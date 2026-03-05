@@ -71,6 +71,7 @@ export function Footer() {
 
       <div className="border-t border-psz-forest/10 px-4 py-4 text-center text-xs text-psz-charcoal/65">
         <p>{new Date().getFullYear()} PakSarZameen. All rights reserved.</p>
+        <p className="mt-1">Development by 04</p>
       </div>
     </footer>
   );

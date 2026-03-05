@@ -18,6 +18,8 @@ export const siteConfig = {
   missionLine: "Building Community Wealth.",
   description:
     "A mission-driven platform focused on education, welfare, and sustainable social progress.",
+  siteUrl:
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://psz-main-web.example.com",
   commonwealthLabel: "Commonwealth Lab",
   commonwealthUrl:
     process.env.NEXT_PUBLIC_COMMONWEALTH_URL ??

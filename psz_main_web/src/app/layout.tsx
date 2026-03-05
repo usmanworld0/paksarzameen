@@ -20,16 +20,47 @@ const bodyFont = Source_Sans_3({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://psz-main-web.example.com"),
+  metadataBase: new URL(siteConfig.siteUrl),
+  applicationName: siteConfig.name,
   title: {
     default: "PakSarZameen | Mission Platform",
     template: "%s | PakSarZameen",
   },
   description: siteConfig.description,
+  keywords: [
+    "PakSarZameen",
+    "community development",
+    "NGO Pakistan",
+    "social impact",
+    "ethical enterprise",
+  ],
+  alternates: {
+    canonical: "/",
+  },
+  authors: [{ name: "PakSarZameen" }],
+  creator: "PakSarZameen",
+  publisher: "PakSarZameen",
   openGraph: {
     title: "PakSarZameen | Mission Platform",
     description: siteConfig.description,
     type: "website",
+    url: siteConfig.siteUrl,
+    siteName: siteConfig.name,
+    locale: "en_PK",
+    images: [
+      {
+        url: "/images/hero-fallback.svg",
+        width: 1600,
+        height: 1000,
+        alt: "PakSarZameen mission platform",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "PakSarZameen | Mission Platform",
+    description: siteConfig.description,
+    images: ["/images/hero-fallback.svg"],
   },
 };
 

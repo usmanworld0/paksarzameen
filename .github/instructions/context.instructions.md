@@ -1,2 +1,3 @@
 - Initializing project context.
 - 2026-03-05 [PSZ Main Web/Phase 1]: Initialized Next.js foundation in `psz_main_web` with Tailwind setup, two-font typography, responsive global Navbar/Footer, and external Commonwealth bridge link wiring via env-configurable URL. (COPILOT_LOG)
+- 2026-03-05 [PSZ Main Web/Footer]: Fixed Next.js server runtime error by removing `onSubmit` event handler from newsletter placeholder in `Footer` and keeping it non-interactive for server component compatibility. (COPILOT_LOG)

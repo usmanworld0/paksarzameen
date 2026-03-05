@@ -47,7 +47,7 @@ export function Footer() {
           <p className="text-sm text-psz-charcoal/80">
             Newsletter signup will be enabled in a future phase.
           </p>
-          <form className="flex gap-2" onSubmit={(event) => event.preventDefault()}>
+          <div className="flex gap-2" role="group" aria-label="Newsletter placeholder">
             <label htmlFor="newsletter-email" className="sr-only">
               Email
             </label>
@@ -59,13 +59,13 @@ export function Footer() {
               disabled
             />
             <button
-              type="submit"
+              type="button"
               className="rounded-lg bg-psz-forest px-4 py-2 text-sm font-semibold text-psz-cream"
               disabled
             >
               Join
             </button>
-          </form>
+          </div>
         </section>
       </div>
 

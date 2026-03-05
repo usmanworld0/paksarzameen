@@ -2,3 +2,4 @@
 - 2026-03-05 [PSZ Main Web/Phase 1]: Initialized Next.js foundation in `psz_main_web` with Tailwind setup, two-font typography, responsive global Navbar/Footer, and external Commonwealth bridge link wiring via env-configurable URL. (COPILOT_LOG)
 - 2026-03-05 [PSZ Main Web/Footer]: Fixed Next.js server runtime error by removing `onSubmit` event handler from newsletter placeholder in `Footer` and keeping it non-interactive for server component compatibility. (COPILOT_LOG)
 - 2026-03-05 [PSZ Main Web/Phase 2]: Added typed models (`Program`, `Article`, `ImpactStat`), dummy datasets, async services with shared 500ms delay utility, and schema documentation alignment for future Supabase migration. (COPILOT_LOG)
+- 2026-03-05 [PSZ Main Web/Phase 3]: Implemented modular homepage assembly in `src/app/page.tsx` with Hero, mission overview, programs preview, framer-motion impact counters, join CTA, and news preview; wired all data through Phase 2 service layer. (COPILOT_LOG)

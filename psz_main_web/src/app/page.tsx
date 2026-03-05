@@ -1,16 +1,33 @@
-export default function HomePage() {
+import { HeroBanner } from "@/features/home/components/HeroBanner";
+import { ImpactCounters } from "@/features/home/components/ImpactCounters";
+import { JoinCTA } from "@/features/home/components/JoinCTA";
+import { NewsPreview } from "@/features/home/components/NewsPreview";
+import { ProgramsPreview } from "@/features/home/components/ProgramsPreview";
+import { WhatIsPSZ } from "@/features/home/components/WhatIsPSZ";
+import { getArticles } from "@/lib/services/getArticles";
+import { getImpactStats } from "@/lib/services/getImpactStats";
+import { getPrograms } from "@/lib/services/getPrograms";
+
+export default async function HomePage() {
+  const [programs, impactStats, articles] = await Promise.all([
+    getPrograms(),
+    getImpactStats(),
+    getArticles(),
+  ]);
+
+  const featuredPrograms = programs.slice(0, 4);
+  const latestArticles = [...articles]
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, 3);
+
   return (
-    <section className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-20 sm:px-6 lg:px-8">
-      <p className="text-sm font-semibold uppercase tracking-[0.2em] text-psz-olive">
-        Foundation Ready
-      </p>
-      <h1 className="font-heading text-4xl leading-tight text-psz-forest sm:text-5xl lg:text-6xl">
-        PakSarZameen Mission Platform
-      </h1>
-      <p className="max-w-2xl text-lg leading-relaxed text-psz-charcoal/80">
-        Global layout, responsive navigation, and footer are now in place for
-        Phase 1. The complete homepage sections will be assembled in Phase 3.
-      </p>
-    </section>
+    <>
+      <HeroBanner />
+      <WhatIsPSZ />
+      <ProgramsPreview programs={featuredPrograms} />
+      <ImpactCounters stats={impactStats} />
+      <JoinCTA />
+      <NewsPreview articles={latestArticles} />
+    </>
   );
 }

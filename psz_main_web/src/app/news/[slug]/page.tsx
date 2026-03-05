@@ -80,48 +80,49 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
   const encodedTitle = encodeURIComponent(article.title);
 
   return (
-    <article className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+    <article className="mx-auto w-full max-w-7xl px-4 py-32 sm:px-6 lg:px-8">
       <Link
         href="/news"
-        className="text-xs font-semibold uppercase tracking-[0.18em] text-psz-olive hover:text-psz-forest"
+        className="text-xs font-semibold uppercase tracking-[0.18em] text-psz-green hover:text-psz-green-light transition-colors"
       >
-        Back To News Hub
+        &larr; Back To News Hub
       </Link>
 
-      <header className="mt-4 rounded-[2rem] border border-psz-forest/10 bg-[linear-gradient(140deg,#1d3528,#3d5c49)] p-8 text-psz-cream sm:p-10">
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-psz-sand">
+      <header className="mt-6 rounded-[2rem] glass-green p-8 sm:p-10 overflow-hidden relative">
+        <div className="absolute -right-20 -top-20 h-60 w-60 rounded-full bg-psz-green/10 blur-[80px]" />
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-psz-green relative">
           {article.category}
         </p>
-        <h1 className="mt-3 max-w-4xl font-heading text-5xl leading-tight sm:text-6xl">
+        <h1 className="mt-3 max-w-4xl font-heading text-5xl font-bold leading-tight tracking-tight gradient-text sm:text-6xl relative">
           {article.title}
         </h1>
-        <p className="mt-4 text-sm uppercase tracking-[0.18em] text-psz-cream/85">
+        <p className="mt-4 text-sm uppercase tracking-[0.18em] text-psz-gray-400 relative">
           {new Date(article.date).toLocaleDateString("en-GB", {
             day: "2-digit",
             month: "long",
             year: "numeric",
           })}
         </p>
-        <p className="mt-5 max-w-3xl text-base leading-relaxed text-psz-cream/90 sm:text-lg">
+        <p className="mt-5 max-w-3xl text-base leading-relaxed text-psz-gray-300 sm:text-lg relative">
           {article.excerpt}
         </p>
       </header>
 
-      <section className="mt-10 rounded-3xl border border-psz-forest/10 bg-white p-7 shadow-panel">
-        <h2 className="font-heading text-3xl text-psz-forest">Full Article</h2>
-        <p className="mt-4 text-sm leading-relaxed text-psz-charcoal/80 sm:text-base">
+      <section className="mt-10 rounded-3xl glass p-7">
+        <h2 className="font-heading text-3xl font-semibold text-white">Full Article</h2>
+        <p className="mt-4 text-sm leading-relaxed text-psz-gray-400 sm:text-base">
           {article.fullContent}
         </p>
       </section>
 
-      <section className="mt-10 rounded-3xl border border-psz-forest/10 bg-white p-7 shadow-panel">
-        <h2 className="font-heading text-3xl text-psz-forest">Share This Story</h2>
+      <section className="mt-10 rounded-3xl glass p-7">
+        <h2 className="font-heading text-3xl font-semibold text-white">Share This Story</h2>
         <div className="mt-4 flex flex-wrap gap-3 text-sm font-semibold">
           <a
             href={`https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-full border border-psz-forest/20 px-4 py-2 text-psz-forest hover:bg-psz-forest hover:text-psz-cream"
+            className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-psz-gray-300 hover:bg-psz-green hover:text-white hover:border-psz-green transition-all"
           >
             Share on X
           </a>
@@ -129,7 +130,7 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
             href={`https://wa.me/?text=${encodedTitle}%20${encodedUrl}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-full border border-psz-forest/20 px-4 py-2 text-psz-forest hover:bg-psz-forest hover:text-psz-cream"
+            className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-psz-gray-300 hover:bg-psz-green hover:text-white hover:border-psz-green transition-all"
           >
             Share on WhatsApp
           </a>
@@ -137,7 +138,7 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
       </section>
 
       <section className="mt-10" aria-labelledby="related-articles-heading">
-        <h2 id="related-articles-heading" className="font-heading text-3xl text-psz-forest">
+        <h2 id="related-articles-heading" className="font-heading text-3xl font-semibold text-white">
           Related Articles
         </h2>
         <div className="mt-5 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
@@ -145,27 +146,27 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
             relatedArticles.map((related) => (
               <article
                 key={related.id}
-                className="rounded-2xl border border-psz-forest/10 bg-white p-5 shadow-panel"
+                className="group rounded-2xl glass p-5 transition-all hover:border-psz-green/20"
               >
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-psz-olive">
+                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-psz-green">
                   {related.category}
                 </p>
-                <h3 className="mt-3 font-heading text-2xl text-psz-forest">
+                <h3 className="mt-3 font-heading text-2xl font-semibold text-white group-hover:text-psz-green transition-colors">
                   {related.title}
                 </h3>
-                <p className="mt-3 text-sm leading-relaxed text-psz-charcoal/80">
+                <p className="mt-3 text-sm leading-relaxed text-psz-gray-400">
                   {related.excerpt}
                 </p>
                 <Link
                   href={`/news/${related.slug}`}
-                  className="mt-4 inline-flex items-center text-sm font-semibold text-psz-forest hover:text-psz-olive"
+                  className="mt-4 inline-flex items-center text-sm font-semibold text-psz-green hover:text-psz-green-light transition-colors"
                 >
                   Read Related Story
                 </Link>
               </article>
             ))
           ) : (
-            <div className="rounded-2xl border border-dashed border-psz-forest/20 bg-white p-5 text-sm text-psz-charcoal/70">
+            <div className="rounded-2xl border border-dashed border-white/10 glass p-5 text-sm text-psz-gray-400">
               More related articles will appear as the resource library grows.
             </div>
           )}

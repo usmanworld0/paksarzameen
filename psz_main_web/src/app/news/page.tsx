@@ -40,14 +40,14 @@ export default async function NewsPage() {
 
   return (
     <>
-      <header className="mx-auto w-full max-w-7xl px-4 pt-16 sm:px-6 lg:px-8">
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-psz-olive">
+      <header className="mx-auto w-full max-w-7xl px-4 pt-32 sm:px-6 lg:px-8">
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-psz-green">
           News Hub
         </p>
-        <h1 className="mt-4 max-w-3xl font-heading text-5xl leading-tight text-psz-forest sm:text-6xl">
+        <h1 className="mt-4 max-w-3xl font-heading text-5xl font-bold leading-tight tracking-tight gradient-text sm:text-6xl">
           Stories, Resources, And Field Updates
         </h1>
-        <p className="mt-5 max-w-3xl text-base leading-relaxed text-psz-charcoal/80 sm:text-lg">
+        <p className="mt-5 max-w-3xl text-base leading-relaxed text-psz-gray-400 sm:text-lg">
           Filter by category, search across updates, and follow the latest PSZ
           work through detailed reports and announcements.
         </p>

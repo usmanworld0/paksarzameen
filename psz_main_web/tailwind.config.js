@@ -10,20 +10,18 @@ module.exports = {
     extend: {
       colors: {
         psz: {
-          forest: "#1f3b2d",
-          sand: "#d3b483",
-          charcoal: "#1a1f1d",
-          cream: "#f6f1e5",
-          olive: "#5f7a54"
-        }
+          green: "#009040",
+          "green-light": "#00C261",
+          "green-dark": "#008A43"
+        },
+        "vp-black": "#1d1d1f",
+        "vp-dark": "#000000",
+        "vp-white": "#ffffff",
+        "vp-grey": "#f5f5f7",
+        "vp-light": "hsl(0, 0%, 45%)"
       },
       fontFamily: {
-        heading: ["var(--font-heading)"],
-        body: ["var(--font-body)"]
-      },
-      boxShadow: {
-        soft: "0 18px 38px -24px rgba(20, 26, 24, 0.45)",
-        panel: "0 10px 28px -18px rgba(19, 29, 24, 0.4)"
+        body: ["var(--font-body)", "Inter", "sans-serif"]
       }
     }
   },

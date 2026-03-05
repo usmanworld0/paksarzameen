@@ -40,14 +40,14 @@ export default async function ProgramsPage() {
 
   return (
     <>
-      <header className="mx-auto w-full max-w-7xl px-4 pt-16 sm:px-6 lg:px-8">
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-psz-olive">
+      <header className="mx-auto w-full max-w-7xl px-4 pt-32 sm:px-6 lg:px-8">
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-psz-green">
           Programs Hub
         </p>
-        <h1 className="mt-4 max-w-3xl font-heading text-5xl leading-tight text-psz-forest sm:text-6xl">
+        <h1 className="mt-4 max-w-3xl font-heading text-5xl font-bold leading-tight tracking-tight gradient-text sm:text-6xl">
           Departments Building Impact Across Communities
         </h1>
-        <p className="mt-5 max-w-3xl text-base leading-relaxed text-psz-charcoal/80 sm:text-lg">
+        <p className="mt-5 max-w-3xl text-base leading-relaxed text-psz-gray-400 sm:text-lg">
           Browse all core PSZ initiatives, filter by category, and search for
           specific focus areas to understand where change is happening.
         </p>

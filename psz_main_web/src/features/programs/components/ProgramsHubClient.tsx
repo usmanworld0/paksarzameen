@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { ArrowRight } from "lucide-react";
 
 import type { Program } from "@/lib/models/Program";
 
@@ -39,8 +40,8 @@ export function ProgramsHubClient({ programs }: ProgramsHubClientProps) {
       <h2 id="programs-hub-controls-heading" className="sr-only">
         Program filters and results
       </h2>
-      <header className="rounded-3xl border border-psz-forest/10 bg-white/85 p-5 shadow-panel sm:p-6">
-        <label className="text-xs font-semibold uppercase tracking-[0.2em] text-psz-olive" htmlFor="program-search">
+      <header className="rounded-3xl glass-strong p-5 sm:p-6 mt-10">
+        <label className="text-xs font-semibold uppercase tracking-[0.2em] text-psz-green" htmlFor="program-search">
           Search Programs
         </label>
         <input
@@ -49,7 +50,7 @@ export function ProgramsHubClient({ programs }: ProgramsHubClientProps) {
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder="Search by department or focus area"
-          className="mt-2 w-full rounded-2xl border border-psz-forest/15 bg-white px-4 py-3 text-sm text-psz-charcoal outline-none ring-0 placeholder:text-psz-charcoal/45 focus:border-psz-olive"
+          className="mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none placeholder:text-psz-gray-600 focus:border-psz-green/40 transition-colors"
         />
 
         <div className="mt-5 flex flex-wrap gap-2">
@@ -60,10 +61,10 @@ export function ProgramsHubClient({ programs }: ProgramsHubClientProps) {
                 key={category}
                 type="button"
                 onClick={() => setActiveCategory(category)}
-                className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition-colors ${
+                className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition-all ${
                   isActive
-                    ? "bg-psz-forest text-psz-cream"
-                    : "border border-psz-forest/20 bg-white text-psz-forest hover:bg-psz-forest/10"
+                    ? "bg-psz-green text-white"
+                    : "border border-white/10 bg-white/5 text-psz-gray-300 hover:bg-white/10 hover:text-white"
                 }`}
               >
                 {category}
@@ -77,23 +78,24 @@ export function ProgramsHubClient({ programs }: ProgramsHubClientProps) {
         {filteredPrograms.map((program) => (
           <article
             key={program.id}
-            className="overflow-hidden rounded-3xl border border-psz-forest/10 bg-white shadow-panel"
+            className="group overflow-hidden rounded-3xl glass transition-all hover:border-psz-green/20"
           >
-            <div className="h-40 bg-[linear-gradient(135deg,#1f3b2d,#4d6a57)] p-5 text-psz-cream">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-psz-sand">
+            <div className="h-40 bg-gradient-to-br from-psz-green/15 via-psz-green/5 to-transparent p-5">
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-psz-green">
                 {program.category}
               </p>
-              <p className="mt-7 font-heading text-2xl">{program.title}</p>
+              <p className="mt-7 font-heading text-2xl font-semibold text-white">{program.title}</p>
             </div>
             <div className="space-y-4 p-5">
-              <p className="text-sm leading-relaxed text-psz-charcoal/80">
+              <p className="text-sm leading-relaxed text-psz-gray-400">
                 {program.description}
               </p>
               <Link
                 href={`/programs/${program.slug}`}
-                className="inline-flex items-center text-sm font-semibold text-psz-forest hover:text-psz-olive"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-psz-green hover:text-psz-green-light transition-colors"
               >
                 Explore Program
+                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
               </Link>
             </div>
           </article>
@@ -101,7 +103,7 @@ export function ProgramsHubClient({ programs }: ProgramsHubClientProps) {
       </div>
 
       {filteredPrograms.length === 0 ? (
-        <div className="mt-8 rounded-2xl border border-dashed border-psz-forest/20 bg-white/80 px-5 py-8 text-center text-sm text-psz-charcoal/70">
+        <div className="mt-8 rounded-2xl border border-dashed border-white/10 glass px-5 py-8 text-center text-sm text-psz-gray-400">
           No programs found for this filter. Try another category or search term.
         </div>
       ) : null}

@@ -1,79 +1,64 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-
-import { MobileNav } from "@/components/header/MobileNav";
-import { navLinks, siteConfig } from "@/config/site";
+import { useState, useEffect } from "react";
+import { navLinks } from "@/config/site";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 export function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-psz-forest/10 bg-psz-cream/90 backdrop-blur">
-      <nav className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
-        <Link
-          href="/"
-          className="font-heading text-xl font-semibold tracking-tight text-psz-forest sm:text-2xl"
-        >
-          PakSarZameen
-        </Link>
+    <>
+      <header className={`psz-header ${scrolled ? "scrolled" : ""}`}>
+        <div className="blur-bg" />
+        <nav>
+          <Link href="/" className="nav-logo">
+            Pak<span className="green">Sar</span>Zameen
+          </Link>
 
-        <ul className="hidden items-center gap-1 md:flex">
-          {navLinks.map((link) => (
-            <li key={link.label}>
-              <Link
-                href={link.href}
-                className="rounded-lg px-3 py-2 text-sm font-medium text-psz-charcoal transition-all hover:bg-psz-forest/10 hover:text-psz-forest"
-              >
+          <div className="nav-links">
+            {navLinks.slice(0, 5).map((link) => (
+              <Link key={link.label} href={link.href}>
                 {link.label}
               </Link>
-            </li>
-          ))}
-          <li>
-            <a
-              href={siteConfig.commonwealthUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="ml-2 inline-flex items-center rounded-full border border-psz-sand/80 bg-psz-forest px-4 py-2 text-sm font-semibold text-psz-cream shadow-soft transition-all hover:-translate-y-px hover:bg-psz-charcoal"
+            ))}
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: "1.6rem" }}>
+            <ThemeToggle />
+            <button
+              type="button"
+              className={`nav-toggle ${menuOpen ? "open" : ""}`}
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              onClick={() => setMenuOpen((p) => !p)}
             >
-              {siteConfig.commonwealthLabel}
-            </a>
-          </li>
-        </ul>
+              <div className="bar1" />
+              <div className="bar2" />
+            </button>
+          </div>
+        </nav>
+      </header>
 
-        <button
-          type="button"
-          className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-psz-forest/20 bg-white/80 text-psz-forest md:hidden"
-          aria-label={isOpen ? "Close menu" : "Open menu"}
-          onClick={() => setIsOpen((prev) => !prev)}
-        >
-          <span className="sr-only">Menu</span>
-          <svg
-            viewBox="0 0 24 24"
-            className="h-5 w-5"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
+      {/* Mobile menu */}
+      <div className={`mobile-menu ${menuOpen ? "open" : ""}`}>
+        {navLinks.map((link) => (
+          <Link
+            key={link.label}
+            href={link.href}
+            onClick={() => setMenuOpen(false)}
           >
-            {isOpen ? (
-              <path d="M6 6l12 12M18 6L6 18" />
-            ) : (
-              <path d="M4 7h16M4 12h16M4 17h16" />
-            )}
-          </svg>
-        </button>
-      </nav>
-
-      <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-        <MobileNav
-          isOpen={isOpen}
-          links={navLinks}
-          commonwealthLabel={siteConfig.commonwealthLabel}
-          commonwealthUrl={siteConfig.commonwealthUrl}
-          onNavigate={() => setIsOpen(false)}
-        />
+            {link.label}
+          </Link>
+        ))}
       </div>
-    </header>
+    </>
   );
 }

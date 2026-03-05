@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 
 import type { NavLink } from "@/config/site";
+import { Button } from "@/components/ui/button";
 
 type MobileNavProps = {
   isOpen: boolean;
@@ -20,32 +22,52 @@ export function MobileNav({
   onNavigate,
 }: MobileNavProps) {
   return (
-    <div
-      className={`md:hidden overflow-hidden transition-[max-height,opacity] duration-300 ease-out ${
-        isOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
-      }`}
-    >
-      <div className="mb-3 space-y-1 rounded-2xl border border-psz-forest/15 bg-white/95 p-3 shadow-panel backdrop-blur">
-        {links.map((link) => (
-          <Link
-            key={link.label}
-            href={link.href}
-            className="block rounded-xl px-3 py-2 text-sm font-medium text-psz-charcoal transition-colors hover:bg-psz-forest/10"
-            onClick={onNavigate}
-          >
-            {link.label}
-          </Link>
-        ))}
-        <a
-          href={commonwealthUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-2 block rounded-xl border border-psz-sand/70 bg-psz-forest px-3 py-2 text-center text-sm font-semibold text-psz-cream transition-all hover:-translate-y-px hover:bg-psz-charcoal"
-          onClick={onNavigate}
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+          exit={{ opacity: 0, height: 0 }}
+          transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          className="overflow-hidden lg:hidden"
         >
-          {commonwealthLabel}
-        </a>
-      </div>
-    </div>
+          <div className="mb-4 space-y-1 rounded-2xl glass-strong p-4">
+            {links.map((link, i) => (
+              <motion.div
+                key={link.label}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.05, duration: 0.3 }}
+              >
+                <Link
+                  href={link.href}
+                  className="block rounded-xl px-4 py-3 text-sm font-medium text-psz-gray-300 transition-all hover:bg-white/5 hover:text-white"
+                  onClick={onNavigate}
+                >
+                  {link.label}
+                </Link>
+              </motion.div>
+            ))}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: links.length * 0.05, duration: 0.3 }}
+              className="pt-2"
+            >
+              <Button asChild variant="primary" size="md" className="w-full">
+                <a
+                  href={commonwealthUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={onNavigate}
+                >
+                  {commonwealthLabel}
+                </a>
+              </Button>
+            </motion.div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }

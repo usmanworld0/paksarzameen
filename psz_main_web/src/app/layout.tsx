@@ -1,19 +1,14 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Source_Sans_3 } from "next/font/google";
+import { Inter } from "next/font/google";
 
-import { Footer } from "@/components/footer/Footer";
 import { Navbar } from "@/components/header/Navbar";
+import { Footer } from "@/components/footer/Footer";
+import { ThemeProvider } from "@/lib/theme";
 import { siteConfig } from "@/config/site";
 
 import "./globals.css";
 
-const headingFont = Playfair_Display({
-  variable: "--font-heading",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const bodyFont = Source_Sans_3({
+const inter = Inter({
   variable: "--font-body",
   subsets: ["latin"],
   display: "swap",
@@ -70,14 +65,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${headingFont.variable} ${bodyFont.variable} bg-psz-cream text-psz-charcoal antialiased`}>
-        <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_15%_10%,rgba(95,122,84,0.16),transparent_40%),radial-gradient(circle_at_85%_15%,rgba(211,180,131,0.25),transparent_45%)]" />
-        <Navbar />
-        <main id="main-content" className="min-h-[65vh]">
-          {children}
-        </main>
-        <Footer />
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Force light theme on initial paint to avoid flashes */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{document.documentElement.setAttribute('data-theme','light');}catch(e){}})();`,
+          }}
+        />
+      </head>
+      <body className={`${inter.variable} antialiased`}>
+        <ThemeProvider>
+          <Navbar />
+          <main id="main-content">
+            {children}
+          </main>
+          <Footer />
+        </ThemeProvider>
       </body>
     </html>
   );

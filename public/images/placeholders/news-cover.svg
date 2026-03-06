@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800" fill="none">
+  <defs>
+    <linearGradient id="a" x1="160" y1="70" x2="1030" y2="740" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1F3B2D"/>
+      <stop offset="1" stop-color="#1A1F1D"/>
+    </linearGradient>
+    <radialGradient id="b" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1000 210) rotate(143) scale(320 210)">
+      <stop stop-color="#D3B483" stop-opacity="0.52"/>
+      <stop offset="1" stop-color="#D3B483" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#a)"/>
+  <rect width="1200" height="800" fill="url(#b)"/>
+  <path d="M0 716C172 635 301 620 452 641C606 663 722 728 866 734C1000 740 1090 706 1200 645V800H0V716Z" fill="#101612" fill-opacity="0.8"/>
+  <text x="72" y="126" fill="#F6F1E5" font-family="Segoe UI, sans-serif" font-size="42" font-weight="700" letter-spacing="2">PSZ NEWS COVER</text>
+</svg>

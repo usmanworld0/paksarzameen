@@ -300,6 +300,217 @@ video {
   height: 100%;
   object-fit: cover;
   filter: grayscale(10%) brightness(90%) contrast(90%);
+  will-change: filter, width, transform;
+  z-index: 0;
+}
+
+/* ═══════════════════════════════════════════════════ */
+/* EDUCATION SECTION (image + founder profile)        */
+/* ═══════════════════════════════════════════════════ */
+.pinned-video-section.section-education {
+  background: #ffffff; /* white background per request */
+}
+
+/* Right-side portrait */
+.pinned-video-section.section-education .edu-img {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: clamp(280px, 38vw, 580px);
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  border-radius: 0;
+  box-shadow: none;
+  z-index: 70; /* raised so image sits above most visuals */
+  transition: filter 0.6s ease, transform 0.6s ease;
+}
+
+/* soft gradient fade from image edge into dark bg */
+.pinned-video-section.section-education .edu-img::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, #ffffff 0%, transparent 35%);
+  z-index: 72;
+  pointer-events: none;
+}
+
+/* Blurred logo watermark behind text */
+.pinned-video-section.section-education .edu-logo-backdrop {
+  position: absolute;
+  left: -2%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: clamp(340px, 42vw, 620px);
+  height: auto;
+  object-fit: contain;
+  opacity: 0.06;
+  filter: blur(3px) grayscale(80%);
+  z-index: 75; /* above image (70) but below text (80) */
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Left-side text block */
+.pinned-video-section.section-education .edu-section-text {
+  position: absolute;
+  left: 7%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: auto;
+  max-width: 48%;
+  text-align: left;
+  z-index: 95; /* ensure text is topmost */
+  background: rgba(255,255,255,0.98);
+  padding: 1.4rem 1.6rem;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(6,24,10,0.06);
+}
+
+/* Override base section-text centering for this section */
+.section-education .section-text {
+  left: 7%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: auto;
+  max-width: 48%;
+  text-align: left;
+}
+
+.section-education .edu-label {
+  display: block;
+  font-size: clamp(0.88rem, 1.3vw, 1.05rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--psz-green) !important;
+  font-family: var(--font-heading) !important;
+  border: none;
+  border-left: 3px solid var(--psz-green);
+  border-radius: 0;
+  padding: 0.18rem 0 0.18rem 0.75rem;
+  margin-bottom: 1.4rem;
+  line-height: 1.4;
+}
+
+/* Text masker wrapper for slide-up reveal animation */
+.section-education .edu-textmasker {
+  overflow: hidden;
+  display: block;
+}
+
+.section-education .edu-name {
+  font-size: clamp(2.8rem, 5.8vw, 5.2rem);
+  font-weight: 800;
+  color: #071a0e !important;
+  letter-spacing: -0.04em;
+  line-height: 1.0;
+  margin: 0 0 1.2rem;
+}
+
+/* Big viewport-scaled name words — animated per word */
+.section-education .edu-name-word {
+  display: block;
+  font-size: clamp(4.5rem, 11vw, 10rem);
+  font-weight: 800;
+  color: #000 !important;
+  font-family: var(--font-heading) !important;
+  letter-spacing: -0.05em;
+  line-height: 0.9;
+  text-transform: uppercase;
+  margin-bottom: 0.04em;
+}
+
+.section-education .edu-bio {
+  font-size: clamp(0.82rem, 1.05vw, 0.96rem) !important;
+  color: var(--dark-black) !important;
+  line-height: 1.75;
+  font-weight: 400 !important;
+  font-family: var(--font-body) !important;
+  margin: 0 0 1.6rem;
+  max-width: 44ch;
+  border-top: 1px solid rgba(0,0,0,0.06);
+  padding-top: 0.9rem;
+}
+
+/* Ensure any paragraph inside the education .section-text that isn't a heading
+   displays smaller and regular weight (overrides the global 'p' weight)
+   but keeps other sections unaffected. */
+.pinned-video-section.section-education .section-text p {
+  font-size: clamp(0.82rem, 1.05vw, 0.96rem);
+  font-weight: 400 !important;
+  color: rgba(0,0,0,0.72) !important;
+  margin: 0 0 1rem;
+}
+
+/* Achievement tiles */
+.section-education .edu-achievements {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem 1.5rem;
+}
+
+.section-education .edu-achievements li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.section-education .edu-achievements li strong {
+  font-size: clamp(1.7rem, 3.2vw, 2.5rem);
+  font-weight: 800;
+  color: var(--psz-green) !important;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.section-education .edu-achievements li span {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(0,0,0,0.72) !important;
+}
+
+/* Override the base .section-text p white color only — targeted, no blanket !important */
+.pinned-video-section.section-education .section-text p:not(.edu-bio) {
+  font-size: inherit;
+  color: rgba(0,0,0,0.82) !important;
+  font-weight: inherit;
+}
+.pinned-video-section.section-education .section-text h2 {
+  color: #071a0e !important;
+}
+
+@media (max-width: 900px) {
+  .pinned-video-section.section-education .edu-img {
+    right: 0;
+    width: 100%;
+    opacity: 0.25;
+  }
+  .section-education .section-text,
+  .pinned-video-section.section-education .edu-section-text {
+    left: 5%;
+    max-width: 90%;
+    background: rgba(255,255,255,0.96);
+    padding: 1rem;
+  }
+  .section-education .edu-achievements {
+    gap: 0.75rem 1rem;
+  }
+}
+
+/* Mission banner overlay: subtle green tint above video but below text */
+.mission-bg-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 40; /* higher to ensure it covers the video */
+  background-color: rgba(6, 120, 60, 0.26); /* solid tint for uniform coverage */
+  pointer-events: none;
 }
 
 .pinned-video-section .section-text {
@@ -309,8 +520,9 @@ video {
   transform: translate(-50%, -50%);
   width: 85%;
   max-width: 900px;
-  z-index: 5;
+  z-index: 60; /* ensure text appears above the overlay */
   text-align: center;
+  will-change: opacity, transform;
 }
 
 .pinned-video-section .section-text p {
@@ -475,38 +687,118 @@ video {
 .approach-section {
   width: 100vw;
   min-height: 100vh;
-  background-color: var(--grey-bg);
+  background-color: #0a0a0a;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   gap: 2rem;
   padding: 8rem 5%;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Background image masonry (CSS columns) */
+.approach-bg-grid {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  column-gap: 8px;
+  /* responsive column count */
+  column-count: 3;
+  column-fill: balance;
+  padding: 0 8px;
+}
+
+.approach-bg-item {
+  display: inline-block;
+  width: 100%;
+  margin-bottom: 8px;
+  break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+  -moz-column-break-inside: avoid;
+}
+
+.approach-bg-item img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  filter: brightness(0.68) saturate(0.88);
+  border-radius: 6px;
+}
+
+/* Slightly larger photos for a stronger visual presence */
+.approach-bg-item img {
+  max-height: 560px;
+}
+.approach-bg-item:nth-child(-n+2) img {
+  /* first two images: compact landscape but a bit larger */
+  max-height: 260px;
+}
+.approach-bg-item:nth-child(3) img {
+  /* center photo (team) slightly larger */
+  max-height: 220px;
+}
+.approach-bg-item:nth-child(4) img {
+  max-height: 300px;
+}
+
+@media (max-width: 900px) {
+  .approach-bg-item:nth-child(-n+2) img { max-height: 180px; }
+  .approach-bg-item:nth-child(3) img { max-height: 140px; }
+}
+@media (max-width: 900px) {
+  .approach-bg-grid { column-count: 2; }
+}
+
+@media (max-width: 520px) {
+  .approach-bg-grid { column-count: 1; }
+}
+
+/* Dark overlay so text stays readable */
+.approach-bg-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.28) 0%,
+    rgba(0, 0, 0, 0.36) 50%,
+    rgba(0, 0, 0, 0.28) 100%
+  );
+  pointer-events: none;
 }
 
 .approach-section h5 {
   font-size: var(--fs-m);
-  color: var(--black);
+  color: var(--psz-green);
   font-weight: 700;
   text-align: center;
+  position: relative;
+  z-index: 2;
 }
 
 .approach-section h2 {
   font-size: var(--fs-3xl);
-  color: var(--black);
+  color: #fff;
   font-weight: 700;
   text-align: center;
   max-width: 70%;
+  position: relative;
+  z-index: 2;
 }
 
 .approach-section p {
   font-size: var(--fs-s);
-  font-weight: 600;
-  color: var(--light-white);
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.75);
   width: 60%;
   margin-top: 2rem;
   text-align: center;
   line-height: 1.7;
+  position: relative;
+  z-index: 2;
 }
 
 /* ─── Media Grid ─── */
@@ -568,13 +860,14 @@ video {
 .heart-section {
   width: 100vw;
   height: 100vh;
-  background: #0a0a0a;
+  background: var(--white);
   position: relative;
   overflow: hidden;
   padding: clamp(3rem, 4vh, 6rem) 5%;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+  z-index: 10;
 }
 
 /* ── Decorative background ── */
@@ -583,8 +876,8 @@ video {
   inset: 0;
   z-index: 0;
   background:
-    radial-gradient(ellipse 80% 60% at 20% 40%, rgba(0, 144, 64, 0.12) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 50% at 80% 70%, rgba(0, 80, 30, 0.10) 0%, transparent 55%);
+    radial-gradient(ellipse 80% 60% at 20% 40%, rgba(6, 120, 60, 0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 70%, rgba(6, 80, 40, 0.04) 0%, transparent 55%);
   pointer-events: none;
 }
 
@@ -593,8 +886,8 @@ video {
   inset: 0;
   z-index: 0;
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+    linear-gradient(rgba(0, 0, 0, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
   background-size: 6rem 6rem;
   pointer-events: none;
 }
@@ -621,7 +914,7 @@ video {
 .heart-title {
   font-size: clamp(2.4rem, 4.5vw, 5rem);
   font-weight: 800;
-  color: #fff;
+  color: var(--black);
   letter-spacing: -0.035em;
   line-height: 1.1;
 }
@@ -651,11 +944,11 @@ video {
   height: clamp(28rem, 60vh, 56rem);
   border-radius: 2rem;
   overflow: hidden;
-  background: #111;
+  background: #fff;
   box-shadow:
-    0 4px 6px rgba(0, 0, 0, 0.15),
-    0 24px 60px rgba(0, 0, 0, 0.45),
-    0 0 0 1px rgba(255, 255, 255, 0.04);
+    0 6px 18px rgba(6, 24, 20, 0.06),
+    0 12px 40px rgba(6, 24, 20, 0.06),
+    0 0 0 1px rgba(0, 0, 0, 0.02);
 }
 
 .heart-member-img {
@@ -700,14 +993,14 @@ video {
 .heart-info-name {
   font-size: clamp(2.8rem, 4vw, 4.5rem);
   font-weight: 800;
-  color: #fff;
+  color: var(--black);
   letter-spacing: -0.03em;
   line-height: 1.15;
 }
 
 .heart-info-quote {
   font-size: var(--fs-s);
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(0, 0, 0, 0.72);
   line-height: 1.75;
   font-weight: 400;
   font-style: italic;
@@ -748,13 +1041,13 @@ video {
 
 .heart-counter-sep {
   font-size: var(--fs-vs);
-  color: rgba(255, 255, 255, 0.25);
+  color: rgba(0, 0, 0, 0.28);
   font-weight: 300;
 }
 
 .heart-counter-total {
   font-size: var(--fs-vs);
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(0, 0, 0, 0.36);
   font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
@@ -762,7 +1055,7 @@ video {
 .heart-progress {
   flex: 1;
   height: 2px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.06);
   border-radius: 2px;
   overflow: hidden;
 }
@@ -858,6 +1151,7 @@ video {
   background-color: var(--white);
   position: relative;
   margin-block: 5rem;
+  z-index: 12;
 }
 
 .full-image-section .image-wrapper {
@@ -1419,12 +1713,17 @@ video {
 
 .psz-footer {
   position: relative;
-  background-image: url('/images/full_team.jpeg');
+  background-image: url('/images/footer.png');
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
   /* darken with overlay via pseudo-element */
   overflow: hidden;
+  min-height: 50vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-block: 3.5rem;
 }
 
 .psz-footer::before {
@@ -1880,16 +2179,30 @@ video {
   pointer-events: none;
 }
 
-/* ── Green tint overlay ── */
+/* ── Green tint overlay (reduced opacity for subtler tint) ── */
 .prog-bg-overlay {
   position: absolute;
   inset: 0;
   z-index: 1;
   background: linear-gradient(
     160deg,
-    rgba(0, 50, 20, 0.82) 0%,
-    rgba(0, 80, 30, 0.70) 40%,
-    rgba(0, 40, 15, 0.88) 100%
+    rgba(0, 50, 20, 0.28) 0%,
+    rgba(0, 80, 30, 0.20) 40%,
+    rgba(0, 40, 15, 0.32) 100%
+  );
+  pointer-events: none;
+}
+
+/* Enterprise section green overlay (matches visual tone of other green overlays) */
+.enterprise-bg-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    160deg,
+    rgba(6, 120, 60, 0.22) 0%,
+    rgba(6, 140, 70, 0.18) 45%,
+    rgba(6, 100, 50, 0.26) 100%
   );
   pointer-events: none;
 }
@@ -2042,6 +2355,21 @@ video {
 
 .stack-card:hover .illus-icon {
   transform: scale(1.12) translateY(-4px);
+}
+
+/* Image variant for illustration icons (placeholders) */
+.illus-icon-img {
+  display: block;
+  width: clamp(6rem, 10vw, 9.5rem);
+  height: auto;
+  object-fit: contain;
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 10px 28px rgba(0, 0, 0, 0.28));
+  transition: transform 0.36s cubic-bezier(0.22, 1.0, 0.36, 1);
+}
+.stack-card:hover .illus-icon-img {
+  transform: scale(1.14) translateY(-4px);
 }
 
 /* Watermark number in illustration */
@@ -2528,4 +2856,409 @@ body,
 .split-section,
 .heart-section {
   transition: background-color 0.35s ease, color 0.35s ease;
+}
+
+/* ═══════════════════════════════════════════════════ */
+/* COMPREHENSIVE MOBILE RESPONSIVENESS                */
+/* ═══════════════════════════════════════════════════ */
+
+/* Static founder name (no animation) */
+.edu-name-static {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Tablet (max-width: 960px) ── */
+@media (max-width: 960px) {
+  /* Hero title — allow wrapping on tablets */
+  .hero-section .hero-title {
+    white-space: normal;
+    max-width: 90vw;
+  }
+
+  /* Approach section — wider text */
+  .approach-section h2 {
+    max-width: 90%;
+  }
+  .approach-section p {
+    width: 85%;
+  }
+
+  /* Impact video text block */
+  .impact-video-section .text-block {
+    max-width: 70%;
+    margin-inline: auto;
+    transform: translateY(-8rem);
+  }
+}
+
+/* ── Small tablet / large phone (max-width: 768px) ── */
+@media (max-width: 768px) {
+  /* Hero — reduce big title, allow wrapping */
+  .hero-section .hero-title {
+    font-size: clamp(3.2rem, 9vw, 5.5rem);
+    white-space: normal;
+    max-width: 90vw;
+  }
+
+  .hero-section .hero-content {
+    width: 90%;
+  }
+
+  /* Split section — tighter on tablets */
+  .split-section {
+    padding: 5rem 5%;
+  }
+
+  /* Approach — wider text on smaller screens */
+  .approach-section {
+    padding: 5rem 5%;
+  }
+  .approach-section h2 {
+    max-width: 95%;
+    font-size: var(--fs-2xl);
+  }
+  .approach-section p {
+    width: 90%;
+  }
+
+  /* Education / Founder section */
+  .section-education .edu-name-word {
+    font-size: clamp(3rem, 9vw, 6rem);
+  }
+
+  .pinned-video-section.section-education .edu-section-text {
+    max-width: 92%;
+    left: 4%;
+    padding: 1.2rem;
+  }
+
+  .section-education .edu-bio {
+    max-width: 100%;
+  }
+
+  /* Pinned video text — reduce on tablets */
+  .pinned-video-section .section-text {
+    width: 90%;
+  }
+  .pinned-video-section .section-text p {
+    font-size: var(--fs-xl);
+  }
+
+  /* Showcase / Pillars section */
+  .showcase-section {
+    padding: 5rem 5%;
+  }
+  .showcase-section .showcase-image {
+    width: 95%;
+  }
+
+  /* Stats row — 2 cols */
+  .stats-row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.2rem;
+    margin-top: 3rem;
+  }
+  .stat-card {
+    padding: 2rem 1rem;
+  }
+
+  /* Highlight section */
+  .highlight-section p {
+    width: 90%;
+    font-size: var(--fs-vs);
+  }
+
+  /* Impact header */
+  .impact-header-section .inner {
+    padding-top: 8rem;
+  }
+  .impact-header-section h2 {
+    max-width: 90%;
+  }
+  .impact-header-section p {
+    width: 90%;
+  }
+
+  /* Impact video text */
+  .impact-video-section .text-block {
+    max-width: 80%;
+    margin-inline: auto;
+    transform: translateY(-4rem);
+  }
+
+  /* Overlay reveal */
+  .overlay-reveal-section .image-pair {
+    width: 90%;
+  }
+  .overlay-reveal-section .reveal-text {
+    max-width: 90%;
+  }
+
+  /* Final CTA */
+  .final-cta-section .reveal-text {
+    max-width: 90%;
+  }
+}
+
+/* ── Phone (max-width: 480px) ── */
+@media (max-width: 480px) {
+  /* Hero */
+  .hero-section .hero-title {
+    font-size: clamp(2.6rem, 8vw, 4rem);
+    white-space: normal;
+    max-width: 92vw;
+  }
+  .hero-section .hero-content {
+    width: 92%;
+  }
+  .hero-section .hero-label {
+    font-size: var(--fs-vs);
+  }
+
+  /* Split section */
+  .split-section {
+    padding: 4rem 5%;
+  }
+  .split-section .split-left h2 {
+    font-size: var(--fs-xl);
+  }
+
+  /* Approach */
+  .approach-section {
+    padding: 4rem 5%;
+    min-height: auto;
+  }
+  .approach-section h2 {
+    max-width: 100%;
+    font-size: var(--fs-xl);
+  }
+  .approach-section p {
+    width: 100%;
+    font-size: var(--fs-vs);
+  }
+
+  /* Education / Founder section */
+  .section-education .edu-name-word {
+    font-size: clamp(2.4rem, 8vw, 4rem);
+  }
+  .pinned-video-section.section-education .edu-section-text {
+    left: 3%;
+    max-width: 94%;
+    padding: 1rem;
+    border-radius: 8px;
+  }
+  .section-education .edu-label {
+    font-size: clamp(0.72rem, 1.1vw, 0.9rem);
+    padding: 0.12rem 0 0.12rem 0.6rem;
+    margin-bottom: 1rem;
+  }
+  .section-education .edu-achievements {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem 0.8rem;
+  }
+  .section-education .edu-achievements li strong {
+    font-size: clamp(1.4rem, 2.8vw, 2rem);
+  }
+  .section-education .edu-achievements li span {
+    font-size: 0.68rem;
+  }
+  .section-education .edu-bio {
+    font-size: clamp(0.76rem, 0.95vw, 0.88rem) !important;
+    max-width: 100%;
+  }
+
+  /* Pinned video section text */
+  .pinned-video-section .section-text {
+    width: 92%;
+  }
+  .pinned-video-section .section-text p {
+    font-size: var(--fs-l);
+  }
+
+  /* Showcase / Pillars */
+  .showcase-section {
+    padding: 3.5rem 5%;
+  }
+  .showcase-section .showcase-image {
+    width: 100%;
+  }
+
+  /* Stats — single column on small phones */
+  .stats-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+    margin-top: 2rem;
+  }
+  .stat-card {
+    padding: 1.5rem 0.8rem;
+  }
+  .stat-number {
+    font-size: clamp(2.2rem, 5vw, 3.2rem);
+  }
+  .stat-label {
+    font-size: var(--fs-vvs);
+    margin-top: 0.5rem;
+  }
+
+  /* Highlight */
+  .highlight-section {
+    padding: 3rem 5%;
+  }
+  .highlight-section p {
+    width: 100%;
+    margin: 2rem auto;
+  }
+
+  /* Testimonials */
+  .testimonials-section {
+    padding: 5rem 0 4rem;
+  }
+  .voices-header {
+    margin-bottom: 2.5rem;
+  }
+
+  /* Heart section */
+  .heart-section {
+    padding: 3rem 5%;
+  }
+  .heart-title {
+    font-size: clamp(2rem, 4vw, 3.5rem);
+  }
+  .heart-info-name {
+    font-size: clamp(2rem, 3.5vw, 3rem);
+  }
+  .heart-info-quote {
+    font-size: var(--fs-vs);
+  }
+  .heart-image-frame {
+    height: clamp(20rem, 42vh, 34rem);
+  }
+
+  /* Programs section */
+  .programs-stack-section {
+    padding: 5rem 4% 4rem;
+  }
+  .programs-stack-header {
+    margin-bottom: 3rem;
+  }
+  .programs-stack-viewport {
+    min-height: 46rem;
+  }
+  .stack-card-illus {
+    height: 12rem;
+  }
+  .stack-card-content {
+    padding: 2rem 1.8rem;
+    gap: 0.8rem;
+  }
+  .stack-card-name {
+    font-size: var(--fs-m);
+  }
+
+  /* Impact sections */
+  .impact-header-section .inner {
+    padding-top: 5rem;
+  }
+  .impact-header-section h2 {
+    max-width: 100%;
+    font-size: var(--fs-xl);
+  }
+  .impact-header-section p {
+    width: 100%;
+  }
+  .impact-image-section .image-wrapper {
+    width: 95%;
+    padding-block: 4rem;
+  }
+  .impact-text-section h5,
+  .impact-text-section p {
+    width: 95%;
+  }
+  .impact-video-section .text-block {
+    max-width: 90%;
+    margin-inline: auto;
+    transform: translateY(0);
+  }
+  .overlay-reveal-section .image-pair {
+    width: 95%;
+  }
+  .overlay-reveal-section .reveal-text {
+    max-width: 95%;
+  }
+  .final-cta-section .reveal-text {
+    max-width: 95%;
+  }
+  .final-cta-section {
+    padding-bottom: 5rem;
+  }
+
+  /* Footer tighter on mobile */
+  .psz-footer {
+    padding-block: 2.5rem;
+  }
+  .psz-footer .footer-inner {
+    padding-inline: 5%;
+  }
+}
+
+/* ── Very small phones (max-width: 375px) ── */
+@media (max-width: 375px) {
+  .hero-section .hero-title {
+    font-size: clamp(2.2rem, 7vw, 3.2rem);
+  }
+
+  .section-education .edu-name-word {
+    font-size: clamp(2rem, 7vw, 3.2rem);
+  }
+
+  .approach-section h2 {
+    font-size: var(--fs-l);
+  }
+
+  .heart-image-frame {
+    height: clamp(18rem, 38vh, 28rem);
+  }
+
+  .programs-stack-viewport {
+    min-height: 42rem;
+  }
+
+  .stack-card-illus {
+    height: 10rem;
+  }
+
+  .stack-card-content {
+    padding: 1.6rem 1.4rem;
+  }
+
+  .stat-number {
+    font-size: clamp(1.8rem, 4.5vw, 2.6rem);
+  }
+}
+
+/* ── Prevent horizontal overflow globally ── */
+@media (max-width: 768px) {
+  html, body {
+    overflow-x: hidden;
+  }
+
+  .sec-container {
+    padding-inline: 5%;
+  }
+
+  /* Ensure all 100vw sections don't cause overflow */
+  .hero-section,
+  .pinned-video-section,
+  .approach-section,
+  .showcase-section,
+  .testimonials-section,
+  .heart-section,
+  .programs-stack-section,
+  .canvas-section,
+  .impact-header-section,
+  .impact-video-section {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
 }

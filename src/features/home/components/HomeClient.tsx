@@ -15,9 +15,8 @@ if (typeof window !== "undefined") {
 const VIDEOS = {
   // Hero: local video placed in public/videos/
   hero: "/videos/hero_video.mp4",
-  // Mission: children studying in classroom
-  mission:
-    "https://www.pexels.com/download/video/9036212/",
+  // Mission: local banner video
+  mission: "/videos/programs.mp4",
   // Education: teacher with students
   education:
     "https://www.pexels.com/download/video/3209298/",
@@ -37,7 +36,7 @@ const VIDEOS = {
     "https://www.pexels.com/download/video/6646701/",
   // What We Do: aerial green landscape / community
   programs:
-    "https://videos.pexels.com/video-files/3571264/3571264-uhd_2560_1440_30fps.mp4",
+    "/videos/banner_video.mp4",
 };
 
 /* ─── Different images for each section ─── */
@@ -57,7 +56,7 @@ const IMAGES = {
 function getCanvasFrameUrl(index: number): string {
   const seeds = [
     "/images/hero-fallback.svg",
-    "/images/placeholders/program-photo.svg",
+    "/images/placeholders/10.png",
     "/images/WhatsApp%20Image%202026-03-06%20at%205.01.33%20AM.jpeg",
     "/images/WhatsApp%20Image%202026-03-06%20at%205.07.22%20AM.jpeg",
     "/images/WhatsApp%20Image%202026-03-06%20at%205.08.17%20AM.jpeg",
@@ -65,7 +64,7 @@ function getCanvasFrameUrl(index: number): string {
     "/images/WhatsApp%20Image%202026-03-06%20at%205.00.43%20AM.jpeg",
     "/images/hero-fallback.svg",
     "https://images.pexels.com/photos/4614166/pexels-photo-4614166.jpeg",
-    "/images/placeholders/program-photo.svg",
+    "/images/placeholders/10.png",
     "/images/hero-fallback.svg",
     "https://images.pexels.com/photos/4614166/pexels-photo-4614166.jpeg",
   ];
@@ -93,8 +92,8 @@ const HEART_MEMBERS = [
     image: "/images/members/3.png",
   },
   {
-    name: "Ayesha Tariq",
-    designation: "Operations Head",
+    name: "Malik Abdullah Amir",
+    designation: "Chief Executive Officer",
     quote: "Real change happens when logistics meet compassion on the ground.",
     image: "/images/members/4.png",
   },
@@ -105,14 +104,14 @@ const HEART_MEMBERS = [
     image: "/images/members/5.png",
   },
   {
-    name: "Sara Malik",
-    designation: "Health Programs Lead",
+    name: "",
+    designation: "",
     quote: "Healthcare is not a privilege — it is the right of every citizen.",
     image: "/images/members/6.png",
   },
   {
-    name: "Hassan Khan",
-    designation: "Education Specialist",
+    name: "Tuba Fatima",
+    designation: "Director",
     quote: "An educated Pakistan is an empowered Pakistan.",
     image: "/images/members/7.png",
   },
@@ -320,12 +319,8 @@ export function HomeClient() {
         ScrollTrigger.create({
           trigger: ".hero-section",
           start: "top top",
-          end: "200% top",
+          end: "bottom top",
           pin: true,
-          scrub: 1,
-          onLeave: () => heroVideo.pause(),
-          onEnterBack: () => heroVideo.play().catch(() => {}),
-          onLeaveBack: () => heroVideo.pause(),
         });
       }
 
@@ -334,14 +329,21 @@ export function HomeClient() {
       createPinnedVideoTimeline(".section-education");
       createPinnedVideoTimeline(".section-enterprise");
 
+      /* ─── Heart members reveal timeline ─── */
+      /* NOTE: heart section is before programs in the DOM, so register it first
+         so ScrollTrigger calculates pin-spacer heights in document order */
+      createMembersTimeline();
+
       /* ─── Programs — sequential center-stage animation ─── */
       createProgramsTimeline();
 
-      /* ─── Heart of Paksarzameen — scroll-driven team showcase ─── */
-      createMembersTimeline();
-
       /* ─── Canvas frame animation ─── */
       setupCanvasAnimation();
+
+      /* Force ScrollTrigger to recalculate positions after pinned sections are set up */
+      requestAnimationFrame(() => {
+        ScrollTrigger.refresh();
+      });
 
       /* ─── Scroll text blocks parallax ─── */
       document.querySelectorAll(".scroll-text-block").forEach((el) => {
@@ -355,33 +357,10 @@ export function HomeClient() {
               trigger: el,
               start: "top 80%",
               end: "top 40%",
-              scrub: 1,
+              scrub: true,
             },
           }
         );
-      });
-
-      /* ─── Overlay Reveals ─── */
-      gsap.to(".section-transform-1 .overlay-img", {
-        opacity: 0,
-        scrollTrigger: {
-          trigger: ".section-transform-1",
-          start: "top 20%",
-          end: "bottom 80%",
-          scrub: 1,
-          pin: true,
-        },
-      });
-
-      gsap.to(".section-transform-2 .overlay-img", {
-        opacity: 0,
-        scrollTrigger: {
-          trigger: ".section-transform-2",
-          start: "top 20%",
-          end: "bottom 80%",
-          scrub: 1,
-          pin: true,
-        },
       });
 
       gsap.to(".section-final-cta .overlay-img", {
@@ -390,7 +369,7 @@ export function HomeClient() {
           trigger: ".section-final-cta",
           start: "top 20%",
           end: "bottom 80%",
-          scrub: 1,
+          scrub: true,
           pin: true,
         },
       });
@@ -490,6 +469,8 @@ export function HomeClient() {
         pin: true,
         scrub: 0.45,
         anticipatePin: 1,
+        invalidateOnRefresh: true,
+        pinSpacing: true,
       },
     });
 
@@ -544,18 +525,17 @@ export function HomeClient() {
     if (!section) return;
 
     const images = Array.from(section.querySelectorAll(".heart-member-img")) as HTMLElement[];
-    const infos  = Array.from(section.querySelectorAll(".heart-member-info")) as HTMLElement[];
-    const counter     = section.querySelector(".heart-counter-current") as HTMLElement | null;
-    const progressBar = section.querySelector(".heart-progress-bar")    as HTMLElement | null;
+    const infos = Array.from(section.querySelectorAll(".heart-member-info")) as HTMLElement[];
+    const counter = section.querySelector(".heart-counter-current") as HTMLElement | null;
+    const progressBar = section.querySelector(".heart-progress-bar") as HTMLElement | null;
     if (!images.length) return;
 
     const total = images.length;
 
-    // ── Initial: all hidden, first member revealed ──
     gsap.set(images, { opacity: 0, scale: 1.08, filter: "blur(12px)" });
-    gsap.set(infos,  { opacity: 0, y: 40,       filter: "blur(6px)"  });
+    gsap.set(infos, { opacity: 0, y: 40, filter: "blur(6px)" });
     gsap.set(images[0], { opacity: 1, scale: 1, filter: "blur(0px)" });
-    gsap.set(infos[0],  { opacity: 1, y: 0,     filter: "blur(0px)"  });
+    gsap.set(infos[0], { opacity: 1, y: 0, filter: "blur(0px)" });
 
     const tl = gsap.timeline({
       scrollTrigger: {
@@ -565,40 +545,48 @@ export function HomeClient() {
         pin: true,
         scrub: 0.5,
         anticipatePin: 1,
+        invalidateOnRefresh: true,
+        pinSpacing: true,
         onUpdate: (self) => {
           const idx = Math.min(Math.floor(self.progress * total), total - 1);
-          if (counter)     counter.textContent = String(idx + 1).padStart(2, "0");
+          if (counter) counter.textContent = String(idx + 1).padStart(2, "0");
           if (progressBar) progressBar.style.transform = `scaleX(${self.progress})`;
         },
       },
     });
 
-    // Cross-fade from member i → i+1 at each boundary
     for (let i = 0; i < total - 1; i++) {
       const crossStart = i + 0.65;
 
-      // Fade out current member
-      tl.to(images[i], {
-        opacity: 0, scale: 0.95, filter: "blur(8px)",
-        duration: 0.35, ease: "power2.in",
-      }, crossStart);
-      tl.to(infos[i], {
-        opacity: 0, y: -24, filter: "blur(6px)",
-        duration: 0.35, ease: "power2.in",
-      }, crossStart);
+      tl.to(
+        images[i],
+        {
+          opacity: 0,
+          scale: 0.95,
+          filter: "blur(8px)",
+          duration: 0.35,
+          ease: "power2.in",
+        },
+        crossStart
+      );
+      tl.to(
+        infos[i],
+        { opacity: 0, y: -24, filter: "blur(6px)", duration: 0.35, ease: "power2.in" },
+        crossStart
+      );
 
-      // Fade in next member (overlapping for smooth cross-fade)
-      tl.to(images[i + 1], {
-        opacity: 1, scale: 1, filter: "blur(0px)",
-        duration: 0.35, ease: "power2.out",
-      }, crossStart + 0.15);
-      tl.to(infos[i + 1], {
-        opacity: 1, y: 0, filter: "blur(0px)",
-        duration: 0.35, ease: "power3.out",
-      }, crossStart + 0.18);
+      tl.to(
+        images[i + 1],
+        { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.35, ease: "power2.out" },
+        crossStart + 0.15
+      );
+      tl.to(
+        infos[i + 1],
+        { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.35, ease: "power3.out" },
+        crossStart + 0.18
+      );
     }
 
-    // Hold last member — force timeline total to exactly `total` units
     tl.to({}, { duration: 0.5 }, total - 0.5);
   }
 
@@ -664,16 +652,29 @@ export function HomeClient() {
       scrollTrigger: {
         trigger: selector,
         start: "top top",
-        end: "300% top",
-        scrub: 1,
+        end: "bottom top",
+        scrub: true,
         pin: true,
       },
     });
-    tl.to(`${selector} .section-text`, { opacity: 0, scale: 0.8, duration: 0.5 }, 0);
+    
+    // Animate text away
+    tl.to(`${selector} .section-text`, { 
+      opacity: 0,
+      y: -50
+    });
+    
+    // Animate media effect (video or image) — exclude elements with .no-filter
     tl.to(
-      `${selector} video`,
-      { filter: "blur(15px) grayscale(1) brightness(0.3)", scale: 0.8, borderRadius: "30px", duration: 0.5 },
-      ">-0.3"
+      `${selector} video, ${selector} img:not(.no-filter)`,
+      {
+        filter: "blur(4px) grayscale(60%)",
+        scale: 1.02,
+        x: "-1%",
+        duration: 1,
+        ease: "power2.out",
+      },
+      "<"
     );
   }
 
@@ -692,7 +693,7 @@ export function HomeClient() {
         });
         lenis.on("scroll", ScrollTrigger.update);
         gsap.ticker.add((time: number) => lenis.raf(time * 1000));
-        gsap.ticker.lagSmoothing(0);
+        gsap.ticker.lagSmoothing(1000, 16);
       } catch {
         /* Fallback without Lenis */
       }
@@ -778,12 +779,13 @@ export function HomeClient() {
         </div>
       </section>
       
-
+     
       {/* ════════════════════════════════════════════════ */}
       {/* PINNED VIDEO — Mission                          */}
       {/* ════════════════════════════════════════════════ */}
       <section className="pinned-video-section section-mission" data-scroll-section="mission">
         <video src={VIDEOS.mission} autoPlay muted loop playsInline preload="auto" />
+        <div className="mission-bg-overlay" aria-hidden="true" />
         <div className="section-text">
           <p>
             A seamless blend of social impact and community empowerment.
@@ -792,8 +794,7 @@ export function HomeClient() {
           </p>
         </div>
       </section>
-
-      {/* ════════════════════════════════════════════════ */}
+       {/* ════════════════════════════════════════════════ */}
       {/* SPLIT — Our Story                               */}
       {/* ════════════════════════════════════════════════ */}
       <section className="split-section" data-scroll-section="story">
@@ -825,31 +826,102 @@ export function HomeClient() {
         </div>
       </section>
 
+ {/* ════════════════════════════════════════════════ */}
+      {/* OUR APPROACH                                    */}
+      {/* ════════════════════════════════════════════════ */}
+      <section className="approach-section" data-scroll-section="approach">
+        {/* Background image grid */}
+        <div className="approach-bg-grid" aria-hidden="true">
+          <div className="approach-bg-item">{/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/images/WhatsApp%20Image%202026-03-06%20at%205.01.33%20AM.jpeg" alt="" loading="lazy" />
+          </div>
+          <div className="approach-bg-item">{/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/images/WhatsApp%20Image%202026-03-06%20at%205.07.22%20AM.jpeg" alt="" loading="lazy" />
+          </div>
+          <div className="approach-bg-item">{/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/images/full_team.jpeg" alt="" loading="lazy" />
+          </div>
+          <div className="approach-bg-item">{/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/images/WhatsApp%20Image%202026-03-06%20at%204.20.53%20PM.jpeg" alt="" loading="lazy" />
+          </div>
+          <div className="approach-bg-item">{/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/images/WhatsApp%20Image%202026-03-06%20at%205.00.43%20AM.jpeg" alt="" loading="lazy" />
+          </div>
+          <div className="approach-bg-item">{/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/images/WhatsApp%20Image%202026-03-06%20at%204.03.34%20PM.jpeg" alt="" loading="lazy" />
+          </div>
+          <div className="approach-bg-item">{/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/images/WhatsApp%20Image%202026-03-06%20at%204.04.00%20PM.jpeg" alt="" loading="lazy" />
+          </div>
+        </div>
+        <div className="approach-bg-overlay" aria-hidden="true" />
+        <h5 className="scroll-reveal" data-delay="0">Our Approach</h5>
+        <h2 className="scroll-reveal" data-delay="0.1">Grassroots innovation for lasting impact.</h2>
+        <p className="scroll-reveal" data-delay="0.2">
+          We invest in practical, high-impact local solutions shaped by community
+          realities. Every initiative is designed to be sustainable, scalable,
+          and deeply rooted in the needs of the people it serves.
+        </p>
+      </section>
+
+
+     
       {/* ════════════════════════════════════════════════ */}
       {/* PINNED VIDEO — Education                        */}
       {/* ════════════════════════════════════════════════ */}
       <section className="pinned-video-section section-education" data-scroll-section="education">
-        <video src={VIDEOS.education} autoPlay muted loop playsInline preload="auto" />
-        <div className="section-text">
-          <p>
-            A revolutionary approach to grassroots development. Empowering
-            communities through education and ethical enterprise — one village at
-            a time.
-          </p>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/images/members/8.png" alt="Abdullah Tanseer — Founder" className="edu-img no-filter" loading="lazy" />
+        {/* Blurred logo backdrop */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/paksarzameen_logo.png" alt="" aria-hidden="true" className="edu-logo-backdrop" />
+        <div className="section-text edu-section-text">
+          {/* Animated eyebrow label */}
+          <div className="edu-textmasker">
+            <motion.span
+              className="edu-label"
+              initial={{ y: "105%" }}
+              whileInView={{ y: 0 }}
+              transition={{ ease: [0.76, 0, 0.24, 1], duration: 0.65 }}
+              viewport={{ once: true }}
+            >
+              Founder — PakSarZameen
+            </motion.span>
+          </div>
+          {/* Static name (removed animation so it's always visible) */}
+          <div className="edu-name-static">
+            <span className="edu-name-word">Abdullah</span>
+            <span className="edu-name-word">Tanseer</span>
+          </div>
+          {/* Bio */}
+          <motion.p
+            className="edu-bio"
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ ease: "easeOut", duration: 0.6, delay: 0.38 }}
+            viewport={{ once: true }}
+          >
+            Abdullah Tanseer founded PakSarZameen with a vision to create measurable,
+            community-driven impact across education, healthcare, and livelihoods.
+            PSZ focuses on practical, scalable solutions that prioritize dignity and local ownership.
+          </motion.p>
+          {/* Achievements */}
+          <motion.ul
+            className="edu-achievements"
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ ease: "easeOut", duration: 0.6, delay: 0.52 }}
+            viewport={{ once: true }}
+          >
+            <li><strong>50,000+</strong><span>Lives Impacted</span></li>
+            <li><strong>120+</strong><span>Schools Powered</span></li>
+            <li><strong>15,000+</strong><span>Medical Consultations</span></li>
+            <li><strong>3,000+</strong><span>Families Empowered</span></li>
+          </motion.ul>
         </div>
       </section>
 
-      {/* ════════════════════════════════════════════════ */}
-      {/* VIDEO OVERLAY — Community Empowerment           */}
-      {/* ════════════════════════════════════════════════ */}
-      <section className="video-overlay-section" data-scroll-section="empowerment">
-        <video src={VIDEOS.empowerment} autoPlay muted loop playsInline preload="auto" />
-        <p>
-          Navigate the path to change. From education to healthcare, PSZ creates
-          opportunities where they&apos;re needed most.
-        </p>
-      </section>
-
+      
       {/* ════════════════════════════════════════════════ */}
       {/* MISSION PILLARS — Stats & CTA                   */}
       {/* ════════════════════════════════════════════════ */}
@@ -918,7 +990,8 @@ export function HomeClient() {
       {/* PINNED VIDEO — Enterprise                       */}
       {/* ════════════════════════════════════════════════ */}
       <section className="pinned-video-section section-enterprise" data-scroll-section="enterprise">
-        <video src={VIDEOS.enterprise} autoPlay muted loop playsInline preload="auto" />
+        <video src="/videos/info.mp4" autoPlay muted loop playsInline preload="auto" />
+        <div className="enterprise-bg-overlay" aria-hidden="true" />
         <div className="section-text">
           <p>
             Sustainable solutions built from the ground up. Community wealth that
@@ -927,20 +1000,7 @@ export function HomeClient() {
         </div>
       </section>
 
-      {/* ════════════════════════════════════════════════ */}
-      {/* OUR APPROACH                                    */}
-      {/* ════════════════════════════════════════════════ */}
-      <section className="approach-section" data-scroll-section="approach">
-        <h5 className="scroll-reveal" data-delay="0">Our Approach</h5>
-        <h2 className="scroll-reveal" data-delay="0.1">Grassroots innovation for lasting impact.</h2>
-        <p className="scroll-reveal" data-delay="0.2">
-          We invest in practical, high-impact local solutions shaped by community
-          realities. Every initiative is designed to be sustainable, scalable,
-          and deeply rooted in the needs of the people it serves.
-        </p>
-      </section>
-
-
+      
       {/* ════════════════════════════════════════════════ */}
       {/* HIGHLIGHT QUOTE                                 */}
       {/* ════════════════════════════════════════════════ */}
@@ -1063,19 +1123,7 @@ export function HomeClient() {
         </div>
       </section>
 
-      {/* ════════════════════════════════════════════════ */}
-      {/* FULL-WIDTH IMAGE CTA                            */}
-      {/* ════════════════════════════════════════════════ */}
-      <section className="full-image-section" data-scroll-section="cta-image">
-        <div className="image-wrapper">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={IMAGES.fullImage} alt="Join PakSarZameen" loading="lazy" />
-        </div>
-        <Link href="/get-involved">
-          <button className="cta-overlay-btn" type="button">↗ Join Our Mission</button>
-        </Link>
-      </section>
-
+     
       {/* ════════════════════════════════════════════════ */}
       {/* PROGRAMS — Stacking Cards Reveal                 */}
       {/* ════════════════════════════════════════════════ */}
@@ -1109,43 +1157,43 @@ export function HomeClient() {
               name: "Mahkma Shajarkari", subtitle: "Plantation Unit",
               desc: "Promoting environmental responsibility through plantation drives and sustainability initiatives across Pakistan.",
               tag: "Environment", icon: "🌿",
-              bg: "linear-gradient(135deg, #0d3d22 0%, #1b6b3a 60%, #0f4a2a 100%)",
-              tagColor: "#4ade80",
+              bg: "linear-gradient(135deg, var(--psz-green) 0%, #2aa86a 60%, #0f6b42 100%)",
+              tagColor: "var(--psz-green)",
             },
             {
               name: "Ehsas ul Haiwanat", subtitle: "Animal Welfare Section",
               desc: "Advocating compassion toward animals and supporting their welfare, protection, and ethical treatment.",
               tag: "Welfare", icon: "🐾",
-              bg: "linear-gradient(135deg, #4a2800 0%, #8b4f10 60%, #5c3000 100%)",
-              tagColor: "#fb923c",
+              bg: "linear-gradient(135deg, var(--psz-green) 0%, #2aa86a 60%, #0f6b42 100%)",
+              tagColor: "var(--psz-green)",
             },
             {
               name: "Room Zia", subtitle: "Bureau for Empowering Marginalized Communities",
               desc: "Providing care, support, and opportunities for orphaned, transgender, and specially-abled individuals.",
               tag: "Social Care", icon: "💡",
-              bg: "linear-gradient(135deg, #1e0e3d 0%, #4b2080 60%, #2d1260 100%)",
-              tagColor: "#c084fc",
+              bg: "linear-gradient(135deg, var(--psz-green) 0%, #2aa86a 60%, #0f6b42 100%)",
+              tagColor: "var(--psz-green)",
             },
             {
               name: "Dar ul Aloom", subtitle: "Agency of Educational Development",
               desc: "Advancing access to knowledge and learning through educational programs and community awareness.",
               tag: "Education", icon: "📚",
-              bg: "linear-gradient(135deg, #0a1a3d 0%, #1a3a7a 60%, #0d2456 100%)",
-              tagColor: "#60a5fa",
+              bg: "linear-gradient(135deg, var(--psz-green) 0%, #2aa86a 60%, #0f6b42 100%)",
+              tagColor: "var(--psz-green)",
             },
             {
               name: "Tibi Imdad", subtitle: "Bureau for Improving Health Standards",
               desc: "Working to improve community health through medical support, awareness campaigns, and welfare services.",
               tag: "Healthcare", icon: "🏥",
-              bg: "linear-gradient(135deg, #033434 0%, #0e6060 60%, #053d3d 100%)",
-              tagColor: "#34d399",
+              bg: "linear-gradient(135deg, var(--psz-green) 0%, #2aa86a 60%, #0f6b42 100%)",
+              tagColor: "var(--psz-green)",
             },
             {
               name: "Wajood-e-Zan", subtitle: "Women Empowerment Department",
               desc: "Promoting the dignity, education, and empowerment of women so they can actively participate in shaping society.",
               tag: "Empowerment", icon: "✊",
-              bg: "linear-gradient(135deg, #3d0a1e 0%, #7c1c40 60%, #4f0d28 100%)",
-              tagColor: "#f472b6",
+              bg: "linear-gradient(135deg, var(--psz-green) 0%, #2aa86a 60%, #0f6b42 100%)",
+              tagColor: "var(--psz-green)",
             },
           ] as Array<{ name: string; subtitle: string; desc: string; tag: string; icon: string; bg: string; tagColor: string }>).map((program, i) => (
             <div
@@ -1159,7 +1207,12 @@ export function HomeClient() {
                 <div className="illus-shape illus-shape-a" />
                 <div className="illus-shape illus-shape-b" />
                 <div className="illus-shape illus-shape-c" />
-                <span className="illus-icon">{program.icon}</span>
+                {/* use numbered placeholders from public/images/placeholders (10.png..15.png) */}
+                <img
+                  src={`/images/placeholders/${10 + i}.png`}
+                  alt={`${program.name} icon`}
+                  className="illus-icon-img"
+                />
                 <span className="illus-num">{'0' + (i + 1)}</span>
               </div>
 
@@ -1258,42 +1311,6 @@ export function HomeClient() {
           </div>
         </section>
 
-        {/* Overlay Reveal 1 */}
-        <section className="overlay-reveal-section section-transform-1">
-          <div className="image-pair">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={IMAGES.transform1} alt="Community after" loading="lazy" />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className="overlay-img" src={IMAGES.transform1Overlay} alt="Community before" loading="lazy" />
-          </div>
-          <div className="reveal-text">
-            <h5>Education That Lasts</h5>
-            <p>
-              From one-room schools to full learning centers — scroll to see the
-              transformation. <span>Every child deserves access</span> to
-              quality education, regardless of geography.
-            </p>
-          </div>
-        </section>
-
-        {/* Overlay Reveal 2 */}
-        <section className="overlay-reveal-section section-transform-2">
-          <div className="image-pair">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={IMAGES.transform2} alt="Healthcare after" loading="lazy" />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className="overlay-img" src={IMAGES.transform2Overlay} alt="Healthcare before" loading="lazy" />
-          </div>
-          <div className="reveal-text">
-            <h5>Healthcare at the Doorstep</h5>
-            <p>
-              Mobile clinics reaching the unreachable. Scroll to reveal the
-              impact of <span>accessible healthcare</span> in remote
-              communities across Sindh, KPK, and Balochistan.
-            </p>
-          </div>
-        </section>
-
         {/* Partners CTA */}
         <section className="impact-text-section" style={{ paddingBlock: "8rem" }}>
           <h5>Our Partners &amp; Volunteers</h5>
@@ -1316,12 +1333,7 @@ export function HomeClient() {
 
         {/* Final CTA */}
         <section className="final-cta-section section-final-cta">
-          <div className="image-pair">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={IMAGES.finalBase} alt="PakSarZameen impact" loading="lazy" />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className="overlay-img" src={IMAGES.finalOverlay} alt="PakSarZameen community" loading="lazy" />
-          </div>
+          
           <div className="reveal-text">
             <h5>Be Part of the Change</h5>
             <p>

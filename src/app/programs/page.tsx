@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/images/placeholders/program-photo.svg",
+        url: "/images/placeholders/10.png",
         width: 1200,
         height: 800,
         alt: "Programs hub preview image",
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     title: "Programs | PakSarZameen",
     description:
       "Discover all PSZ departments and initiatives with category filters and searchable previews.",
-    images: ["/images/placeholders/program-photo.svg"],
+    images: ["/images/placeholders/10.png"],
   },
 };
 

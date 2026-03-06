@@ -76,7 +76,7 @@ export async function generateMetadata({
       type: "article",
       images: [
         {
-          url: "/images/placeholders/program-photo.svg",
+          url: "/images/placeholders/10.png",
           width: 1200,
           height: 800,
           alt: `${program.title} program detail image`,
@@ -87,7 +87,7 @@ export async function generateMetadata({
       card: "summary_large_image",
       title: `${program.title} | PakSarZameen`,
       description: program.description,
-      images: ["/images/placeholders/program-photo.svg"],
+      images: ["/images/placeholders/10.png"],
     },
   };
 }
@@ -157,23 +157,36 @@ export default async function ProgramDetailPage({ params }: ProgramDetailPagePro
           Photos
         </h2>
         <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 3 }).map((_, index) => (
-            <figure
-              key={`${program.slug}-photo-${index + 1}`}
-              className="overflow-hidden rounded-2xl glass"
-            >
-              <Image
-                src="/images/placeholders/program-photo.svg"
-                alt={`${program.title} photo ${index + 1}`}
-                width={900}
-                height={600}
-                className="h-52 w-full object-cover"
-              />
-              <figcaption className="px-4 py-3 text-xs uppercase tracking-[0.16em] text-psz-gray-600">
-                Field Photo {index + 1}
-              </figcaption>
-            </figure>
-          ))}
+          {(() => {
+            const placeholderFiles = [
+              "/images/placeholders/10.png",
+              "/images/placeholders/11.png",
+              "/images/placeholders/12.png",
+              "/images/placeholders/13.png",
+              "/images/placeholders/14.png",
+              "/images/placeholders/15.png",
+            ];
+            return Array.from({ length: 3 }).map((_, index) => {
+              const src = placeholderFiles[(index % placeholderFiles.length)];
+              return (
+                <figure
+                  key={`${program.slug}-photo-${index + 1}`}
+                  className="overflow-hidden rounded-2xl glass"
+                >
+                  <Image
+                    src={src}
+                    alt={`${program.title} photo ${index + 1}`}
+                    width={900}
+                    height={600}
+                    className="h-52 w-full object-cover"
+                  />
+                  <figcaption className="px-4 py-3 text-xs uppercase tracking-[0.16em] text-psz-gray-600">
+                    Field Photo {index + 1}
+                  </figcaption>
+                </figure>
+              );
+            });
+          })()}
         </div>
       </section>
     </article>

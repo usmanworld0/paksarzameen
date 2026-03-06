@@ -25,7 +25,7 @@ const VIDEOS = {
     "https://videos.pexels.com/video-files/3191572/3191572-uhd_2560_1440_25fps.mp4",
   // Enterprise: market / small business / hands working
   enterprise:
-    "https://videos.pexels.com/video-files/5727812/5727812-hd_1920_1080_30fps.mp4",
+    "https://www.pexels.com/download/video/16118544/",
   // Impact: healthcare / medical help
   impact:
     "https://videos.pexels.com/video-files/4492224/4492224-uhd_2560_1440_25fps.mp4",
@@ -33,46 +33,37 @@ const VIDEOS = {
   // grid video removed
   // Dark section: volunteers hands
   volunteers:
-    "https://videos.pexels.com/video-files/6646379/6646379-hd_1920_1080_25fps.mp4",
+    "https://www.pexels.com/download/video/6646701/",
 };
 
 /* ─── Different images for each section ─── */
 const IMAGES = {
-  showcase:
-    "https://images.pexels.com/photos/11523676/pexels-photo-11523676.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  fullImage:
-    "https://images.pexels.com/photos/6646918/pexels-photo-6646918.jpeg?auto=compress&cs=tinysrgb&w=1400",
-  impactHero:
-    "https://images.pexels.com/photos/6994982/pexels-photo-6994982.jpeg?auto=compress&cs=tinysrgb&w=1000",
-  transform1:
-    "https://images.pexels.com/photos/8613070/pexels-photo-8613070.jpeg?auto=compress&cs=tinysrgb&w=800",
-  transform1Overlay:
-    "https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800",
-  transform2:
-    "https://images.pexels.com/photos/6646896/pexels-photo-6646896.jpeg?auto=compress&cs=tinysrgb&w=800",
-  transform2Overlay:
-    "https://images.pexels.com/photos/6994944/pexels-photo-6994944.jpeg?auto=compress&cs=tinysrgb&w=800",
-  finalBase:
-    "https://images.pexels.com/photos/6994831/pexels-photo-6994831.jpeg?auto=compress&cs=tinysrgb&w=1400",
-  finalOverlay:
-    "https://images.pexels.com/photos/6647033/pexels-photo-6647033.jpeg?auto=compress&cs=tinysrgb&w=1400",
+  showcase: "/images/WhatsApp%20Image%202026-03-06%20at%205.01.33%20AM.jpeg",
+  fullImage: "https://images.pexels.com/photos/4614166/pexels-photo-4614166.jpeg",
+  impactHero: "https://images.pexels.com/photos/6963695/pexels-photo-6963695.jpeg",
+  transform1: "/images/WhatsApp%20Image%202026-03-06%20at%205.01.33%20AM.jpeg",
+  transform1Overlay: "/images/WhatsApp%20Image%202026-03-06%20at%205.07.22%20AM.jpeg",
+  transform2: "/images/WhatsApp%20Image%202026-03-06%20at%205.08.17%20AM.jpeg",
+  transform2Overlay: "/images/WhatsApp%20Image%202026-03-06%20at%205.08.52%20AM.jpeg",
+  finalBase: "/images/WhatsApp%20Image%202026-03-06%20at%205.00.43%20AM.jpeg",
+  finalOverlay: "/images/hero-fallback.svg",
 };
 
 /* ─── Canvas frame animation images (NGO related) ─── */
 function getCanvasFrameUrl(index: number): string {
   const seeds = [
-    "https://images.pexels.com/photos/6646918/pexels-photo-6646918.jpeg",
-    "https://images.pexels.com/photos/6994982/pexels-photo-6994982.jpeg",
-    "https://images.pexels.com/photos/6994944/pexels-photo-6994944.jpeg",
-    "https://images.pexels.com/photos/6647033/pexels-photo-6647033.jpeg",
-    "https://images.pexels.com/photos/6646896/pexels-photo-6646896.jpeg",
-    "https://images.pexels.com/photos/8613089/pexels-photo-8613089.jpeg",
-    "https://images.pexels.com/photos/8613319/pexels-photo-8613319.jpeg",
-    "https://images.pexels.com/photos/8613070/pexels-photo-8613070.jpeg",
-    "https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg",
-    "https://images.pexels.com/photos/11523676/pexels-photo-11523676.jpeg",
-    "https://images.pexels.com/photos/6994831/pexels-photo-6994831.jpeg",
-    "https://images.pexels.com/photos/6646379/pexels-photo-6646379.jpeg",
+    "/images/hero-fallback.svg",
+    "/images/placeholders/program-photo.svg",
+    "/images/WhatsApp%20Image%202026-03-06%20at%205.01.33%20AM.jpeg",
+    "/images/WhatsApp%20Image%202026-03-06%20at%205.07.22%20AM.jpeg",
+    "/images/WhatsApp%20Image%202026-03-06%20at%205.08.17%20AM.jpeg",
+    "/images/WhatsApp%20Image%202026-03-06%20at%205.08.52%20AM.jpeg",
+    "/images/WhatsApp%20Image%202026-03-06%20at%205.00.43%20AM.jpeg",
+    "/images/hero-fallback.svg",
+    "https://images.pexels.com/photos/4614166/pexels-photo-4614166.jpeg",
+    "/images/placeholders/program-photo.svg",
+    "/images/hero-fallback.svg",
+    "https://images.pexels.com/photos/4614166/pexels-photo-4614166.jpeg",
   ];
   return `${seeds[index % seeds.length]}?auto=compress&cs=tinysrgb&w=1200&h=800&fit=crop&seed=${index}`;
 }

@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 
 import { Navbar } from "@/components/header/Navbar";
 import { Footer } from "@/components/footer/Footer";
-import { ThemeProvider } from "@/lib/theme";
+// ThemeProvider removed: app is light-only now
 import { siteConfig } from "@/config/site";
 
 import "./globals.css";
@@ -67,7 +67,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Force light theme on initial paint to avoid flashes */}
+        {/* Force light theme to avoid any theme toggling */}
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(){try{document.documentElement.setAttribute('data-theme','light');}catch(e){}})();`,
@@ -75,13 +75,11 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.variable} antialiased`}>
-        <ThemeProvider>
-          <Navbar />
-          <main id="main-content">
-            {children}
-          </main>
-          <Footer />
-        </ThemeProvider>
+        <Navbar />
+        <main id="main-content">
+          {children}
+        </main>
+        <Footer />
       </body>
     </html>
   );

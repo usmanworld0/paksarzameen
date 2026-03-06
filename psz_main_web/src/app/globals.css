@@ -113,7 +113,7 @@ video {
   position: fixed;
   inset: 0;
   z-index: 9999;
-  background: #fff; /* switched to light splash */
+  background: #fff; /* splash: white background */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -156,7 +156,7 @@ video {
   font-size: clamp(3rem, 8vw, 6.5rem);
   font-weight: 800;
   letter-spacing: -0.03em;
-  color: #0b1220; /* dark text on white splash */
+  color: var(--black); /* black text on white splash */
   line-height: 1;
   overflow: visible;
   margin: 0;
@@ -176,7 +176,7 @@ video {
 
 .intro-tagline {
   font-size: clamp(0.9rem, 1.6vw, 1.2rem);
-  color: rgba(0, 0, 0, 0.6);
+  color: rgba(0, 0, 0, 0.65); /* darker tagline for contrast */
   font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -214,9 +214,6 @@ video {
   position: absolute;
   top: 0;
   left: 0;
-
-/* Safety: hide media-grid-section if any leftover exists after code removal */
-.media-grid-section { display: none !important; }
   width: 100%;
   height: 100%;
   z-index: 2;
@@ -510,9 +507,6 @@ video {
   padding-inline: 5%;
   border-radius: 0.8rem;
 }
-
-/* Safety: hide media-grid-section if any leftover exists after code removal */
-.media-grid-section { display: none !important; }
 
 /* ─── Highlight Quote Section ─── */
 .highlight-section {
@@ -958,17 +952,13 @@ video {
   width: 100%;
   height: 100%;
   z-index: -1;
-  /* keep backdrop blur for subtle depth but start transparent */
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
-  background-color: transparent;
-  transition: background-color 0.28s ease, opacity 0.28s ease;
+  backdrop-filter: blur(50px);
+  -webkit-backdrop-filter: blur(50px);
   opacity: 0;
+  transition: opacity 0.3s;
 }
 
-/* When scrolled, show only a blue-tinted background (no other color) */
 .psz-header.scrolled .blur-bg {
-  background-color: rgba(20, 100, 255, 0.12); /* blue tint */
   opacity: 1;
 }
 
@@ -1090,8 +1080,91 @@ video {
   }
 }
 
-/* ─── Footer (new Tailwind-based design) ─── */
-/* All footer styles are now handled by Tailwind classes in Footer.tsx */
+/* ─── Footer ─── */
+.psz-footer {
+  background-color: var(--dark-black);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 6rem 5% 3rem;
+}
+
+.psz-footer .footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 4rem;
+}
+
+.psz-footer .footer-brand h3 {
+  font-size: var(--fs-m);
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 1rem;
+}
+
+.psz-footer .footer-brand h3 .green {
+  color: var(--psz-green);
+}
+
+.psz-footer .footer-brand p {
+  font-size: var(--fs-vvs);
+  color: var(--light-white);
+  line-height: 1.7;
+  max-width: 35ch;
+}
+
+.psz-footer .footer-col h4 {
+  font-size: var(--fs-vvs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--light-white);
+  margin-bottom: 1.5rem;
+}
+
+.psz-footer .footer-col ul {
+  list-style: none;
+}
+
+.psz-footer .footer-col li {
+  margin-bottom: 0.8rem;
+}
+
+.psz-footer .footer-col a {
+  font-size: var(--fs-vvs);
+  color: var(--light-white);
+  transition: color 0.2s;
+}
+
+.psz-footer .footer-col a:hover {
+  color: var(--white);
+}
+
+.psz-footer .footer-bottom {
+  max-width: 1200px;
+  margin: 4rem auto 0;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.psz-footer .footer-bottom p {
+  font-size: var(--fs-vvs);
+  color: var(--light-white);
+}
+
+@media (max-width: 720px) {
+  .psz-footer .footer-inner {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+  .psz-footer .footer-bottom {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
 
 /* ═══════════════════════════════════════════════════ */
 /* CANVAS SCROLL REVEAL SECTION                       */
@@ -1579,7 +1652,39 @@ video {
   background-color: #333;
 }
 
-/* Footer is now Tailwind-based */
+/* ── Footer → light ── */
+[data-theme="light"] .psz-footer {
+  background-color: #f5f5f7;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] .psz-footer .footer-brand h3 {
+  color: #1d1d1f;
+}
+
+[data-theme="light"] .psz-footer .footer-brand p {
+  color: #6e6e73;
+}
+
+[data-theme="light"] .psz-footer .footer-col h4 {
+  color: #6e6e73;
+}
+
+[data-theme="light"] .psz-footer .footer-col a {
+  color: #6e6e73;
+}
+
+[data-theme="light"] .psz-footer .footer-col a:hover {
+  color: #1d1d1f;
+}
+
+[data-theme="light"] .psz-footer .footer-bottom {
+  border-top-color: rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] .psz-footer .footer-bottom p {
+  color: #6e6e73;
+}
 
 /* ── Testimonial cards in light mode ── */
 [data-theme="light"] .testimonials-section {
@@ -1608,6 +1713,7 @@ video {
 
 /* ── Smooth theme transition on key elements ── */
 body,
+.psz-footer,
 .dark-bottom,
 .impact-header-section,
 .impact-image-section,

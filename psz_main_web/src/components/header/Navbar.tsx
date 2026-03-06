@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { navLinks } from "@/config/site";
-import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -33,7 +32,6 @@ export function Navbar() {
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: "1.6rem" }}>
-            <ThemeToggle />
             <button
               type="button"
               className={`nav-toggle ${menuOpen ? "open" : ""}`}

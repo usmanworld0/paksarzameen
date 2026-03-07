@@ -16,17 +16,17 @@ export function MarketplaceHero({
     <section className="relative flex h-screen w-full items-center justify-center overflow-hidden bg-neutral-950">
       {/* Background image */}
       <Image
-        src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1920&h=1080&fit=crop"
-        alt="Artisan marketplace banner"
+        src="/images/commonwealth_header.jpeg"
+        alt="Commonwealth Lab banner"
         fill
         sizes="100vw"
-        className="object-cover opacity-30"
+        className="object-cover opacity-50"
         quality={85}
         priority
       />
 
       {/* Subtle gradient */}
-      <div className="absolute inset-0 bg-gradient-to-b from-neutral-950/60 via-neutral-950/20 to-neutral-950/70" />
+      <div className="absolute inset-0 bg-gradient-to-b from-neutral-950/42 via-neutral-950/12 to-neutral-950/50" />
 
       {/* Content */}
       <div className="relative z-10 flex w-full max-w-5xl flex-col items-center px-6 text-center">

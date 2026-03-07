@@ -81,7 +81,7 @@ function ProductsContent() {
 
   return (
     <section className="bg-white py-24">
-      <div className="mx-auto max-w-7xl px-6">
+      <div className="mx-auto max-w-screen-2xl px-6 sm:px-10 lg:px-16">
         {/* Header */}
         <header className="mb-10">
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-400">

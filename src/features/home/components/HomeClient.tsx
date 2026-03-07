@@ -1257,9 +1257,8 @@ export function HomeClient() {
           </p>
         </section>
 
-        {/* Impact Video + Text */}
+        {/* Impact Video + Text (video removed) */}
         <section className="impact-video-section">
-          <LazyVideo src={VIDEOS.volunteers} rootMargin="300px" poster={VIDEO_POSTERS.programs} />
           <div className="text-block">
             <h5>Enterprise for Dignity</h5>
             <p>

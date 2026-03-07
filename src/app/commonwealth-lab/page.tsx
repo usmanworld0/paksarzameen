@@ -28,7 +28,7 @@ export default function CommonwealthLabPage() {
 
       {/* Featured Products */}
       <section id="featured" className="bg-white py-16 sm:py-28">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
+        <div className="mx-auto max-w-screen-2xl px-6 sm:px-10 lg:px-16">
           {/* Section header */}
           <div className="mb-16 flex flex-col items-start gap-4 border-b border-neutral-100 pb-10 sm:flex-row sm:items-end sm:justify-between">
             <div>
@@ -60,7 +60,7 @@ export default function CommonwealthLabPage() {
 
       {/* Divider strip — PSZ green accent */}
       <div className="bg-[#0c2e1a] py-10">
-        <div className="mx-auto max-w-7xl px-6 lg:px-12">
+        <div className="mx-auto max-w-screen-2xl px-6 lg:px-16">
           <p className="text-center text-[10px] font-semibold uppercase tracking-[0.4em] text-white/80">
             100% of profits support artisan communities &amp; PSZ social programmes
           </p>
@@ -69,7 +69,7 @@ export default function CommonwealthLabPage() {
 
       {/* Category Grid */}
       <section className="bg-white py-16 sm:py-28">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
+        <div className="mx-auto max-w-screen-2xl px-6 sm:px-10 lg:px-16">
           <div className="mb-16 border-b border-neutral-100 pb-10">
             <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-[#0c2e1a]">
               Browse By

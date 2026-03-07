@@ -9,6 +9,7 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const lastY = useRef(0);
+  
 
   useEffect(() => {
     const handleScroll = () => {

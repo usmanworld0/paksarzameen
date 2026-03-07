@@ -1122,13 +1122,15 @@ video {
   }
 
   .heart-info-col {
-    min-height: 14rem;
-    height: auto;
+    position: relative;
+    min-height: 12rem;
+    height: clamp(12rem, 28vh, 20rem);
     text-align: center;
   }
 
   .heart-member-info {
-    position: relative;
+    position: absolute;
+    inset: 0;
     align-items: center;
   }
 

@@ -4,6 +4,31 @@ export type MissionCard = {
   icon: string;
 };
 
+<<<<<<< HEAD
+=======
+export type TeamMember = {
+  name: string;
+  designation: string;
+  quote: string;
+  image: string;
+};
+
+export type ScrollTextBlock = {
+  title: string;
+  description: string;
+};
+
+export type ProgramCard = {
+  name: string;
+  subtitle: string;
+  desc: string;
+  tag: string;
+  icon: string;
+  bg: string;
+  tagColor: string;
+};
+
+>>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
 export const heroContent = {
   title: "PakSarZameen",
   subtitle: "Building Community Wealth.",
@@ -14,7 +39,11 @@ export const heroContent = {
   videoSrc:
     "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
   mobileFallback: "/images/hero-fallback.svg",
+<<<<<<< HEAD
 };
+=======
+} as const;
+>>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
 
 export const missionCards: MissionCard[] = [
   {
@@ -49,7 +78,11 @@ export const joinContent = {
     "Partner with PakSarZameen to expand opportunity, strengthen communities, and deliver measurable social impact across Pakistan.",
   volunteerCta: "Volunteer With PSZ",
   partnerCta: "Become a Partner",
+<<<<<<< HEAD
 };
+=======
+} as const;
+>>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
 
 export const storiesContent = [
   {
@@ -74,3 +107,157 @@ export const storiesContent = [
     role: "Director, Rural Health Initiative",
   },
 ];
+<<<<<<< HEAD
+=======
+
+/* ─── Heart of Paksarzameen — Team Members ─── */
+export const HEART_MEMBERS: readonly TeamMember[] = [
+  {
+    name: "Hussain Khan Langah",
+    designation: "Executive Managing Director",
+    quote: "Paksarzameen is more than a project — it is a mission for the future.",
+    image: "/images/members/1.png",
+  },
+  {
+    name: "Ahmad Malik",
+    designation: "Executive Managing Director",
+    quote: "Design can inspire people to believe in a better Pakistan.",
+    image: "/images/members/2.png",
+  },
+  {
+    name: "Laiba Shafiq",
+    designation: "Director",
+    quote: "Technology should empower communities and create opportunity.",
+    image: "/images/members/3.png",
+  },
+  {
+    name: "Malik Abdullah Amir",
+    designation: "Chief Executive Officer",
+    quote: "Real change happens when logistics meet compassion on the ground.",
+    image: "/images/members/4.png",
+  },
+  {
+    name: "Bilal Ahmed",
+    designation: "Outreach Coordinator",
+    quote: "Every village we reach is a promise kept to the people of Pakistan.",
+    image: "/images/members/5.png",
+  },
+  {
+    name: "",
+    designation: "",
+    quote: "Healthcare is not a privilege — it is the right of every citizen.",
+    image: "/images/members/6.png",
+  },
+  {
+    name: "Tuba Fatima",
+    designation: "Director",
+    quote: "An educated Pakistan is an empowered Pakistan.",
+    image: "/images/members/7.png",
+  },
+];
+
+/* ─── Scroll-text blocks alongside the canvas ─── */
+export const SCROLL_TEXT_BLOCKS: readonly ScrollTextBlock[] = [
+  {
+    title: "Room Zia",
+    description:
+      "Solar-powered learning spaces that bring electricity and education to remote villages. Over 120 schools illuminated.",
+  },
+  {
+    title: "Mobile Health Clinics",
+    description:
+      "Bringing essential healthcare to doorsteps. 15,000+ consultations in areas with no hospital access.",
+  },
+  {
+    title: "Skills for Tomorrow",
+    description:
+      "Vocational training programs equipping youth with digital literacy, tailoring, and agricultural skills.",
+  },
+  {
+    title: "Clean Water Initiative",
+    description:
+      "Installing water filtration plants across Punjab and Sindh. Safe drinking water for 30,000+ people.",
+  },
+  {
+    title: "Women Enterprise Hub",
+    description:
+      "Micro-financing and mentorship for women entrepreneurs. 3,000 families lifted through sustainable business.",
+  },
+  {
+    title: "Community Kitchens",
+    description:
+      "Daily nutritious meals for 5,000+ individuals in urban slums and disaster-affected regions.",
+  },
+];
+
+/* ─── Program department cards ─── */
+const PSZ_GREEN_GRADIENT =
+  "linear-gradient(135deg, var(--psz-green) 0%, #2aa86a 60%, #0f6b42 100%)";
+
+export const PROGRAM_CARDS: readonly ProgramCard[] = [
+  {
+    name: "Mahkma Shajarkari",
+    subtitle: "Plantation Unit",
+    desc: "Promoting environmental responsibility through plantation drives and sustainability initiatives across Pakistan.",
+    tag: "Environment",
+    icon: "🌿",
+    bg: PSZ_GREEN_GRADIENT,
+    tagColor: "var(--psz-green)",
+  },
+  {
+    name: "Ehsas ul Haiwanat",
+    subtitle: "Animal Welfare Section",
+    desc: "Advocating compassion toward animals and supporting their welfare, protection, and ethical treatment.",
+    tag: "Welfare",
+    icon: "🐾",
+    bg: PSZ_GREEN_GRADIENT,
+    tagColor: "var(--psz-green)",
+  },
+  {
+    name: "Room Zia",
+    subtitle: "Bureau for Empowering Marginalized Communities",
+    desc: "Providing care, support, and opportunities for orphaned, transgender, and specially-abled individuals.",
+    tag: "Social Care",
+    icon: "💡",
+    bg: PSZ_GREEN_GRADIENT,
+    tagColor: "var(--psz-green)",
+  },
+  {
+    name: "Dar ul Aloom",
+    subtitle: "Agency of Educational Development",
+    desc: "Advancing access to knowledge and learning through educational programs and community awareness.",
+    tag: "Education",
+    icon: "📚",
+    bg: PSZ_GREEN_GRADIENT,
+    tagColor: "var(--psz-green)",
+  },
+  {
+    name: "Tibi Imdad",
+    subtitle: "Bureau for Improving Health Standards",
+    desc: "Working to improve community health through medical support, awareness campaigns, and welfare services.",
+    tag: "Healthcare",
+    icon: "🏥",
+    bg: PSZ_GREEN_GRADIENT,
+    tagColor: "var(--psz-green)",
+  },
+  {
+    name: "Wajood-e-Zan",
+    subtitle: "Women Empowerment Department",
+    desc: "Promoting the dignity, education, and empowerment of women so they can actively participate in shaping society.",
+    tag: "Empowerment",
+    icon: "✊",
+    bg: PSZ_GREEN_GRADIENT,
+    tagColor: "var(--psz-green)",
+  },
+];
+
+/* ─── Testimonial avatar URLs ─── */
+export const TESTIMONIAL_AVATARS: Readonly<Record<string, string>> = {
+  "Fatima Bibi":
+    "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=80&h=80&fit=crop&crop=face",
+  "Ahmed Khan":
+    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&crop=face",
+  "Dr. Sara Malik":
+    "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=80&h=80&fit=crop&crop=face",
+};
+>>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)

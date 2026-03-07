@@ -2,15 +2,30 @@
 
 import { useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
+<<<<<<< HEAD
 import { motion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { storiesContent } from "@/features/home/home.content";
+=======
+import Image from "next/image";
+import { motion } from "framer-motion";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import {
+  storiesContent,
+  HEART_MEMBERS,
+  PROGRAM_CARDS,
+  TESTIMONIAL_AVATARS,
+} from "@/features/home/home.content";
+import { LazyVideo } from "@/components/ui/LazyVideo";
+>>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
+<<<<<<< HEAD
 /* ─── Different Pexels Free Videos — NGO / Humanity / Community ─── */
 const VIDEOS = {
   // Hero: local video placed in public/videos/
@@ -44,12 +59,38 @@ const IMAGES = {
   showcase: "/images/WhatsApp%20Image%202026-03-06%20at%205.01.33%20AM.jpeg",
   fullImage: "https://images.pexels.com/photos/4614166/pexels-photo-4614166.jpeg",
   impactHero: "https://images.pexels.com/photos/6963695/pexels-photo-6963695.jpeg",
+=======
+/* ─── Video Sources — Local & Pexels (use SD/720p for performance) ─── */
+const VIDEOS = {
+  hero: "/videos/hero_video.mp4",
+  mission: "/videos/programs.mp4",
+  // Reduced from UHD → 720p variants for faster loading
+  education:
+    "https://www.pexels.com/download/video/3209298/",
+  empowerment:
+    "https://videos.pexels.com/video-files/3191572/3191572-hd_1280_720_25fps.mp4",
+  enterprise:
+    "https://www.pexels.com/download/video/16118544/",
+  impact:
+    "https://videos.pexels.com/video-files/4492224/4492224-hd_1280_720_25fps.mp4",
+  volunteers:
+    "https://www.pexels.com/download/video/6646701/",
+  programs: "/videos/programs.mp4",
+} as const;
+
+/* ─── Image Sources ─── */
+const IMAGES = {
+  showcase: "/images/WhatsApp%20Image%202026-03-06%20at%205.01.33%20AM.jpeg",
+  fullImage: "https://images.pexels.com/photos/4614166/pexels-photo-4614166.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  impactHero: "https://images.pexels.com/photos/6963695/pexels-photo-6963695.jpeg?auto=compress&cs=tinysrgb&w=1200",
+>>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
   transform1: "/images/WhatsApp%20Image%202026-03-06%20at%205.01.33%20AM.jpeg",
   transform1Overlay: "/images/WhatsApp%20Image%202026-03-06%20at%205.07.22%20AM.jpeg",
   transform2: "/images/WhatsApp%20Image%202026-03-06%20at%205.08.17%20AM.jpeg",
   transform2Overlay: "/images/WhatsApp%20Image%202026-03-06%20at%205.08.52%20AM.jpeg",
   finalBase: "/images/WhatsApp%20Image%202026-03-06%20at%205.00.43%20AM.jpeg",
   finalOverlay: "/images/hero-fallback.svg",
+<<<<<<< HEAD
 };
 
 /* ─── Canvas frame animation images (NGO related) ─── */
@@ -151,6 +192,30 @@ const SCROLL_TEXT_BLOCKS = [
   },
 ];
 
+=======
+} as const;
+
+/* ─── Canvas frame animation images (re-uses existing local assets) ─── */
+const CANVAS_FRAME_SEEDS = [
+  "/images/hero-fallback.svg",
+  "/images/placeholders/10.png",
+  "/images/WhatsApp%20Image%202026-03-06%20at%205.01.33%20AM.jpeg",
+  "/images/WhatsApp%20Image%202026-03-06%20at%205.07.22%20AM.jpeg",
+  "/images/WhatsApp%20Image%202026-03-06%20at%205.08.17%20AM.jpeg",
+  "/images/WhatsApp%20Image%202026-03-06%20at%205.08.52%20AM.jpeg",
+  "/images/WhatsApp%20Image%202026-03-06%20at%205.00.43%20AM.jpeg",
+  "/images/hero-fallback.svg",
+  "https://images.pexels.com/photos/4614166/pexels-photo-4614166.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+  "/images/placeholders/10.png",
+  "/images/hero-fallback.svg",
+  "https://images.pexels.com/photos/4614166/pexels-photo-4614166.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+] as const;
+
+function getCanvasFrameUrl(index: number): string {
+  return CANVAS_FRAME_SEEDS[index % CANVAS_FRAME_SEEDS.length];
+}
+
+>>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
 export function HomeClient() {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -605,7 +670,11 @@ export function HomeClient() {
     let loadedCount = 0;
 
     for (let i = 0; i < frameCount; i++) {
+<<<<<<< HEAD
       const img = new Image();
+=======
+      const img = new globalThis.Image();
+>>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
       img.crossOrigin = "anonymous";
       img.src = getCanvasFrameUrl(i);
       img.onload = () => {
@@ -724,11 +793,21 @@ export function HomeClient() {
       <div ref={introRef} className="intro-overlay">
         <div className="intro-text-wrapper">
           <div className="intro-content">
+<<<<<<< HEAD
             {/* Logo animated in */}
+=======
+            {/* Logo animated via GSAP 3D transforms — raw img required */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+>>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
             <img
               src="/paksarzameen_logo.png"
               alt="PakSarZameen Logo"
               className="intro-logo"
+<<<<<<< HEAD
+=======
+              width={140}
+              height={140}
+>>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
             />
             {/* Animated text reveal */}
             <h1 className="intro-title" aria-hidden>
@@ -784,7 +863,11 @@ export function HomeClient() {
       {/* PINNED VIDEO — Mission                          */}
       {/* ════════════════════════════════════════════════ */}
       <section className="pinned-video-section section-mission" data-scroll-section="mission">
+<<<<<<< HEAD
         <video src={VIDEOS.mission} autoPlay muted loop playsInline preload="auto" />
+=======
+        <LazyVideo src={VIDEOS.mission} rootMargin="400px" />
+>>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
         <div className="mission-bg-overlay" aria-hidden="true" />
         <div className="section-text">
           <p>
@@ -830,6 +913,7 @@ export function HomeClient() {
       {/* OUR APPROACH                                    */}
       {/* ════════════════════════════════════════════════ */}
       <section className="approach-section" data-scroll-section="approach">
+<<<<<<< HEAD
         {/* Background image grid */}
         <div className="approach-bg-grid" aria-hidden="true">
           <div className="approach-bg-item">{/* eslint-disable-next-line @next/next/no-img-element */}
@@ -852,6 +936,30 @@ export function HomeClient() {
           </div>
           <div className="approach-bg-item">{/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/images/WhatsApp%20Image%202026-03-06%20at%204.04.00%20PM.jpeg" alt="" loading="lazy" />
+=======
+        {/* Background image grid — optimized with next/image */}
+        <div className="approach-bg-grid" aria-hidden="true">
+          <div className="approach-bg-item">
+            <Image src="/images/WhatsApp Image 2026-03-06 at 5.01.33 AM.jpeg" alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} />
+          </div>
+          <div className="approach-bg-item">
+            <Image src="/images/WhatsApp Image 2026-03-06 at 5.07.22 AM.jpeg" alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} />
+          </div>
+          <div className="approach-bg-item">
+            <Image src="/images/full_team.jpeg" alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} />
+          </div>
+          <div className="approach-bg-item">
+            <Image src="/images/WhatsApp Image 2026-03-06 at 4.20.53 PM.jpeg" alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} />
+          </div>
+          <div className="approach-bg-item">
+            <Image src="/images/WhatsApp Image 2026-03-06 at 5.00.43 AM.jpeg" alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} />
+          </div>
+          <div className="approach-bg-item">
+            <Image src="/images/WhatsApp Image 2026-03-06 at 4.03.34 PM.jpeg" alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} />
+          </div>
+          <div className="approach-bg-item">
+            <Image src="/images/WhatsApp Image 2026-03-06 at 4.04.00 PM.jpeg" alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} />
+>>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
           </div>
         </div>
         <div className="approach-bg-overlay" aria-hidden="true" />
@@ -870,11 +978,17 @@ export function HomeClient() {
       {/* PINNED VIDEO — Education                        */}
       {/* ════════════════════════════════════════════════ */}
       <section className="pinned-video-section section-education" data-scroll-section="education">
+<<<<<<< HEAD
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/images/members/8.png" alt="Abdullah Tanseer — Founder" className="edu-img no-filter" loading="lazy" />
         {/* Blurred logo backdrop */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/paksarzameen_logo.png" alt="" aria-hidden="true" className="edu-logo-backdrop" />
+=======
+        <Image src="/images/members/8.png" alt="Abdullah Tanseer — Founder" className="edu-img no-filter" width={580} height={800} loading="lazy" quality={75} sizes="(max-width: 900px) 100vw, 38vw" />
+        {/* Blurred logo backdrop */}
+        <Image src="/paksarzameen_logo.png" alt="" aria-hidden className="edu-logo-backdrop" width={620} height={620} loading="lazy" quality={30} />
+>>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
         <div className="section-text edu-section-text">
           {/* Animated eyebrow label */}
           <div className="edu-textmasker">
@@ -977,8 +1091,12 @@ export function HomeClient() {
         </div>
 
         <div className="showcase-image">
+<<<<<<< HEAD
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={IMAGES.showcase} alt="PakSarZameen community programs" loading="lazy" />
+=======
+          <Image src="/images/WhatsApp Image 2026-03-06 at 5.01.33 AM.jpeg" alt="PakSarZameen community programs" width={1200} height={600} loading="lazy" quality={75} sizes="(max-width: 768px) 100vw, 80vw" />
+>>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
         </div>
 
         <Link href="/get-involved">
@@ -990,7 +1108,11 @@ export function HomeClient() {
       {/* PINNED VIDEO — Enterprise                       */}
       {/* ════════════════════════════════════════════════ */}
       <section className="pinned-video-section section-enterprise" data-scroll-section="enterprise">
+<<<<<<< HEAD
         <video src="/videos/info.mp4" autoPlay muted loop playsInline preload="auto" />
+=======
+        <LazyVideo src="/videos/Info.mp4" rootMargin="400px" />
+>>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
         <div className="enterprise-bg-overlay" aria-hidden="true" />
         <div className="section-text">
           <p>
@@ -1036,20 +1158,28 @@ export function HomeClient() {
         <div className="testimonials-marquee" aria-hidden={false}>
           <div className="marquee-track" role="list">
             {storiesContent.concat(storiesContent).map((s, idx) => {
+<<<<<<< HEAD
               const avatars: Record<string, string> = {
                 "Fatima Bibi": "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=80&h=80&fit=crop&crop=face",
                 "Ahmed Khan": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&crop=face",
                 "Dr. Sara Malik": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=80&h=80&fit=crop&crop=face",
               };
               const photoUrl = avatars[s.author];
+=======
+              const photoUrl = TESTIMONIAL_AVATARS[s.author];
+>>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
               return (
                 <div className="testimonial-card" key={idx} role="listitem">
                   <div className="testimonial-card-quote">“</div>
                   <blockquote>{s.quote}</blockquote>
                   <div className="testimonial-author">
                     {photoUrl ? (
+<<<<<<< HEAD
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={photoUrl} alt={s.author} className="author-avatar author-avatar-photo" />
+=======
+                      <Image src={photoUrl} alt={s.author} className="author-avatar author-avatar-photo" width={80} height={80} loading="lazy" quality={60} />
+>>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
                     ) : (
                       <div className="author-avatar">{s.author.charAt(0)}</div>
                     )}
@@ -1085,6 +1215,7 @@ export function HomeClient() {
           <div className="heart-image-col">
             <div className="heart-image-frame">
               {HEART_MEMBERS.map((m, i) => (
+<<<<<<< HEAD
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   key={i}
@@ -1092,6 +1223,18 @@ export function HomeClient() {
                   alt={m.name}
                   className="heart-member-img"
                   loading={i === 0 ? "eager" : "lazy"}
+=======
+                <Image
+                  key={i}
+                  src={m.image}
+                  alt={m.name || "Team member"}
+                  className="heart-member-img"
+                  width={600}
+                  height={750}
+                  loading={i === 0 ? "eager" : "lazy"}
+                  quality={70}
+                  sizes="(max-width: 768px) 100vw, 50vw"
+>>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
                   draggable={false}
                 />
               ))}
@@ -1128,6 +1271,7 @@ export function HomeClient() {
       {/* PROGRAMS — Stacking Cards Reveal                 */}
       {/* ════════════════════════════════════════════════ */}
       <section className="programs-stack-section" data-scroll-section="programs">
+<<<<<<< HEAD
         {/* Background video */}
         <video
           className="prog-bg-video"
@@ -1138,6 +1282,14 @@ export function HomeClient() {
           playsInline
           preload="auto"
           aria-hidden="true"
+=======
+        {/* Background video — lazy-loaded */}
+        <LazyVideo
+          className="prog-bg-video"
+          src={VIDEOS.programs}
+          aria-hidden={true}
+          rootMargin="600px"
+>>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
         />
         {/* Green overlay */}
         <div className="prog-bg-overlay" aria-hidden="true" />
@@ -1152,6 +1304,7 @@ export function HomeClient() {
         </div>
 
         <div className="programs-stack-viewport">
+<<<<<<< HEAD
           {([
             {
               name: "Mahkma Shajarkari", subtitle: "Plantation Unit",
@@ -1196,6 +1349,9 @@ export function HomeClient() {
               tagColor: "var(--psz-green)",
             },
           ] as Array<{ name: string; subtitle: string; desc: string; tag: string; icon: string; bg: string; tagColor: string }>).map((program, i) => (
+=======
+          {PROGRAM_CARDS.map((program, i) => (
+>>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
             <div
               key={program.name}
               className="stack-card"
@@ -1207,11 +1363,24 @@ export function HomeClient() {
                 <div className="illus-shape illus-shape-a" />
                 <div className="illus-shape illus-shape-b" />
                 <div className="illus-shape illus-shape-c" />
+<<<<<<< HEAD
                 {/* use numbered placeholders from public/images/placeholders (10.png..15.png) */}
                 <img
                   src={`/images/placeholders/${10 + i}.png`}
                   alt={`${program.name} icon`}
                   className="illus-icon-img"
+=======
+                {/* Placeholder illustration from public/images/placeholders */}
+                <Image
+                  src={`/images/placeholders/${10 + i}.png`}
+                  alt={`${program.name} icon`}
+                  className="illus-icon-img"
+                  width={400}
+                  height={400}
+                  loading="lazy"
+                  quality={65}
+                  sizes="(max-width: 768px) 50vw, 25vw"
+>>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
                 />
                 <span className="illus-num">{'0' + (i + 1)}</span>
               </div>
@@ -1266,8 +1435,12 @@ export function HomeClient() {
         {/* Impact Image */}
         <section className="impact-image-section">
           <div className="image-wrapper">
+<<<<<<< HEAD
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={IMAGES.impactHero} alt="PSZ impact" loading="lazy" />
+=======
+            <Image src={IMAGES.impactHero} alt="PSZ impact" width={1200} height={800} loading="lazy" quality={70} sizes="100vw" />
+>>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
           </div>
         </section>
 
@@ -1299,7 +1472,11 @@ export function HomeClient() {
 
         {/* Impact Video + Text */}
         <section className="impact-video-section">
+<<<<<<< HEAD
           <video src={VIDEOS.volunteers} autoPlay muted loop playsInline />
+=======
+          <LazyVideo src={VIDEOS.volunteers} rootMargin="300px" />
+>>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
           <div className="text-block">
             <h5>Enterprise for Dignity</h5>
             <p>

@@ -11,9 +11,9 @@
   /* Primary site font (minimalist, professional) */
   --font-body: 'Inter', 'Helvetica Neue', 'Segoe UI', Roboto, Arial, sans-serif;
   --font-heading: 'Inter', 'Helvetica Neue', 'Segoe UI', Roboto, Arial, sans-serif;
-  --psz-green: #009040;
-  --psz-green-dark: #005c27;
-  --psz-green-rgb: 0, 144, 64;
+  --psz-green: #0c2e1a;
+  --psz-green-dark: #081c10;
+  --psz-green-rgb: 12, 46, 26;
   --white: #fff;
   --black: #1d1d1f;
   --dark-black: #000;
@@ -250,9 +250,9 @@ video {
   width: 100%;
   height: 100%;
   z-index: 2;
-  /* Further reduced blur for a much lighter hero look */
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
+  background: rgba(12, 46, 26, 0.08);
 }
 
 .hero-section .hero-content {
@@ -509,8 +509,8 @@ video {
 .mission-bg-overlay {
   position: absolute;
   inset: 0;
-  z-index: 40; /* higher to ensure it covers the video */
-  background-color: rgba(6, 120, 60, 0.26); /* solid tint for uniform coverage */
+  z-index: 40;
+  background-color: rgba(12, 46, 26, 0.35);
   pointer-events: none;
 }
 
@@ -589,6 +589,15 @@ video {
   overflow: hidden;
 }
 
+.video-overlay-section::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: rgba(12, 46, 26, 0.22);
+  pointer-events: none;
+}
+
 .video-overlay-section video {
   position: absolute;
   top: 0;
@@ -611,6 +620,7 @@ video {
   color: var(--white);
   font-weight: 700;
   line-height: 1.2;
+  z-index: 2;
 }
 
 /* ─── Showcase Section (light bg) ─── */
@@ -2189,30 +2199,30 @@ video {
   pointer-events: none;
 }
 
-/* ── Green tint overlay (reduced opacity for subtler tint) ── */
+/* ── Dark green tint overlay ── */
 .prog-bg-overlay {
   position: absolute;
   inset: 0;
   z-index: 1;
   background: linear-gradient(
     160deg,
-    rgba(0, 50, 20, 0.28) 0%,
-    rgba(0, 80, 30, 0.20) 40%,
-    rgba(0, 40, 15, 0.32) 100%
+    rgba(12, 46, 26, 0.32) 0%,
+    rgba(12, 46, 26, 0.18) 40%,
+    rgba(8, 28, 16, 0.36) 100%
   );
   pointer-events: none;
 }
 
-/* Enterprise section green overlay (matches visual tone of other green overlays) */
+/* Enterprise section dark green overlay */
 .enterprise-bg-overlay {
   position: absolute;
   inset: 0;
   z-index: 1;
   background: linear-gradient(
     160deg,
-    rgba(6, 120, 60, 0.22) 0%,
-    rgba(6, 140, 70, 0.18) 45%,
-    rgba(6, 100, 50, 0.26) 100%
+    rgba(12, 46, 26, 0.28) 0%,
+    rgba(12, 46, 26, 0.16) 45%,
+    rgba(8, 28, 16, 0.32) 100%
   );
   pointer-events: none;
 }

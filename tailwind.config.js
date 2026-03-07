@@ -11,9 +11,9 @@ module.exports = {
     extend: {
       colors: {
         psz: {
-          green: "#009040",
-          "green-light": "#00C261",
-          "green-dark": "#008A43"
+          green: "#0c2e1a",
+          "green-light": "#1a5c35",
+          "green-dark": "#081c10"
         },
         "vp-black": "#1d1d1f",
         "vp-dark": "#000000",

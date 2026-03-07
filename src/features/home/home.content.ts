@@ -179,7 +179,7 @@ export const SCROLL_TEXT_BLOCKS: readonly ScrollTextBlock[] = [
 
 /* ─── Program department cards ─── */
 const PSZ_GREEN_GRADIENT =
-  "linear-gradient(135deg, var(--psz-green) 0%, #2aa86a 60%, #0f6b42 100%)";
+  "linear-gradient(135deg, #0c2e1a 0%, #1a5c35 60%, #081c10 100%)";
 
 export const PROGRAM_CARDS: readonly ProgramCard[] = [
   {

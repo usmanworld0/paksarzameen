@@ -27,8 +27,8 @@ export default function CommonwealthLabPage() {
       <MarketplaceHero />
 
       {/* Featured Products */}
-      <section id="featured" className="bg-white py-28">
-        <div className="mx-auto max-w-7xl px-6 lg:px-12">
+      <section id="featured" className="bg-white py-16 sm:py-28">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
           {/* Section header */}
           <div className="mb-16 flex flex-col items-start gap-4 border-b border-neutral-100 pb-10 sm:flex-row sm:items-end sm:justify-between">
             <div>
@@ -50,7 +50,7 @@ export default function CommonwealthLabPage() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 gap-x-4 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-4 sm:gap-y-12 lg:grid-cols-4">
             {featured.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
@@ -68,8 +68,8 @@ export default function CommonwealthLabPage() {
       </div>
 
       {/* Category Grid */}
-      <section className="bg-white py-28">
-        <div className="mx-auto max-w-7xl px-6 lg:px-12">
+      <section className="bg-white py-16 sm:py-28">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
           <div className="mb-16 border-b border-neutral-100 pb-10">
             <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-[#0c2e1a]">
               Browse By
@@ -82,12 +82,12 @@ export default function CommonwealthLabPage() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
             {PRODUCT_CATEGORIES.map((category) => (
               <Link
                 key={category}
                 href={`/commonwealth-lab/products?category=${encodeURIComponent(category)}`}
-                className="group relative flex aspect-[3/4] items-end overflow-hidden bg-neutral-900"
+                className="group relative flex aspect-[3/4] items-end overflow-hidden bg-neutral-900 sm:aspect-[3/4]"
               >
                 <Image
                   src={CATEGORY_IMAGES[category]}
@@ -118,8 +118,8 @@ export default function CommonwealthLabPage() {
       </section>
 
       {/* CTA */}
-      <section className="bg-white py-32 border-t border-neutral-100">
-        <div className="mx-auto max-w-3xl px-6 text-center">
+      <section className="bg-white py-20 sm:py-32 border-t border-neutral-100">
+        <div className="mx-auto max-w-3xl px-4 sm:px-6 text-center">
           <div className="mb-8 flex items-center justify-center gap-4">
             <span className="h-px w-12 bg-neutral-200" />
             <p className="text-[10px] font-semibold uppercase tracking-[0.4em] text-neutral-400">

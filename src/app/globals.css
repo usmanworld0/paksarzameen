@@ -1725,7 +1725,7 @@ video {
   }
 
   .psz-header nav {
-    padding: 6rem 5% 3rem;
+    padding: 2.4rem 5% 1.6rem;
   }
 }
 
@@ -2536,7 +2536,7 @@ video {
 @media (max-width: 768px) {
   .programs-stack-viewport {
     height: auto;
-    min-height: 52rem;
+    min-height: 38rem;
   }
 
   .stack-card {
@@ -2546,20 +2546,20 @@ video {
 
   .stack-card-illus {
     width: 100%;
-    height: 14rem;
+    height: 11rem;
     flex-shrink: 0;
   }
 
   .illus-icon {
-    font-size: 5rem;
-  }
-
-  .illus-num {
     font-size: 4rem;
   }
 
+  .illus-num {
+    font-size: 3.5rem;
+  }
+
   .stack-card-content {
-    padding: 2.8rem 2.4rem;
+    padding: 2rem 2rem;
   }
 
   .stack-card-content::before {
@@ -2915,7 +2915,7 @@ body,
 
 /* ── Small tablet / large phone (max-width: 768px) ── */
 @media (max-width: 768px) {
-  /* Hero — reduce big title, allow wrapping */
+  /* Hero — reduce big title, allow wrapping, shift text up */
   .hero-section .hero-title {
     font-size: clamp(3.2rem, 9vw, 5.5rem);
     white-space: normal;
@@ -2924,6 +2924,7 @@ body,
 
   .hero-section .hero-content {
     width: 90%;
+    top: 45%;
   }
 
   /* Split section — tighter on tablets */
@@ -3005,6 +3006,8 @@ body,
   .impact-video-section .text-block {
     max-width: 80%;
     margin-inline: auto;
+    margin-right: auto;
+    margin-left: auto;
     transform: translateY(-4rem);
   }
 
@@ -3032,9 +3035,11 @@ body,
   }
   .hero-section .hero-content {
     width: 92%;
+    top: 42%;
   }
   .hero-section .hero-label {
     font-size: var(--fs-vs);
+    margin-bottom: 1rem;
   }
 
   /* Split section */
@@ -3164,17 +3169,24 @@ body,
     margin-bottom: 3rem;
   }
   .programs-stack-viewport {
-    min-height: 46rem;
+    min-height: 34rem;
   }
   .stack-card-illus {
-    height: 12rem;
+    height: 9rem;
   }
   .stack-card-content {
-    padding: 2rem 1.8rem;
-    gap: 0.8rem;
+    padding: 1.6rem 1.6rem;
+    gap: 0.6rem;
   }
   .stack-card-name {
     font-size: var(--fs-m);
+  }
+  .stack-card-desc {
+    font-size: var(--fs-vvs);
+    line-height: 1.6;
+  }
+  .stack-card-subtitle {
+    font-size: var(--fs-vvs);
   }
 
   /* Impact sections */
@@ -3229,6 +3241,10 @@ body,
     font-size: clamp(2.2rem, 7vw, 3.2rem);
   }
 
+  .hero-section .hero-content {
+    top: 40%;
+  }
+
   .section-education .edu-name-word {
     font-size: clamp(2rem, 7vw, 3.2rem);
   }
@@ -3242,15 +3258,15 @@ body,
   }
 
   .programs-stack-viewport {
-    min-height: 42rem;
+    min-height: 30rem;
   }
 
   .stack-card-illus {
-    height: 10rem;
+    height: 8rem;
   }
 
   .stack-card-content {
-    padding: 1.6rem 1.4rem;
+    padding: 1.2rem 1.2rem;
   }
 
   .stat-number {
@@ -3277,9 +3293,24 @@ body,
   .heart-section,
   .programs-stack-section,
   .canvas-section,
+  .scroll-text-block,
   .impact-header-section,
-  .impact-video-section {
-    max-width: 100vw;
+  .impact-video-section,
+  .impact-text-section,
+  .impact-image-section,
+  .overlay-reveal-section,
+  .final-cta-section,
+  .split-section,
+  .highlight-section,
+  .video-overlay-section {
+    max-width: 100%;
     overflow-x: hidden;
+    width: 100%;
+  }
+
+  /* Fix 100vw elements that cause overflow due to scrollbar */
+  .pinned-video-section .section-text {
+    padding-inline: 5%;
+    box-sizing: border-box;
   }
 }

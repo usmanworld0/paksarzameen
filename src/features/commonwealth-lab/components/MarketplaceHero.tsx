@@ -13,7 +13,7 @@ export function MarketplaceHero({
   subtitle = "Ethically sourced. Artisan crafted. Every purchase builds community wealth across the Commonwealth region.",
 }: MarketplaceHeroProps) {
   return (
-    <section className="relative flex h-screen w-screen items-center justify-center overflow-hidden bg-neutral-950">
+    <section className="relative flex h-screen w-full items-center justify-center overflow-hidden bg-neutral-950">
       {/* Background image */}
       <Image
         src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1920&h=1080&fit=crop"

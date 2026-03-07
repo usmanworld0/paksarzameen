@@ -49,13 +49,13 @@ async function main() {
 
   const entries = await readdir(VIDEOS_DIR, { withFileTypes: true });
   const videos = entries.filter(
-    (e) => e.isFile() && extname(e.name).toLowerCase() === ".mp4"
+    (e) => e.isFile() && extname(e.name).toLowerCase() === ".webm"
   );
 
   console.log(`Found ${videos.length} videos\n`);
 
   for (const video of videos) {
-    const name = basename(video.name, ".mp4");
+    const name = basename(video.name, ".webm");
     const safeName = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
     const outPath = join(POSTERS_DIR, `${safeName}-poster.webp`);
 
@@ -83,7 +83,7 @@ async function main() {
 
   console.log("\n✨ Done! Posters saved to public/videos/posters/");
   console.log("💡 For best results, replace placeholders with real thumbnails extracted via ffmpeg:");
-  console.log("   ffmpeg -i input.mp4 -vframes 1 -q:v 2 output-poster.jpg");
+  console.log("   ffmpeg -i input.webm -vframes 1 -q:v 2 output-poster.jpg");
 }
 
 main().catch((err) => {

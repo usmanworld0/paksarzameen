@@ -22,9 +22,9 @@ if (typeof window !== "undefined") {
 
 /* ─── Video Sources — Local & Pexels (use SD/720p for performance) ─── */
 const VIDEOS = {
-  hero: "/videos/hero_video.mp4",
-  banner: "/videos/banner.mp4",
-  mission: "/videos/programs.mp4",
+  hero: "/videos/hero_video.webm",
+  banner: "/videos/banner.webm",
+  mission: "/videos/programs.webm",
   // Reduced from UHD → 720p variants for faster loading
   education:
     "https://www.pexels.com/download/video/3209298/",
@@ -36,7 +36,7 @@ const VIDEOS = {
     "https://videos.pexels.com/video-files/4492224/4492224-hd_1280_720_25fps.mp4",
   volunteers:
     "https://www.pexels.com/download/video/6646701/",
-  programs: "/videos/programs.mp4",
+  programs: "/videos/programs.webm",
 } as const;
 
 /* ─── Image Sources ─── */
@@ -910,7 +910,7 @@ export function HomeClient() {
       {/* PINNED VIDEO — Enterprise                       */}
       {/* ════════════════════════════════════════════════ */}
       <section className="pinned-video-section section-enterprise" data-scroll-section="enterprise">
-        <LazyVideo src="/videos/Info.mp4" rootMargin="400px" poster={VIDEO_POSTERS.info} />
+        <LazyVideo src="/videos/Info.webm" rootMargin="400px" poster={VIDEO_POSTERS.info} />
         <div className="enterprise-bg-overlay" aria-hidden="true" />
         <div className="section-text">
           <p>

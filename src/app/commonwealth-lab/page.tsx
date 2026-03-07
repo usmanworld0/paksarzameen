@@ -32,7 +32,7 @@ export default function CommonwealthLabPage() {
           {/* Section header */}
           <div className="mb-16 flex flex-col items-start gap-4 border-b border-neutral-100 pb-10 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-[#009040]">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-[#0c2e1a]">
                 Curated Selection
               </p>
               <h2
@@ -50,7 +50,7 @@ export default function CommonwealthLabPage() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid grid-cols-1 gap-x-4 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
             {featured.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
@@ -59,7 +59,7 @@ export default function CommonwealthLabPage() {
       </section>
 
       {/* Divider strip — PSZ green accent */}
-      <div className="bg-[#009040] py-10">
+      <div className="bg-[#0c2e1a] py-10">
         <div className="mx-auto max-w-7xl px-6 lg:px-12">
           <p className="text-center text-[10px] font-semibold uppercase tracking-[0.4em] text-white/80">
             100% of profits support artisan communities &amp; PSZ social programmes
@@ -71,7 +71,7 @@ export default function CommonwealthLabPage() {
       <section className="bg-white py-28">
         <div className="mx-auto max-w-7xl px-6 lg:px-12">
           <div className="mb-16 border-b border-neutral-100 pb-10">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-[#009040]">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-[#0c2e1a]">
               Browse By
             </p>
             <h2
@@ -110,7 +110,7 @@ export default function CommonwealthLabPage() {
                   </p>
                 </div>
                 {/* Bottom border accent on hover */}
-                <div className="absolute bottom-0 left-0 h-0.5 w-0 bg-[#009040] transition-all duration-500 group-hover:w-full" />
+                <div className="absolute bottom-0 left-0 h-0.5 w-0 bg-[#0c2e1a] transition-all duration-500 group-hover:w-full" />
               </Link>
             ))}
           </div>

@@ -13,6 +13,7 @@ import {
   TESTIMONIAL_AVATARS,
 } from "@/features/home/home.content";
 import { LazyVideo } from "@/components/ui/LazyVideo";
+import { getBlurDataURL, VIDEO_POSTERS } from "@/lib/utils/media-helpers";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -677,7 +678,7 @@ export function HomeClient() {
       {/* HERO — Full-screen video with blurred overlay   */}
       {/* ════════════════════════════════════════════════ */}
       <section className="hero-section" data-scroll-section="hero">
-        <video ref={heroVideoRef} src={VIDEOS.hero} muted loop playsInline preload="metadata" controls={false} autoPlay={false} />
+        <video ref={heroVideoRef} src={VIDEOS.hero} muted loop playsInline preload="metadata" controls={false} autoPlay={false} poster={VIDEO_POSTERS.hero} />
         <div className="hero-content">
           <p className="hero-label">Introducing</p>
           <h1 className="hero-title">
@@ -705,7 +706,7 @@ export function HomeClient() {
       {/* PINNED VIDEO — Mission                          */}
       {/* ════════════════════════════════════════════════ */}
       <section className="pinned-video-section section-mission" data-scroll-section="mission">
-        <LazyVideo src={VIDEOS.mission} rootMargin="400px" />
+        <LazyVideo src={VIDEOS.mission} rootMargin="400px" poster={VIDEO_POSTERS.programs} />
         <div className="mission-bg-overlay" aria-hidden="true" />
         <div className="section-text">
           <p>
@@ -754,25 +755,25 @@ export function HomeClient() {
         {/* Background image grid — optimized with next/image */}
         <div className="approach-bg-grid" aria-hidden="true">
           <div className="approach-bg-item">
-            <Image src="/images/WhatsApp Image 2026-03-06 at 5.01.33 AM.jpeg" alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} />
+            <Image src="/images/WhatsApp Image 2026-03-06 at 5.01.33 AM.jpeg" alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} placeholder="blur" blurDataURL={getBlurDataURL("/images/WhatsApp Image 2026-03-06 at 5.01.33 AM.jpeg")} />
           </div>
           <div className="approach-bg-item">
-            <Image src="/images/WhatsApp Image 2026-03-06 at 5.07.22 AM.jpeg" alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} />
+            <Image src="/images/WhatsApp Image 2026-03-06 at 5.07.22 AM.jpeg" alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} placeholder="blur" blurDataURL={getBlurDataURL("/images/WhatsApp Image 2026-03-06 at 5.07.22 AM.jpeg")} />
           </div>
           <div className="approach-bg-item">
-            <Image src="/images/full_team.jpeg" alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} />
+            <Image src="/images/full_team.jpeg" alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} placeholder="blur" blurDataURL={getBlurDataURL("/images/full_team.jpeg")} />
           </div>
           <div className="approach-bg-item">
-            <Image src="/images/WhatsApp Image 2026-03-06 at 4.20.53 PM.jpeg" alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} />
+            <Image src="/images/WhatsApp Image 2026-03-06 at 4.20.53 PM.jpeg" alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} placeholder="blur" blurDataURL={getBlurDataURL("/images/WhatsApp Image 2026-03-06 at 4.20.53 PM.jpeg")} />
           </div>
           <div className="approach-bg-item">
-            <Image src="/images/WhatsApp Image 2026-03-06 at 5.00.43 AM.jpeg" alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} />
+            <Image src="/images/WhatsApp Image 2026-03-06 at 5.00.43 AM.jpeg" alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} placeholder="blur" blurDataURL={getBlurDataURL("/images/WhatsApp Image 2026-03-06 at 5.00.43 AM.jpeg")} />
           </div>
           <div className="approach-bg-item">
-            <Image src="/images/WhatsApp Image 2026-03-06 at 4.03.34 PM.jpeg" alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} />
+            <Image src="/images/WhatsApp Image 2026-03-06 at 4.03.34 PM.jpeg" alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} placeholder="blur" blurDataURL={getBlurDataURL("/images/WhatsApp Image 2026-03-06 at 4.03.34 PM.jpeg")} />
           </div>
           <div className="approach-bg-item">
-            <Image src="/images/WhatsApp Image 2026-03-06 at 4.04.00 PM.jpeg" alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} />
+            <Image src="/images/WhatsApp Image 2026-03-06 at 4.04.00 PM.jpeg" alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} placeholder="blur" blurDataURL={getBlurDataURL("/images/WhatsApp Image 2026-03-06 at 4.04.00 PM.jpeg")} />
           </div>
         </div>
         <div className="approach-bg-overlay" aria-hidden="true" />
@@ -791,7 +792,7 @@ export function HomeClient() {
       {/* PINNED VIDEO — Education                        */}
       {/* ════════════════════════════════════════════════ */}
       <section className="pinned-video-section section-education" data-scroll-section="education">
-        <Image src="/images/members/8.png" alt="Abdullah Tanseer — Founder" className="edu-img no-filter" width={580} height={800} loading="lazy" quality={75} sizes="(max-width: 900px) 100vw, 38vw" />
+        <Image src="/images/members/8.png" alt="Abdullah Tanseer — Founder" className="edu-img no-filter" width={580} height={800} loading="lazy" quality={75} sizes="(max-width: 900px) 100vw, 38vw" placeholder="blur" blurDataURL={getBlurDataURL("/images/members/8.png")} />
         {/* Blurred logo backdrop */}
         <Image src="/paksarzameen_logo.png" alt="" aria-hidden className="edu-logo-backdrop" width={620} height={620} loading="lazy" quality={30} />
         <div className="section-text edu-section-text">
@@ -908,7 +909,7 @@ export function HomeClient() {
       {/* PINNED VIDEO — Enterprise                       */}
       {/* ════════════════════════════════════════════════ */}
       <section className="pinned-video-section section-enterprise" data-scroll-section="enterprise">
-        <LazyVideo src="/videos/Info.mp4" rootMargin="400px" />
+        <LazyVideo src="/videos/Info.mp4" rootMargin="400px" poster={VIDEO_POSTERS.info} />
         <div className="enterprise-bg-overlay" aria-hidden="true" />
         <div className="section-text">
           <p>
@@ -1008,6 +1009,8 @@ export function HomeClient() {
                   quality={70}
                   sizes="(max-width: 768px) 100vw, 50vw"
                   draggable={false}
+                  placeholder="blur"
+                  blurDataURL={getBlurDataURL(m.image)}
                 />
               ))}
             </div>
@@ -1049,6 +1052,7 @@ export function HomeClient() {
           src={VIDEOS.programs}
           aria-hidden={true}
           rootMargin="600px"
+          poster={VIDEO_POSTERS.programs}
         />
         {/* Green overlay */}
         <div className="prog-bg-overlay" aria-hidden="true" />
@@ -1171,7 +1175,7 @@ export function HomeClient() {
 
         {/* Impact Video + Text */}
         <section className="impact-video-section">
-          <LazyVideo src={VIDEOS.volunteers} rootMargin="300px" />
+          <LazyVideo src={VIDEOS.volunteers} rootMargin="300px" poster={VIDEO_POSTERS.programs} />
           <div className="text-block">
             <h5>Enterprise for Dignity</h5>
             <p>

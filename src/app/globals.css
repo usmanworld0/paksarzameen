@@ -1731,7 +1731,8 @@ video {
 
 .psz-footer {
   position: relative;
-  background-image: url('/images/footer.png');
+  /* Optimized: 18 MB PNG → 0.14 MB WebP (99% smaller) */
+  background-image: url('/images/optimized/footer.webp');
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;

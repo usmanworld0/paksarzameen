@@ -7,7 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "optimize:images": "node scripts/optimize-images.mjs",
+    "optimize:posters": "node scripts/generate-video-posters.mjs",
+    "optimize:all": "node scripts/optimize-images.mjs && node scripts/generate-video-posters.mjs",
+    "prebuild": "node scripts/optimize-images.mjs && node scripts/generate-video-posters.mjs"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.15",
@@ -34,6 +38,7 @@
     "eslint": "^9.21.0",
     "eslint-config-next": "^15.2.4",
     "postcss": "^8.5.3",
+    "sharp": "^0.34.5",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.8.2"
   }

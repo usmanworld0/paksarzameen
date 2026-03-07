@@ -11,9 +11,9 @@
   /* Primary site font (minimalist, professional) */
   --font-body: 'Inter', 'Helvetica Neue', 'Segoe UI', Roboto, Arial, sans-serif;
   --font-heading: 'Inter', 'Helvetica Neue', 'Segoe UI', Roboto, Arial, sans-serif;
-  --psz-green: #0c2e1a;
+  --psz-green: #0f7a47;
   --psz-green-dark: #081c10;
-  --psz-green-rgb: 12, 46, 26;
+  --psz-green-rgb: 15, 122, 71;
   --white: #fff;
   --black: #1d1d1f;
   --dark-black: #000;
@@ -252,7 +252,7 @@ video {
   z-index: 2;
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  background: rgba(12, 46, 26, 0.08);
+  background: rgba(15, 122, 71, 0.10);
 }
 
 .hero-section .hero-content {
@@ -510,7 +510,7 @@ video {
   position: absolute;
   inset: 0;
   z-index: 40;
-  background-color: rgba(12, 46, 26, 0.35);
+  background-color: rgba(15, 122, 71, 0.38);
   pointer-events: none;
 }
 
@@ -594,7 +594,7 @@ video {
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: rgba(12, 46, 26, 0.22);
+  background: rgba(15, 122, 71, 0.25);
   pointer-events: none;
 }
 
@@ -1579,7 +1579,7 @@ video {
 .psz-header nav {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2.4rem 5%;
+  padding: 3.2rem 5%;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -1606,7 +1606,7 @@ video {
 }
 
 .psz-header .nav-logo {
-  font-size: var(--fs-s);
+  font-size: var(--fs-m);
   font-weight: 700;
   color: var(--white);
   white-space: nowrap;
@@ -1625,7 +1625,7 @@ video {
 }
 
 .psz-header .nav-links a {
-  font-size: var(--fs-vs);
+  font-size: var(--fs-s);
   color: var(--white);
   cursor: pointer;
   transition: opacity 0.2s;

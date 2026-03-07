@@ -26,7 +26,7 @@ export function MeetTheArtistsSection() {
               Meet the Artists
             </h2>
             <p className="mt-4 text-sm font-light text-neutral-600">
-              Discover the talented artisans behind Commonwealth Lab's finest collections.
+              Discover the talented artisans behind Commonwealth Lab&apos;s finest collections.
               Each piece represents decades of heritage, skill, and dedication to traditional craftsmanship.
             </p>
           </div>

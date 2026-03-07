@@ -4,20 +4,31 @@ import Image from "next/image";
 import Link from "next/link";
 import { MarketplaceHero } from "@/features/commonwealth-lab/components/MarketplaceHero";
 import { ProductCard } from "@/features/commonwealth-lab/components/ProductCard";
+import { MeetTheArtistsSection } from "@/features/commonwealth-lab/components/MeetTheArtistsSection";
 import { dummyProducts } from "@/data/products";
 import { PRODUCT_CATEGORIES } from "@/lib/models/Product";
 
 const featured = dummyProducts.filter((p) => p.featured);
 
+// Map each category to a representative product image
+const PRODUCT_IMAGE_NAMES = [
+  "WhatsApp Image 2026-03-07 at 4.15.50 PM (1).jpeg",
+  "WhatsApp Image 2026-03-07 at 4.15.50 PM.jpeg",
+  "WhatsApp Image 2026-03-07 at 4.15.51 PM (1).jpeg",
+  "WhatsApp Image 2026-03-07 at 4.15.51 PM (2).jpeg",
+  "WhatsApp Image 2026-03-07 at 4.15.51 PM (3).jpeg",
+  "WhatsApp Image 2026-03-07 at 4.15.51 PM.jpeg",
+] as const;
+
+const PRODUCT_IMAGES = PRODUCT_IMAGE_NAMES.map(
+  (name) => `/images/products/${encodeURIComponent(name)}`
+);
+
 const CATEGORY_IMAGES: Record<string, string> = {
-  "Traditional Clothing":
-    "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600&h=800&fit=crop",
-  Handicrafts:
-    "https://images.unsplash.com/photo-1612196808214-b7e239e5f6dc?w=600&h=800&fit=crop",
-  "Cultural Goods":
-    "https://images.unsplash.com/photo-1600166898405-da9535204843?w=600&h=800&fit=crop",
-  "PSZ Merchandise":
-    "https://images.unsplash.com/photo-1622560480605-d83c853bc5c3?w=600&h=800&fit=crop",
+  "Traditional Clothing": PRODUCT_IMAGES[0],
+  Handicrafts: PRODUCT_IMAGES[1],
+  "Cultural Goods": PRODUCT_IMAGES[2],
+  "PSZ Merchandise": PRODUCT_IMAGES[3],
 };
 
 export default function CommonwealthLabPage() {
@@ -66,6 +77,9 @@ export default function CommonwealthLabPage() {
           </p>
         </div>
       </div>
+
+      {/* Meet the Artists */}
+      <MeetTheArtistsSection />
 
       {/* Category Grid */}
       <section className="bg-white py-16 sm:py-28">

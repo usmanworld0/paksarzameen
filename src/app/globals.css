@@ -1569,7 +1569,7 @@ video {
 .psz-header nav {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 1.8rem 5%;
+  padding: 2.4rem 5%;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -1596,11 +1596,12 @@ video {
 }
 
 .psz-header .nav-logo {
-  font-size: var(--fs-vs);
+  font-size: var(--fs-s);
   font-weight: 700;
   color: var(--white);
   white-space: nowrap;
   cursor: pointer;
+  letter-spacing: 0.04em;
 }
 
 .psz-header .nav-logo .green {
@@ -1614,11 +1615,12 @@ video {
 }
 
 .psz-header .nav-links a {
-  font-size: var(--fs-vvs);
+  font-size: var(--fs-vs);
   color: var(--white);
   cursor: pointer;
   transition: opacity 0.2s;
   white-space: nowrap;
+  letter-spacing: 0.03em;
 }
 
 .psz-header .nav-links a:hover {

@@ -26,6 +26,47 @@ export type ProgramCard = {
   tagColor: string;
 };
 
+export type Chapter = {
+  city: string;
+  tagline: string;
+  icon: string;          // inline SVG path data for the city landmark
+  accent: string;        // accent colour for the card
+};
+
+/* ─── PSZ Chapters across Pakistan ─── */
+export const PSZ_CHAPTERS: readonly Chapter[] = [
+  {
+    city: "Islamabad",
+    tagline: "Policy & Strategy Hub",
+    icon: "faisal-mosque",
+    accent: "#0f7a47",
+  },
+  {
+    city: "Bahawalpur",
+    tagline: "Heritage & Education Centre",
+    icon: "noor-mahal",
+    accent: "#c4a265",
+  },
+  {
+    city: "Hyderabad",
+    tagline: "Sindh Outreach Office",
+    icon: "pakka-qila",
+    accent: "#3b82f6",
+  },
+  {
+    city: "Lahore",
+    tagline: "Punjab Operations Base",
+    icon: "minar-e-pakistan",
+    accent: "#ef4444",
+  },
+  {
+    city: "Multan",
+    tagline: "Southern Punjab Hub",
+    icon: "shah-rukn-e-alam",
+    accent: "#8b5cf6",
+  },
+];
+
 export const heroContent = {
   title: "PakSarZameen",
   subtitle: "Building Community Wealth.",

@@ -11,6 +11,7 @@ import {
   HEART_MEMBERS,
   PROGRAM_CARDS,
   TESTIMONIAL_AVATARS,
+  PSZ_CHAPTERS,
 } from "@/features/home/home.content";
 import { LazyVideo } from "@/components/ui/LazyVideo";
 import { getBlurDataURL, VIDEO_POSTERS } from "@/lib/utils/media-helpers";
@@ -42,7 +43,6 @@ const VIDEOS = {
 const IMAGES = {
   showcase: "/images/WhatsApp%20Image%202026-03-06%20at%205.01.33%20AM.jpeg",
   fullImage: "https://images.pexels.com/photos/4614166/pexels-photo-4614166.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  impactHero: "https://images.pexels.com/photos/6963695/pexels-photo-6963695.jpeg?auto=compress&cs=tinysrgb&w=1200",
   transform1: "/images/WhatsApp%20Image%202026-03-06%20at%205.01.33%20AM.jpeg",
   transform1Overlay: "/images/WhatsApp%20Image%202026-03-06%20at%205.07.22%20AM.jpeg",
   transform2: "/images/WhatsApp%20Image%202026-03-06%20at%205.08.17%20AM.jpeg",
@@ -385,9 +385,9 @@ export function HomeClient() {
       scrollTrigger: {
         trigger: ".programs-stack-section",
         start: "top top",
-        end: `+=${cards.length * 130}%`,
+        end: `+=${cards.length * 80}%`,
         pin: true,
-        scrub: 0.45,
+        scrub: 0.35,
         anticipatePin: 1,
         invalidateOnRefresh: true,
         pinSpacing: true,
@@ -402,18 +402,18 @@ export function HomeClient() {
         scale: 1,
         filter: "blur(0px)",
         opacity: 1,
-        duration: 1.6,
+        duration: 1.2,
         ease: "expo.out",
       });
 
       // ── Activate corresponding dot ──
       if (dots.length > i) {
-        tl.to(dots[i], { scale: 1.4, opacity: 1, duration: 0.4 }, "<0.7");
-        if (i > 0) tl.to(dots[i - 1], { scale: 0.75, opacity: 0.3, duration: 0.4 }, "<");
+        tl.to(dots[i], { scale: 1.4, opacity: 1, duration: 0.3 }, "<0.5");
+        if (i > 0) tl.to(dots[i - 1], { scale: 0.75, opacity: 0.3, duration: 0.3 }, "<");
       }
 
       // ── Hold ──
-      tl.to({}, { duration: 1.1 });
+      tl.to({}, { duration: 0.6 });
 
       // ── Push all previous cards back with depth blur ──
       if (i < cards.length - 1) {
@@ -427,7 +427,7 @@ export function HomeClient() {
               filter: `blur(${Math.min(depth * 3, 14)}px)`,
               rotationX: depth * 1.0,
               opacity: Math.max(0.7 - depth * 0.18, 0.15),
-              duration: 1.1,
+              duration: 0.8,
               ease: "power3.inOut",
             },
             "<"
@@ -461,9 +461,9 @@ export function HomeClient() {
       scrollTrigger: {
         trigger: ".heart-section",
         start: "top top",
-        end: `+=${total * 100}%`,
+        end: `+=${total * 55}%`,
         pin: true,
-        scrub: 0.5,
+        scrub: 0.35,
         anticipatePin: 1,
         invalidateOnRefresh: true,
         pinSpacing: true,
@@ -542,7 +542,7 @@ export function HomeClient() {
       scrollTrigger: {
         trigger: ".canvas-section",
         start: "top top",
-        end: "600% top",
+        end: "350% top",
         scrub: 0.15,
         pin: true,
       },
@@ -572,7 +572,7 @@ export function HomeClient() {
       scrollTrigger: {
         trigger: selector,
         start: "top top",
-        end: "bottom top",
+        end: "70% top",
         scrub: true,
         pin: true,
       },
@@ -607,7 +607,7 @@ export function HomeClient() {
         const LenisModule = await import("lenis");
         const Lenis = LenisModule.default;
         lenis = new Lenis({
-          duration: 1.2,
+          duration: 0.85,
           easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
           smoothWheel: true,
         });
@@ -1125,26 +1125,109 @@ export function HomeClient() {
       {/* DARK BOTTOM — Impact Sections                   */}
       {/* ════════════════════════════════════════════════ */}
       <div className="dark-bottom" data-scroll-section="impact">
-        {/* Impact Header */}
-        <section className="impact-header-section">
-          <div className="inner">
-            <h5>Our Impact</h5>
-            <h2>Breaking the Cycle of Poverty, Inequality, and Environmental Injustice.</h2>
-            <p>
-              Every rupee, every hour, every effort is tracked and reported.
-              PakSarZameen believes in <span>radical transparency</span> —
-              because the communities we serve deserve nothing less.
-            </p>
-            <p style={{ marginTop: "1rem", fontWeight: 600 }}>
-              Operating in: Bahawalpur, Multan, Lahore, Islamabad, Hyderabad
+        {/* ── Our Chapters ── */}
+        <section className="chapters-section">
+          {/* Background orbs */}
+          <div className="chapters-orb chapters-orb-1" />
+          <div className="chapters-orb chapters-orb-2" />
+
+          <div className="chapters-header">
+            <p className="chapters-label scroll-reveal">Where We Operate</p>
+            <h2 className="chapters-title scroll-reveal" data-delay="0.1">Our Chapters</h2>
+            <p className="chapters-subtitle scroll-reveal" data-delay="0.2">
+              PakSarZameen is on the ground across Pakistan — each chapter tailored to
+              regional challenges and opportunities.
             </p>
           </div>
-        </section>
 
-        {/* Impact Image */}
-        <section className="impact-image-section">
-          <div className="image-wrapper">
-            <Image src={IMAGES.impactHero} alt="PSZ impact" width={1200} height={800} loading="lazy" quality={70} sizes="100vw" />
+          {/* Globe + Connecting Lines (decorative SVG) */}
+          <div className="chapters-globe scroll-reveal" data-delay="0.15">
+            <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="chapters-globe-svg">
+              <circle cx="60" cy="60" r="54" stroke="rgba(15,122,71,0.18)" strokeWidth="1.2"/>
+              <ellipse cx="60" cy="60" rx="54" ry="22" stroke="rgba(15,122,71,0.14)" strokeWidth="0.8"/>
+              <ellipse cx="60" cy="60" rx="22" ry="54" stroke="rgba(15,122,71,0.14)" strokeWidth="0.8"/>
+              <line x1="60" y1="6" x2="60" y2="114" stroke="rgba(15,122,71,0.1)" strokeWidth="0.6"/>
+              <line x1="6" y1="60" x2="114" y2="60" stroke="rgba(15,122,71,0.1)" strokeWidth="0.6"/>
+              {/* Pin dots for each city */}
+              <circle cx="62" cy="32" r="3" fill="#0f7a47" opacity="0.9"><animate attributeName="r" values="3;4.5;3" dur="2.5s" repeatCount="indefinite"/></circle>
+              <circle cx="50" cy="48" r="3" fill="#c4a265" opacity="0.9"><animate attributeName="r" values="3;4.5;3" dur="2.8s" repeatCount="indefinite"/></circle>
+              <circle cx="42" cy="65" r="3" fill="#3b82f6" opacity="0.9"><animate attributeName="r" values="3;4.5;3" dur="3.1s" repeatCount="indefinite"/></circle>
+              <circle cx="55" cy="44" r="3" fill="#ef4444" opacity="0.9"><animate attributeName="r" values="3;4.5;3" dur="2.2s" repeatCount="indefinite"/></circle>
+              <circle cx="48" cy="52" r="3" fill="#8b5cf6" opacity="0.9"><animate attributeName="r" values="3;4.5;3" dur="2.6s" repeatCount="indefinite"/></circle>
+            </svg>
+          </div>
+
+          {/* Chapter cards grid */}
+          <div className="chapters-grid">
+            {PSZ_CHAPTERS.map((ch, i) => (
+              <div
+                key={ch.city}
+                className="chapter-card fade-in-section"
+                style={{ "--chapter-accent": ch.accent } as React.CSSProperties}
+              >
+                {/* Landmark icon */}
+                <div className="chapter-icon">
+                  {ch.icon === "faisal-mosque" && (
+                    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M32 4L8 32h8l-4 24h40l-4-24h8L32 4z" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+                      <path d="M32 4v14M24 56V38a8 8 0 0116 0v18" stroke="currentColor" strokeWidth="1.5"/>
+                      <circle cx="32" cy="22" r="3" stroke="currentColor" strokeWidth="1.2"/>
+                    </svg>
+                  )}
+                  {ch.icon === "noor-mahal" && (
+                    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <rect x="12" y="28" width="40" height="28" rx="2" stroke="currentColor" strokeWidth="1.5"/>
+                      <path d="M20 28V20a12 12 0 0124 0v8" stroke="currentColor" strokeWidth="1.5"/>
+                      <circle cx="32" cy="16" r="3" stroke="currentColor" strokeWidth="1.2"/>
+                      <line x1="12" y1="40" x2="52" y2="40" stroke="currentColor" strokeWidth="0.8" opacity="0.5"/>
+                      <rect x="27" y="44" width="10" height="12" rx="5" stroke="currentColor" strokeWidth="1.2"/>
+                      <line x1="8" y1="56" x2="12" y2="28" stroke="currentColor" strokeWidth="1.2"/>
+                      <line x1="56" y1="56" x2="52" y2="28" stroke="currentColor" strokeWidth="1.2"/>
+                    </svg>
+                  )}
+                  {ch.icon === "pakka-qila" && (
+                    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <rect x="10" y="24" width="44" height="32" rx="1" stroke="currentColor" strokeWidth="1.5"/>
+                      <rect x="6" y="20" width="8" height="36" rx="1" stroke="currentColor" strokeWidth="1.2"/>
+                      <rect x="50" y="20" width="8" height="36" rx="1" stroke="currentColor" strokeWidth="1.2"/>
+                      <path d="M6 20l4-8 4 8M50 20l4-8 4 8" stroke="currentColor" strokeWidth="1.2"/>
+                      <rect x="26" y="40" width="12" height="16" rx="6" stroke="currentColor" strokeWidth="1.2"/>
+                      <path d="M22 24h20v4H22z" stroke="currentColor" strokeWidth="0.8" opacity="0.5"/>
+                    </svg>
+                  )}
+                  {ch.icon === "minar-e-pakistan" && (
+                    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M32 4v52M24 56h16" stroke="currentColor" strokeWidth="1.5"/>
+                      <path d="M28 56l-4 4h16l-4-4" stroke="currentColor" strokeWidth="1.2"/>
+                      <path d="M32 12l-8 16h16L32 12z" stroke="currentColor" strokeWidth="1.5"/>
+                      <circle cx="32" cy="8" r="2.5" stroke="currentColor" strokeWidth="1.2"/>
+                      <path d="M26 36h12v6H26z" stroke="currentColor" strokeWidth="1" opacity="0.6"/>
+                      <path d="M29 42h6v14h-6z" stroke="currentColor" strokeWidth="1" opacity="0.4"/>
+                    </svg>
+                  )}
+                  {ch.icon === "shah-rukn-e-alam" && (
+                    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M32 6a18 18 0 0118 18v4H14v-4A18 18 0 0132 6z" stroke="currentColor" strokeWidth="1.5"/>
+                      <rect x="14" y="28" width="36" height="28" rx="1" stroke="currentColor" strokeWidth="1.5"/>
+                      <rect x="27" y="38" width="10" height="18" rx="5" stroke="currentColor" strokeWidth="1.2"/>
+                      <circle cx="32" cy="14" r="3" stroke="currentColor" strokeWidth="1.2"/>
+                      <line x1="32" y1="4" x2="32" y2="6" stroke="currentColor" strokeWidth="1.5"/>
+                      <circle cx="32" cy="3" r="1.5" fill="currentColor" opacity="0.6"/>
+                    </svg>
+                  )}
+                </div>
+
+                {/* City info */}
+                <h3 className="chapter-city">{ch.city}</h3>
+                <p className="chapter-tagline">{ch.tagline}</p>
+
+                {/* Accent bottom bar */}
+                <div className="chapter-bar" />
+
+                {/* Index number */}
+                <span className="chapter-index">{String(i + 1).padStart(2, "0")}</span>
+              </div>
+            ))}
           </div>
         </section>
 

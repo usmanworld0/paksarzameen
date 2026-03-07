@@ -100,41 +100,44 @@ export const storiesContent = [
 /* ─── Heart of Paksarzameen — Team Members ─── */
 export const HEART_MEMBERS: readonly TeamMember[] = [
   {
-    name: "Hussain Khan Langah",
-    designation: "Executive Managing Director",
-    quote: "Paksarzameen is more than a project — it is a mission for the future.",
-    image: "/images/members/1.png",
+    name: "Malik Abdullah Amir",
+    designation: "Chief Executive Officer",
+    quote: "Real change happens when logistics meet compassion on the ground.",
+    image: "/images/members/4.png",
   },
-  {
+   {
     name: "Ahmad Malik",
     designation: "Executive Managing Director",
     quote: "Design can inspire people to believe in a better Pakistan.",
     image: "/images/members/2.png",
   },
   {
+    name: "M. Abdullah Jamal",
+    designation: "Executive Managing Director",
+    quote: "Healthcare is not a privilege — it is the right of every citizen.",
+    image: "/images/members/6.png",
+  },
+  {
+    name: "Hussain Khan Langah",
+    designation: "Executive Managing Director",
+    quote: "Paksarzameen is more than a project — it is a mission for the future.",
+    image: "/images/members/1.png",
+  },
+ 
+  {
     name: "Laiba Shafiq",
     designation: "Director",
     quote: "Technology should empower communities and create opportunity.",
     image: "/images/members/3.png",
   },
+  
   {
-    name: "Malik Abdullah Amir",
-    designation: "Chief Executive Officer",
-    quote: "Real change happens when logistics meet compassion on the ground.",
-    image: "/images/members/4.png",
-  },
-  {
-    name: "Bilal Ahmed",
-    designation: "Outreach Coordinator",
+    name: "Hassan Fadul",
+    designation: "Director",
     quote: "Every village we reach is a promise kept to the people of Pakistan.",
     image: "/images/members/5.png",
   },
-  {
-    name: "",
-    designation: "",
-    quote: "Healthcare is not a privilege — it is the right of every citizen.",
-    image: "/images/members/6.png",
-  },
+  
   {
     name: "Tuba Fatima",
     designation: "Director",

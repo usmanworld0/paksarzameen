@@ -22,6 +22,7 @@ if (typeof window !== "undefined") {
 /* ─── Video Sources — Local & Pexels (use SD/720p for performance) ─── */
 const VIDEOS = {
   hero: "/videos/hero_video.mp4",
+  banner: "/videos/banner.mp4",
   mission: "/videos/programs.mp4",
   // Reduced from UHD → 720p variants for faster loading
   education:
@@ -1049,10 +1050,10 @@ export function HomeClient() {
         {/* Background video — lazy-loaded */}
         <LazyVideo
           className="prog-bg-video"
-          src={VIDEOS.programs}
+          src={VIDEOS.banner}
           aria-hidden={true}
           rootMargin="600px"
-          poster={VIDEO_POSTERS.programs}
+          poster={VIDEO_POSTERS.banner}
         />
         {/* Green overlay */}
         <div className="prog-bg-overlay" aria-hidden="true" />

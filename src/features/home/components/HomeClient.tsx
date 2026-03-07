@@ -2,12 +2,6 @@
 
 import { useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
-<<<<<<< HEAD
-import { motion } from "framer-motion";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { storiesContent } from "@/features/home/home.content";
-=======
 import Image from "next/image";
 import { motion } from "framer-motion";
 import gsap from "gsap";
@@ -19,47 +13,11 @@ import {
   TESTIMONIAL_AVATARS,
 } from "@/features/home/home.content";
 import { LazyVideo } from "@/components/ui/LazyVideo";
->>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-<<<<<<< HEAD
-/* ─── Different Pexels Free Videos — NGO / Humanity / Community ─── */
-const VIDEOS = {
-  // Hero: local video placed in public/videos/
-  hero: "/videos/hero_video.mp4",
-  // Mission: local banner video
-  mission: "/videos/programs.mp4",
-  // Education: teacher with students
-  education:
-    "https://www.pexels.com/download/video/3209298/",
-  // Empowerment: people working together / community
-  empowerment:
-    "https://videos.pexels.com/video-files/3191572/3191572-uhd_2560_1440_25fps.mp4",
-  // Enterprise: market / small business / hands working
-  enterprise:
-    "https://www.pexels.com/download/video/16118544/",
-  // Impact: healthcare / medical help
-  impact:
-    "https://videos.pexels.com/video-files/4492224/4492224-uhd_2560_1440_25fps.mp4",
-  // Grid video: nature / farming
-  // grid video removed
-  // Dark section: volunteers hands
-  volunteers:
-    "https://www.pexels.com/download/video/6646701/",
-  // What We Do: aerial green landscape / community
-  programs:
-    "/videos/banner_video.mp4",
-};
-
-/* ─── Different images for each section ─── */
-const IMAGES = {
-  showcase: "/images/WhatsApp%20Image%202026-03-06%20at%205.01.33%20AM.jpeg",
-  fullImage: "https://images.pexels.com/photos/4614166/pexels-photo-4614166.jpeg",
-  impactHero: "https://images.pexels.com/photos/6963695/pexels-photo-6963695.jpeg",
-=======
 /* ─── Video Sources — Local & Pexels (use SD/720p for performance) ─── */
 const VIDEOS = {
   hero: "/videos/hero_video.mp4",
@@ -83,116 +41,12 @@ const IMAGES = {
   showcase: "/images/WhatsApp%20Image%202026-03-06%20at%205.01.33%20AM.jpeg",
   fullImage: "https://images.pexels.com/photos/4614166/pexels-photo-4614166.jpeg?auto=compress&cs=tinysrgb&w=1200",
   impactHero: "https://images.pexels.com/photos/6963695/pexels-photo-6963695.jpeg?auto=compress&cs=tinysrgb&w=1200",
->>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
   transform1: "/images/WhatsApp%20Image%202026-03-06%20at%205.01.33%20AM.jpeg",
   transform1Overlay: "/images/WhatsApp%20Image%202026-03-06%20at%205.07.22%20AM.jpeg",
   transform2: "/images/WhatsApp%20Image%202026-03-06%20at%205.08.17%20AM.jpeg",
   transform2Overlay: "/images/WhatsApp%20Image%202026-03-06%20at%205.08.52%20AM.jpeg",
   finalBase: "/images/WhatsApp%20Image%202026-03-06%20at%205.00.43%20AM.jpeg",
   finalOverlay: "/images/hero-fallback.svg",
-<<<<<<< HEAD
-};
-
-/* ─── Canvas frame animation images (NGO related) ─── */
-function getCanvasFrameUrl(index: number): string {
-  const seeds = [
-    "/images/hero-fallback.svg",
-    "/images/placeholders/10.png",
-    "/images/WhatsApp%20Image%202026-03-06%20at%205.01.33%20AM.jpeg",
-    "/images/WhatsApp%20Image%202026-03-06%20at%205.07.22%20AM.jpeg",
-    "/images/WhatsApp%20Image%202026-03-06%20at%205.08.17%20AM.jpeg",
-    "/images/WhatsApp%20Image%202026-03-06%20at%205.08.52%20AM.jpeg",
-    "/images/WhatsApp%20Image%202026-03-06%20at%205.00.43%20AM.jpeg",
-    "/images/hero-fallback.svg",
-    "https://images.pexels.com/photos/4614166/pexels-photo-4614166.jpeg",
-    "/images/placeholders/10.png",
-    "/images/hero-fallback.svg",
-    "https://images.pexels.com/photos/4614166/pexels-photo-4614166.jpeg",
-  ];
-  return `${seeds[index % seeds.length]}?auto=compress&cs=tinysrgb&w=1200&h=800&fit=crop&seed=${index}`;
-}
-
-/* ─── Heart of Paksarzameen — Team Members ─── */
-const HEART_MEMBERS = [
-  {
-    name: "Hussain Khan Langah ",
-    designation: "Executive ManagingDirector",
-    quote: "Paksarzameen is more than a project — it is a mission for the future.",
-    image: "/images/members/1.png",
-  },
-  {
-    name: "Ahmad Malik",
-    designation: "Executive Managing Director",
-    quote: "Design can inspire people to believe in a better Pakistan.",
-    image: "/images/members/2.png",
-  },
-  {
-    name: "Laiba Shafiq",
-    designation: "Director",
-    quote: "Technology should empower communities and create opportunity.",
-    image: "/images/members/3.png",
-  },
-  {
-    name: "Malik Abdullah Amir",
-    designation: "Chief Executive Officer",
-    quote: "Real change happens when logistics meet compassion on the ground.",
-    image: "/images/members/4.png",
-  },
-  {
-    name: "Bilal Ahmed",
-    designation: "Outreach Coordinator",
-    quote: "Every village we reach is a promise kept to the people of Pakistan.",
-    image: "/images/members/5.png",
-  },
-  {
-    name: "",
-    designation: "",
-    quote: "Healthcare is not a privilege — it is the right of every citizen.",
-    image: "/images/members/6.png",
-  },
-  {
-    name: "Tuba Fatima",
-    designation: "Director",
-    quote: "An educated Pakistan is an empowered Pakistan.",
-    image: "/images/members/7.png",
-  },
-];
-
-/* ─── Scroll-reveal text blocks alongside the canvas ─── */
-const SCROLL_TEXT_BLOCKS = [
-  {
-    title: "Room Zia",
-    description:
-      "Solar-powered learning spaces that bring electricity and education to remote villages. Over 120 schools illuminated.",
-  },
-  {
-    title: "Mobile Health Clinics",
-    description:
-      "Bringing essential healthcare to doorsteps. 15,000+ consultations in areas with no hospital access.",
-  },
-  {
-    title: "Skills for Tomorrow",
-    description:
-      "Vocational training programs equipping youth with digital literacy, tailoring, and agricultural skills.",
-  },
-  {
-    title: "Clean Water Initiative",
-    description:
-      "Installing water filtration plants across Punjab and Sindh. Safe drinking water for 30,000+ people.",
-  },
-  {
-    title: "Women Enterprise Hub",
-    description:
-      "Micro-financing and mentorship for women entrepreneurs. 3,000 families lifted through sustainable business.",
-  },
-  {
-    title: "Community Kitchens",
-    description:
-      "Daily nutritious meals for 5,000+ individuals in urban slums and disaster-affected regions.",
-  },
-];
-
-=======
 } as const;
 
 /* ─── Canvas frame animation images (re-uses existing local assets) ─── */
@@ -215,7 +69,6 @@ function getCanvasFrameUrl(index: number): string {
   return CANVAS_FRAME_SEEDS[index % CANVAS_FRAME_SEEDS.length];
 }
 
->>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
 export function HomeClient() {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -670,11 +523,7 @@ export function HomeClient() {
     let loadedCount = 0;
 
     for (let i = 0; i < frameCount; i++) {
-<<<<<<< HEAD
-      const img = new Image();
-=======
       const img = new globalThis.Image();
->>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
       img.crossOrigin = "anonymous";
       img.src = getCanvasFrameUrl(i);
       img.onload = () => {
@@ -793,21 +642,14 @@ export function HomeClient() {
       <div ref={introRef} className="intro-overlay">
         <div className="intro-text-wrapper">
           <div className="intro-content">
-<<<<<<< HEAD
-            {/* Logo animated in */}
-=======
             {/* Logo animated via GSAP 3D transforms — raw img required */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
->>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
             <img
               src="/paksarzameen_logo.png"
               alt="PakSarZameen Logo"
               className="intro-logo"
-<<<<<<< HEAD
-=======
               width={140}
               height={140}
->>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
             />
             {/* Animated text reveal */}
             <h1 className="intro-title" aria-hidden>
@@ -863,11 +705,7 @@ export function HomeClient() {
       {/* PINNED VIDEO — Mission                          */}
       {/* ════════════════════════════════════════════════ */}
       <section className="pinned-video-section section-mission" data-scroll-section="mission">
-<<<<<<< HEAD
-        <video src={VIDEOS.mission} autoPlay muted loop playsInline preload="auto" />
-=======
         <LazyVideo src={VIDEOS.mission} rootMargin="400px" />
->>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
         <div className="mission-bg-overlay" aria-hidden="true" />
         <div className="section-text">
           <p>
@@ -913,30 +751,6 @@ export function HomeClient() {
       {/* OUR APPROACH                                    */}
       {/* ════════════════════════════════════════════════ */}
       <section className="approach-section" data-scroll-section="approach">
-<<<<<<< HEAD
-        {/* Background image grid */}
-        <div className="approach-bg-grid" aria-hidden="true">
-          <div className="approach-bg-item">{/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/images/WhatsApp%20Image%202026-03-06%20at%205.01.33%20AM.jpeg" alt="" loading="lazy" />
-          </div>
-          <div className="approach-bg-item">{/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/images/WhatsApp%20Image%202026-03-06%20at%205.07.22%20AM.jpeg" alt="" loading="lazy" />
-          </div>
-          <div className="approach-bg-item">{/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/images/full_team.jpeg" alt="" loading="lazy" />
-          </div>
-          <div className="approach-bg-item">{/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/images/WhatsApp%20Image%202026-03-06%20at%204.20.53%20PM.jpeg" alt="" loading="lazy" />
-          </div>
-          <div className="approach-bg-item">{/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/images/WhatsApp%20Image%202026-03-06%20at%205.00.43%20AM.jpeg" alt="" loading="lazy" />
-          </div>
-          <div className="approach-bg-item">{/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/images/WhatsApp%20Image%202026-03-06%20at%204.03.34%20PM.jpeg" alt="" loading="lazy" />
-          </div>
-          <div className="approach-bg-item">{/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/images/WhatsApp%20Image%202026-03-06%20at%204.04.00%20PM.jpeg" alt="" loading="lazy" />
-=======
         {/* Background image grid — optimized with next/image */}
         <div className="approach-bg-grid" aria-hidden="true">
           <div className="approach-bg-item">
@@ -959,7 +773,6 @@ export function HomeClient() {
           </div>
           <div className="approach-bg-item">
             <Image src="/images/WhatsApp Image 2026-03-06 at 4.04.00 PM.jpeg" alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} />
->>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
           </div>
         </div>
         <div className="approach-bg-overlay" aria-hidden="true" />
@@ -978,17 +791,9 @@ export function HomeClient() {
       {/* PINNED VIDEO — Education                        */}
       {/* ════════════════════════════════════════════════ */}
       <section className="pinned-video-section section-education" data-scroll-section="education">
-<<<<<<< HEAD
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/images/members/8.png" alt="Abdullah Tanseer — Founder" className="edu-img no-filter" loading="lazy" />
-        {/* Blurred logo backdrop */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/paksarzameen_logo.png" alt="" aria-hidden="true" className="edu-logo-backdrop" />
-=======
         <Image src="/images/members/8.png" alt="Abdullah Tanseer — Founder" className="edu-img no-filter" width={580} height={800} loading="lazy" quality={75} sizes="(max-width: 900px) 100vw, 38vw" />
         {/* Blurred logo backdrop */}
         <Image src="/paksarzameen_logo.png" alt="" aria-hidden className="edu-logo-backdrop" width={620} height={620} loading="lazy" quality={30} />
->>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
         <div className="section-text edu-section-text">
           {/* Animated eyebrow label */}
           <div className="edu-textmasker">
@@ -1091,12 +896,7 @@ export function HomeClient() {
         </div>
 
         <div className="showcase-image">
-<<<<<<< HEAD
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={IMAGES.showcase} alt="PakSarZameen community programs" loading="lazy" />
-=======
           <Image src="/images/WhatsApp Image 2026-03-06 at 5.01.33 AM.jpeg" alt="PakSarZameen community programs" width={1200} height={600} loading="lazy" quality={75} sizes="(max-width: 768px) 100vw, 80vw" />
->>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
         </div>
 
         <Link href="/get-involved">
@@ -1108,11 +908,7 @@ export function HomeClient() {
       {/* PINNED VIDEO — Enterprise                       */}
       {/* ════════════════════════════════════════════════ */}
       <section className="pinned-video-section section-enterprise" data-scroll-section="enterprise">
-<<<<<<< HEAD
-        <video src="/videos/info.mp4" autoPlay muted loop playsInline preload="auto" />
-=======
         <LazyVideo src="/videos/Info.mp4" rootMargin="400px" />
->>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
         <div className="enterprise-bg-overlay" aria-hidden="true" />
         <div className="section-text">
           <p>
@@ -1158,28 +954,14 @@ export function HomeClient() {
         <div className="testimonials-marquee" aria-hidden={false}>
           <div className="marquee-track" role="list">
             {storiesContent.concat(storiesContent).map((s, idx) => {
-<<<<<<< HEAD
-              const avatars: Record<string, string> = {
-                "Fatima Bibi": "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=80&h=80&fit=crop&crop=face",
-                "Ahmed Khan": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&crop=face",
-                "Dr. Sara Malik": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=80&h=80&fit=crop&crop=face",
-              };
-              const photoUrl = avatars[s.author];
-=======
               const photoUrl = TESTIMONIAL_AVATARS[s.author];
->>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
               return (
                 <div className="testimonial-card" key={idx} role="listitem">
                   <div className="testimonial-card-quote">“</div>
                   <blockquote>{s.quote}</blockquote>
                   <div className="testimonial-author">
                     {photoUrl ? (
-<<<<<<< HEAD
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={photoUrl} alt={s.author} className="author-avatar author-avatar-photo" />
-=======
                       <Image src={photoUrl} alt={s.author} className="author-avatar author-avatar-photo" width={80} height={80} loading="lazy" quality={60} />
->>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
                     ) : (
                       <div className="author-avatar">{s.author.charAt(0)}</div>
                     )}
@@ -1215,15 +997,6 @@ export function HomeClient() {
           <div className="heart-image-col">
             <div className="heart-image-frame">
               {HEART_MEMBERS.map((m, i) => (
-<<<<<<< HEAD
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  key={i}
-                  src={m.image}
-                  alt={m.name}
-                  className="heart-member-img"
-                  loading={i === 0 ? "eager" : "lazy"}
-=======
                 <Image
                   key={i}
                   src={m.image}
@@ -1234,7 +1007,6 @@ export function HomeClient() {
                   loading={i === 0 ? "eager" : "lazy"}
                   quality={70}
                   sizes="(max-width: 768px) 100vw, 50vw"
->>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
                   draggable={false}
                 />
               ))}
@@ -1271,25 +1043,12 @@ export function HomeClient() {
       {/* PROGRAMS — Stacking Cards Reveal                 */}
       {/* ════════════════════════════════════════════════ */}
       <section className="programs-stack-section" data-scroll-section="programs">
-<<<<<<< HEAD
-        {/* Background video */}
-        <video
-          className="prog-bg-video"
-          src={VIDEOS.programs}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-          aria-hidden="true"
-=======
         {/* Background video — lazy-loaded */}
         <LazyVideo
           className="prog-bg-video"
           src={VIDEOS.programs}
           aria-hidden={true}
           rootMargin="600px"
->>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
         />
         {/* Green overlay */}
         <div className="prog-bg-overlay" aria-hidden="true" />
@@ -1304,54 +1063,7 @@ export function HomeClient() {
         </div>
 
         <div className="programs-stack-viewport">
-<<<<<<< HEAD
-          {([
-            {
-              name: "Mahkma Shajarkari", subtitle: "Plantation Unit",
-              desc: "Promoting environmental responsibility through plantation drives and sustainability initiatives across Pakistan.",
-              tag: "Environment", icon: "🌿",
-              bg: "linear-gradient(135deg, var(--psz-green) 0%, #2aa86a 60%, #0f6b42 100%)",
-              tagColor: "var(--psz-green)",
-            },
-            {
-              name: "Ehsas ul Haiwanat", subtitle: "Animal Welfare Section",
-              desc: "Advocating compassion toward animals and supporting their welfare, protection, and ethical treatment.",
-              tag: "Welfare", icon: "🐾",
-              bg: "linear-gradient(135deg, var(--psz-green) 0%, #2aa86a 60%, #0f6b42 100%)",
-              tagColor: "var(--psz-green)",
-            },
-            {
-              name: "Room Zia", subtitle: "Bureau for Empowering Marginalized Communities",
-              desc: "Providing care, support, and opportunities for orphaned, transgender, and specially-abled individuals.",
-              tag: "Social Care", icon: "💡",
-              bg: "linear-gradient(135deg, var(--psz-green) 0%, #2aa86a 60%, #0f6b42 100%)",
-              tagColor: "var(--psz-green)",
-            },
-            {
-              name: "Dar ul Aloom", subtitle: "Agency of Educational Development",
-              desc: "Advancing access to knowledge and learning through educational programs and community awareness.",
-              tag: "Education", icon: "📚",
-              bg: "linear-gradient(135deg, var(--psz-green) 0%, #2aa86a 60%, #0f6b42 100%)",
-              tagColor: "var(--psz-green)",
-            },
-            {
-              name: "Tibi Imdad", subtitle: "Bureau for Improving Health Standards",
-              desc: "Working to improve community health through medical support, awareness campaigns, and welfare services.",
-              tag: "Healthcare", icon: "🏥",
-              bg: "linear-gradient(135deg, var(--psz-green) 0%, #2aa86a 60%, #0f6b42 100%)",
-              tagColor: "var(--psz-green)",
-            },
-            {
-              name: "Wajood-e-Zan", subtitle: "Women Empowerment Department",
-              desc: "Promoting the dignity, education, and empowerment of women so they can actively participate in shaping society.",
-              tag: "Empowerment", icon: "✊",
-              bg: "linear-gradient(135deg, var(--psz-green) 0%, #2aa86a 60%, #0f6b42 100%)",
-              tagColor: "var(--psz-green)",
-            },
-          ] as Array<{ name: string; subtitle: string; desc: string; tag: string; icon: string; bg: string; tagColor: string }>).map((program, i) => (
-=======
           {PROGRAM_CARDS.map((program, i) => (
->>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
             <div
               key={program.name}
               className="stack-card"
@@ -1363,13 +1075,6 @@ export function HomeClient() {
                 <div className="illus-shape illus-shape-a" />
                 <div className="illus-shape illus-shape-b" />
                 <div className="illus-shape illus-shape-c" />
-<<<<<<< HEAD
-                {/* use numbered placeholders from public/images/placeholders (10.png..15.png) */}
-                <img
-                  src={`/images/placeholders/${10 + i}.png`}
-                  alt={`${program.name} icon`}
-                  className="illus-icon-img"
-=======
                 {/* Placeholder illustration from public/images/placeholders */}
                 <Image
                   src={`/images/placeholders/${10 + i}.png`}
@@ -1380,7 +1085,6 @@ export function HomeClient() {
                   loading="lazy"
                   quality={65}
                   sizes="(max-width: 768px) 50vw, 25vw"
->>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
                 />
                 <span className="illus-num">{'0' + (i + 1)}</span>
               </div>
@@ -1435,12 +1139,7 @@ export function HomeClient() {
         {/* Impact Image */}
         <section className="impact-image-section">
           <div className="image-wrapper">
-<<<<<<< HEAD
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={IMAGES.impactHero} alt="PSZ impact" loading="lazy" />
-=======
             <Image src={IMAGES.impactHero} alt="PSZ impact" width={1200} height={800} loading="lazy" quality={70} sizes="100vw" />
->>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
           </div>
         </section>
 
@@ -1472,11 +1171,7 @@ export function HomeClient() {
 
         {/* Impact Video + Text */}
         <section className="impact-video-section">
-<<<<<<< HEAD
-          <video src={VIDEOS.volunteers} autoPlay muted loop playsInline />
-=======
           <LazyVideo src={VIDEOS.volunteers} rootMargin="300px" />
->>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
           <div className="text-block">
             <h5>Enterprise for Dignity</h5>
             <p>

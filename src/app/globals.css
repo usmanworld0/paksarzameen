@@ -2,12 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-<<<<<<< HEAD
-/* Import a clean, professional minimalist typeface */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-=======
 /* Font is loaded via next/font/google in layout.tsx — no CSS @import needed */
->>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
 
 /* ─── Vision Pro Style — PSZ NGO ─── */
 
@@ -119,11 +114,8 @@ video {
 /* ═══════════════════════════════════════════════════ */
 [data-scroll-section] {
   position: relative;
-<<<<<<< HEAD
-=======
   /* Paint containment — isolates repaints to each section */
   contain: layout style paint;
->>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
 }
 
 /* Pin-spacer wrappers must carry the same z-index as their child */
@@ -726,49 +718,21 @@ video {
   break-inside: avoid;
   -webkit-column-break-inside: avoid;
   -moz-column-break-inside: avoid;
-<<<<<<< HEAD
-=======
   position: relative;
   /* Aspect ratio ensures fill-mode next/image has a container height */
   aspect-ratio: 4 / 3;
   overflow: hidden;
->>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
 }
 
 .approach-bg-item img {
   width: 100%;
-<<<<<<< HEAD
-  height: auto;
-=======
   height: 100%;
->>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
   display: block;
   object-fit: cover;
   filter: brightness(0.68) saturate(0.88);
   border-radius: 6px;
 }
 
-<<<<<<< HEAD
-/* Slightly larger photos for a stronger visual presence */
-.approach-bg-item img {
-  max-height: 560px;
-}
-.approach-bg-item:nth-child(-n+2) img {
-  /* first two images: compact landscape but a bit larger */
-  max-height: 260px;
-}
-.approach-bg-item:nth-child(3) img {
-  /* center photo (team) slightly larger */
-  max-height: 220px;
-}
-.approach-bg-item:nth-child(4) img {
-  max-height: 300px;
-}
-
-@media (max-width: 900px) {
-  .approach-bg-item:nth-child(-n+2) img { max-height: 180px; }
-  .approach-bg-item:nth-child(3) img { max-height: 140px; }
-=======
 /* Slightly different aspect ratios for visual variety */
 .approach-bg-item img {
   /* base: covered by parent aspect-ratio */
@@ -786,7 +750,6 @@ video {
 @media (max-width: 900px) {
   .approach-bg-item:nth-child(-n+2) { aspect-ratio: 16 / 9; }
   .approach-bg-item:nth-child(3) { aspect-ratio: 4 / 3; }
->>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
 }
 @media (max-width: 900px) {
   .approach-bg-grid { column-count: 2; }
@@ -1231,12 +1194,9 @@ video {
 /* ─── Dark Bottom Sections (Impact) ─── */
 .dark-bottom {
   background-color: var(--dark-black);
-<<<<<<< HEAD
-=======
   /* Defer rendering of the impact block until near viewport */
   content-visibility: auto;
   contain-intrinsic-size: auto 3000px;
->>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
 }
 
 .impact-header-section {

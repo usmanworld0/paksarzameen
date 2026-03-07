@@ -40,7 +40,7 @@ export function Navbar() {
           </Link>
 
           <div className="nav-links">
-            {navLinks.slice(0, 5).map((link) => (
+            {navLinks.slice(0, 7).map((link) => (
               <Link key={link.label} href={link.href}>
                 {link.label}
               </Link>

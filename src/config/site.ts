@@ -10,6 +10,7 @@ export const navLinks: NavLink[] = [
   { label: "Impact", href: "/impact" },
   { label: "Get Involved", href: "/get-involved" },
   { label: "News & Resources", href: "/news" },
+  { label: "Commonwealth Lab", href: "/commonwealth-lab" },
   { label: "Contact", href: "/contact" }
 ];
 

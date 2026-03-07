@@ -2,8 +2,6 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-<<<<<<< HEAD
-=======
 
   /* ── Image optimisation ── */
   images: {
@@ -38,7 +36,6 @@ const nextConfig: NextConfig = {
       },
     ];
   },
->>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
 };
 
 export default nextConfig;

@@ -4,8 +4,6 @@ export type MissionCard = {
   icon: string;
 };
 
-<<<<<<< HEAD
-=======
 export type TeamMember = {
   name: string;
   designation: string;
@@ -28,7 +26,6 @@ export type ProgramCard = {
   tagColor: string;
 };
 
->>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
 export const heroContent = {
   title: "PakSarZameen",
   subtitle: "Building Community Wealth.",
@@ -39,11 +36,7 @@ export const heroContent = {
   videoSrc:
     "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
   mobileFallback: "/images/hero-fallback.svg",
-<<<<<<< HEAD
-};
-=======
 } as const;
->>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
 
 export const missionCards: MissionCard[] = [
   {
@@ -78,11 +71,7 @@ export const joinContent = {
     "Partner with PakSarZameen to expand opportunity, strengthen communities, and deliver measurable social impact across Pakistan.",
   volunteerCta: "Volunteer With PSZ",
   partnerCta: "Become a Partner",
-<<<<<<< HEAD
-};
-=======
 } as const;
->>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)
 
 export const storiesContent = [
   {
@@ -107,8 +96,6 @@ export const storiesContent = [
     role: "Director, Rural Health Initiative",
   },
 ];
-<<<<<<< HEAD
-=======
 
 /* ─── Heart of Paksarzameen — Team Members ─── */
 export const HEART_MEMBERS: readonly TeamMember[] = [
@@ -260,4 +247,3 @@ export const TESTIMONIAL_AVATARS: Readonly<Record<string, string>> = {
   "Dr. Sara Malik":
     "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=80&h=80&fit=crop&crop=face",
 };
->>>>>>> 33c6b96 (Perf: lazy-load videos, optimize images, remove artificial delays, next/image and config, CSS perf hints, refactor HomeClient)

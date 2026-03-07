@@ -1304,6 +1304,11 @@ video {
   color: var(--white);
 }
 
+/* ─── Partners CTA section (desktop keeps original 8rem; mobile reduced) ─── */
+.impact-partners-section {
+  padding-block: 8rem;
+}
+
 /* ─── Impact Video Block ─── */
 .impact-video-section {
   position: relative;
@@ -1495,6 +1500,9 @@ video {
     width: 80%;
     text-align: start;
   }
+  .impact-partners-section {
+    padding-block: 4rem;
+  }
   .impact-video-section .text-block {
     max-width: 65%;
     margin-inline: auto;
@@ -1546,6 +1554,12 @@ video {
   .impact-text-section h5,
   .impact-text-section p {
     width: 90%;
+  }
+  .impact-partners-section {
+    padding-block: 2.5rem;
+  }
+  .final-cta-section {
+    padding-bottom: 4rem;
   }
   .impact-video-section .text-block {
     max-width: 80%;

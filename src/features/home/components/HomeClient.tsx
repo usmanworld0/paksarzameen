@@ -1272,7 +1272,7 @@ export function HomeClient() {
         </section>
 
         {/* Partners CTA */}
-        <section className="impact-text-section" style={{ paddingBlock: "8rem" }}>
+        <section className="impact-text-section impact-partners-section">
           <h5>Our Partners &amp; Volunteers</h5>
           <p>
             PSZ works with <span>government bodies</span>,{" "}

@@ -226,23 +226,14 @@ export function HomeClient() {
       gsap.set(".hero-title",  { opacity: 0, y: 50 });
       gsap.set(".hero-desc",   { opacity: 0, y: 30 });
 
-      /* ─── Hero: start paused, play when user scrolls for the first time ─── */
+      /* ─── Hero: autoplay video ─── */
       const heroVideo = (containerRef.current?.querySelector(
         ".hero-section video"
       ) || heroVideoRef.current) as HTMLVideoElement | null;
 
       if (heroVideo) {
-        // Hard stop — video is paused and visible from the start
-        heroVideo.pause();
-        heroVideo.currentTime = 0;
         gsap.set(heroVideo, { autoAlpha: 1 });
-
-        // Play on the very first scroll interaction, then remove the listener
-        const onFirstScroll = () => {
-          heroVideo.play().catch(() => {});
-        };
-        window.addEventListener("wheel",     onFirstScroll, { once: true, passive: true });
-        window.addEventListener("touchmove", onFirstScroll, { once: true, passive: true });
+      }
 
         // Pin the hero section — pinSpacing:false so the next section
         // physically slides OVER the hero as you scroll (Ochi overlap effect)
@@ -283,7 +274,6 @@ export function HomeClient() {
       /* ─── Pinned Video Sections ─── */
       createPinnedVideoTimeline(".section-mission");
       createPinnedVideoTimeline(".section-education");
-      createPinnedVideoTimeline(".section-enterprise");
 
       /* ─── Heart members reveal timeline ─── */
       /* NOTE: heart section is before programs in the DOM, so register it first
@@ -798,10 +788,11 @@ export function HomeClient() {
       </div>
 
       {/* ════════════════════════════════════════════════ */}
-      {/* HERO — Full-screen video with blurred overlay   */}
+      {/* HERO — Full-screen video with dark overlay      */}
       {/* ════════════════════════════════════════════════ */}
       <section className="hero-section" data-scroll-section="hero">
-        <video ref={heroVideoRef} src={VIDEOS.hero} muted loop playsInline preload="metadata" controls={false} autoPlay={false} poster={VIDEO_POSTERS.hero} />
+        <video ref={heroVideoRef} src={VIDEOS.hero} muted loop playsInline preload="metadata" controls={false} autoPlay={true} poster={VIDEO_POSTERS.hero} />
+        <div className="blur-overlay" aria-hidden="true" />
         <div className="hero-content">
           <p className="hero-label">Introducing</p>
           <h1 className="hero-title">
@@ -1414,19 +1405,6 @@ export function HomeClient() {
             Tharparkar now serve <span>8 villages</span> that previously had no
             access to potable water.
           </p>
-        </section>
-
-        {/* Impact Video + Text (video removed) */}
-        <section className="impact-video-section">
-          <div className="text-block">
-            <h5>Enterprise for Dignity</h5>
-            <p>
-              Our ethical enterprise program empowers women and youth with{" "}
-              <span>practical skills training</span>, micro-financing, and
-              market access. Over <span>3,000 families</span> have started
-              sustainable businesses through PSZ support.
-            </p>
-          </div>
         </section>
 
         {/* Partners CTA */}

@@ -123,21 +123,22 @@ video {
   position: relative !important;
 }
 
-/* Ascending z-index by section order */
-[data-scroll-section="hero"]           { z-index: 1; }
-[data-scroll-section="mission"]        { z-index: 2; }
-[data-scroll-section="story"]          { z-index: 3; }
-[data-scroll-section="education"]      { z-index: 4; }
-[data-scroll-section="empowerment"]    { z-index: 5; }
-[data-scroll-section="pillars"]        { z-index: 6; }
-[data-scroll-section="enterprise"]     { z-index: 7; }
-[data-scroll-section="approach"]       { z-index: 8; }
-[data-scroll-section="highlight"]      { z-index: 9; }
-[data-scroll-section="voices"]         { z-index: 10; }
-[data-scroll-section="heart"]          { z-index: 11; }
-[data-scroll-section="cta-image"]      { z-index: 12; }
-[data-scroll-section="programs"]       { z-index: 13; }
-[data-scroll-section="impact"]         { z-index: 14; }
+/* Ascending z-index in actual DOM order so each section slides OVER the previous.
+   ochi-marquee-sections (between pinned sections) get their own z-index rules below. */
+[data-scroll-section="hero"]           { z-index: 1; }   /* 1st  – GSAP pinned */
+[data-scroll-section="mission"]        { z-index: 2; }   /* 2nd  – GSAP pinned */
+/* ochi-marquee-section (1st) → z:3  — see .ochi-marquee-section rules below */
+[data-scroll-section="story"]          { z-index: 4; }   /* 4th  */
+[data-scroll-section="approach"]       { z-index: 5; }   /* 5th  */
+[data-scroll-section="education"]      { z-index: 6; }   /* 6th  – GSAP pinned */
+[data-scroll-section="pillars"]        { z-index: 7; }   /* 7th  */
+[data-scroll-section="enterprise"]     { z-index: 8; }   /* 8th  – GSAP pinned */
+/* ochi-marquee-section.ochi-marquee-reverse → z:9 — see rules below */
+[data-scroll-section="highlight"]      { z-index: 10; }  /* 10th */
+[data-scroll-section="voices"]         { z-index: 11; }  /* 11th */
+[data-scroll-section="heart"]          { z-index: 12; }  /* 12th – GSAP pinned */
+[data-scroll-section="programs"]       { z-index: 13; }  /* 13th – GSAP pinned */
+[data-scroll-section="impact"]         { z-index: 14; }  /* 14th */
 
 /* ═══════════════════════════════════════════════════ */
 /* INTRO SPLASH OVERLAY                               */
@@ -337,20 +338,22 @@ video {
   pointer-events: none;
 }
 
-/* Blurred logo watermark behind text */
+/* Logo watermark — positioned BEHIND the founder photo */
 .pinned-video-section.section-education .edu-logo-backdrop {
   position: absolute;
-  left: -2%;
+  right: 0;
+  left: auto;
   top: 50%;
   transform: translateY(-50%);
-  width: clamp(340px, 42vw, 620px);
+  width: clamp(300px, 44vw, 640px);
   height: auto;
   object-fit: contain;
-  opacity: 0.06;
-  filter: blur(3px) grayscale(80%);
-  z-index: 75; /* above image (70) but below text (80) */
+  opacity: 0.16;
+  filter: grayscale(100%) contrast(0.6) brightness(1.1);
+  z-index: 62; /* BELOW edu-img (70) so it sits behind the photo */
   pointer-events: none;
   user-select: none;
+  mix-blend-mode: luminosity;
 }
 
 /* Left-side text block */
@@ -538,6 +541,10 @@ video {
   width: 100vw;
   background-color: var(--white);
   padding: 8rem 5%;
+  border-radius: 2.4rem 2.4rem 0 0;
+  box-shadow: 0 -12px 50px rgba(0, 0, 0, 0.18);
+  position: relative;
+  z-index: 3;
 }
 
 .split-section .split-inner {
@@ -549,7 +556,8 @@ video {
   gap: 4rem;
 }
 
-.split-section .split-left h2 {
+.split-section .split-left h2,
+.split-section .split-left .split-left-heading {
   font-size: var(--fs-2xl);
   font-weight: 700;
   color: var(--black);
@@ -631,6 +639,8 @@ video {
   width: 100vw;
   background-color: var(--white);
   padding: 8rem 5%;
+  border-radius: 2.4rem 2.4rem 0 0;
+  box-shadow: 0 -12px 50px rgba(0, 0, 0, 0.15);
 }
 
 .showcase-section .logo-container {
@@ -851,6 +861,8 @@ video {
   background-color: var(--white);
   z-index: 11;
   padding: 5rem 5%;
+  border-radius: 2.4rem 2.4rem 0 0;
+  box-shadow: 0 -12px 50px rgba(0, 0, 0, 0.15);
 }
 
 .highlight-section p {
@@ -1218,6 +1230,8 @@ video {
 /* ─── Dark Bottom Sections (Impact) ─── */
 .dark-bottom {
   background-color: var(--dark-black);
+  border-radius: 2.4rem 2.4rem 0 0;
+  box-shadow: 0 -16px 60px rgba(0, 0, 0, 0.4);
   /* Defer rendering of the impact block until near viewport */
   content-visibility: auto;
   contain-intrinsic-size: auto 3000px;
@@ -1598,10 +1612,11 @@ video {
   top: 0;
   left: 0;
   transform: translateY(0);
-  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.45s cubic-bezier(0.76, 0, 0.24, 1);
+  will-change: transform;
 }
 
-/* Hide on scroll-down */
+/* Hide on scroll-down — Ochi-style smooth slide */
 .psz-header.nav-hidden {
   transform: translateY(-110%);
 }
@@ -1667,6 +1682,42 @@ video {
   opacity: 0.7;
 }
 
+/* ─── Commonwealth Lab prominent button ─── */
+.nav-commonwealth-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.9rem 1.7rem;
+  background: linear-gradient(135deg, var(--psz-green) 0%, #0a8f48 100%);
+  color: #fff;
+  border-radius: 0.8rem;
+  font-size: clamp(1.1rem, 0.8vw, 1.3rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  transition: all 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: 0 8px 24px rgba(15, 122, 71, 0.28);
+  white-space: nowrap;
+}
+
+.nav-commonwealth-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 36px rgba(15, 122, 71, 0.4);
+  background: linear-gradient(135deg, #0a8f48 0%, var(--psz-green) 100%);
+}
+
+.nav-commonwealth-btn svg {
+  width: 1.2em;
+  height: 1.2em;
+  transition: transform 0.2s ease;
+}
+.nav-commonwealth-btn:hover svg {
+  transform: scale(1.15) translateX(1px);
+}
+
+.psz-header.scrolled .nav-commonwealth-btn {
+  box-shadow: 0 6px 18px rgba(15, 122, 71, 0.35);
+}
+
 .psz-header .nav-toggle {
   display: none;
   background: none;
@@ -1721,6 +1772,317 @@ video {
 .psz-header.reverse .nav-toggle .bar1,
 .psz-header.reverse .nav-toggle .bar2 {
   background-color: var(--white);
+}
+
+/* ═══════════════════════════════════════════════════ */
+/* MEGA DROPDOWN PANELS (About PSZ & Impact)          */
+/* Dark-glass / frosted design — Ochi-inspired        */
+/* ═══════════════════════════════════════════════════ */
+
+/* Wrapper around dropdown trigger links */
+.nav-dropdown-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Trigger link */
+.nav-dropdown-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: clamp(1.15rem, 0.82vw, 1.35rem);
+  color: var(--white);
+  cursor: pointer;
+  transition: opacity 0.2s;
+  white-space: nowrap;
+  letter-spacing: 0.03em;
+}
+.psz-header.scrolled .nav-dropdown-trigger { color: var(--black); }
+.nav-dropdown-trigger:hover,
+.nav-dropdown-trigger.active { opacity: 0.7; }
+
+/* Animated chevron */
+.nav-chevron {
+  flex-shrink: 0;
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  margin-top: 1px;
+}
+.nav-chevron.open { transform: rotate(180deg); }
+
+/* ─── Panel shell — dark glassmorphism ─── */
+.nav-mega-panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  width: 100%;
+  /* Rich frosted-glass dark bg */
+  background: rgba(8, 8, 12, 0.78);
+  backdrop-filter: blur(36px) saturate(180%) brightness(70%);
+  -webkit-backdrop-filter: blur(36px) saturate(180%) brightness(70%);
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow:
+    0 32px 80px rgba(0, 0, 0, 0.6),
+    0 1px 0 rgba(255, 255, 255, 0.06) inset;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-12px);
+  transition:
+    opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  overflow: hidden;
+}
+
+/* Subtle green ambient glow via pseudo-element */
+.nav-mega-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 55% at 8% 20%, rgba(15, 122, 71, 0.1) 0%, transparent 65%),
+    radial-gradient(ellipse 55% 70% at 92% 80%, rgba(15, 122, 71, 0.07) 0%, transparent 65%);
+  pointer-events: none;
+  z-index: 0;
+}
+.nav-mega-panel > * { position: relative; z-index: 1; }
+
+.nav-mega-panel.open {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateY(0);
+}
+
+/* Inner wrapper */
+.mega-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3.4rem 5% 3.8rem;
+  display: flex;
+  gap: 4rem;
+  align-items: flex-start;
+}
+
+/* ─── Left intro column ─── */
+.mega-left {
+  flex: 0 0 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-right: 3.2rem;
+  border-right: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.mega-eyebrow {
+  font-size: 1.0rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--psz-green);
+}
+
+.mega-heading {
+  font-size: clamp(2.8rem, 3vw, 3.6rem);
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.0;
+  margin: 0;
+  letter-spacing: -0.03em;
+}
+
+.mega-tagline {
+  font-size: 1.3rem;
+  color: rgba(255, 255, 255, 0.46);
+  line-height: 1.7;
+  margin: 0;
+}
+
+.mega-view-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--psz-green);
+  margin-top: 0.2rem;
+  transition: gap 0.2s ease;
+}
+.mega-view-all:hover { gap: 0.75rem; }
+
+/* ─── Right container ─── */
+.mega-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* ─── About PSZ: 2×2 card grid ─── */
+.mega-about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.mega-about-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 1.7rem 1.9rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 1.4rem;
+  transition: background 0.22s, border-color 0.22s, transform 0.22s;
+}
+.mega-about-card:hover {
+  background: rgba(15, 122, 71, 0.11);
+  border-color: rgba(15, 122, 71, 0.35);
+  transform: translateY(-3px);
+}
+
+.mega-about-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.mega-about-card-desc {
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.65;
+  margin: 0;
+  flex: 1;
+}
+
+.mega-about-card-cta {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--psz-green);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 0.2rem;
+  transition: gap 0.18s;
+}
+.mega-about-card:hover .mega-about-card-cta { gap: 0.6rem; }
+
+/* ─── Impact: 2×2 category grid ─── */
+.mega-cats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.8rem 3.2rem;
+}
+
+.mega-cat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.mega-cat-header {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.mega-cat-icon { font-size: 1.5rem; line-height: 1; }
+
+.mega-cat-title {
+  font-size: 1.22rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.mega-cat-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.mega-cat-list li a {
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.5);
+  padding-left: 0;
+  display: block;
+  transition: color 0.18s, padding-left 0.18s;
+}
+.mega-cat-list li a:hover {
+  color: var(--psz-green);
+  padding-left: 0.6rem;
+}
+
+/* ─── Impact: Stories of Hope ─── */
+.mega-stories-row {
+  padding-top: 1.6rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.mega-stories-header {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 1.1rem;
+}
+
+.mega-story-cards {
+  display: flex;
+  gap: 1.2rem;
+}
+
+.mega-story-card {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  padding: 1.1rem 1.5rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.1rem;
+  flex: 0 1 300px;
+  transition: background 0.22s, border-color 0.22s, transform 0.22s;
+}
+.mega-story-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(15, 122, 71, 0.4);
+  transform: translateY(-2px);
+}
+
+.mega-story-img-wrap {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 2px solid rgba(15, 122, 71, 0.38);
+  box-shadow: 0 0 0 3px rgba(15, 122, 71, 0.12);
+}
+.mega-story-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mega-story-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.mega-story-info strong {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.25;
+}
+.mega-story-info span {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.48);
+  line-height: 1.4;
 }
 
 /* ─── Mobile Nav ─── */
@@ -2119,7 +2481,60 @@ video {
 }
 
 /* ═══════════════════════════════════════════════════ */
-/* CANVAS SCROLL REVEAL SECTION                       */
+/* CHAPTERS DIAGONAL FLOWING TEXT BACKDROP            */
+/* Continuously scrolls from bottom-right to top-left */
+/* ═══════════════════════════════════════════════════ */
+.chapters-diag-bg {
+  position: absolute;
+  /* Extend well beyond all edges so rotated content always fills the section */
+  top: -60%;
+  left: -30%;
+  width: 160%;
+  height: 220%;
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+  /* Diagonal tilt — text flows bottom-right → top-left */
+  transform: rotate(-38deg);
+  display: flex;
+  gap: clamp(2.5rem, 5vw, 6rem);
+  flex-wrap: nowrap;
+  align-items: flex-start;
+}
+
+.chapters-diag-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2.4rem;
+  flex-shrink: 0;
+  will-change: transform;
+  /* Each column scrolls upward — different delays stagger them */
+  animation: chapters-diag-float 30s linear infinite;
+}
+
+/* Stagger each column so they're offset, creating a continuous field */
+.chapters-diag-col:nth-child(1) { animation-delay:  0s; }
+.chapters-diag-col:nth-child(2) { animation-delay: -6s; }
+.chapters-diag-col:nth-child(3) { animation-delay: -12s; }
+.chapters-diag-col:nth-child(4) { animation-delay: -18s; }
+.chapters-diag-col:nth-child(5) { animation-delay: -24s; }
+
+.chapters-diag-col span {
+  display: block;
+  font-size: clamp(0.85rem, 1.5vw, 1.25rem);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: rgba(255, 255, 255, 0.038);
+  white-space: nowrap;
+}
+
+/* Seamless loop: animate from 0 → -50% (content is duplicated 30× so this always cycles) */
+@keyframes chapters-diag-float {
+  from { transform: translateY(0%); }
+  to   { transform: translateY(-50%); }
+}
 /* ═══════════════════════════════════════════════════ */
 .canvas-section {
   position: relative;
@@ -2236,6 +2651,8 @@ video {
   padding: 9rem 0 7rem;
   position: relative;
   overflow: hidden;
+  border-radius: 2.4rem 2.4rem 0 0;
+  box-shadow: 0 -12px 50px rgba(0, 0, 0, 0.2);
 }
 
 /* ─ Decorative orbs ─ */
@@ -3196,8 +3613,156 @@ body,
 .programs-stack-section,
 .showcase-section,
 .split-section,
-.heart-section {
+.heart-section,
+.ochi-marquee-section {
   transition: background-color 0.35s ease, color 0.35s ease;
+}
+
+/* ═══════════════════════════════════════════════════ */
+/* OCHI-STYLE SCROLL ANIMATIONS                       */
+/* GPU-accelerated section transitions & parallax     */
+/* ═══════════════════════════════════════════════════ */
+
+/* Force GPU compositing on all animated sections for silky 60fps */
+[data-scroll-section] {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Ochi-style section entrance — clip-path reveal with rounded corners */
+.ochi-section-reveal {
+  will-change: clip-path, transform;
+}
+
+/* ── Ochi-Style Marquee Banner ── */
+.ochi-marquee-section {
+  width: 100%;
+  padding: 2rem 0;
+  background: var(--psz-green);
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+  /* 1st marquee: between mission (z:2) and story (z:4) → z:3 */
+  z-index: 3;
+  border-radius: 2.4rem 2.4rem 0 0;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.25);
+}
+
+.ochi-marquee-section.ochi-marquee-reverse {
+  background: var(--psz-green-dark);
+  /* 2nd marquee: between enterprise (z:8) and highlight (z:10) → z:9 */
+  z-index: 9;
+}
+
+.ochi-marquee-track {
+  display: inline-flex;
+  animation: ochi-marquee-scroll 18s linear infinite;
+  will-change: transform;
+}
+
+.ochi-marquee-reverse .ochi-marquee-track {
+  animation: ochi-marquee-scroll-reverse 22s linear infinite;
+}
+
+.ochi-marquee-word {
+  font-size: clamp(2.2rem, 5vw, 4.5rem);
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.92);
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  padding-right: 0;
+  font-family: var(--font-heading);
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+@keyframes ochi-marquee-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@keyframes ochi-marquee-scroll-reverse {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
+}
+
+/* Subtle gradient overlay on marquee edges for polish */
+.ochi-marquee-section::before,
+.ochi-marquee-section::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 8%;
+  z-index: 2;
+  pointer-events: none;
+}
+.ochi-marquee-section::before {
+  left: 0;
+  background: linear-gradient(to right, var(--psz-green), transparent);
+}
+.ochi-marquee-section::after {
+  right: 0;
+  background: linear-gradient(to left, var(--psz-green), transparent);
+}
+.ochi-marquee-section.ochi-marquee-reverse::before {
+  background: linear-gradient(to right, var(--psz-green-dark), transparent);
+}
+.ochi-marquee-section.ochi-marquee-reverse::after {
+  background: linear-gradient(to left, var(--psz-green-dark), transparent);
+}
+
+/* ── Ochi-style smooth inter-section gradient connectors ── */
+.split-section::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.04), transparent);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.highlight-section::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.03), transparent);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Highlight section word spans — Ochi-style individual word pop-in */
+.highlight-section p span {
+  display: inline;
+  will-change: opacity, transform;
+}
+
+/* ── Smooth section background transitions for depth rhythm ── */
+.split-section,
+.approach-section,
+.showcase-section,
+.highlight-section {
+  will-change: transform;
+}
+
+/* ── GPU-accelerated smooth scrollbar ── */
+html {
+  scroll-behavior: auto; /* Lenis handles smooth scrolling */
+}
+
+@media (max-width: 768px) {
+  .ochi-marquee-word {
+    font-size: clamp(1.6rem, 4vw, 2.8rem);
+  }
+  .ochi-marquee-section {
+    padding: 1.4rem 0;
+  }
 }
 
 /* ═══════════════════════════════════════════════════ */
@@ -3624,7 +4189,8 @@ body,
   .final-cta-section,
   .split-section,
   .highlight-section,
-  .video-overlay-section {
+  .video-overlay-section,
+  .ochi-marquee-section {
     max-width: 100%;
     overflow-x: hidden;
     width: 100%;

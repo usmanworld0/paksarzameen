@@ -1,4 +1,28 @@
 {
+  "/images/ajrak.jpg": {
+    "optimized": {
+      "sm": "/images/optimized/ajrak-sm.webp",
+      "md": "/images/optimized/ajrak-md.webp",
+      "full": "/images/optimized/ajrak.webp"
+    },
+    "blurDataURL": "data:image/webp;base64,UklGRkIAAABXRUJQVlA4IDYAAAAwAgCdASoQABAABUB8JZDuHJ9c/caoVYAuAAD+34tS4fkbmpx2TN2TOO81OOynbfA13fngAAA="
+  },
+  "/images/commonwealth_header.jpeg": {
+    "optimized": {
+      "sm": "/images/optimized/commonwealth-header-sm.webp",
+      "md": "/images/optimized/commonwealth-header-md.webp",
+      "full": "/images/optimized/commonwealth-header.webp"
+    },
+    "blurDataURL": "data:image/webp;base64,UklGRkoAAABXRUJQVlA4ID4AAADwAQCdASoQAAkABUB8JZgCdAED+5StK4AA/t2H2SN7sfWIecyRwWZYhYEqR2wI7dNuFUKC9tMK0ULeQAAAAA=="
+  },
+  "/images/contrast_ajrak.png": {
+    "optimized": {
+      "sm": "/images/optimized/contrast-ajrak-sm.webp",
+      "md": "/images/optimized/contrast-ajrak-md.webp",
+      "full": "/images/optimized/contrast-ajrak.webp"
+    },
+    "blurDataURL": "data:image/webp;base64,UklGRjAAAABXRUJQVlA4ICQAAACQAQCdASoQABAABUB8JZwAAuQgvaAA/rhHaJcm/cPD6XFAAAA="
+  },
   "/images/footer.png": {
     "optimized": {
       "sm": "/images/optimized/footer-sm.webp",
@@ -157,6 +181,48 @@
       "full": "/images/optimized/placeholders/15.webp"
     },
     "blurDataURL": "data:image/webp;base64,UklGRpgAAABXRUJQVlA4WAoAAAAQAAAADwAAEwAAQUxQSE4AAAABcCTbtlmd2E7LtpNvzH9iVj8iJgCfShLPPK022iMEqv1ogr5DQLvSo/GQ7cH2WZ2+BZAMnILYCvdAUYnTzyDuEYR3qFg8TPF4mnjqbwJWUDggJAAAALACAJ0BKhAAFAA/OYa6VC8pJaMwCAHgJwlpAAB7IAD+73JAAA=="
+  },
+  "/images/products/WhatsApp Image 2026-03-07 at 4.15.50 PM (1).jpeg": {
+    "optimized": {
+      "sm": "/images/optimized/products/whatsapp-image-2026-03-07-at-4-15-50-pm-1-sm.webp",
+      "full": "/images/optimized/products/whatsapp-image-2026-03-07-at-4-15-50-pm-1.webp"
+    },
+    "blurDataURL": "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAADQAwCdASoQABQAPzmKu1SvKaYjMAgB4CcJQAB8dcy/dmz2c9r+jGIA/vcHsgDccp4MoWO7q/xEFmRjaf5aVBQ5qe/Fa4CFYul6XpJKH/p76imKyEv15ZYzNLvy+JZPvIAAAA=="
+  },
+  "/images/products/WhatsApp Image 2026-03-07 at 4.15.50 PM.jpeg": {
+    "optimized": {
+      "sm": "/images/optimized/products/whatsapp-image-2026-03-07-at-4-15-50-pm-sm.webp",
+      "full": "/images/optimized/products/whatsapp-image-2026-03-07-at-4-15-50-pm.webp"
+    },
+    "blurDataURL": "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAADwAwCdASoQABQAPzmIuVQvKSWjMAgB4CcJQAECAHse5LF+UmcvarpwAP7efnO60QdtghQXY2mBwxwtzm43Q7rPUhg6WFN5Ocol7wJL7KXQhPpJJ4yimL+DDhkAAA=="
+  },
+  "/images/products/WhatsApp Image 2026-03-07 at 4.15.51 PM (1).jpeg": {
+    "optimized": {
+      "sm": "/images/optimized/products/whatsapp-image-2026-03-07-at-4-15-51-pm-1-sm.webp",
+      "full": "/images/optimized/products/whatsapp-image-2026-03-07-at-4-15-51-pm-1.webp"
+    },
+    "blurDataURL": "data:image/webp;base64,UklGRooAAABXRUJQVlA4IH4AAAAwBACdASoQABQAPzmGulQvKSWjMAgB4CcJZwC7AYww32maEobiOdz5E7gA/t5WjWgxELmD/Y1fObUJjT8gUOoDZ9nAEhQCjcQcFOY0dgHU4/2SKKDk4yH/n5nP3Aoo91WoSzuVZq+fZon88D68ta8Uk/7cFYAblfqgXP4AAAA="
+  },
+  "/images/products/WhatsApp Image 2026-03-07 at 4.15.51 PM (2).jpeg": {
+    "optimized": {
+      "sm": "/images/optimized/products/whatsapp-image-2026-03-07-at-4-15-51-pm-2-sm.webp",
+      "full": "/images/optimized/products/whatsapp-image-2026-03-07-at-4-15-51-pm-2.webp"
+    },
+    "blurDataURL": "data:image/webp;base64,UklGRlwAAABXRUJQVlA4IFAAAAAwAwCdASoQABQAPzmGulQvKSWjMAgB4CcJQBOgBDhgfPJQAP7egEXA30K+LNJAGG0ktNZ6i8vKhJ5dJP+K4MCkZ8iOYeKIxCjeR4b9TwAAAA=="
+  },
+  "/images/products/WhatsApp Image 2026-03-07 at 4.15.51 PM (3).jpeg": {
+    "optimized": {
+      "sm": "/images/optimized/products/whatsapp-image-2026-03-07-at-4-15-51-pm-3-sm.webp",
+      "full": "/images/optimized/products/whatsapp-image-2026-03-07-at-4-15-51-pm-3.webp"
+    },
+    "blurDataURL": "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAACwAwCdASoQABQAPzmEuVOvKKWisAgB4CcJYwCdMoADJ8PtU9x+AAD8i4IYbdHxUj4A3YGgm4eLFqamVeyWPj56yzNl99vWC6LxGxicIDMOz7C5PGdV8wGCSm6/sSv4J1BZKwAA"
+  },
+  "/images/products/WhatsApp Image 2026-03-07 at 4.15.51 PM.jpeg": {
+    "optimized": {
+      "sm": "/images/optimized/products/whatsapp-image-2026-03-07-at-4-15-51-pm-sm.webp",
+      "full": "/images/optimized/products/whatsapp-image-2026-03-07-at-4-15-51-pm.webp"
+    },
+    "blurDataURL": "data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAAAQBACdASoQABQAPzmEuVOvKKWisAgB4CcJagC7MoADTOE1M/8fa3QrAAD+3nTWm9uQG/sa6ZFOu0XeU3kiuj99SmQcfPG+LZcYCX2YXm9KIX2rQcS1lYWAAAA="
   },
   "/images/WhatsApp Image 2026-03-06 at 4.03.34 PM.jpeg": {
     "optimized": {

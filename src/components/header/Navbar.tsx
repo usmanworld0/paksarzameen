@@ -1,23 +1,121 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { navLinks } from "@/config/site";
 
+/* ── About PSZ mega-dropdown data ────────────────────── */
+const ABOUT_PANELS = [
+  {
+    slug: "story",
+    icon: "🏛️",
+    title: "Our Story",
+    desc: "Guinness World Record–holding NGO, founded in 2021 with 436 trees in Bahawalpur — one per student in the Child Protection Bureau dormitories.",
+    href: "/about",
+  },
+  {
+    slug: "mission",
+    icon: "🎯",
+    title: "Mission",
+    desc: "Alleviate poverty by empowering marginalized communities through digital markets, entrepreneurial capacity building, and character-centred education.",
+    href: "/about#mission",
+  },
+  {
+    slug: "vision",
+    icon: "🌟",
+    title: "Vision",
+    desc: "A compassionate society where impoverished communities achieve dignity and prosperity through ethical enterprise and responsible generations.",
+    href: "/about#vision",
+  },
+  {
+    slug: "objective",
+    icon: "📌",
+    title: "Objective",
+    desc: "Create sustainable opportunities for livelihood, education, and social development through ethical entrepreneurship and dignified community welfare.",
+    href: "/about#objective",
+  },
+];
+
+/* ── Impact mega-dropdown data ─────────────────────────── */
+const IMPACT_CATS = [
+  {
+    slug: "environmental",
+    icon: "🌿",
+    title: "Environmental Impact",
+    items: [
+      "GWR",
+      "Miawuaki Forest",
+      "South Punjab Green Book Initiative",
+      "LCOY",
+      "COP in My City",
+      "Data Assessment & Research",
+    ],
+  },
+  {
+    slug: "animal",
+    icon: "🐾",
+    title: "Animal Welfare Impact",
+    items: [
+      "Cat Feeding Points",
+      "Stray Dog Collar Project",
+      "Data Assessment & Research",
+    ],
+  },
+  {
+    slug: "education",
+    icon: "📚",
+    title: "Educational Empowerment Impact",
+    items: [
+      "Pakistan's Only Transgender School",
+      "Pakistan's First Blind Parliamentary Debating Team",
+      "Career Counselling & University Applications",
+      "Enrollment Rate & Data Assessment",
+    ],
+  },
+  {
+    slug: "health",
+    icon: "❤️",
+    title: "Community Health Impact",
+    items: [
+      "24/7 Availability of Blood",
+      "Monthly Free Medical/Blood Camps",
+      "Data Assessment & Research",
+    ],
+  },
+];
+
+const STORIES_OF_HOPE = [
+  {
+    name: "Zain Hashim",
+    role: "Pakistan's First Blind Anchor",
+    image: "/images/members/1.png",
+  },
+  {
+    name: "Sahiba Jehan",
+    role: "Pakistan's First Transgender Police Officer",
+    image: "/images/members/2.png",
+  },
+];
+/* ────────────────────────────────────────────────────── */
+
+type Panel = "about" | "impact" | null;
+const DROPDOWN_LABELS: Record<string, Panel> = { "About PSZ": "about", "Impact": "impact" };
+
 export function Navbar() {
-  const [hidden, setHidden]   = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [hidden, setHidden]           = useState(false);
+  const [scrolled, setScrolled]       = useState(false);
+  const [menuOpen, setMenuOpen]       = useState(false);
+  const [activePanel, setActivePanel] = useState<Panel>(null);
   const lastY = useRef(0);
-  
 
   useEffect(() => {
     const handleScroll = () => {
       const y = window.scrollY;
       setScrolled(y > 40);
-      // Hide on scroll-down, reveal on scroll-up
       if (y > lastY.current && y > 80) {
         setHidden(true);
+        setActivePanel(null);
       } else {
         setHidden(false);
       }
@@ -29,11 +127,10 @@ export function Navbar() {
 
   return (
     <>
-      <header className={`psz-header ${
-        scrolled ? "scrolled" : ""
-      } ${
-        hidden ? "nav-hidden" : ""
-      }`}>
+      <header
+        className={`psz-header ${scrolled ? "scrolled" : ""} ${hidden ? "nav-hidden" : ""}`}
+        onMouseLeave={() => setActivePanel(null)}
+      >
         <div className="blur-bg" />
         <nav>
           <Link href="/" className="nav-logo">
@@ -41,14 +138,47 @@ export function Navbar() {
           </Link>
 
           <div className="nav-links">
-            {navLinks.slice(0, 7).map((link) => (
-              <Link key={link.label} href={link.href}>
-                {link.label}
-              </Link>
-            ))}
+            {navLinks.slice(0, 6).map((link) => {
+              const panel = DROPDOWN_LABELS[link.label];
+              if (panel) {
+                const isOpen = activePanel === panel;
+                return (
+                  <div
+                    key={link.label}
+                    className="nav-dropdown-wrapper"
+                    onMouseEnter={() => setActivePanel(panel)}
+                  >
+                    <Link
+                      href={link.href}
+                      className={`nav-dropdown-trigger${isOpen ? " active" : ""}`}
+                    >
+                      {link.label}
+                      <svg
+                        className={`nav-chevron${isOpen ? " open" : ""}`}
+                        width="10" height="6" viewBox="0 0 10 6"
+                        fill="currentColor" aria-hidden="true"
+                      >
+                        <path d="M0 0l5 6 5-6z" />
+                      </svg>
+                    </Link>
+                  </div>
+                );
+              }
+              return (
+                <Link key={link.label} href={link.href}>
+                  {link.label}
+                </Link>
+              );
+            })}
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: "1.6rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "1.2rem" }}>
+            <Link href="/commonwealth-lab" className="nav-commonwealth-btn">
+              Commonwealth Lab
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M2 2h10v4m0-4L2 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </Link>
             <button
               type="button"
               className={`nav-toggle ${menuOpen ? "open" : ""}`}
@@ -60,6 +190,115 @@ export function Navbar() {
             </button>
           </div>
         </nav>
+
+        {/* ══ About PSZ Mega Dropdown ═══════════════════════ */}
+        <div
+          className={`nav-mega-panel${activePanel === "about" ? " open" : ""}`}
+          onMouseEnter={() => setActivePanel("about")}
+          aria-hidden={activePanel !== "about"}
+        >
+          <div className="mega-inner">
+            <div className="mega-left">
+              <span className="mega-eyebrow">Who We Are</span>
+              <h3 className="mega-heading">About PSZ</h3>
+              <p className="mega-tagline">
+                A Guinness World Record–holding NGO rooted in justice,
+                compassion, and community-first development across Pakistan.
+              </p>
+              <Link href="/about" className="mega-view-all">Read our full story →</Link>
+            </div>
+            <div className="mega-right">
+              <div className="mega-about-grid">
+                {ABOUT_PANELS.map((p) => (
+                  <Link href={p.href} key={p.slug} className="mega-about-card">
+                    <div className="mega-about-card-header">
+                      <span className="mega-cat-icon" aria-hidden="true">{p.icon}</span>
+                      <h4 className="mega-cat-title">{p.title}</h4>
+                    </div>
+                    <p className="mega-about-card-desc">{p.desc}</p>
+                    <span className="mega-about-card-cta">Learn more →</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ══ Impact Mega Dropdown ══════════════════════════ */}
+        <div
+          className={`nav-mega-panel${activePanel === "impact" ? " open" : ""}`}
+          onMouseEnter={() => setActivePanel("impact")}
+          aria-hidden={activePanel !== "impact"}
+        >
+          <div className="mega-inner">
+
+            {/* ── Left: intro ── */}
+            <div className="mega-left">
+              <span className="mega-eyebrow">Explore</span>
+              <h3 className="mega-heading">Impact</h3>
+              <p className="mega-tagline">
+                Measuring the real change we create across Pakistan&apos;s
+                communities — environmental, social, and human.
+              </p>
+              <Link href="/impact" className="mega-view-all">
+                View all impact →
+              </Link>
+            </div>
+
+            {/* ── Right: categories + stories ── */}
+            <div className="mega-right">
+
+              {/* 4 category columns */}
+              <div className="mega-cats-grid">
+                {IMPACT_CATS.map((cat) => (
+                  <div key={cat.slug} className="mega-cat">
+                    <div className="mega-cat-header">
+                      <span className="mega-cat-icon" aria-hidden="true">{cat.icon}</span>
+                      <h4 className="mega-cat-title">{cat.title}</h4>
+                    </div>
+                    <ul className="mega-cat-list">
+                      {cat.items.map((item) => (
+                        <li key={item}>
+                          <Link href="/impact">{item}</Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+
+              {/* Stories of Hope */}
+              <div className="mega-stories-row">
+                <div className="mega-stories-header">
+                  <span className="mega-cat-icon" aria-hidden="true">✨</span>
+                  <h4 className="mega-cat-title">Stories of Hope</h4>
+                </div>
+                <div className="mega-story-cards">
+                  {STORIES_OF_HOPE.map((s) => (
+                    <Link href="/impact" key={s.name} className="mega-story-card">
+                      <div className="mega-story-img-wrap">
+                        <Image
+                          src={s.image}
+                          alt={s.name}
+                          width={56}
+                          height={56}
+                          className="mega-story-img"
+                        />
+                      </div>
+                      <div className="mega-story-info">
+                        <strong>{s.name}</strong>
+                        <span>{s.role}</span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        {/* ════════════════════════════════════════════════ */}
+
       </header>
 
       {/* Mobile menu */}

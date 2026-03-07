@@ -4,6 +4,7 @@ import { useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { TextReveal } from "@/components/ui/motion-primitives";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
@@ -193,17 +194,25 @@ export function HomeClient() {
     const ctx = gsap.context(() => {
 
       /* ─── Helper: after GSAP creates a pin-spacer, copy the
-             section's z-index onto the spacer so stacking works ─── */
+             section's z-index AND background onto the spacer so
+             (a) stacking works and (b) the post-pin "dead zone"
+             shows the section colour instead of the raw body bg ─── */
       function propagateZIndex(st: ScrollTrigger) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const spacer = (st as any).spacer as HTMLElement | undefined;
         const trigger = st.trigger as HTMLElement | undefined;
         if (spacer && trigger) {
           const section = trigger.closest("[data-scroll-section]") || trigger;
-          const z = window.getComputedStyle(section).zIndex;
+          const computed = window.getComputedStyle(section as HTMLElement);
+          const z = computed.zIndex;
           if (z && z !== "auto") {
             spacer.style.zIndex = z;
             (trigger as HTMLElement).style.zIndex = z;
+          }
+          // Copy background-color so the spacer never shows the raw page bg
+          const bg = computed.backgroundColor;
+          if (bg && bg !== "rgba(0, 0, 0, 0)" && bg !== "transparent") {
+            spacer.style.backgroundColor = bg;
           }
         }
       }
@@ -235,12 +244,39 @@ export function HomeClient() {
         window.addEventListener("wheel",     onFirstScroll, { once: true, passive: true });
         window.addEventListener("touchmove", onFirstScroll, { once: true, passive: true });
 
-        // Pin the hero section so it stays on screen while scrolling
+        // Pin the hero section — pinSpacing:false so the next section
+        // physically slides OVER the hero as you scroll (Ochi overlap effect)
         ScrollTrigger.create({
           trigger: ".hero-section",
           start: "top top",
           end: "bottom top",
           pin: true,
+          pinSpacing: false,
+        });
+
+        // Hero content drifts up + fades as the next section covers it
+        gsap.to(".hero-content", {
+          y: -70,
+          opacity: 0.2,
+          ease: "none",
+          scrollTrigger: {
+            trigger: ".hero-section",
+            start: "top top",
+            end: "bottom top",
+            scrub: 0.5,
+          },
+        });
+
+        // Hero video subtly scales up as it's being covered — adds depth
+        gsap.to(".hero-section video", {
+          scale: 1.06,
+          ease: "none",
+          scrollTrigger: {
+            trigger: ".hero-section",
+            start: "top top",
+            end: "bottom top",
+            scrub: 0.8,
+          },
         });
       }
 
@@ -263,6 +299,58 @@ export function HomeClient() {
       /* Force ScrollTrigger to recalculate positions after pinned sections are set up */
       requestAnimationFrame(() => {
         ScrollTrigger.refresh();
+      });
+
+      /* ─── Ochi-style per-section parallax speed variation ─── */
+      /* Non-pinned sections get varying y-translations based on scroll,
+         creating a breathing depth effect like Ochi Design */
+      const parallaxSections: { selector: string; speed: number }[] = [
+        { selector: ".split-section", speed: -0.15 },
+        { selector: ".approach-section", speed: 0.08 },
+        { selector: ".showcase-section", speed: -0.1 },
+        { selector: ".highlight-section", speed: 0.12 },
+        { selector: ".testimonials-section", speed: -0.08 },
+        { selector: ".chapters-section", speed: 0.06 },
+        { selector: ".impact-text-section", speed: -0.05 },
+      ];
+
+      parallaxSections.forEach(({ selector, speed }) => {
+        const els = document.querySelectorAll(selector);
+        els.forEach((el) => {
+          gsap.to(el, {
+            y: () => speed * 120,
+            ease: "none",
+            scrollTrigger: {
+              trigger: el,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: 0.6,
+            },
+          });
+        });
+      });
+
+      /* ─── Ochi-style section entrance reveals ─── */
+      /* Sections reveal with a clip-path + scale transition as they enter viewport */
+      document.querySelectorAll(".ochi-section-reveal").forEach((el) => {
+        gsap.fromTo(
+          el,
+          {
+            clipPath: "inset(8% 4% 8% 4% round 20px)",
+            scale: 0.96,
+          },
+          {
+            clipPath: "inset(0% 0% 0% 0% round 0px)",
+            scale: 1,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: el,
+              start: "top 85%",
+              end: "top 25%",
+              scrub: 0.4,
+            },
+          }
+        );
       });
 
       /* ─── Scroll text blocks parallax ─── */
@@ -294,7 +382,7 @@ export function HomeClient() {
         },
       });
 
-      /* ─── Scroll-reveal: headings + paragraphs in text sections ─── */
+      /* ─── Scroll-reveal: Ochi-style cubic-bezier clip-path reveals ─── */
       document.querySelectorAll(".scroll-reveal").forEach((el) => {
         const delay = parseFloat((el as HTMLElement).dataset.delay || "0");
         gsap.fromTo(
@@ -304,9 +392,9 @@ export function HomeClient() {
             opacity: 1,
             y: 0,
             clipPath: "inset(0 0 0% 0)",
-            duration: 0.9,
+            duration: 1.1,
             delay,
-            ease: "power4.out",
+            ease: "expo.out",
             scrollTrigger: {
               trigger: el,
               start: "top 88%",
@@ -316,7 +404,27 @@ export function HomeClient() {
         );
       });
 
-      /* ─── Fade-in sections ─── */
+      /* ─── Ochi-style highlight text word reveal ─── */
+      document.querySelectorAll(".highlight-section p span").forEach((span, i) => {
+        gsap.fromTo(
+          span,
+          { opacity: 0.3, y: 8 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            delay: i * 0.12,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: span,
+              start: "top 90%",
+              toggleActions: "play none none none",
+            },
+          }
+        );
+      });
+
+      /* ─── Fade-in sections with Ochi easing ─── */
       document.querySelectorAll(".fade-in-section").forEach((el) => {
         gsap.fromTo(
           el,
@@ -325,6 +433,7 @@ export function HomeClient() {
             opacity: 1,
             y: 0,
             duration: 1,
+            ease: "power3.out",
             scrollTrigger: {
               trigger: el,
               start: "top 85%",
@@ -385,7 +494,7 @@ export function HomeClient() {
       scrollTrigger: {
         trigger: ".programs-stack-section",
         start: "top top",
-        end: `+=${cards.length * 80}%`,
+        end: `+=${cards.length * 50}%`,
         pin: true,
         scrub: 0.35,
         anticipatePin: 1,
@@ -461,7 +570,7 @@ export function HomeClient() {
       scrollTrigger: {
         trigger: ".heart-section",
         start: "top top",
-        end: `+=${total * 55}%`,
+        end: `+=${total * 35}%`,
         pin: true,
         scrub: 0.35,
         anticipatePin: 1,
@@ -542,7 +651,7 @@ export function HomeClient() {
       scrollTrigger: {
         trigger: ".canvas-section",
         start: "top top",
-        end: "350% top",
+        end: "200% top",
         scrub: 0.15,
         pin: true,
       },
@@ -572,26 +681,36 @@ export function HomeClient() {
       scrollTrigger: {
         trigger: selector,
         start: "top top",
-        end: "70% top",
-        scrub: true,
+        end: "80% top",
+        scrub: 0.5,
         pin: true,
+        // pinSpacing: false keeps the spacer = section's own height only.
+        // The next section therefore starts right after the section content,
+        // so it slides OVER the still-visible pinned section (Ochi card effect)
+        // rather than sliding over an empty dark-background dead zone.
+        pinSpacing: false,
       },
     });
-    
-    // Animate text away
-    tl.to(`${selector} .section-text`, { 
+
+    // ── Hold: text visible for the first 35% of the scroll journey
+    tl.to({}, { duration: 0.25 });
+
+    // ── Then smoothly fade text away in the remaining 40%
+    tl.to(`${selector} .section-text`, {
       opacity: 0,
-      y: -50
+      y: -50,
+      ease: "power3.inOut",
+      duration: 0.4,
     });
-    
-    // Animate media effect (video or image) — exclude elements with .no-filter
+
+    // ── Media blurs out simultaneously
     tl.to(
       `${selector} video, ${selector} img:not(.no-filter)`,
       {
         filter: "blur(4px) grayscale(60%)",
         scale: 1.02,
         x: "-1%",
-        duration: 1,
+        duration: 0.4,
         ease: "power2.out",
       },
       "<"
@@ -607,9 +726,12 @@ export function HomeClient() {
         const LenisModule = await import("lenis");
         const Lenis = LenisModule.default;
         lenis = new Lenis({
-          duration: 0.85,
+          duration: 1.2,
           easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
           smoothWheel: true,
+          lerp: 0.08,
+          wheelMultiplier: 0.9,
+          touchMultiplier: 1.5,
         });
         lenis.on("scroll", ScrollTrigger.update);
         gsap.ticker.add((time: number) => lenis.raf(time * 1000));
@@ -718,12 +840,25 @@ export function HomeClient() {
         </div>
       </section>
        {/* ════════════════════════════════════════════════ */}
+      {/* OCHI-STYLE MARQUEE BANNER                        */}
+      {/* ════════════════════════════════════════════════ */}
+      <section className="ochi-marquee-section" aria-hidden="true">
+        <div className="ochi-marquee-track">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <span key={i} className="ochi-marquee-word">
+              PakSarZameen &mdash; Nurturing Character &mdash; Building Community Wealth &mdash;&nbsp;
+            </span>
+          ))}
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════════════ */}
       {/* SPLIT — Our Story                               */}
       {/* ════════════════════════════════════════════════ */}
-      <section className="split-section" data-scroll-section="story">
+      <section className="split-section ochi-section-reveal" data-scroll-section="story">
         <div className="split-inner">
           <div className="split-left">
-            <h2>Building Community Wealth.</h2>
+            <TextReveal text="Building Community Wealth." as="h2" staggerDelay={0.035} className="split-left-heading" />
           </div>
           <div className="split-right">
             <p>
@@ -752,7 +887,7 @@ export function HomeClient() {
  {/* ════════════════════════════════════════════════ */}
       {/* OUR APPROACH                                    */}
       {/* ════════════════════════════════════════════════ */}
-      <section className="approach-section" data-scroll-section="approach">
+      <section className="approach-section ochi-section-reveal" data-scroll-section="approach">
         {/* Background image grid — optimized with next/image */}
         <div className="approach-bg-grid" aria-hidden="true">
           <div className="approach-bg-item">
@@ -846,7 +981,7 @@ export function HomeClient() {
       {/* ════════════════════════════════════════════════ */}
       {/* MISSION PILLARS — Stats & CTA                   */}
       {/* ════════════════════════════════════════════════ */}
-      <section className="showcase-section" data-scroll-section="pillars">
+      <section className="showcase-section ochi-section-reveal" data-scroll-section="pillars">
         <div className="logo-container">
             <h2
             style={{
@@ -920,11 +1055,24 @@ export function HomeClient() {
         </div>
       </section>
 
-      
+       {/* ════════════════════════════════════════════════ */}
+      {/* OCHI-STYLE MARQUEE BANNER 2                      */}
+      {/* ════════════════════════════════════════════════ */}
+      <section className="ochi-marquee-section ochi-marquee-reverse" aria-hidden="true">
+        <div className="ochi-marquee-track">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <span key={i} className="ochi-marquee-word">
+              Impact &mdash; Education &mdash; Healthcare &mdash; Enterprise &mdash; Compassion &mdash;&nbsp;
+            </span>
+          ))}
+        </div>
+      </section>
+
+     
       {/* ════════════════════════════════════════════════ */}
       {/* HIGHLIGHT QUOTE                                 */}
       {/* ════════════════════════════════════════════════ */}
-      <section className="highlight-section" data-scroll-section="highlight">
+      <section className="highlight-section ochi-section-reveal" data-scroll-section="highlight">
         <p>
           Since our inception, PakSarZameen has{" "}
           <span>reached over 50,000 individuals</span> across Pakistan. From
@@ -1127,6 +1275,17 @@ export function HomeClient() {
       <div className="dark-bottom" data-scroll-section="impact">
         {/* ── Our Chapters ── */}
         <section className="chapters-section">
+          {/* Diagonal flowing city names backdrop */}
+          <div className="chapters-diag-bg" aria-hidden="true">
+            {[0, 1, 2, 3, 4].map((col) => (
+              <div key={col} className="chapters-diag-col">
+                {Array.from({ length: 30 }).map((_, i) => (
+                  <span key={i}>PakSarZameen &bull; Bahawalpur &bull; Islamabad &bull; Hyderabad &bull; Multan &bull; Lahore</span>
+                ))}
+              </div>
+            ))}
+          </div>
+
           {/* Background orbs */}
           <div className="chapters-orb chapters-orb-1" />
           <div className="chapters-orb chapters-orb-2" />

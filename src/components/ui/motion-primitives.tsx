@@ -273,3 +273,49 @@ export function SectionHeader({
     </Reveal>
   );
 }
+
+/* ─── Ochi-Style Character Reveal ─── */
+/* Characters reveal one-by-one from below with staggered timing,
+   inspired by Ochi Design's Featured.js component */
+type TextRevealProps = {
+  text: string;
+  className?: string;
+  as?: "h1" | "h2" | "h3" | "h4" | "p" | "span";
+  staggerDelay?: number;
+  once?: boolean;
+};
+
+export function TextReveal({
+  text,
+  className,
+  as: Tag = "h2",
+  staggerDelay = 0.04,
+  once = true,
+}: TextRevealProps) {
+  const ref = useRef<HTMLElement>(null);
+  const isInView = useInView(ref, { once, margin: "-60px" });
+
+  return (
+    <Tag
+      ref={ref as React.RefObject<HTMLHeadingElement>}
+      className={cn("overflow-hidden", className)}
+      style={{ display: "flex", flexWrap: "wrap" }}
+    >
+      {text.split("").map((char, i) => (
+        <motion.span
+          key={i}
+          initial={{ y: "110%", opacity: 0 }}
+          animate={isInView ? { y: "0%", opacity: 1 } : {}}
+          transition={{
+            ease: [0.22, 1, 0.36, 1],
+            duration: 0.6,
+            delay: i * staggerDelay,
+          }}
+          style={{ display: "inline-block", whiteSpace: char === " " ? "pre" : "normal" }}
+        >
+          {char}
+        </motion.span>
+      ))}
+    </Tag>
+  );
+}

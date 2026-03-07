@@ -118,36 +118,36 @@ export default function CommonwealthLabPage() {
       </section>
 
       {/* CTA */}
-      <section className="bg-neutral-950 py-32">
+      <section className="bg-white py-32 border-t border-neutral-100">
         <div className="mx-auto max-w-3xl px-6 text-center">
           <div className="mb-8 flex items-center justify-center gap-4">
-            <span className="h-px w-12 bg-white/20" />
-            <p className="text-[10px] font-semibold uppercase tracking-[0.4em] text-white/40">
+            <span className="h-px w-12 bg-neutral-200" />
+            <p className="text-[10px] font-semibold uppercase tracking-[0.4em] text-neutral-400">
               Commonwealth Lab
             </p>
-            <span className="h-px w-12 bg-white/20" />
+            <span className="h-px w-12 bg-neutral-200" />
           </div>
           <h2
-            className="text-3xl font-light tracking-tight text-white sm:text-5xl"
+            className="text-3xl font-light tracking-tight text-neutral-900 sm:text-5xl"
             style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
           >
             Every Purchase Makes an Impact
           </h2>
-          <div className="mx-auto my-8 h-px w-16 bg-white/15" />
-          <p className="text-sm font-light leading-relaxed tracking-wide text-white/50">
+          <div className="mx-auto my-8 h-px w-16 bg-neutral-200" />
+          <p className="text-sm font-light leading-relaxed tracking-wide text-neutral-500">
             When you shop at Commonwealth Lab, 100&nbsp;% of profits go directly
             to artisan communities and PakSarZameen social programmes.
           </p>
           <div className="mt-12 flex flex-wrap items-center justify-center gap-5">
             <Link
               href="/commonwealth-lab/products"
-              className="border border-white/70 px-10 py-3.5 text-[10px] font-semibold uppercase tracking-[0.25em] text-white transition-all duration-300 hover:bg-white hover:text-neutral-900"
+              className="border border-neutral-900 px-10 py-3.5 text-[10px] font-semibold uppercase tracking-[0.25em] text-neutral-900 transition-all duration-300 hover:bg-neutral-900 hover:text-white"
             >
               Explore Collection
             </Link>
             <Link
               href="/"
-              className="px-10 py-3.5 text-[10px] font-semibold uppercase tracking-[0.25em] text-white/40 transition-colors duration-300 hover:text-white"
+              className="px-10 py-3.5 text-[10px] font-semibold uppercase tracking-[0.25em] text-neutral-400 transition-colors duration-300 hover:text-neutral-900"
             >
               Learn About PSZ →
             </Link>

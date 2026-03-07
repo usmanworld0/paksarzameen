@@ -32,9 +32,9 @@ export function Footer() {
         <div className="footer-col">
           <h4>Contact</h4>
           <ul>
-            <li><span style={{ color: "var(--light-white)", fontSize: "var(--fs-vvs)" }}>info@psz.org</span></li>
-            <li><span style={{ color: "var(--light-white)", fontSize: "var(--fs-vvs)" }}>+92 300 0000000</span></li>
-            <li><span style={{ color: "var(--light-white)", fontSize: "var(--fs-vvs)" }}>Lahore, Pakistan</span></li>
+            <li><span style={{ color: "rgba(255,255,255,0.55)", fontSize: "var(--fs-vs)" }}>info@psz.org</span></li>
+            <li><span style={{ color: "rgba(255,255,255,0.55)", fontSize: "var(--fs-vs)" }}>+92 300 0000000</span></li>
+            <li><span style={{ color: "rgba(255,255,255,0.55)", fontSize: "var(--fs-vs)" }}>Lahore, Pakistan</span></li>
           </ul>
         </div>
       </div>

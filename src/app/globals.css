@@ -1725,13 +1725,12 @@ video {
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
-  /* darken with overlay via pseudo-element */
   overflow: hidden;
   min-height: 50vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding-block: 3.5rem;
+  padding-block: 5rem;
 }
 
 .psz-footer::before {
@@ -1750,14 +1749,16 @@ video {
   z-index: 1;
   display: grid;
   grid-template-columns: 2fr 1fr 1fr;
-  gap: 4rem;
+  gap: 5rem;
+  width: 100%;
+  padding-inline: 5%;
 }
 
 .psz-footer .footer-brand h3 {
-  font-size: var(--fs-m);
+  font-size: var(--fs-l);
   font-weight: 700;
   color: var(--white);
-  margin-bottom: 1rem;
+  margin-bottom: 1.2rem;
 }
 
 .psz-footer .footer-brand h3 .green {
@@ -1765,19 +1766,19 @@ video {
 }
 
 .psz-footer .footer-brand p {
-  font-size: var(--fs-vvs);
+  font-size: var(--fs-vs);
   color: var(--light-white);
-  line-height: 1.7;
-  max-width: 35ch;
+  line-height: 1.8;
+  max-width: 38ch;
 }
 
 .psz-footer .footer-col h4 {
-  font-size: var(--fs-vvs);
+  font-size: var(--fs-vs);
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.15em;
-  color: var(--light-white);
-  margin-bottom: 1.5rem;
+  letter-spacing: 0.18em;
+  color: var(--white);
+  margin-bottom: 1.8rem;
 }
 
 .psz-footer .footer-col ul {
@@ -1785,12 +1786,12 @@ video {
 }
 
 .psz-footer .footer-col li {
-  margin-bottom: 0.8rem;
+  margin-bottom: 1rem;
 }
 
 .psz-footer .footer-col a {
-  font-size: var(--fs-vvs);
-  color: var(--light-white);
+  font-size: var(--fs-vs);
+  color: rgba(255,255,255,0.55);
   transition: color 0.2s;
 }
 
@@ -1800,17 +1801,18 @@ video {
 
 .psz-footer .footer-bottom {
   max-width: 1200px;
-  margin: 4rem auto 0;
-  padding-top: 2rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  margin: 4.5rem auto 0;
+  padding-top: 2.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 .psz-footer .footer-bottom p {
-  font-size: var(--fs-vvs);
-  color: var(--light-white);
+  font-size: var(--fs-vs);
+  color: rgba(255,255,255,0.45);
+  letter-spacing: 0.02em;
 }
 
 @media (max-width: 720px) {

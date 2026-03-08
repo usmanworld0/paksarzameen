@@ -73,6 +73,22 @@ export function HomeClient() {
     const intro = introRef.current;
     if (!intro) return;
 
+    // Skip intro on repeat visits within the same session
+    try {
+      if (sessionStorage.getItem("psz-intro-seen")) {
+        intro.style.display = "none";
+        document.body.style.overflow = "";
+        // Reveal hero text immediately
+        gsap.set(".hero-label", { opacity: 1, y: 0 });
+        gsap.set(".hero-title", { opacity: 1, y: 0 });
+        gsap.set(".hero-desc", { opacity: 1, y: 0 });
+        return;
+      }
+      sessionStorage.setItem("psz-intro-seen", "1");
+    } catch {
+      /* sessionStorage unavailable — play intro normally */
+    }
+
     // Lock scroll during intro
     document.body.style.overflow = "hidden";
 
@@ -780,7 +796,7 @@ export function HomeClient() {
       {/* HERO — Full-screen video with dark overlay      */}
       {/* ════════════════════════════════════════════════ */}
       <section className="hero-section" data-scroll-section="hero">
-        <video ref={heroVideoRef} src={VIDEOS.hero} muted loop playsInline preload="metadata" controls={false} autoPlay={true} poster={VIDEO_POSTERS.hero} />
+        <video ref={heroVideoRef} src={VIDEOS.hero} muted loop playsInline preload="none" controls={false} autoPlay={true} poster={VIDEO_POSTERS.hero} />
         <div className="blur-overlay" aria-hidden="true" />
         <div className="hero-content">
           <p className="hero-label">Introducing</p>

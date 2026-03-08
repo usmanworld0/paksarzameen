@@ -74,6 +74,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Preconnect to external media domains for faster loading */}
+        <link rel="dns-prefetch" href="https://images.pexels.com" />
+        <link rel="dns-prefetch" href="https://videos.pexels.com" />
+        <link rel="dns-prefetch" href="https://images.unsplash.com" />
+        <link rel="preconnect" href="https://images.pexels.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://videos.pexels.com" crossOrigin="anonymous" />
         {/* Force light theme to avoid any theme toggling */}
         <script
           dangerouslySetInnerHTML={{

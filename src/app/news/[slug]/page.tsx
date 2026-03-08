@@ -6,6 +6,8 @@ import { siteConfig } from "@/config/site";
 import { getArticleBySlug } from "@/lib/services/getArticleBySlug";
 import { getArticles } from "@/lib/services/getArticles";
 
+export const revalidate = 3600;
+
 type ArticleDetailPageProps = {
   params: Promise<{ slug: string }>;
 };

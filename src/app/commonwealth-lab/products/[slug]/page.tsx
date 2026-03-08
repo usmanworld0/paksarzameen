@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { dummyProducts } from "@/data/products";
 import { ProductDetailClient } from "@/features/commonwealth-lab/components/ProductDetailClient";
 
+export const revalidate = 3600;
+
 interface PageProps {
   params: Promise<{ slug: string }>;
 }

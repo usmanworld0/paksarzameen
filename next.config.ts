@@ -2,6 +2,12 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  poweredByHeader: false,
+
+  /* ── Experimental performance optimisations ── */
+  experimental: {
+    scrollRestoration: true,
+  },
 
   /* ── Image optimisation ── */
   images: {

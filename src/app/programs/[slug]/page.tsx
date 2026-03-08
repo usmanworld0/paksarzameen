@@ -7,6 +7,8 @@ import { siteConfig } from "@/config/site";
 import { getProgramBySlug } from "@/lib/services/getProgramBySlug";
 import { getPrograms } from "@/lib/services/getPrograms";
 
+export const revalidate = 3600;
+
 type ProgramDetailPageProps = {
   params: Promise<{ slug: string }>;
 };

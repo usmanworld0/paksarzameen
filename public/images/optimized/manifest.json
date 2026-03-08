@@ -42,6 +42,16 @@
     },
     "blurDataURL": "data:image/webp;base64,UklGRloAAABXRUJQVlA4IE4AAACQAQCdASoQAAsABUB8JZACdABV2sAAzEbL5UEum+iWc8qulyRnFoCBG1XxV5Z+3/q6cN6tkWYux0jMf1A/TXx0UXfD1wuAhESGinegAAA="
   },
+  "/images/grid.jpeg": {
+    "optimized": {
+      "sm": "/images/optimized/grid-sm.webp",
+      "md": "/images/optimized/grid-md.webp",
+      "lg": "/images/optimized/grid-lg.webp",
+      "xl": "/images/optimized/grid-xl.webp",
+      "full": "/images/optimized/grid.webp"
+    },
+    "blurDataURL": "data:image/webp;base64,UklGRloAAABXRUJQVlA4IE4AAAAwAgCdASoQAAkABUB8JZQCw7EQWs7sX+vkAAD5T1WCk2nDUINXUesRv5QpfOtzBqZX5hs1C6Yj4vgbhf7/ZZ8EwAqaMRIqA+KOGsv0AAA="
+  },
   "/images/members/1.png": {
     "optimized": {
       "sm": "/images/optimized/members/1-sm.webp",
@@ -182,45 +192,65 @@
     },
     "blurDataURL": "data:image/webp;base64,UklGRpgAAABXRUJQVlA4WAoAAAAQAAAADwAAEwAAQUxQSE4AAAABcCTbtlmd2E7LtpNvzH9iVj8iJgCfShLPPK022iMEqv1ogr5DQLvSo/GQ7cH2WZ2+BZAMnILYCvdAUYnTzyDuEYR3qFg8TPF4mnjqbwJWUDggJAAAALACAJ0BKhAAFAA/OYa6VC8pJaMwCAHgJwlpAAB7IAD+73JAAA=="
   },
-  "/images/products/WhatsApp Image 2026-03-07 at 4.15.50 PM (1).jpeg": {
+  "/images/products/Commisioned_Art.jpeg": {
     "optimized": {
-      "sm": "/images/optimized/products/whatsapp-image-2026-03-07-at-4-15-50-pm-1-sm.webp",
-      "full": "/images/optimized/products/whatsapp-image-2026-03-07-at-4-15-50-pm-1.webp"
-    },
-    "blurDataURL": "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAADQAwCdASoQABQAPzmKu1SvKaYjMAgB4CcJQAB8dcy/dmz2c9r+jGIA/vcHsgDccp4MoWO7q/xEFmRjaf5aVBQ5qe/Fa4CFYul6XpJKH/p76imKyEv15ZYzNLvy+JZPvIAAAA=="
-  },
-  "/images/products/WhatsApp Image 2026-03-07 at 4.15.50 PM.jpeg": {
-    "optimized": {
-      "sm": "/images/optimized/products/whatsapp-image-2026-03-07-at-4-15-50-pm-sm.webp",
-      "full": "/images/optimized/products/whatsapp-image-2026-03-07-at-4-15-50-pm.webp"
-    },
-    "blurDataURL": "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAADwAwCdASoQABQAPzmIuVQvKSWjMAgB4CcJQAECAHse5LF+UmcvarpwAP7efnO60QdtghQXY2mBwxwtzm43Q7rPUhg6WFN5Ocol7wJL7KXQhPpJJ4yimL+DDhkAAA=="
-  },
-  "/images/products/WhatsApp Image 2026-03-07 at 4.15.51 PM (1).jpeg": {
-    "optimized": {
-      "sm": "/images/optimized/products/whatsapp-image-2026-03-07-at-4-15-51-pm-1-sm.webp",
-      "full": "/images/optimized/products/whatsapp-image-2026-03-07-at-4-15-51-pm-1.webp"
-    },
-    "blurDataURL": "data:image/webp;base64,UklGRooAAABXRUJQVlA4IH4AAAAwBACdASoQABQAPzmGulQvKSWjMAgB4CcJZwC7AYww32maEobiOdz5E7gA/t5WjWgxELmD/Y1fObUJjT8gUOoDZ9nAEhQCjcQcFOY0dgHU4/2SKKDk4yH/n5nP3Aoo91WoSzuVZq+fZon88D68ta8Uk/7cFYAblfqgXP4AAAA="
-  },
-  "/images/products/WhatsApp Image 2026-03-07 at 4.15.51 PM (2).jpeg": {
-    "optimized": {
-      "sm": "/images/optimized/products/whatsapp-image-2026-03-07-at-4-15-51-pm-2-sm.webp",
-      "full": "/images/optimized/products/whatsapp-image-2026-03-07-at-4-15-51-pm-2.webp"
-    },
-    "blurDataURL": "data:image/webp;base64,UklGRlwAAABXRUJQVlA4IFAAAAAwAwCdASoQABQAPzmGulQvKSWjMAgB4CcJQBOgBDhgfPJQAP7egEXA30K+LNJAGG0ktNZ6i8vKhJ5dJP+K4MCkZ8iOYeKIxCjeR4b9TwAAAA=="
-  },
-  "/images/products/WhatsApp Image 2026-03-07 at 4.15.51 PM (3).jpeg": {
-    "optimized": {
-      "sm": "/images/optimized/products/whatsapp-image-2026-03-07-at-4-15-51-pm-3-sm.webp",
-      "full": "/images/optimized/products/whatsapp-image-2026-03-07-at-4-15-51-pm-3.webp"
+      "sm": "/images/optimized/products/commisioned-art-sm.webp",
+      "full": "/images/optimized/products/commisioned-art.webp"
     },
     "blurDataURL": "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAACwAwCdASoQABQAPzmEuVOvKKWisAgB4CcJYwCdMoADJ8PtU9x+AAD8i4IYbdHxUj4A3YGgm4eLFqamVeyWPj56yzNl99vWC6LxGxicIDMOz7C5PGdV8wGCSm6/sSv4J1BZKwAA"
   },
-  "/images/products/WhatsApp Image 2026-03-07 at 4.15.51 PM.jpeg": {
+  "/images/products/Crockery.jpeg": {
     "optimized": {
-      "sm": "/images/optimized/products/whatsapp-image-2026-03-07-at-4-15-51-pm-sm.webp",
-      "full": "/images/optimized/products/whatsapp-image-2026-03-07-at-4-15-51-pm.webp"
+      "sm": "/images/optimized/products/crockery-sm.webp",
+      "full": "/images/optimized/products/crockery.webp"
+    },
+    "blurDataURL": "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAADwAwCdASoQABQAPzmIuVQvKSWjMAgB4CcJQAECAHse5LF+UmcvarpwAP7efnO60QdtghQXY2mBwxwtzm43Q7rPUhg6WFN5Ocol7wJL7KXQhPpJJ4yimL+DDhkAAA=="
+  },
+  "/images/products/Gemstones.png": {
+    "optimized": {
+      "sm": "/images/optimized/products/gemstones-sm.webp",
+      "md": "/images/optimized/products/gemstones-md.webp",
+      "lg": "/images/optimized/products/gemstones-lg.webp",
+      "xl": "/images/optimized/products/gemstones-xl.webp",
+      "full": "/images/optimized/products/gemstones.webp"
+    },
+    "blurDataURL": "data:image/webp;base64,UklGRn4AAABXRUJQVlA4IHIAAAAwBACdASoQABQAPzmIulQvKSWjMAgB4CcJZgC7IP8DAuE6HKasSgfp1BgA/tMQ/p/IZj8sg90X+ROrsfqPqa7XN8rIWcYi1cvTZmUWYXoJH2T7pMF3a3hW0p2MUPccoTi+WfVPjUTiDvLi7ws1VycxgAA="
+  },
+  "/images/products/Jewellery.png": {
+    "optimized": {
+      "sm": "/images/optimized/products/jewellery-sm.webp",
+      "md": "/images/optimized/products/jewellery-md.webp",
+      "lg": "/images/optimized/products/jewellery-lg.webp",
+      "xl": "/images/optimized/products/jewellery-xl.webp",
+      "full": "/images/optimized/products/jewellery.webp"
+    },
+    "blurDataURL": "data:image/webp;base64,UklGRoAAAABXRUJQVlA4IHQAAABQBACdASoQABQAPzmEuVOvKKWisAgB4CcJZQDImB6MeTwEfPU1j6Hba/AAAP6vmw2yTgyarkmThcF/MjfEzQYflWIYVixwn858zR3CzfzwDTz1WJ/LBuGaUkhw3NMlx1JPVWNtUr824XbJq4sKz0UYHRQAAA=="
+  },
+  "/images/products/Lamps.jpeg": {
+    "optimized": {
+      "sm": "/images/optimized/products/lamps-sm.webp",
+      "full": "/images/optimized/products/lamps.webp"
+    },
+    "blurDataURL": "data:image/webp;base64,UklGRlwAAABXRUJQVlA4IFAAAAAwAwCdASoQABQAPzmGulQvKSWjMAgB4CcJQBOgBDhgfPJQAP7egEXA30K+LNJAGG0ktNZ6i8vKhJ5dJP+K4MCkZ8iOYeKIxCjeR4b9TwAAAA=="
+  },
+  "/images/products/Leather.jpeg": {
+    "optimized": {
+      "sm": "/images/optimized/products/leather-sm.webp",
+      "full": "/images/optimized/products/leather.webp"
+    },
+    "blurDataURL": "data:image/webp;base64,UklGRooAAABXRUJQVlA4IH4AAAAwBACdASoQABQAPzmGulQvKSWjMAgB4CcJZwC7AYww32maEobiOdz5E7gA/t5WjWgxELmD/Y1fObUJjT8gUOoDZ9nAEhQCjcQcFOY0dgHU4/2SKKDk4yH/n5nP3Aoo91WoSzuVZq+fZon88D68ta8Uk/7cFYAblfqgXP4AAAA="
+  },
+  "/images/products/Musical_Instrunments.jpeg": {
+    "optimized": {
+      "sm": "/images/optimized/products/musical-instrunments-sm.webp",
+      "full": "/images/optimized/products/musical-instrunments.webp"
+    },
+    "blurDataURL": "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAADQAwCdASoQABQAPzmKu1SvKaYjMAgB4CcJQAB8dcy/dmz2c9r+jGIA/vcHsgDccp4MoWO7q/xEFmRjaf5aVBQ5qe/Fa4CFYul6XpJKH/p76imKyEv15ZYzNLvy+JZPvIAAAA=="
+  },
+  "/images/products/Textiles.jpeg": {
+    "optimized": {
+      "sm": "/images/optimized/products/textiles-sm.webp",
+      "full": "/images/optimized/products/textiles.webp"
     },
     "blurDataURL": "data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAAAQBACdASoQABQAPzmEuVOvKKWisAgB4CcJagC7MoADTOE1M/8fa3QrAAD+3nTWm9uQG/sa6ZFOu0XeU3kiuj99SmQcfPG+LZcYCX2YXm9KIX2rQcS1lYWAAAA="
   },

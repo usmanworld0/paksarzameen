@@ -12,14 +12,14 @@ const featured = dummyProducts.filter((p) => p.featured);
 
 // Map each category to a representative product image
 const PRODUCT_IMAGE_NAMES = [
-  "WhatsApp Image 2026-03-07 at 4.15.50 PM (1).jpeg",
-  "WhatsApp Image 2026-03-07 at 4.15.50 PM.jpeg",
-  "WhatsApp Image 2026-03-07 at 4.15.51 PM (1).jpeg",
-  "WhatsApp Image 2026-03-07 at 4.15.51 PM (2).jpeg",
-  "WhatsApp Image 2026-03-07 at 4.15.51 PM (3).jpeg",
-  "WhatsApp Image 2026-03-07 at 4.15.51 PM.jpeg",
-  "WhatsApp Image 2026-03-06 at 5.01.33 AM.jpeg",
-  "WhatsApp Image 2026-03-06 at 5.07.22 AM.jpeg",
+  "Commisioned_Art.jpeg",
+  "Crockery.jpeg",
+  "Gemstones.png",
+  "Jewellery.png",
+  "Lamps.jpeg",
+  "Leather.jpeg",
+  "Musical_Instrunments.jpeg",
+  "Textiles.jpeg",
 ] as const;
 
 const PRODUCT_IMAGES = PRODUCT_IMAGE_NAMES.map(

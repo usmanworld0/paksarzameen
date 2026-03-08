@@ -12,6 +12,10 @@ export interface Product {
   description: string;
   images: string[];
   featured: boolean;
+  ingredients?: string[];
+  application?: string;
+  details?: string;
+  heritage?: string;
 }
 
 export type ProductCategory =

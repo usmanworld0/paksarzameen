@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+/* eslint-disable react/no-unescaped-entities */
+
 export const metadata: Metadata = {
   title: "About",
   description:
@@ -48,7 +50,7 @@ export default function AboutPage() {
               <div className="content-block-number">01</div>
               <h3>Our Founding</h3>
               <p>
-                We began in 2021 with the planting of 436 trees at the Child Protection Bureau in Bahawalpur—one tree for each student residing in the Bureau's dormitories. This initiative marked the beginning of a broader mission to nurture both communities and the environment, embodying our commitment to meaningful, symbolic action grounded in compassion.
+                We began in 2021 with the planting of 436 trees at the Child Protection Bureau in Bahawalpur—one tree for each student residing in the Bureau&apos;s dormitories. This initiative marked the beginning of a broader mission to nurture both communities and the environment, embodying our commitment to meaningful, symbolic action grounded in compassion.
               </p>
             </div>
 

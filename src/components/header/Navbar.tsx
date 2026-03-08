@@ -105,6 +105,12 @@ const DROPDOWN_LABELS: Record<string, Panel> = { "Impact": "impact" };
 
 export function Navbar() {
   const pathname = usePathname();
+  
+  // Hide navbar on product detail pages
+  if (pathname.startsWith("/commonwealth-lab/products/")) {
+    return null;
+  }
+  
   const [hidden, setHidden]           = useState(false);
   const [scrolled, setScrolled]       = useState(false);
   const [menuOpen, setMenuOpen]       = useState(false);

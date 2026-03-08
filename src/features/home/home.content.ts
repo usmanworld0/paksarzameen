@@ -144,7 +144,7 @@ export const HEART_MEMBERS: readonly TeamMember[] = [
     name: "Malik Abdullah Amir",
     designation: "Chief Executive Officer",
     quote: "Real change happens when logistics meet compassion on the ground.",
-    image: "/images/optimized/members/1.webp",
+    image: "/images/optimized/members/6.webp",
   },
   {
     name: "Ahmad Malik",
@@ -156,7 +156,7 @@ export const HEART_MEMBERS: readonly TeamMember[] = [
     name: "M. Abdullah Jamal",
     designation: "Executive Managing Director",
     quote: "Healthcare is not a privilege — it is the right of every citizen.",
-    image: "/images/optimized/members/3.webp",
+    image: "/images/optimized/members/7.webp",
   },
   {
     name: "Hussain Khan Langah",
@@ -174,13 +174,13 @@ export const HEART_MEMBERS: readonly TeamMember[] = [
     name: "Hassan Fadul",
     designation: "Director",
     quote: "Every village we reach is a promise kept to the people of Pakistan.",
-    image: "/images/optimized/members/6.webp",
+    image: "/images/optimized/members/3.webp",
   },
   {
     name: "Tuba Fatima",
     designation: "Director",
     quote: "An educated Pakistan is an empowered Pakistan.",
-    image: "/images/optimized/members/7.webp",
+    image: "/images/optimized/members/8.webp",
   },
 ];
 

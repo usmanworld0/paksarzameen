@@ -80,28 +80,28 @@ export default function AboutPage() {
         <div className="pillars-container">
           {/* Mission */}
           <div id="mission" className="pillar-card mission-card fade-in-section">
-            <div className="pillar-icon">🎯</div>
+            <div className="pillar-icon"></div>
             <h3 className="pillar-title">Mission</h3>
             <p className="pillar-text">
-              To alleviate poverty by empowering socially and economically marginalized communities through access to digital markets and by harnessing entrepreneurial potential, capacity building, sustainable initiatives and nurturing character in the youth as the foundation of meaningful education.
+              Empower marginalized communities through ethical enterprise, digital market access, capacity building, and education rooted in character and dignity.
             </p>
           </div>
 
           {/* Vision */}
           <div id="vision" className="pillar-card vision-card fade-in-section">
-            <div className="pillar-icon">🌟</div>
+            <div className="pillar-icon"></div>
             <h3 className="pillar-title">Vision</h3>
             <p className="pillar-text">
-              A compassionate and just society where impoverished communities achieve dignity and prosperity through ethical enterprise, access to digital markets, sustainable resource use, and character-centered education that nurtures responsible and socially conscious generations.
+              A just society where every community achieves dignity and prosperity through ethical enterprise, sustainable development, and education that nurtures responsible, conscious generations.
             </p>
           </div>
 
           {/* Objective */}
           <div id="objective" className="pillar-card objective-card fade-in-section">
-            <div className="pillar-icon">📌</div>
+            <div className="pillar-icon"></div>
             <h3 className="pillar-title">Objective</h3>
             <p className="pillar-text">
-              To uplift socially and economically marginalized communities by creating sustainable opportunities for livelihood, education, and social development through ethical entrepreneurship, digital market access, capacity building, and community welfare initiatives that nurture dignity, compassion, and responsible citizenship.
+              Create sustainable pathways for livelihood, education, and social development through ethical entrepreneurship, community welfare initiatives, and programs that uphold dignity.
             </p>
           </div>
         </div>
@@ -113,24 +113,24 @@ export default function AboutPage() {
           <h2 className="values-title">Our Values</h2>
           <div className="values-grid">
             <div className="value-item">
-              <div className="value-icon">⚖️</div>
+              <div className="value-icon"></div>
               <h4>Justice</h4>
-              <p>Equitable treatment and ethical practices in all endeavors</p>
+              <p>Equitable treatment and ethical practices</p>
             </div>
             <div className="value-item">
-              <div className="value-icon">💚</div>
+              <div className="value-icon"></div>
               <h4>Compassion</h4>
-              <p>Empathy-driven action that honors human dignity</p>
+              <p>Empathy-driven action that honors dignity</p>
             </div>
             <div className="value-item">
-              <div className="value-icon">🤝</div>
+              <div className="value-icon"></div>
               <h4>Community</h4>
               <p>Collaborative development rooted in local wisdom</p>
             </div>
             <div className="value-item">
-              <div className="value-icon">🌱</div>
+              <div className="value-icon"></div>
               <h4>Sustainability</h4>
-              <p>Long-term impact that benefits future generations</p>
+              <p>Long-term impact for future generations</p>
             </div>
           </div>
         </div>

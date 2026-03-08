@@ -51,13 +51,13 @@ export function NewsHubClient({ articles }: NewsHubClientProps) {
 
   return (
     <section
-      className="mx-auto w-full max-w-7xl px-4 pb-20 sm:px-6 lg:px-8"
+      className="mx-auto w-full max-w-screen-xl px-[5%] pb-20"
       aria-labelledby="news-hub-controls-heading"
     >
       <h2 id="news-hub-controls-heading" className="sr-only">
         News filters and results
       </h2>
-      <header className="rounded-3xl glass-strong p-5 sm:p-6 mt-10">
+      <header className="rounded-2xl border border-neutral-200 bg-white p-5 sm:p-6 mt-10 shadow-sm">
         <label className="text-xs font-semibold uppercase tracking-[0.2em] text-psz-green" htmlFor="news-search">
           Search News
         </label>
@@ -67,7 +67,7 @@ export function NewsHubClient({ articles }: NewsHubClientProps) {
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder="Search updates, stories, and announcements"
-          className="mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none placeholder:text-psz-gray-600 focus:border-psz-green/40 transition-colors"
+          className="mt-2 w-full rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-900 outline-none placeholder:text-neutral-400 focus:border-psz-green/60 transition-colors"
         />
 
         <div className="mt-5 flex flex-wrap gap-2">
@@ -78,10 +78,10 @@ export function NewsHubClient({ articles }: NewsHubClientProps) {
                 key={category}
                 type="button"
                 onClick={() => setActiveCategory(category)}
-                className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition-all ${
+                className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition-all border ${
                   isActive
-                    ? "bg-psz-green text-white"
-                    : "border border-white/10 bg-white/5 text-psz-gray-300 hover:bg-white/10 hover:text-white"
+                    ? "bg-psz-green text-white border-psz-green"
+                    : "border-neutral-300 bg-white text-neutral-600 hover:bg-neutral-50 hover:border-neutral-400"
                 }`}
               >
                 {category}
@@ -100,29 +100,29 @@ export function NewsHubClient({ articles }: NewsHubClientProps) {
           return (
             <article
               key={article.id}
-              className="group overflow-hidden rounded-3xl glass transition-all hover:border-psz-green/20"
+              className="group overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm transition-all hover:shadow-md hover:border-psz-green/30"
             >
-              <div className="h-40 bg-gradient-to-br from-psz-green/15 via-psz-green/5 to-transparent p-5">
-                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-psz-green">
+              <div className="bg-neutral-50 p-6 border-b border-neutral-100">
+                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-psz-green/80">
                   {article.category}
                 </p>
-                <p className="mt-7 font-heading text-2xl font-semibold leading-tight text-white">
+                <p className="mt-4 font-heading text-xl font-semibold leading-tight text-neutral-900">
                   {article.title}
                 </p>
               </div>
-              <div className="space-y-4 p-5">
-                <p className="text-xs uppercase tracking-[0.2em] text-psz-gray-600">
+              <div className="space-y-4 p-6">
+                <p className="text-xs uppercase tracking-[0.2em] text-neutral-400">
                   {new Date(article.date).toLocaleDateString("en-GB", {
                     day: "2-digit",
                     month: "short",
                     year: "numeric",
                   })}
                 </p>
-                <p className="text-sm leading-relaxed text-psz-gray-400">
+                <p className="text-sm leading-relaxed text-neutral-500">
                   {article.excerpt}
                 </p>
 
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-psz-gray-600">
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-neutral-400">
                   <span>{relatedCount(article)} related in this category</span>
                   <a
                     href={`https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`}
@@ -156,7 +156,7 @@ export function NewsHubClient({ articles }: NewsHubClientProps) {
       </div>
 
       {filteredArticles.length === 0 ? (
-        <div className="mt-8 rounded-2xl border border-dashed border-white/10 glass px-5 py-8 text-center text-sm text-psz-gray-400">
+        <div className="mt-8 rounded-xl border border-dashed border-neutral-300 bg-neutral-50 px-5 py-10 text-center text-sm text-neutral-400">
           No articles found for this filter. Try another category or search term.
         </div>
       ) : null}

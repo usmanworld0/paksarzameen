@@ -110,7 +110,7 @@ export default async function ProgramDetailPage({ params }: ProgramDetailPagePro
     narrativeBySlug["mahkma-shajarkari"];
 
   return (
-    <article className="mx-auto w-full max-w-7xl px-4 py-32 sm:px-6 lg:px-8">
+    <article className="mx-auto w-full max-w-screen-xl px-[5%] py-32">
       <Link
         href="/programs"
         className="text-xs font-semibold uppercase tracking-[0.18em] text-psz-green hover:text-psz-green-light transition-colors"
@@ -118,42 +118,41 @@ export default async function ProgramDetailPage({ params }: ProgramDetailPagePro
         &larr; Back To Programs
       </Link>
 
-      <header className="mt-6 rounded-[2rem] glass-green p-8 sm:p-10 overflow-hidden relative">
-        <div className="absolute -right-20 -top-20 h-60 w-60 rounded-full bg-psz-green/10 blur-[80px]" />
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-psz-green relative">
+      <header className="mt-6 rounded-2xl border border-neutral-200 bg-white p-8 sm:p-10 shadow-sm">
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-psz-green">
           {program.category}
         </p>
-        <h1 className="mt-3 max-w-3xl font-heading text-5xl font-bold leading-tight tracking-tight gradient-text sm:text-6xl relative">
+        <h1 className="mt-3 max-w-3xl font-heading text-5xl font-bold leading-tight tracking-tight text-neutral-900 sm:text-6xl">
           {program.title}
         </h1>
-        <p className="mt-4 max-w-3xl text-base leading-relaxed text-psz-gray-400 sm:text-lg relative">
+        <p className="mt-4 max-w-3xl text-base leading-relaxed text-neutral-500 sm:text-lg">
           {program.description}
         </p>
       </header>
 
       <section className="mt-10 grid gap-6 lg:grid-cols-3">
-        <section className="rounded-3xl glass p-6 lg:col-span-1">
-          <h2 className="font-heading text-2xl font-semibold text-white">Overview</h2>
-          <p className="mt-3 text-sm leading-relaxed text-psz-gray-400">
+        <section className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm lg:col-span-1">
+          <h2 className="font-heading text-2xl font-semibold text-neutral-900">Overview</h2>
+          <p className="mt-3 text-sm leading-relaxed text-neutral-500">
             {program.fullContent}
           </p>
         </section>
 
-        <section className="rounded-3xl glass p-6 lg:col-span-2">
-          <h2 className="font-heading text-2xl font-semibold text-white">Problem Being Addressed</h2>
-          <p className="mt-3 text-sm leading-relaxed text-psz-gray-400 sm:text-base">
+        <section className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm lg:col-span-2">
+          <h2 className="font-heading text-2xl font-semibold text-neutral-900">Problem Being Addressed</h2>
+          <p className="mt-3 text-sm leading-relaxed text-neutral-500 sm:text-base">
             {narrative.problem}
           </p>
 
-          <h2 className="mt-8 font-heading text-2xl font-semibold text-white">PSZ Solution</h2>
-          <p className="mt-3 text-sm leading-relaxed text-psz-gray-400 sm:text-base">
+          <h2 className="mt-8 font-heading text-2xl font-semibold text-neutral-900">PSZ Solution</h2>
+          <p className="mt-3 text-sm leading-relaxed text-neutral-500 sm:text-base">
             {narrative.solution}
           </p>
         </section>
       </section>
 
       <section className="mt-10" aria-labelledby="program-photos-heading">
-        <h2 id="program-photos-heading" className="font-heading text-3xl font-semibold text-white">
+        <h2 id="program-photos-heading" className="font-heading text-3xl font-semibold text-neutral-900">
           Photos
         </h2>
         <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -171,7 +170,7 @@ export default async function ProgramDetailPage({ params }: ProgramDetailPagePro
               return (
                 <figure
                   key={`${program.slug}-photo-${index + 1}`}
-                  className="overflow-hidden rounded-2xl glass"
+                  className="overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm"
                 >
                   <Image
                     src={src}
@@ -180,9 +179,6 @@ export default async function ProgramDetailPage({ params }: ProgramDetailPagePro
                     height={600}
                     className="h-52 w-full object-cover"
                   />
-                  <figcaption className="px-4 py-3 text-xs uppercase tracking-[0.16em] text-psz-gray-600">
-                    Field Photo {index + 1}
-                  </figcaption>
                 </figure>
               );
             });

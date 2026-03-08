@@ -40,18 +40,21 @@ export default async function ProgramsPage() {
 
   return (
     <>
-      <header className="mx-auto w-full max-w-7xl px-4 pt-32 sm:px-6 lg:px-8">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-psz-green">
-          Programs Hub
-        </p>
-        <h1 className="mt-4 max-w-3xl font-heading text-5xl font-bold leading-tight tracking-tight gradient-text sm:text-6xl">
-          Departments Building Impact Across Communities
-        </h1>
-        <p className="mt-5 max-w-3xl text-base leading-relaxed text-psz-gray-400 sm:text-lg">
-          Browse all core PSZ initiatives, filter by category, and search for
-          specific focus areas to understand where change is happening.
-        </p>
-      </header>
+      <div className="programs-hero-section">
+        <div className="programs-hero-overlay" />
+        <header className="mx-auto w-full max-w-screen-xl px-[5%] pt-32 relative z-10">
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-psz-green">
+            Programs Hub
+          </p>
+          <h1 className="mt-4 max-w-3xl font-heading text-5xl font-bold leading-tight tracking-tight text-white sm:text-6xl">
+            Departments Building Impact Across Communities
+          </h1>
+          <p className="mt-5 max-w-3xl text-base leading-relaxed text-neutral-100 sm:text-lg">
+            Browse all core PSZ initiatives, filter by category, and search for
+            specific focus areas to understand where change is happening.
+          </p>
+        </header>
+      </div>
       <ProgramsHubClient programs={programs} />
     </>
   );

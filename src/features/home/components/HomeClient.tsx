@@ -908,7 +908,7 @@ export function HomeClient() {
       {/* PINNED VIDEO — Education                        */}
       {/* ════════════════════════════════════════════════ */}
       <section className="pinned-video-section section-education" data-scroll-section="education">
-        <Image src="/images/optimized/members/8.webp" alt="Abdullah Tanseer — Founder" className="edu-img no-filter" width={580} height={800} loading="lazy" quality={75} sizes="(max-width: 900px) 100vw, 38vw" placeholder="blur" blurDataURL={getBlurDataURL("/images/members/8.png")} />
+        <Image src="/images/optimized/members/8.webp" alt="Abdullah Tanseer — Founder" className="edu-img no-filter" width={580} height={800} loading="lazy" quality={75} sizes="(max-width: 900px) 100vw, 38vw" />
         {/* Blurred logo backdrop */}
         <Image src="/paksarzameen_logo.png" alt="" aria-hidden className="edu-logo-backdrop" width={620} height={620} loading="lazy" quality={30} />
         <div className="section-text edu-section-text">
@@ -1370,39 +1370,31 @@ export function HomeClient() {
 
         {/* Impact Detail 1 */}
         <section className="impact-text-section">
-          <h5>Programs That Transform</h5>
+          <h5>Measurable Impact</h5>
           <p>
-            Our <span>Room Zia</span> initiative has brought solar-powered
-            electricity to <span>120+ schools</span>, enabling evening study
-            programs and digital learning. Meanwhile, our{" "}
-            <span>mobile health clinics</span> have conducted over{" "}
-            <span>15,000 medical consultations</span> in remote areas of Sindh
-            and KPK.
+            Our <span>Room Zia</span> initiative powers <span>120+ schools</span> with solar electricity.
+            Our <span>mobile health clinics</span> have delivered <span>15,000+ medical consultations</span>
+            in remote areas of Sindh and KPK.
           </p>
         </section>
 
         {/* Impact Detail 2 */}
         <section className="impact-text-section" style={{ paddingTop: "4rem" }}>
-          <h5>From Intention to Action</h5>
+          <h5>Scale & Reach</h5>
           <p>
-            In <span>2024 alone</span>, PSZ expanded operations to{" "}
-            <span>15 new districts</span> across Pakistan. Our disaster response
-            team provided emergency relief to <span>12,000 families</span>{" "}
-            affected by flooding in Sindh. Clean water plants installed in
-            Tharparkar now serve <span>8 villages</span> that previously had no
-            access to potable water.
+            In <span>2024</span>, we expanded to <span>15 new districts</span>. Our disaster response provided
+            relief to <span>12,000 families</span> affected by flooding. Clean water installations
+            now serve <span>8 villages</span> in Tharparkar with no prior access to potable water.
           </p>
         </section>
 
         {/* Partners CTA */}
         <section className="impact-text-section impact-partners-section">
-          <h5>Our Partners &amp; Volunteers</h5>
+          <h5>500+ Volunteers. One Mission.</h5>
           <p>
-            PSZ works with <span>government bodies</span>,{" "}
-            <span>international NGOs</span>, and <span>private sector leaders</span>{" "}
-            to maximize reach and sustainability. With over{" "}
-            <span>500 active volunteers</span> across Pakistan, we are a movement —
-            not just an organization.
+            We partner with <span>government bodies</span>, <span>international NGOs</span>,
+            and <span>private sector leaders</span>. With <span>500+ active volunteers</span>
+            across Pakistan, we are a movement united by purpose.
           </p>
           <div style={{ display: "flex", gap: "2rem", justifyContent: "center", marginTop: "3rem" }}>
             <Link href="/get-involved" style={{ color: "var(--psz-green)", fontSize: "var(--fs-vs)", fontWeight: 500 }}>
@@ -1416,17 +1408,15 @@ export function HomeClient() {
 
         {/* Final CTA */}
         <section className="final-cta-section section-final-cta">
-          
           <div className="reveal-text">
-            <h5>Be Part of the Change</h5>
+            <h5>Ready to Make a Difference?</h5>
             <p>
-              Whether you <span>volunteer, donate, or partner</span> with us —
-              every action counts. Together, we build a Pakistan where every
-              community thrives with dignity, education, and opportunity.
+              Whether you <span>volunteer, donate, or partner</span> — your action creates impact.
+              Together, we build a Pakistan where every community thrives with dignity.
             </p>
           </div>
           <Link href="/get-involved">
-            <button className="final-btn" type="button">↗ Support PakSarZameen</button>
+            <button className="final-btn" type="button">→ Get Involved</button>
           </Link>
         </section>
       </div>

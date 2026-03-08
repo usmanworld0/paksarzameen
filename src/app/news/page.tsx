@@ -40,18 +40,21 @@ export default async function NewsPage() {
 
   return (
     <>
-      <header className="mx-auto w-full max-w-7xl px-4 pt-32 sm:px-6 lg:px-8">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-psz-green">
-          News Hub
-        </p>
-        <h1 className="mt-4 max-w-3xl font-heading text-5xl font-bold leading-tight tracking-tight gradient-text sm:text-6xl">
-          Stories, Resources, And Field Updates
-        </h1>
-        <p className="mt-5 max-w-3xl text-base leading-relaxed text-psz-gray-400 sm:text-lg">
-          Filter by category, search across updates, and follow the latest PSZ
-          work through detailed reports and announcements.
-        </p>
-      </header>
+      <div className="news-hero-section">
+        <div className="news-hero-overlay" />
+        <header className="mx-auto w-full max-w-screen-xl px-[5%] pt-32 relative z-10">
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-psz-green">
+            News Hub
+          </p>
+          <h1 className="mt-4 max-w-3xl font-heading text-5xl font-bold leading-tight tracking-tight text-white sm:text-6xl">
+            Stories, Resources, And Field Updates
+          </h1>
+          <p className="mt-5 max-w-3xl text-base leading-relaxed text-neutral-100 sm:text-lg">
+            Filter by category, search across updates, and follow the latest PSZ
+            work through detailed reports and announcements.
+          </p>
+        </header>
+      </div>
       <NewsHubClient articles={articles} />
     </>
   );

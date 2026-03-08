@@ -12,7 +12,7 @@ import { navLinks } from "@/config/site";
 const IMPACT_CATS = [
   {
     slug: "environmental",
-    icon: "🌿",
+    icon: "",
     title: "Environmental Impact",
     items: [
       "GWR",
@@ -25,7 +25,7 @@ const IMPACT_CATS = [
   },
   {
     slug: "animal",
-    icon: "🐾",
+    icon: "",
     title: "Animal Welfare Impact",
     items: [
       "Cat Feeding Points",
@@ -35,7 +35,7 @@ const IMPACT_CATS = [
   },
   {
     slug: "education",
-    icon: "📚",
+    icon: "",
     title: "Educational Empowerment Impact",
     items: [
       "Pakistan's Only Transgender School",
@@ -46,7 +46,7 @@ const IMPACT_CATS = [
   },
   {
     slug: "health",
-    icon: "❤️",
+    icon: "",
     title: "Community Health Impact",
     items: [
       "24/7 Availability of Blood",
@@ -82,10 +82,15 @@ export function Navbar() {
   const [activePanel, setActivePanel] = useState<Panel>(null);
   const lastY = useRef(0);
 
+  // Determine if background is dark based on pathname
+  // Only homepage has a dark background; all other pages have white/light backgrounds
+  const isDarkBg = pathname === "/";
+
   useEffect(() => {
     const handleScroll = () => {
       const y = window.scrollY;
       setScrolled(y > 40);
+      
       if (y > lastY.current && y > 80) {
         setHidden(true);
         setActivePanel(null);
@@ -94,8 +99,12 @@ export function Navbar() {
       }
       lastY.current = y;
     };
+    
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
   
   // Hide navbar on product detail pages
@@ -106,7 +115,7 @@ export function Navbar() {
   return (
     <>
       <header
-        className={`psz-header ${scrolled ? "scrolled" : ""} ${hidden ? "nav-hidden" : ""}`}
+        className={`psz-header ${scrolled ? "scrolled" : ""} ${hidden ? "nav-hidden" : ""} ${isDarkBg ? "dark-text" : "light-text"}`}
         onMouseLeave={() => setActivePanel(null)}
       >
         <div className="blur-bg" />
@@ -228,7 +237,7 @@ export function Navbar() {
               {/* Stories of Hope */}
               <div className="mega-stories-row">
                 <div className="mega-stories-header">
-                  <span className="mega-cat-icon" aria-hidden="true">✨</span>
+                  <span className="mega-cat-icon" aria-hidden="true"></span>
                   <h4 className="mega-cat-title">Stories of Hope</h4>
                 </div>
                 <div className="mega-story-cards">

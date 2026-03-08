@@ -1,14 +1,24 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useMemo, useState } from "react";
 import { ArrowRight } from "lucide-react";
 
 import type { Program } from "@/lib/models/Program";
+import { PROGRAM_CARDS } from "@/features/home/home.content";
 
 type ProgramsHubClientProps = {
   programs: Program[];
 };
+
+// Helper function to get program icon/logo index based on title
+function getProgramLogoIndex(programTitle: string): number {
+  const programCard = PROGRAM_CARDS.find(
+    (card) => card.name.toLowerCase() === programTitle.toLowerCase()
+  );
+  return programCard ? PROGRAM_CARDS.indexOf(programCard) : 0;
+}
 
 export function ProgramsHubClient({ programs }: ProgramsHubClientProps) {
   const [query, setQuery] = useState("");
@@ -34,13 +44,13 @@ export function ProgramsHubClient({ programs }: ProgramsHubClientProps) {
 
   return (
     <section
-      className="mx-auto w-full max-w-7xl px-4 pb-20 sm:px-6 lg:px-8"
+      className="mx-auto w-full max-w-screen-xl px-[5%] pb-20"
       aria-labelledby="programs-hub-controls-heading"
     >
       <h2 id="programs-hub-controls-heading" className="sr-only">
         Program filters and results
       </h2>
-      <header className="rounded-3xl glass-strong p-5 sm:p-6 mt-10">
+      <header className="rounded-2xl border border-neutral-200 bg-white p-5 sm:p-6 mt-10 shadow-sm">
         <label className="text-xs font-semibold uppercase tracking-[0.2em] text-psz-green" htmlFor="program-search">
           Search Programs
         </label>
@@ -50,7 +60,7 @@ export function ProgramsHubClient({ programs }: ProgramsHubClientProps) {
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder="Search by department or focus area"
-          className="mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none placeholder:text-psz-gray-600 focus:border-psz-green/40 transition-colors"
+          className="mt-2 w-full rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-900 outline-none placeholder:text-neutral-400 focus:border-psz-green/60 transition-colors"
         />
 
         <div className="mt-5 flex flex-wrap gap-2">
@@ -61,10 +71,10 @@ export function ProgramsHubClient({ programs }: ProgramsHubClientProps) {
                 key={category}
                 type="button"
                 onClick={() => setActiveCategory(category)}
-                className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition-all ${
+                className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition-all border ${
                   isActive
-                    ? "bg-psz-green text-white"
-                    : "border border-white/10 bg-white/5 text-psz-gray-300 hover:bg-white/10 hover:text-white"
+                    ? "bg-psz-green text-white border-psz-green"
+                    : "border-neutral-300 bg-white text-neutral-600 hover:bg-neutral-50 hover:border-neutral-400"
                 }`}
               >
                 {category}
@@ -74,20 +84,28 @@ export function ProgramsHubClient({ programs }: ProgramsHubClientProps) {
         </div>
       </header>
 
-      <div className="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      <div className="mt-8 grid gap-8 md:grid-cols-2 xl:grid-cols-3">
         {filteredPrograms.map((program) => (
           <article
             key={program.id}
-            className="group overflow-hidden rounded-3xl glass transition-all hover:border-psz-green/20"
+            className="group overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm transition-all hover:shadow-md hover:border-psz-green/30"
           >
-            <div className="h-40 bg-gradient-to-br from-psz-green/15 via-psz-green/5 to-transparent p-5">
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-psz-green">
+            <div className="h-44 bg-neutral-50 p-6 flex flex-col items-center justify-center border-b border-neutral-100">
+              <Image
+                src={`/images/placeholders/${10 + getProgramLogoIndex(program.title)}.png`}
+                alt={`${program.title} icon`}
+                width={60}
+                height={60}
+                className="mb-3 opacity-80 group-hover:opacity-100 transition-opacity"
+                quality={60}
+              />
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-psz-green/80 mt-3">
                 {program.category}
               </p>
-              <p className="mt-7 font-heading text-2xl font-semibold text-white">{program.title}</p>
+              <p className="mt-2 font-heading text-xl font-semibold text-neutral-900 text-center">{program.title}</p>
             </div>
-            <div className="space-y-4 p-5">
-              <p className="text-sm leading-relaxed text-psz-gray-400">
+            <div className="space-y-4 p-6">
+              <p className="text-sm leading-relaxed text-neutral-500">
                 {program.description}
               </p>
               <Link
@@ -103,7 +121,7 @@ export function ProgramsHubClient({ programs }: ProgramsHubClientProps) {
       </div>
 
       {filteredPrograms.length === 0 ? (
-        <div className="mt-8 rounded-2xl border border-dashed border-white/10 glass px-5 py-8 text-center text-sm text-psz-gray-400">
+        <div className="mt-8 rounded-xl border border-dashed border-neutral-300 bg-neutral-50 px-5 py-10 text-center text-sm text-neutral-400">
           No programs found for this filter. Try another category or search term.
         </div>
       ) : null}

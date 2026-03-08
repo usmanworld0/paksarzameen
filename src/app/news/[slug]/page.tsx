@@ -80,7 +80,7 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
   const encodedTitle = encodeURIComponent(article.title);
 
   return (
-    <article className="mx-auto w-full max-w-7xl px-4 py-32 sm:px-6 lg:px-8">
+    <article className="mx-auto w-full max-w-screen-xl px-[5%] py-32">
       <Link
         href="/news"
         className="text-xs font-semibold uppercase tracking-[0.18em] text-psz-green hover:text-psz-green-light transition-colors"
@@ -88,41 +88,40 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
         &larr; Back To News Hub
       </Link>
 
-      <header className="mt-6 rounded-[2rem] glass-green p-8 sm:p-10 overflow-hidden relative">
-        <div className="absolute -right-20 -top-20 h-60 w-60 rounded-full bg-psz-green/10 blur-[80px]" />
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-psz-green relative">
+      <header className="mt-6 rounded-2xl border border-neutral-200 bg-white p-8 sm:p-10 shadow-sm">
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-psz-green">
           {article.category}
         </p>
-        <h1 className="mt-3 max-w-4xl font-heading text-5xl font-bold leading-tight tracking-tight gradient-text sm:text-6xl relative">
+        <h1 className="mt-3 max-w-4xl font-heading text-5xl font-bold leading-tight tracking-tight text-neutral-900 sm:text-6xl">
           {article.title}
         </h1>
-        <p className="mt-4 text-sm uppercase tracking-[0.18em] text-psz-gray-400 relative">
+        <p className="mt-4 text-sm uppercase tracking-[0.18em] text-neutral-400">
           {new Date(article.date).toLocaleDateString("en-GB", {
             day: "2-digit",
             month: "long",
             year: "numeric",
           })}
         </p>
-        <p className="mt-5 max-w-3xl text-base leading-relaxed text-psz-gray-300 sm:text-lg relative">
+        <p className="mt-5 max-w-3xl text-base leading-relaxed text-neutral-500 sm:text-lg">
           {article.excerpt}
         </p>
       </header>
 
-      <section className="mt-10 rounded-3xl glass p-7">
-        <h2 className="font-heading text-3xl font-semibold text-white">Full Article</h2>
-        <p className="mt-4 text-sm leading-relaxed text-psz-gray-400 sm:text-base">
+      <section className="mt-10 rounded-2xl border border-neutral-200 bg-white p-7 shadow-sm">
+        <h2 className="font-heading text-3xl font-semibold text-neutral-900">Full Article</h2>
+        <p className="mt-4 text-sm leading-relaxed text-neutral-500 sm:text-base">
           {article.fullContent}
         </p>
       </section>
 
-      <section className="mt-10 rounded-3xl glass p-7">
-        <h2 className="font-heading text-3xl font-semibold text-white">Share This Story</h2>
+      <section className="mt-10 rounded-2xl border border-neutral-200 bg-white p-7 shadow-sm">
+        <h2 className="font-heading text-3xl font-semibold text-neutral-900">Share This Story</h2>
         <div className="mt-4 flex flex-wrap gap-3 text-sm font-semibold">
           <a
             href={`https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-psz-gray-300 hover:bg-psz-green hover:text-white hover:border-psz-green transition-all"
+            className="rounded-full border border-neutral-300 bg-white px-4 py-2 text-neutral-600 hover:bg-psz-green hover:text-white hover:border-psz-green transition-all"
           >
             Share on X
           </a>
@@ -130,7 +129,7 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
             href={`https://wa.me/?text=${encodedTitle}%20${encodedUrl}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-psz-gray-300 hover:bg-psz-green hover:text-white hover:border-psz-green transition-all"
+            className="rounded-full border border-neutral-300 bg-white px-4 py-2 text-neutral-600 hover:bg-psz-green hover:text-white hover:border-psz-green transition-all"
           >
             Share on WhatsApp
           </a>
@@ -138,7 +137,7 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
       </section>
 
       <section className="mt-10" aria-labelledby="related-articles-heading">
-        <h2 id="related-articles-heading" className="font-heading text-3xl font-semibold text-white">
+        <h2 id="related-articles-heading" className="font-heading text-3xl font-semibold text-neutral-900">
           Related Articles
         </h2>
         <div className="mt-5 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
@@ -146,15 +145,15 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
             relatedArticles.map((related) => (
               <article
                 key={related.id}
-                className="group rounded-2xl glass p-5 transition-all hover:border-psz-green/20"
+                className="group rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm transition-all hover:shadow-md hover:border-psz-green/30"
               >
                 <p className="text-xs font-semibold uppercase tracking-[0.3em] text-psz-green">
                   {related.category}
                 </p>
-                <h3 className="mt-3 font-heading text-2xl font-semibold text-white group-hover:text-psz-green transition-colors">
+                <h3 className="mt-3 font-heading text-2xl font-semibold text-neutral-900 group-hover:text-psz-green transition-colors">
                   {related.title}
                 </h3>
-                <p className="mt-3 text-sm leading-relaxed text-psz-gray-400">
+                <p className="mt-3 text-sm leading-relaxed text-neutral-500">
                   {related.excerpt}
                 </p>
                 <Link
@@ -166,7 +165,7 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
               </article>
             ))
           ) : (
-            <div className="rounded-2xl border border-dashed border-white/10 glass p-5 text-sm text-psz-gray-400">
+            <div className="rounded-xl border border-dashed border-neutral-300 bg-neutral-50 p-5 text-sm text-neutral-400">
               More related articles will appear as the resource library grows.
             </div>
           )}

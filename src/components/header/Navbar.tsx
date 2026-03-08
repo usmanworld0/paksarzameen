@@ -6,37 +6,7 @@ import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { navLinks } from "@/config/site";
 
-/* ── About PSZ mega-dropdown data ────────────────────── */
-const ABOUT_PANELS = [
-  {
-    slug: "story",
-    icon: "🏛️",
-    title: "Our Story",
-    desc: "Guinness World Record–holding NGO, founded in 2021 with 436 trees in Bahawalpur — one per student in the Child Protection Bureau dormitories.",
-    href: "/about",
-  },
-  {
-    slug: "mission",
-    icon: "🎯",
-    title: "Mission",
-    desc: "Alleviate poverty by empowering marginalized communities through digital markets, entrepreneurial capacity building, and character-centred education.",
-    href: "/about#mission",
-  },
-  {
-    slug: "vision",
-    icon: "🌟",
-    title: "Vision",
-    desc: "A compassionate society where impoverished communities achieve dignity and prosperity through ethical enterprise and responsible generations.",
-    href: "/about#vision",
-  },
-  {
-    slug: "objective",
-    icon: "📌",
-    title: "Objective",
-    desc: "Create sustainable opportunities for livelihood, education, and social development through ethical entrepreneurship and dignified community welfare.",
-    href: "/about#objective",
-  },
-];
+
 
 /* ── Impact mega-dropdown data ─────────────────────────── */
 const IMPACT_CATS = [
@@ -106,11 +76,6 @@ const DROPDOWN_LABELS: Record<string, Panel> = { "Impact": "impact" };
 export function Navbar() {
   const pathname = usePathname();
   
-  // Hide navbar on product detail pages
-  if (pathname.startsWith("/commonwealth-lab/products/")) {
-    return null;
-  }
-  
   const [hidden, setHidden]           = useState(false);
   const [scrolled, setScrolled]       = useState(false);
   const [menuOpen, setMenuOpen]       = useState(false);
@@ -132,6 +97,11 @@ export function Navbar() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+  
+  // Hide navbar on product detail pages
+  if (pathname.startsWith("/commonwealth-lab/products/")) {
+    return null;
+  }
 
   return (
     <>

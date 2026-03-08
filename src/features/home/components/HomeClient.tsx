@@ -40,17 +40,7 @@ const VIDEOS = {
   programs: "/videos/programs.webm",
 } as const;
 
-/* ─── Image Sources ─── */
-const IMAGES = {
-  showcase: "/images/WhatsApp%20Image%202026-03-06%20at%205.01.33%20AM.jpeg",
-  fullImage: "https://images.pexels.com/photos/4614166/pexels-photo-4614166.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  transform1: "/images/WhatsApp%20Image%202026-03-06%20at%205.01.33%20AM.jpeg",
-  transform1Overlay: "/images/WhatsApp%20Image%202026-03-06%20at%205.07.22%20AM.jpeg",
-  transform2: "/images/WhatsApp%20Image%202026-03-06%20at%205.08.17%20AM.jpeg",
-  transform2Overlay: "/images/WhatsApp%20Image%202026-03-06%20at%205.08.52%20AM.jpeg",
-  finalBase: "/images/WhatsApp%20Image%202026-03-06%20at%205.00.43%20AM.jpeg",
-  finalOverlay: "/images/hero-fallback.svg",
-} as const;
+
 
 /* ─── Canvas frame animation images (re-uses existing local assets) ─── */
 const CANVAS_FRAME_SEEDS = [

@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     canonical: "/programs",
   },
   openGraph: {
-    title: "Programs | PakSarZameen",
+    title: "PSZ | Programs",
     description:
       "Discover all PSZ departments and initiatives with category filters and searchable previews.",
     url: `${siteConfig.siteUrl}/programs`,
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Programs | PakSarZameen",
+    title: "PSZ | Programs",
     description:
       "Discover all PSZ departments and initiatives with category filters and searchable previews.",
     images: ["/images/placeholders/10.png"],

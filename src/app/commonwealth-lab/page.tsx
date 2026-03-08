@@ -18,6 +18,8 @@ const PRODUCT_IMAGE_NAMES = [
   "WhatsApp Image 2026-03-07 at 4.15.51 PM (2).jpeg",
   "WhatsApp Image 2026-03-07 at 4.15.51 PM (3).jpeg",
   "WhatsApp Image 2026-03-07 at 4.15.51 PM.jpeg",
+  "WhatsApp Image 2026-03-06 at 5.01.33 AM.jpeg",
+  "WhatsApp Image 2026-03-06 at 5.07.22 AM.jpeg",
 ] as const;
 
 const PRODUCT_IMAGES = PRODUCT_IMAGE_NAMES.map(
@@ -25,10 +27,14 @@ const PRODUCT_IMAGES = PRODUCT_IMAGE_NAMES.map(
 );
 
 const CATEGORY_IMAGES: Record<string, string> = {
-  "Traditional Clothing": PRODUCT_IMAGES[0],
-  Handicrafts: PRODUCT_IMAGES[1],
-  "Cultural Goods": PRODUCT_IMAGES[2],
-  "PSZ Merchandise": PRODUCT_IMAGES[3],
+  "Commissioned Art": PRODUCT_IMAGES[0],
+  "Crockery": PRODUCT_IMAGES[1],
+  "Gemstones": PRODUCT_IMAGES[2],
+  "Jewellery": PRODUCT_IMAGES[3],
+  "Lamps": PRODUCT_IMAGES[4],
+  "Leather": PRODUCT_IMAGES[5],
+  "Musical Instruments": PRODUCT_IMAGES[6],
+  "Textiles": PRODUCT_IMAGES[7],
 };
 
 export default function CommonwealthLabPage() {
@@ -36,6 +42,59 @@ export default function CommonwealthLabPage() {
     <>
       {/* Hero */}
       <MarketplaceHero />
+
+      {/* Category Grid */}
+      <section className="bg-white py-16 sm:py-28">
+        <div className="mx-auto max-w-screen-2xl px-6 sm:px-10 lg:px-16">
+          <div className="mb-16 border-b border-neutral-100 pb-10">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-[#0c2e1a]">
+              Browse By
+            </p>
+            <h2
+              className="mt-2 text-3xl font-light tracking-tight text-neutral-900 sm:text-4xl"
+              style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
+            >
+              Shop Categories
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+            {PRODUCT_CATEGORIES.map((category) => (
+              <Link
+                key={category}
+                href={`/commonwealth-lab/products?category=${encodeURIComponent(category)}`}
+                className="group relative flex aspect-[3/4] items-end overflow-hidden bg-neutral-900"
+              >
+                <Image
+                  src={CATEGORY_IMAGES[category]}
+                  alt={category}
+                  fill
+                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 25vw"
+                  className="object-cover opacity-70 transition-all duration-700 group-hover:opacity-50 group-hover:scale-105"
+                  quality={75}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+                <div className="relative z-10 p-6 w-full">
+                  <h3
+                    className="text-lg font-light text-white"
+                    style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
+                  >
+                    {category}
+                  </h3>
+                  <p className="mt-1.5 text-[10px] font-semibold uppercase tracking-[0.3em] text-white/50 transition-colors duration-300 group-hover:text-white/80">
+                    Explore →
+                  </p>
+                </div>
+                {/* Bottom border accent on hover */}
+                <div className="absolute bottom-0 left-0 h-0.5 w-0 bg-[#0c2e1a] transition-all duration-500 group-hover:w-full" />
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Meet the Artists */}
+      <MeetTheArtistsSection />
 
       {/* Featured Products */}
       <section id="featured" className="bg-white py-16 sm:py-28">
@@ -77,59 +136,6 @@ export default function CommonwealthLabPage() {
           </p>
         </div>
       </div>
-
-      {/* Meet the Artists */}
-      <MeetTheArtistsSection />
-
-      {/* Category Grid */}
-      <section className="bg-white py-16 sm:py-28">
-        <div className="mx-auto max-w-screen-2xl px-6 sm:px-10 lg:px-16">
-          <div className="mb-16 border-b border-neutral-100 pb-10">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-[#0c2e1a]">
-              Browse By
-            </p>
-            <h2
-              className="mt-2 text-3xl font-light tracking-tight text-neutral-900 sm:text-4xl"
-              style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
-            >
-              Shop Categories
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-            {PRODUCT_CATEGORIES.map((category) => (
-              <Link
-                key={category}
-                href={`/commonwealth-lab/products?category=${encodeURIComponent(category)}`}
-                className="group relative flex aspect-[3/4] items-end overflow-hidden bg-neutral-900 sm:aspect-[3/4]"
-              >
-                <Image
-                  src={CATEGORY_IMAGES[category]}
-                  alt={category}
-                  fill
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                  className="object-cover opacity-70 transition-all duration-700 group-hover:opacity-50 group-hover:scale-105"
-                  quality={75}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
-                <div className="relative z-10 p-7">
-                  <h3
-                    className="text-xl font-light text-white"
-                    style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
-                  >
-                    {category}
-                  </h3>
-                  <p className="mt-1.5 text-[10px] font-semibold uppercase tracking-[0.3em] text-white/50 transition-colors duration-300 group-hover:text-white/80">
-                    Explore Collection →
-                  </p>
-                </div>
-                {/* Bottom border accent on hover */}
-                <div className="absolute bottom-0 left-0 h-0.5 w-0 bg-[#0c2e1a] transition-all duration-500 group-hover:w-full" />
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* CTA */}
       <section className="bg-white py-20 sm:py-32 border-t border-neutral-100">

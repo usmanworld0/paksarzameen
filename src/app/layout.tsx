@@ -18,10 +18,17 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.siteUrl),
   applicationName: siteConfig.name,
   title: {
-    default: "PakSarZameen | Mission Platform",
-    template: "%s | PakSarZameen",
+    default: "PSZ",
+    template: "PSZ | %s",
   },
   description: siteConfig.description,
+  icons: {
+    icon: [
+      { url: "/paksarzameen_logo.png", sizes: "512x512", type: "image/png" },
+      { url: "/paksarzameen_logo.png", sizes: "1024x1024", type: "image/png" },
+    ],
+    apple: { url: "/paksarzameen_logo.png", sizes: "1024x1024", type: "image/png" },
+  },
   keywords: [
     "PakSarZameen",
     "community development",
@@ -36,7 +43,7 @@ export const metadata: Metadata = {
   creator: "PakSarZameen",
   publisher: "PakSarZameen",
   openGraph: {
-    title: "PakSarZameen | Mission Platform",
+    title: "PSZ",
     description: siteConfig.description,
     type: "website",
     url: siteConfig.siteUrl,
@@ -53,7 +60,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "PakSarZameen | Mission Platform",
+    title: "PSZ",
     description: siteConfig.description,
     images: ["/images/hero-fallback.svg"],
   },

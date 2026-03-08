@@ -269,7 +269,6 @@ export function HomeClient() {
             scrub: 0.8,
           },
         });
-      }
 
       /* ─── Pinned Video Sections ─── */
       createPinnedVideoTimeline(".section-mission");
@@ -919,7 +918,7 @@ export function HomeClient() {
       {/* PINNED VIDEO — Education                        */}
       {/* ════════════════════════════════════════════════ */}
       <section className="pinned-video-section section-education" data-scroll-section="education">
-        <Image src="/images/members/8.png" alt="Abdullah Tanseer — Founder" className="edu-img no-filter" width={580} height={800} loading="lazy" quality={75} sizes="(max-width: 900px) 100vw, 38vw" placeholder="blur" blurDataURL={getBlurDataURL("/images/members/8.png")} />
+        <Image src="/images/optimized/members/8.webp" alt="Abdullah Tanseer — Founder" className="edu-img no-filter" width={580} height={800} loading="lazy" quality={75} sizes="(max-width: 900px) 100vw, 38vw" placeholder="blur" blurDataURL={getBlurDataURL("/images/members/8.png")} />
         {/* Blurred logo backdrop */}
         <Image src="/paksarzameen_logo.png" alt="" aria-hidden className="edu-logo-backdrop" width={620} height={620} loading="lazy" quality={30} />
         <div className="section-text edu-section-text">
@@ -1149,8 +1148,6 @@ export function HomeClient() {
                   quality={70}
                   sizes="(max-width: 768px) 100vw, 50vw"
                   draggable={false}
-                  placeholder="blur"
-                  blurDataURL={getBlurDataURL(m.image)}
                 />
               ))}
             </div>

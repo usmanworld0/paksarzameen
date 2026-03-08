@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import { navLinks } from "@/config/site";
 
 /* ── About PSZ mega-dropdown data ────────────────────── */
@@ -99,10 +100,11 @@ const STORIES_OF_HOPE = [
 ];
 /* ────────────────────────────────────────────────────── */
 
-type Panel = "about" | "impact" | null;
-const DROPDOWN_LABELS: Record<string, Panel> = { "About PSZ": "about", "Impact": "impact" };
+type Panel = "impact" | null;
+const DROPDOWN_LABELS: Record<string, Panel> = { "Impact": "impact" };
 
 export function Navbar() {
+  const pathname = usePathname();
   const [hidden, setHidden]           = useState(false);
   const [scrolled, setScrolled]       = useState(false);
   const [menuOpen, setMenuOpen]       = useState(false);
@@ -134,12 +136,21 @@ export function Navbar() {
         <div className="blur-bg" />
         <nav>
           <Link href="/" className="nav-logo">
+            <Image
+              src="/paksarzameen_logo.png"
+              alt="PakSarZameen"
+              width={40}
+              height={40}
+              priority
+              className="nav-logo-img"
+            />
             Pak<span className="green">Sar</span>Zameen
           </Link>
 
           <div className="nav-links">
             {navLinks.slice(0, 6).map((link) => {
               const panel = DROPDOWN_LABELS[link.label];
+              const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
               if (panel) {
                 const isOpen = activePanel === panel;
                 return (
@@ -150,7 +161,7 @@ export function Navbar() {
                   >
                     <Link
                       href={link.href}
-                      className={`nav-dropdown-trigger${isOpen ? " active" : ""}`}
+                      className={`nav-dropdown-trigger${isOpen ? " active" : ""}${isActive ? " nav-link-active" : ""}`}
                     >
                       {link.label}
                       <svg
@@ -165,7 +176,11 @@ export function Navbar() {
                 );
               }
               return (
-                <Link key={link.label} href={link.href}>
+                <Link 
+                  key={link.label} 
+                  href={link.href}
+                  className={`nav-link${isActive ? " nav-link-active" : ""}`}
+                >
                   {link.label}
                 </Link>
               );
@@ -190,39 +205,6 @@ export function Navbar() {
             </button>
           </div>
         </nav>
-
-        {/* ══ About PSZ Mega Dropdown ═══════════════════════ */}
-        <div
-          className={`nav-mega-panel${activePanel === "about" ? " open" : ""}`}
-          onMouseEnter={() => setActivePanel("about")}
-          aria-hidden={activePanel !== "about"}
-        >
-          <div className="mega-inner">
-            <div className="mega-left">
-              <span className="mega-eyebrow">Who We Are</span>
-              <h3 className="mega-heading">About PSZ</h3>
-              <p className="mega-tagline">
-                A Guinness World Record–holding NGO rooted in justice,
-                compassion, and community-first development across Pakistan.
-              </p>
-              <Link href="/about" className="mega-view-all">Read our full story →</Link>
-            </div>
-            <div className="mega-right">
-              <div className="mega-about-grid">
-                {ABOUT_PANELS.map((p) => (
-                  <Link href={p.href} key={p.slug} className="mega-about-card">
-                    <div className="mega-about-card-header">
-                      <span className="mega-cat-icon" aria-hidden="true">{p.icon}</span>
-                      <h4 className="mega-cat-title">{p.title}</h4>
-                    </div>
-                    <p className="mega-about-card-desc">{p.desc}</p>
-                    <span className="mega-about-card-cta">Learn more →</span>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* ══ Impact Mega Dropdown ══════════════════════════ */}
         <div

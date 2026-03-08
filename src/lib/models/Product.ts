@@ -15,16 +15,24 @@ export interface Product {
 }
 
 export type ProductCategory =
-  | "Traditional Clothing"
-  | "Handicrafts"
-  | "Cultural Goods"
-  | "PSZ Merchandise";
+  | "Commissioned Art"
+  | "Crockery"
+  | "Gemstones"
+  | "Jewellery"
+  | "Lamps"
+  | "Leather"
+  | "Musical Instruments"
+  | "Textiles";
 
 export const PRODUCT_CATEGORIES: ProductCategory[] = [
-  "Traditional Clothing",
-  "Handicrafts",
-  "Cultural Goods",
-  "PSZ Merchandise",
+  "Commissioned Art",
+  "Crockery",
+  "Gemstones",
+  "Jewellery",
+  "Lamps",
+  "Leather",
+  "Musical Instruments",
+  "Textiles",
 ];
 
 export interface CartItem {

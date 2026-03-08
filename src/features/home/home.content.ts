@@ -144,46 +144,43 @@ export const HEART_MEMBERS: readonly TeamMember[] = [
     name: "Malik Abdullah Amir",
     designation: "Chief Executive Officer",
     quote: "Real change happens when logistics meet compassion on the ground.",
-    image: "/images/members/4.png",
+    image: "/images/optimized/members/1.webp",
   },
-   {
+  {
     name: "Ahmad Malik",
     designation: "Executive Managing Director",
     quote: "Design can inspire people to believe in a better Pakistan.",
-    image: "/images/members/2.png",
+    image: "/images/optimized/members/2.webp",
   },
   {
     name: "M. Abdullah Jamal",
     designation: "Executive Managing Director",
     quote: "Healthcare is not a privilege — it is the right of every citizen.",
-    image: "/images/members/6.png",
+    image: "/images/optimized/members/3.webp",
   },
   {
     name: "Hussain Khan Langah",
     designation: "Executive Managing Director",
     quote: "Paksarzameen is more than a project — it is a mission for the future.",
-    image: "/images/members/1.png",
+    image: "/images/optimized/members/4.webp",
   },
- 
   {
     name: "Laiba Shafiq",
     designation: "Director",
     quote: "Technology should empower communities and create opportunity.",
-    image: "/images/members/3.png",
+    image: "/images/optimized/members/5.webp",
   },
-  
   {
     name: "Hassan Fadul",
     designation: "Director",
     quote: "Every village we reach is a promise kept to the people of Pakistan.",
-    image: "/images/members/5.png",
+    image: "/images/optimized/members/6.webp",
   },
-  
   {
     name: "Tuba Fatima",
     designation: "Director",
     quote: "An educated Pakistan is an empowered Pakistan.",
-    image: "/images/members/7.png",
+    image: "/images/optimized/members/7.webp",
   },
 ];
 

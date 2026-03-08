@@ -5,14 +5,14 @@ import { NewsHubClient } from "@/features/news/components/NewsHubClient";
 import { getArticles } from "@/lib/services/getArticles";
 
 export const metadata: Metadata = {
-  title: "News And Resources",
+  title: "News",
   description:
     "Read the latest PakSarZameen impact stories, program announcements, and field updates.",
   alternates: {
     canonical: "/news",
   },
   openGraph: {
-    title: "News And Resources | PakSarZameen",
+    title: "PSZ | News",
     description:
       "Explore categorized updates, search by topic, and discover related stories.",
     url: `${siteConfig.siteUrl}/news`,
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "News And Resources | PakSarZameen",
+    title: "PSZ | News",
     description:
       "Explore categorized updates, search by topic, and discover related stories.",
     images: ["/images/placeholders/news-cover.svg"],

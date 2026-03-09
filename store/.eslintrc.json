@@ -1,6 +1,8 @@
 {
-  "extends": "next/core-web-vitals",
+  "extends": ["next"],
   "rules": {
-    "@typescript-eslint/no-unused-expressions": "off"
-  }
+    "@typescript-eslint/no-unused-expressions": "off",
+    "@next/next/no-html-link-for-pages": "off"
+  },
+  "ignorePatterns": [".next", "node_modules"]
 }

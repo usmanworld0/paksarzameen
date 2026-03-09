@@ -1,25 +1,6 @@
 import type { Metadata } from "next";
-import dynamic from "next/dynamic";
 import { siteConfig } from "@/config/site";
-
-const HomeClient = dynamic(
-  () =>
-    import("@/features/home/components/HomeClient").then((mod) => mod.HomeClient),
-  {
-    loading: () => (
-      <div className="loading-skeleton" aria-label="Loading homepage">
-        <div className="skeleton-hero">
-          <div className="skeleton-pulse skeleton-hero-bg" />
-          <div className="skeleton-hero-content">
-            <div className="skeleton-pulse skeleton-line skeleton-line-sm" />
-            <div className="skeleton-pulse skeleton-line skeleton-line-lg" />
-            <div className="skeleton-pulse skeleton-line skeleton-line-md" />
-          </div>
-        </div>
-      </div>
-    ),
-  }
-);
+import { HomeClient } from "@/features/home/components/HomeClient";
 
 export const metadata: Metadata = {
   title: "PSZ | Home",

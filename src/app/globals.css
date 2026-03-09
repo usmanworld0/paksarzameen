@@ -269,7 +269,7 @@ video {
   font-weight: 600;
   color: var(--white);
   margin-bottom: 1.5rem;
-  opacity: 0.9;
+  opacity: 0;
 }
 
 .hero-section .hero-title {
@@ -279,10 +279,15 @@ video {
   line-height: 1;
   letter-spacing: -0.03em;
   white-space: nowrap;
+  opacity: 0;
 }
 
 .hero-section .hero-title .green {
   color: var(--psz-green);
+}
+
+.hero-section .hero-desc {
+  opacity: 0;
 }
 
 /* ─── Pinned Video + Text Sections ─── */

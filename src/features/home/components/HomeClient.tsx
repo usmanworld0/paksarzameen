@@ -15,7 +15,7 @@ import {
   PSZ_CHAPTERS,
 } from "@/features/home/home.content";
 import { LazyVideo } from "@/components/ui/LazyVideo";
-import { getBlurDataURL, VIDEO_POSTERS } from "@/lib/utils/media-helpers";
+import { getBlurDataURL, getOptimizedImagePath, VIDEO_POSTERS } from "@/lib/utils/media-helpers";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -42,19 +42,19 @@ const VIDEOS = {
 
 
 
-/* ─── Canvas frame animation images (re-uses existing local assets) ─── */
+/* ─── Canvas frame animation images (optimized WebP versions) ─── */
 const CANVAS_FRAME_SEEDS = [
   "/images/hero-fallback.svg",
-  "/images/placeholders/10.png",
-  "/images/WhatsApp%20Image%202026-03-06%20at%205.01.33%20AM.jpeg",
-  "/images/WhatsApp%20Image%202026-03-06%20at%205.07.22%20AM.jpeg",
-  "/images/WhatsApp%20Image%202026-03-06%20at%205.08.17%20AM.jpeg",
-  "/images/WhatsApp%20Image%202026-03-06%20at%205.08.52%20AM.jpeg",
-  "/images/WhatsApp%20Image%202026-03-06%20at%205.00.43%20AM.jpeg",
+  "/images/optimized/placeholders/10-md.webp",
+  "/images/optimized/whatsapp-image-2026-03-06-at-5-01-33-am-md.webp",
+  "/images/optimized/whatsapp-image-2026-03-06-at-5-07-22-am-md.webp",
+  "/images/optimized/whatsapp-image-2026-03-06-at-5-08-52-am-sm.webp",
+  "/images/optimized/whatsapp-image-2026-03-06-at-5-00-43-am-md.webp",
   "/images/hero-fallback.svg",
   "https://images.pexels.com/photos/4614166/pexels-photo-4614166.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
-  "/images/placeholders/10.png",
+  "/images/optimized/placeholders/10-md.webp",
   "/images/hero-fallback.svg",
+  "/images/optimized/full-team-md.webp",
   "https://images.pexels.com/photos/4614166/pexels-photo-4614166.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
 ] as const;
 
@@ -887,25 +887,25 @@ export function HomeClient() {
         {/* Background image grid — optimized with next/image */}
         <div className="approach-bg-grid" aria-hidden="true">
           <div className="approach-bg-item">
-            <Image src="/images/WhatsApp Image 2026-03-06 at 5.01.33 AM.jpeg" alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} placeholder="blur" blurDataURL={getBlurDataURL("/images/WhatsApp Image 2026-03-06 at 5.01.33 AM.jpeg")} />
+            <Image src={getOptimizedImagePath("/images/WhatsApp Image 2026-03-06 at 5.01.33 AM.jpeg", "md")} alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} placeholder="blur" blurDataURL={getBlurDataURL("/images/WhatsApp Image 2026-03-06 at 5.01.33 AM.jpeg")} />
           </div>
           <div className="approach-bg-item">
-            <Image src="/images/WhatsApp Image 2026-03-06 at 5.07.22 AM.jpeg" alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} placeholder="blur" blurDataURL={getBlurDataURL("/images/WhatsApp Image 2026-03-06 at 5.07.22 AM.jpeg")} />
+            <Image src={getOptimizedImagePath("/images/WhatsApp Image 2026-03-06 at 5.07.22 AM.jpeg", "md")} alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} placeholder="blur" blurDataURL={getBlurDataURL("/images/WhatsApp Image 2026-03-06 at 5.07.22 AM.jpeg")} />
           </div>
           <div className="approach-bg-item">
-            <Image src="/images/full_team.jpeg" alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} placeholder="blur" blurDataURL={getBlurDataURL("/images/full_team.jpeg")} />
+            <Image src={getOptimizedImagePath("/images/full_team.jpeg", "md")} alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} placeholder="blur" blurDataURL={getBlurDataURL("/images/full_team.jpeg")} />
           </div>
           <div className="approach-bg-item">
-            <Image src="/images/WhatsApp Image 2026-03-06 at 4.20.53 PM.jpeg" alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} placeholder="blur" blurDataURL={getBlurDataURL("/images/WhatsApp Image 2026-03-06 at 4.20.53 PM.jpeg")} />
+            <Image src={getOptimizedImagePath("/images/WhatsApp Image 2026-03-06 at 4.20.53 PM.jpeg", "md")} alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} placeholder="blur" blurDataURL={getBlurDataURL("/images/WhatsApp Image 2026-03-06 at 4.20.53 PM.jpeg")} />
           </div>
           <div className="approach-bg-item">
-            <Image src="/images/WhatsApp Image 2026-03-06 at 5.00.43 AM.jpeg" alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} placeholder="blur" blurDataURL={getBlurDataURL("/images/WhatsApp Image 2026-03-06 at 5.00.43 AM.jpeg")} />
+            <Image src={getOptimizedImagePath("/images/WhatsApp Image 2026-03-06 at 5.00.43 AM.jpeg", "md")} alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} placeholder="blur" blurDataURL={getBlurDataURL("/images/WhatsApp Image 2026-03-06 at 5.00.43 AM.jpeg")} />
           </div>
           <div className="approach-bg-item">
-            <Image src="/images/WhatsApp Image 2026-03-06 at 4.03.34 PM.jpeg" alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} placeholder="blur" blurDataURL={getBlurDataURL("/images/WhatsApp Image 2026-03-06 at 4.03.34 PM.jpeg")} />
+            <Image src={getOptimizedImagePath("/images/WhatsApp Image 2026-03-06 at 4.03.34 PM.jpeg", "md")} alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} placeholder="blur" blurDataURL={getBlurDataURL("/images/WhatsApp Image 2026-03-06 at 4.03.34 PM.jpeg")} />
           </div>
           <div className="approach-bg-item">
-            <Image src="/images/WhatsApp Image 2026-03-06 at 4.04.00 PM.jpeg" alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} placeholder="blur" blurDataURL={getBlurDataURL("/images/WhatsApp Image 2026-03-06 at 4.04.00 PM.jpeg")} />
+            <Image src={getOptimizedImagePath("/images/WhatsApp Image 2026-03-06 at 4.04.00 PM.jpeg", "md")} alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} placeholder="blur" blurDataURL={getBlurDataURL("/images/WhatsApp Image 2026-03-06 at 4.04.00 PM.jpeg")} />
           </div>
         </div>
         <div className="approach-bg-overlay" aria-hidden="true" />
@@ -1029,7 +1029,7 @@ export function HomeClient() {
         </div>
 
         <div className="showcase-image">
-          <Image src="/images/WhatsApp Image 2026-03-06 at 5.01.33 AM.jpeg" alt="PakSarZameen community programs" width={1200} height={600} loading="lazy" quality={75} sizes="(max-width: 768px) 100vw, 80vw" />
+          <Image src={getOptimizedImagePath("/images/WhatsApp Image 2026-03-06 at 5.01.33 AM.jpeg", "lg")} alt="PakSarZameen community programs" width={1200} height={600} loading="lazy" quality={75} sizes="(max-width: 768px) 100vw, 80vw" />
         </div>
 
         <Link href="/get-involved">
@@ -1224,7 +1224,7 @@ export function HomeClient() {
                 <div className="illus-shape illus-shape-c" />
                 {/* Placeholder illustration from public/images/placeholders */}
                 <Image
-                  src={`/images/placeholders/${10 + i}.png`}
+                  src={`/images/optimized/placeholders/${10 + i}-md.webp`}
                   alt={`${program.name} icon`}
                   className="illus-icon-img"
                   width={400}

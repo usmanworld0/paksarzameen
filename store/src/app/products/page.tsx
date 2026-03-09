@@ -7,6 +7,8 @@ import { SearchBar } from "@/components/storefront/SearchBar";
 import { getProducts } from "@/actions/products";
 import { getCategories } from "@/actions/categories";
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: "Products",
   description:

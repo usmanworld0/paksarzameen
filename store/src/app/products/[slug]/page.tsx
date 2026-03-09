@@ -10,6 +10,8 @@ import { formatPrice } from "@/lib/utils";
 import { AddToCartButton } from "./AddToCartButton";
 import Link from "next/link";
 
+export const dynamic = 'force-dynamic';
+
 interface ProductPageProps {
   params: { slug: string };
 }

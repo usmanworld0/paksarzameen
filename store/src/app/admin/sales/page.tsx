@@ -4,6 +4,8 @@ import { AdminTable, type Column } from "@/components/admin/AdminTable";
 import { deleteSale } from "@/actions/sales";
 import { Plus } from "lucide-react";
 
+export const dynamic = 'force-dynamic';
+
 type SaleRow = {
   id: string;
   name: string;

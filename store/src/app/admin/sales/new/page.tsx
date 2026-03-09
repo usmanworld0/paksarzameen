@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { SaleForm } from "@/components/admin/SaleForm";
 import { ArrowLeft } from "lucide-react";
 
+export const dynamic = 'force-dynamic';
+
 export default async function NewSalePage() {
   const [categories, products] = await Promise.all([
     prisma.category.findMany({ orderBy: { name: "asc" } }),

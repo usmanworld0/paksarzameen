@@ -5,6 +5,8 @@ import { formatPrice } from "@/lib/utils";
 import { deleteProduct } from "@/actions/products";
 import { Plus } from "lucide-react";
 
+export const dynamic = 'force-dynamic';
+
 type ProductRow = {
   id: string;
   imageUrl: string;

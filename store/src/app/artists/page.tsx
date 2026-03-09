@@ -4,6 +4,8 @@ import { Footer } from "@/components/storefront/Footer";
 import { ArtistCard } from "@/components/storefront/ArtistCard";
 import { getArtists } from "@/actions/artists";
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: "Artisans",
   description:

@@ -4,6 +4,8 @@ import { AdminTable, type Column } from "@/components/admin/AdminTable";
 import { deleteCategory } from "@/actions/categories";
 import { Plus } from "lucide-react";
 
+export const dynamic = 'force-dynamic';
+
 type CategoryRow = {
   id: string;
   name: string;

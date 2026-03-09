@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { StatsCard } from "@/components/admin/StatsCard";
+
+export const dynamic = 'force-dynamic';
 import { formatPrice } from "@/lib/utils";
 import {
   Package,

@@ -4,6 +4,8 @@ import { AdminTable, type Column } from "@/components/admin/AdminTable";
 import { deleteArtist } from "@/actions/artists";
 import { Plus } from "lucide-react";
 
+export const dynamic = 'force-dynamic';
+
 type ArtistRow = {
   id: string;
   name: string;

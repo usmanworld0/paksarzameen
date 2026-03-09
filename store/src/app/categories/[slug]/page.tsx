@@ -6,6 +6,8 @@ import { ProductCard } from "@/components/storefront/ProductCard";
 import { getCategoryBySlug } from "@/actions/categories";
 import { getProducts } from "@/actions/products";
 
+export const dynamic = 'force-dynamic';
+
 interface CategoryPageProps {
   params: { slug: string };
   searchParams: { page?: string; sort?: string };

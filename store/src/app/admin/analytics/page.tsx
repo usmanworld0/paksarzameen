@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { formatPrice } from "@/lib/utils";
+
+export const dynamic = 'force-dynamic';
 import {
   Package,
   Layers,

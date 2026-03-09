@@ -7,6 +7,8 @@ import { ProductCard } from "@/components/storefront/ProductCard";
 import { getArtistById } from "@/actions/artists";
 import { MapPin } from "lucide-react";
 
+export const dynamic = 'force-dynamic';
+
 interface ArtistPageProps {
   params: { id: string };
 }

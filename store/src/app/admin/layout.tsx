@@ -34,7 +34,7 @@ export default function AdminLayout({
         {mounted && (
           <AdminSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
         )}
-        <div className="min-w-0 transition-all duration-300 md:pl-[260px]">
+        <div className="min-w-0 transition-all duration-300 md:ml-[260px]">
           {mounted && (
             <AdminHeader
               onToggleSidebar={() => setSidebarOpen((prev) => !prev)}

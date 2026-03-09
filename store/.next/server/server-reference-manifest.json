@@ -1,0 +1,160 @@
+{
+  "node": {
+    "053af11fa7f81e5a9870f353991cc1cb657be31e": {
+      "workers": {
+        "app/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Cactions%5C%5Cproducts.ts%22%2C%5B%22getProductBySlug%22%2C%22deleteProduct%22%2C%22createProduct%22%2C%22updateProduct%22%2C%22getProducts%22%5D%5D%2C%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Cactions%5C%5Ccategories.ts%22%2C%5B%22getCategories%22%2C%22createCategory%22%2C%22getCategoryBySlug%22%2C%22updateCategory%22%2C%22deleteCategory%22%5D%5D%5D&__client_imported__=!"
+      },
+      "layer": {
+        "app/page": "rsc"
+      }
+    },
+    "70e20784ca2269c8608fe848c7fe9b1e5837a5d9": {
+      "workers": {
+        "app/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Cactions%5C%5Cproducts.ts%22%2C%5B%22getProductBySlug%22%2C%22deleteProduct%22%2C%22createProduct%22%2C%22updateProduct%22%2C%22getProducts%22%5D%5D%2C%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Cactions%5C%5Ccategories.ts%22%2C%5B%22getCategories%22%2C%22createCategory%22%2C%22getCategoryBySlug%22%2C%22updateCategory%22%2C%22deleteCategory%22%5D%5D%5D&__client_imported__=!"
+      },
+      "layer": {
+        "app/page": "rsc"
+      }
+    },
+    "7e5b0f850ef6dc900526a84525abb3b9a157ceff": {
+      "workers": {
+        "app/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Cactions%5C%5Cproducts.ts%22%2C%5B%22getProductBySlug%22%2C%22deleteProduct%22%2C%22createProduct%22%2C%22updateProduct%22%2C%22getProducts%22%5D%5D%2C%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Cactions%5C%5Ccategories.ts%22%2C%5B%22getCategories%22%2C%22createCategory%22%2C%22getCategoryBySlug%22%2C%22updateCategory%22%2C%22deleteCategory%22%5D%5D%5D&__client_imported__=!"
+      },
+      "layer": {
+        "app/page": "rsc"
+      }
+    },
+    "91a9943d8cc3873160059c3fb03c5c42c005552e": {
+      "workers": {
+        "app/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Cactions%5C%5Cproducts.ts%22%2C%5B%22getProductBySlug%22%2C%22deleteProduct%22%2C%22createProduct%22%2C%22updateProduct%22%2C%22getProducts%22%5D%5D%2C%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Cactions%5C%5Ccategories.ts%22%2C%5B%22getCategories%22%2C%22createCategory%22%2C%22getCategoryBySlug%22%2C%22updateCategory%22%2C%22deleteCategory%22%5D%5D%5D&__client_imported__=!"
+      },
+      "layer": {
+        "app/page": "rsc"
+      }
+    },
+    "a59635e109a6859f1edc820d3ea37ee6765b0525": {
+      "workers": {
+        "app/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Cactions%5C%5Cproducts.ts%22%2C%5B%22getProductBySlug%22%2C%22deleteProduct%22%2C%22createProduct%22%2C%22updateProduct%22%2C%22getProducts%22%5D%5D%2C%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Cactions%5C%5Ccategories.ts%22%2C%5B%22getCategories%22%2C%22createCategory%22%2C%22getCategoryBySlug%22%2C%22updateCategory%22%2C%22deleteCategory%22%5D%5D%5D&__client_imported__=!"
+      },
+      "layer": {
+        "app/page": "rsc"
+      }
+    },
+    "265db939129ecfab141e6958084c2ecb73f9d47e": {
+      "workers": {
+        "app/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Cactions%5C%5Cproducts.ts%22%2C%5B%22getProductBySlug%22%2C%22deleteProduct%22%2C%22createProduct%22%2C%22updateProduct%22%2C%22getProducts%22%5D%5D%2C%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Cactions%5C%5Ccategories.ts%22%2C%5B%22getCategories%22%2C%22createCategory%22%2C%22getCategoryBySlug%22%2C%22updateCategory%22%2C%22deleteCategory%22%5D%5D%5D&__client_imported__=!",
+        "app/admin/categories/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Capp%5C%5Cadmin%5C%5Ccategories%5C%5Cpage.tsx%22%2C%5B%22%24%24ACTION_0%22%5D%5D%2C%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Cactions%5C%5Ccategories.ts%22%2C%5B%22getCategories%22%2C%22createCategory%22%2C%22getCategoryBySlug%22%2C%22updateCategory%22%2C%22deleteCategory%22%5D%5D%5D&__client_imported__=!"
+      },
+      "layer": {
+        "app/page": "rsc",
+        "app/admin/categories/page": "rsc"
+      }
+    },
+    "5cba42280886227e1211c12fc8e3a9dbe6402a25": {
+      "workers": {
+        "app/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Cactions%5C%5Cproducts.ts%22%2C%5B%22getProductBySlug%22%2C%22deleteProduct%22%2C%22createProduct%22%2C%22updateProduct%22%2C%22getProducts%22%5D%5D%2C%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Cactions%5C%5Ccategories.ts%22%2C%5B%22getCategories%22%2C%22createCategory%22%2C%22getCategoryBySlug%22%2C%22updateCategory%22%2C%22deleteCategory%22%5D%5D%5D&__client_imported__=!",
+        "app/admin/categories/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Capp%5C%5Cadmin%5C%5Ccategories%5C%5Cpage.tsx%22%2C%5B%22%24%24ACTION_0%22%5D%5D%2C%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Cactions%5C%5Ccategories.ts%22%2C%5B%22getCategories%22%2C%22createCategory%22%2C%22getCategoryBySlug%22%2C%22updateCategory%22%2C%22deleteCategory%22%5D%5D%5D&__client_imported__=!"
+      },
+      "layer": {
+        "app/page": "rsc",
+        "app/admin/categories/page": "rsc"
+      }
+    },
+    "83e13876ff68a214ea199e142525e4c7afd1e34f": {
+      "workers": {
+        "app/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Cactions%5C%5Cproducts.ts%22%2C%5B%22getProductBySlug%22%2C%22deleteProduct%22%2C%22createProduct%22%2C%22updateProduct%22%2C%22getProducts%22%5D%5D%2C%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Cactions%5C%5Ccategories.ts%22%2C%5B%22getCategories%22%2C%22createCategory%22%2C%22getCategoryBySlug%22%2C%22updateCategory%22%2C%22deleteCategory%22%5D%5D%5D&__client_imported__=!",
+        "app/admin/categories/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Capp%5C%5Cadmin%5C%5Ccategories%5C%5Cpage.tsx%22%2C%5B%22%24%24ACTION_0%22%5D%5D%2C%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Cactions%5C%5Ccategories.ts%22%2C%5B%22getCategories%22%2C%22createCategory%22%2C%22getCategoryBySlug%22%2C%22updateCategory%22%2C%22deleteCategory%22%5D%5D%5D&__client_imported__=!"
+      },
+      "layer": {
+        "app/page": "rsc",
+        "app/admin/categories/page": "rsc"
+      }
+    },
+    "9014a4ab7ae22507f2c80c24c54dbe9dfeea5483": {
+      "workers": {
+        "app/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Cactions%5C%5Cproducts.ts%22%2C%5B%22getProductBySlug%22%2C%22deleteProduct%22%2C%22createProduct%22%2C%22updateProduct%22%2C%22getProducts%22%5D%5D%2C%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Cactions%5C%5Ccategories.ts%22%2C%5B%22getCategories%22%2C%22createCategory%22%2C%22getCategoryBySlug%22%2C%22updateCategory%22%2C%22deleteCategory%22%5D%5D%5D&__client_imported__=!",
+        "app/admin/categories/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Capp%5C%5Cadmin%5C%5Ccategories%5C%5Cpage.tsx%22%2C%5B%22%24%24ACTION_0%22%5D%5D%2C%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Cactions%5C%5Ccategories.ts%22%2C%5B%22getCategories%22%2C%22createCategory%22%2C%22getCategoryBySlug%22%2C%22updateCategory%22%2C%22deleteCategory%22%5D%5D%5D&__client_imported__=!"
+      },
+      "layer": {
+        "app/page": "rsc",
+        "app/admin/categories/page": "rsc"
+      }
+    },
+    "ae0b5e6cda3fd39bdb995fc7b556cf844dd12924": {
+      "workers": {
+        "app/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Cactions%5C%5Cproducts.ts%22%2C%5B%22getProductBySlug%22%2C%22deleteProduct%22%2C%22createProduct%22%2C%22updateProduct%22%2C%22getProducts%22%5D%5D%2C%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Cactions%5C%5Ccategories.ts%22%2C%5B%22getCategories%22%2C%22createCategory%22%2C%22getCategoryBySlug%22%2C%22updateCategory%22%2C%22deleteCategory%22%5D%5D%5D&__client_imported__=!",
+        "app/admin/categories/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Capp%5C%5Cadmin%5C%5Ccategories%5C%5Cpage.tsx%22%2C%5B%22%24%24ACTION_0%22%5D%5D%2C%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Cactions%5C%5Ccategories.ts%22%2C%5B%22getCategories%22%2C%22createCategory%22%2C%22getCategoryBySlug%22%2C%22updateCategory%22%2C%22deleteCategory%22%5D%5D%5D&__client_imported__=!"
+      },
+      "layer": {
+        "app/page": "rsc",
+        "app/admin/categories/page": "rsc"
+      }
+    },
+    "4eaa0b3af8ca319b232fe23b0e70cf1b4416f679": {
+      "workers": {
+        "app/admin/categories/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Capp%5C%5Cadmin%5C%5Ccategories%5C%5Cpage.tsx%22%2C%5B%22%24%24ACTION_0%22%5D%5D%2C%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Cactions%5C%5Ccategories.ts%22%2C%5B%22getCategories%22%2C%22createCategory%22%2C%22getCategoryBySlug%22%2C%22updateCategory%22%2C%22deleteCategory%22%5D%5D%5D&__client_imported__=!"
+      },
+      "layer": {
+        "app/admin/categories/page": "rsc"
+      }
+    },
+    "71f976e0c0eabf2a29e3bce6d465ef2dce992073": {
+      "workers": {
+        "app/admin/artists/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Capp%5C%5Cadmin%5C%5Cartists%5C%5Cpage.tsx%22%2C%5B%22%24%24ACTION_0%22%5D%5D%2C%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Cactions%5C%5Cartists.ts%22%2C%5B%22getArtists%22%2C%22createArtist%22%2C%22getArtistById%22%2C%22getArtistBySlug%22%2C%22updateArtist%22%2C%22deleteArtist%22%5D%5D%5D&__client_imported__=!"
+      },
+      "layer": {
+        "app/admin/artists/page": "rsc"
+      }
+    },
+    "30a84a73d91caffd8c0ddc7bc2ce7ac0aa8c164a": {
+      "workers": {
+        "app/admin/artists/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Capp%5C%5Cadmin%5C%5Cartists%5C%5Cpage.tsx%22%2C%5B%22%24%24ACTION_0%22%5D%5D%2C%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Cactions%5C%5Cartists.ts%22%2C%5B%22getArtists%22%2C%22createArtist%22%2C%22getArtistById%22%2C%22getArtistBySlug%22%2C%22updateArtist%22%2C%22deleteArtist%22%5D%5D%5D&__client_imported__=!"
+      },
+      "layer": {
+        "app/admin/artists/page": "rsc"
+      }
+    },
+    "9e947ddf2255efdc5fbd1c98eb7fb0a224a954b2": {
+      "workers": {
+        "app/admin/artists/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Capp%5C%5Cadmin%5C%5Cartists%5C%5Cpage.tsx%22%2C%5B%22%24%24ACTION_0%22%5D%5D%2C%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Cactions%5C%5Cartists.ts%22%2C%5B%22getArtists%22%2C%22createArtist%22%2C%22getArtistById%22%2C%22getArtistBySlug%22%2C%22updateArtist%22%2C%22deleteArtist%22%5D%5D%5D&__client_imported__=!"
+      },
+      "layer": {
+        "app/admin/artists/page": "rsc"
+      }
+    },
+    "a0acdb8a39a96104c9bc4f3693c98c468ed7dae3": {
+      "workers": {
+        "app/admin/artists/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Capp%5C%5Cadmin%5C%5Cartists%5C%5Cpage.tsx%22%2C%5B%22%24%24ACTION_0%22%5D%5D%2C%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Cactions%5C%5Cartists.ts%22%2C%5B%22getArtists%22%2C%22createArtist%22%2C%22getArtistById%22%2C%22getArtistBySlug%22%2C%22updateArtist%22%2C%22deleteArtist%22%5D%5D%5D&__client_imported__=!"
+      },
+      "layer": {
+        "app/admin/artists/page": "rsc"
+      }
+    },
+    "b0ea4c0434b5aa0bf1e778d610ceda9fb7609328": {
+      "workers": {
+        "app/admin/artists/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Capp%5C%5Cadmin%5C%5Cartists%5C%5Cpage.tsx%22%2C%5B%22%24%24ACTION_0%22%5D%5D%2C%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Cactions%5C%5Cartists.ts%22%2C%5B%22getArtists%22%2C%22createArtist%22%2C%22getArtistById%22%2C%22getArtistBySlug%22%2C%22updateArtist%22%2C%22deleteArtist%22%5D%5D%5D&__client_imported__=!"
+      },
+      "layer": {
+        "app/admin/artists/page": "rsc"
+      }
+    },
+    "e742b9e93a00535b31808408795464aa96da7686": {
+      "workers": {
+        "app/admin/artists/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Capp%5C%5Cadmin%5C%5Cartists%5C%5Cpage.tsx%22%2C%5B%22%24%24ACTION_0%22%5D%5D%2C%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Cactions%5C%5Cartists.ts%22%2C%5B%22getArtists%22%2C%22createArtist%22%2C%22getArtistById%22%2C%22getArtistBySlug%22%2C%22updateArtist%22%2C%22deleteArtist%22%5D%5D%5D&__client_imported__=!"
+      },
+      "layer": {
+        "app/admin/artists/page": "rsc"
+      }
+    },
+    "eaad9f72acbed49a80a922c5f21d365baab2f976": {
+      "workers": {
+        "app/admin/artists/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Capp%5C%5Cadmin%5C%5Cartists%5C%5Cpage.tsx%22%2C%5B%22%24%24ACTION_0%22%5D%5D%2C%5B%22C%3A%5C%5CUsers%5C%5C23247%5C%5CDesktop%5C%5Cpaksarzameen-main%5C%5Cpaksarzameen-main%5C%5Cstore%5C%5Csrc%5C%5Cactions%5C%5Cartists.ts%22%2C%5B%22getArtists%22%2C%22createArtist%22%2C%22getArtistById%22%2C%22getArtistBySlug%22%2C%22updateArtist%22%2C%22deleteArtist%22%5D%5D%5D&__client_imported__=!"
+      },
+      "layer": {
+        "app/admin/artists/page": "rsc"
+      }
+    }
+  },
+  "edge": {},
+  "encryptionKey": "s7n/iUkaghKljCn2WCq1gVT4jF8Nf+MyLY5Ng6pQ10o="
+}

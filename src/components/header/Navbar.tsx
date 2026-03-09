@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
-import { navLinks } from "@/config/site";
+import { navLinks, siteConfig } from "@/config/site";
 
 
 
@@ -173,7 +173,12 @@ export function Navbar() {
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: "1.2rem" }}>
-            <Link href="/commonwealth-lab" className="nav-commonwealth-btn">
+            <Link
+              href={siteConfig.commonwealthUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="nav-commonwealth-btn"
+            >
               Commonwealth Lab
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                 <path d="M2 2h10v4m0-4L2 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />

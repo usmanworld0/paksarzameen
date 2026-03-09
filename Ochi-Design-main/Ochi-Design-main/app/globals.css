@@ -1,7 +1,0 @@
-@import "tailwindcss";
-@font-face {
-  font-family: 'Founders Grotesk X-Cond';
-  src: url('./assets/FoundersGroteskXCond-Bold.otf') format('opentype');
-  font-weight: bold;
-  font-style: normal;
-}

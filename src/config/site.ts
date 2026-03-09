@@ -3,6 +3,11 @@ export type NavLink = {
   href: string;
 };
 
+const DEFAULT_COMMONWEALTH_URL =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:3001"
+    : "https://store.paksarzameenwfo.com";
+
 export const navLinks: NavLink[] = [
   { label: "Home", href: "/" },
   { label: "About PSZ", href: "/about" },
@@ -24,5 +29,5 @@ export const siteConfig = {
   commonwealthLabel: "Commonwealth Lab",
   commonwealthUrl:
     process.env.NEXT_PUBLIC_COMMONWEALTH_URL ??
-    "https://commonwealth-lab.example.com"
+    DEFAULT_COMMONWEALTH_URL
 };

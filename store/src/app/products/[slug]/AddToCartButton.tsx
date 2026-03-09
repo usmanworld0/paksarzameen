@@ -114,7 +114,7 @@ export function AddToCartButton({
         <button
           onClick={handleAdd}
           disabled={product.stock === 0}
-          className="w-full bg-[#0c2e1a] text-white text-[11px] tracking-[0.25em] uppercase py-4 hover:bg-[#0c2e1a]/90 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+          className="w-full bg-neutral-900 text-white text-sm font-medium tracking-wider uppercase py-4 hover:bg-neutral-700 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
           type="button"
         >
           {added ? "Added to Cart" : product.stock === 0 ? "Out of Stock" : "Add to Cart"}

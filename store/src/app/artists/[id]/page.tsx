@@ -32,24 +32,24 @@ export default async function ArtistPage({ params }: ArtistPageProps) {
       <Navbar />
       <main className="pt-[72px]">
         {/* Artist header */}
-        <div className="py-16 sm:py-20 px-4 sm:px-6 lg:px-10 border-b border-neutral-100 bg-[#f5f4f2]">
-          <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-[240px_1fr] gap-10 items-start">
+        <div className="py-16 sm:py-24 px-6 sm:px-10 lg:px-16 border-b border-neutral-100 bg-neutral-50">
+          <div className="mx-auto max-w-screen-2xl">
+            <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-12 items-start">
               {/* Profile image */}
               <div>
                 {artist.profileImage ? (
-                  <div className="aspect-square relative overflow-hidden bg-white">
+                  <div className="aspect-[3/4] relative overflow-hidden rounded-lg bg-neutral-100">
                     <Image
                       src={artist.profileImage}
                       alt={artist.name}
                       fill
-                      sizes="240px"
+                      sizes="280px"
                       className="object-cover"
                     />
                   </div>
                 ) : (
-                  <div className="aspect-square bg-white flex items-center justify-center">
-                    <span className="text-4xl text-neutral-300">
+                  <div className="aspect-[3/4] rounded-lg bg-neutral-800 flex items-center justify-center">
+                    <span className="text-5xl text-white/40">
                       {artist.name[0]}
                     </span>
                   </div>
@@ -58,10 +58,10 @@ export default async function ArtistPage({ params }: ArtistPageProps) {
 
               {/* Info */}
               <div className="space-y-4">
-                <p className="text-[10px] tracking-[0.4em] uppercase text-[#0c2e1a]/50">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-[#0c2e1a]">
                   Artisan
                 </p>
-                <h1 className="text-2xl sm:text-3xl font-light tracking-tight text-neutral-900">
+                <h1 className="text-3xl lg:text-4xl font-bold text-neutral-900">
                   {artist.name}
                 </h1>
                 {artist.location && (
@@ -117,20 +117,24 @@ export default async function ArtistPage({ params }: ArtistPageProps) {
 
         {/* Artist's products */}
         {artist.products.length > 0 && (
-          <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-16">
-            <p className="text-[10px] tracking-[0.4em] uppercase text-[#0c2e1a]/50 mb-3">
-              Collection
-            </p>
-            <h2 className="text-xl font-light tracking-tight text-neutral-900 mb-8">
-              Products by {artist.name}
-            </h2>
-            <div className="grid grid-cols-2 gap-x-3 gap-y-6 lg:grid-cols-3 xl:grid-cols-4">
+          <section className="bg-white py-24">
+            <div className="mx-auto max-w-screen-2xl px-6 sm:px-10 lg:px-16">
+            <div className="border-b border-neutral-100 pb-10 mb-16">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-[#0c2e1a] mb-3">
+                Collection
+              </p>
+              <h2 className="text-2xl font-bold text-neutral-900">
+                Products by {artist.name}
+              </h2>
+            </div>
+            <div className="grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-y-12 lg:grid-cols-3 xl:grid-cols-4">
               {artist.products.map((product) => (
                 <ProductCard
                   key={product.id}
                   product={product as Parameters<typeof ProductCard>[0]["product"]}
                 />
               ))}
+            </div>
             </div>
           </section>
         )}

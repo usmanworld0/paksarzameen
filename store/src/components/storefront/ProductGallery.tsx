@@ -14,7 +14,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
 
   if (images.length === 0) {
     return (
-      <div className="aspect-[3/4] bg-[#f5f4f2] flex items-center justify-center">
+      <div className="aspect-[4/5] rounded-lg bg-neutral-100 flex items-center justify-center">
         <span className="text-neutral-400">No image available</span>
       </div>
     );
@@ -23,39 +23,39 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
   return (
     <div className="flex flex-col gap-4">
       {/* Main image */}
-      <div className="relative aspect-[3/4] overflow-hidden bg-[#f5f4f2]">
+      <div className="relative aspect-[4/5] w-full overflow-hidden rounded-lg bg-neutral-100">
         <Image
           src={images[selectedIndex].imageUrl}
           alt={images[selectedIndex].altText || productName}
           fill
           sizes="(max-width: 768px) 100vw, 50vw"
-          className="object-cover"
+          className="object-cover transition-opacity duration-500"
           priority
-          quality={85}
+          quality={90}
         />
       </div>
 
       {/* Thumbnails */}
       {images.length > 1 && (
-        <div className="flex gap-2 overflow-x-auto pb-1">
+        <div className="flex gap-3">
           {images.map((img, index) => (
             <button
               key={img.id}
               onClick={() => setSelectedIndex(index)}
-              className={`relative w-16 h-20 sm:w-20 sm:h-24 flex-shrink-0 overflow-hidden border-2 transition-all ${
+              className={`relative aspect-square w-20 overflow-hidden rounded-md border-2 transition-all duration-300 ${
                 index === selectedIndex
-                  ? "border-[#0c2e1a]"
-                  : "border-transparent opacity-60 hover:opacity-100"
+                  ? "border-neutral-900 opacity-100"
+                  : "border-transparent opacity-60 hover:opacity-90"
               }`}
               aria-label={`View image ${index + 1}`}
             >
               <Image
                 src={img.imageUrl}
-                alt={img.altText || `${productName} ${index + 1}`}
+                alt={img.altText || `${productName} thumbnail ${index + 1}`}
                 fill
                 sizes="80px"
                 className="object-cover"
-                loading="lazy"
+                quality={60}
               />
             </button>
           ))}

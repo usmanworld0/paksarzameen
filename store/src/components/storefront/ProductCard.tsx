@@ -16,60 +16,61 @@ export function ProductCard({ product, discountPercent }: ProductCardProps) {
     : product.price;
 
   return (
-    <Link href={`/products/${product.slug}`} className="group block">
-      <article className="overflow-hidden">
-        {/* Image */}
-        <div className="relative aspect-[3/4] sm:aspect-[4/5] overflow-hidden bg-[#f5f4f2]">
-          <Image
-            src={mainImage}
-            alt={product.name}
-            fill
-            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-            className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-            loading="lazy"
-          />
-          {/* Badges */}
-          {product.stock === 0 && (
-            <div className="absolute top-3 left-3">
-              <span className="bg-neutral-900 text-white text-[9px] tracking-[0.15em] uppercase px-2.5 py-1">
-                Sold Out
-              </span>
-            </div>
-          )}
-          {hasDiscount && (
-            <div className="absolute top-3 right-3">
-              <span className="bg-[#0c2e1a] text-white text-[9px] tracking-[0.15em] uppercase px-2.5 py-1">
-                -{discountPercent}%
-              </span>
-            </div>
-          )}
-        </div>
-
-        {/* Info — centered, minimal, LV-style */}
-        <div className="px-2 pt-3 pb-4 text-center">
-          <p className="text-[8px] sm:text-[9px] tracking-[0.25em] uppercase text-[#0c2e1a]/60 mb-1">
-            {product.category.name}
-          </p>
-          <h3 className="text-xs sm:text-sm text-neutral-900 leading-snug line-clamp-2 mb-1.5">
-            {product.name}
-          </h3>
-          {product.artist && (
-            <p className="text-[10px] text-neutral-400 mb-1">
-              by {product.artist.name}
-            </p>
-          )}
-          <div className="flex items-center justify-center gap-2 mt-1">
-            <span className="text-xs sm:text-sm text-neutral-900">
-              {formatPrice(finalPrice)}
+    <article className="group flex flex-col bg-white">
+      {/* Image — full-width portrait, no border or shadow */}
+      <Link
+        href={`/products/${product.slug}`}
+        className="relative aspect-[3/4] w-full overflow-hidden bg-[#f5f4f2] sm:aspect-[4/5]"
+      >
+        <Image
+          src={mainImage}
+          alt={product.name}
+          fill
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 22vw"
+          className="object-cover transition-transform duration-700 group-hover:scale-105"
+          quality={80}
+        />
+        {/* Badges */}
+        {product.stock === 0 && (
+          <div className="absolute top-3 left-3">
+            <span className="bg-neutral-900 text-white text-[9px] tracking-[0.15em] uppercase px-2.5 py-1">
+              Sold Out
             </span>
-            {hasDiscount && (
-              <span className="text-[10px] text-neutral-400 line-through">
-                {formatPrice(product.price)}
-              </span>
-            )}
           </div>
+        )}
+        {hasDiscount && (
+          <div className="absolute top-3 right-3">
+            <span className="bg-[#0c2e1a] text-white text-[9px] tracking-[0.15em] uppercase px-2.5 py-1">
+              -{discountPercent}%
+            </span>
+          </div>
+        )}
+      </Link>
+
+      {/* Info — centered, LV style */}
+      <div className="flex flex-col items-center gap-0.5 px-2 pt-3 pb-4 text-center sm:gap-1 sm:px-3 sm:pt-4 sm:pb-6">
+        <p className="text-[8px] font-semibold uppercase tracking-[0.25em] text-[#0c2e1a] sm:text-[9px] sm:tracking-[0.3em]">
+          {product.category.name}
+        </p>
+        <h3 className="mt-0.5 text-xs font-light leading-snug text-neutral-900 line-clamp-2 sm:text-sm">
+          {product.name}
+        </h3>
+        {product.artist && (
+          <p className="text-[10px] text-neutral-400">
+            by {product.artist.name}
+          </p>
+        )}
+        <div className="mt-1 flex items-center gap-2 sm:mt-2">
+          <span className="text-xs font-medium tracking-tight text-neutral-800 sm:text-sm">
+            {formatPrice(finalPrice)}
+          </span>
+          {hasDiscount && (
+            <span className="text-[10px] text-neutral-400 line-through">
+              {formatPrice(product.price)}
+            </span>
+          )}
         </div>
-      </article>
-    </Link>
+      </div>
+    </article>
   );
 }

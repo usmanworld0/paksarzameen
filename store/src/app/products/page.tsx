@@ -43,68 +43,63 @@ export default async function ProductsPage({
     <>
       <Navbar />
       <main className="pt-[72px]">
-        {/* Page header */}
-        <div className="py-16 sm:py-20 px-4 sm:px-6 lg:px-10 border-b border-neutral-100">
-          <div className="max-w-7xl mx-auto text-center">
-            <p className="text-[10px] tracking-[0.4em] uppercase text-[#0c2e1a]/50 mb-3">
-              Collection
-            </p>
-            <h1 className="text-2xl sm:text-3xl font-light text-neutral-900 tracking-tight mb-2">
-              All Products
-            </h1>
-            <p className="text-sm text-neutral-400">
-              {total} {total === 1 ? "product" : "products"} available
-            </p>
-          </div>
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-10">
-          {/* Filters */}
-          <div className="flex flex-col gap-6 mb-10">
-            <div className="flex flex-wrap items-center gap-3">
-              <CategoryFilter categories={categories} />
-            </div>
-            <SearchBar />
-          </div>
-
-          {products.length === 0 ? (
-            <div className="text-center py-20">
-              <p className="text-neutral-400 text-sm">
-                No products found. Try adjusting your filters.
+        <section className="bg-white py-24">
+          <div className="mx-auto max-w-screen-2xl px-6 sm:px-10 lg:px-16">
+            {/* Header */}
+            <header className="mb-10">
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-400">
+                Commonwealth Lab
               </p>
+              <h1 className="mt-2 text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl">
+                All Products
+              </h1>
+            </header>
+
+            {/* Controls */}
+            <div className="mb-10 flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+              <CategoryFilter categories={categories} />
+              <SearchBar />
             </div>
-          ) : (
-            <>
-              <div className="grid grid-cols-2 gap-x-3 gap-y-6 lg:grid-cols-3 xl:grid-cols-4">
+
+            {/* Grid */}
+            {products.length === 0 ? (
+              <div className="flex min-h-[300px] items-center justify-center">
+                <p className="text-lg text-neutral-400">No products found.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-x-3 gap-y-6 sm:gap-x-4 sm:gap-y-10 lg:grid-cols-3 xl:grid-cols-4">
                 {products.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}
               </div>
+            )}
 
-              {/* Pagination */}
-              {pages > 1 && (
-                <div className="flex justify-center gap-2 mt-16">
-                  {Array.from({ length: pages }, (_, i) => i + 1).map((p) => (
-                    <a
-                      key={p}
-                      href={`/products?${new URLSearchParams({
-                        ...searchParams,
-                        page: String(p),
-                      })}`}
-                      className={`w-10 h-10 flex items-center justify-center text-xs tracking-wide transition-all ${
-                        p === currentPage
-                          ? "bg-neutral-900 text-white"
-                          : "border border-neutral-200 text-neutral-500 hover:border-neutral-900"
-                      }`}
-                    >
-                      {p}
-                    </a>
-                  ))}
-                </div>
-              )}
-            </>
-          )}
-        </div>
+            {/* Pagination */}
+            {pages > 1 && (
+              <nav
+                aria-label="Pagination"
+                className="mt-14 flex items-center justify-center gap-2"
+              >
+                {Array.from({ length: pages }, (_, i) => i + 1).map((n) => (
+                  <a
+                    key={n}
+                    href={`/products?${new URLSearchParams({
+                      ...searchParams,
+                      page: String(n),
+                    })}`}
+                    className={`flex h-9 w-9 items-center justify-center rounded-full text-xs font-semibold transition-colors ${
+                      n === currentPage
+                        ? "bg-neutral-900 text-white"
+                        : "text-neutral-600 hover:bg-neutral-100"
+                    }`}
+                  >
+                    {n}
+                  </a>
+                ))}
+              </nav>
+            )}
+          </div>
+        </section>
       </main>
       <Footer />
     </>

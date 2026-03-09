@@ -8,40 +8,48 @@ interface ArtistCardProps {
 
 export function ArtistCard({ artist }: ArtistCardProps) {
   return (
-    <Link href={`/artists/${artist.slug}`} className="group block text-center">
-      <div className="relative w-32 h-32 sm:w-40 sm:h-40 mx-auto rounded-full overflow-hidden bg-[#f5f4f2] mb-4">
+    <Link
+      href={`/artists/${artist.slug}`}
+      className="group flex flex-col items-center overflow-hidden text-center transition-all duration-300 hover:scale-105"
+    >
+      {/* Artist Image */}
+      <div className="relative aspect-[3/4] w-full overflow-hidden bg-neutral-900 mb-4">
         {artist.profileImage ? (
           <Image
             src={artist.profileImage}
             alt={artist.name}
             fill
-            sizes="160px"
-            className="object-cover transition-transform duration-500 group-hover:scale-110"
-            loading="lazy"
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+            className="object-cover transition-all duration-700 group-hover:scale-110"
+            quality={85}
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-[#0c2e1a]/5 text-[#0c2e1a] text-3xl">
+          <div className="absolute inset-0 flex items-center justify-center bg-neutral-800 text-white text-3xl">
             {artist.name[0]}
           </div>
         )}
-        {/* Hover overlay */}
-        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <span className="text-white text-[10px] tracking-[0.2em] uppercase">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+        <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-white">
             View Profile
-          </span>
+          </p>
         </div>
       </div>
-      <h3 className="text-sm text-neutral-900 group-hover:text-[#0c2e1a] transition-colors">
-        {artist.name}
-      </h3>
-      {artist.location && (
-        <p className="text-[10px] text-neutral-400 tracking-wide mt-0.5">
-          {artist.location}
+
+      {/* Artist Info */}
+      <div className="w-full">
+        <h3 className="text-sm font-light text-neutral-900 group-hover:text-[#0c2e1a] transition-colors">
+          {artist.name}
+        </h3>
+        {artist.location && (
+          <p className="mt-1.5 text-[10px] font-semibold uppercase tracking-[0.25em] text-neutral-500 group-hover:text-[#0c2e1a] transition-colors">
+            {artist.location}
+          </p>
+        )}
+        <p className="mt-2 text-[9px] font-medium text-[#0c2e1a]">
+          {artist._count.products} Product{artist._count.products !== 1 ? "s" : ""}
         </p>
-      )}
-      <p className="text-[10px] text-neutral-400 mt-0.5">
-        {artist._count.products} product{artist._count.products !== 1 ? "s" : ""}
-      </p>
+      </div>
     </Link>
   );
 }

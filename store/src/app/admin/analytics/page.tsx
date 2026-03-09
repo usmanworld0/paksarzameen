@@ -279,7 +279,7 @@ export default async function AnalyticsPage() {
             <div className="space-y-3">
               {topArtists.map((a, i) => (
                 <div key={a.name} className="flex items-center gap-3">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-gold/10 text-xs font-bold text-brand-gold">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-neutral-900/5 text-xs font-bold text-neutral-700">
                     {i + 1}
                   </span>
                   <span className="text-sm text-neutral-700 flex-1 truncate">{a.name}</span>
@@ -361,7 +361,7 @@ function TypeBar({
       <span className="text-xs text-neutral-500 w-20 shrink-0">{label}</span>
       <div className="flex-1 h-5 bg-neutral-50 rounded-full overflow-hidden">
         <div
-          className="h-full rounded-full bg-brand-gold/30"
+          className="h-full rounded-full bg-neutral-900/20"
           style={{ width: `${pct}%`, minWidth: count > 0 ? "16px" : "0" }}
         />
       </div>

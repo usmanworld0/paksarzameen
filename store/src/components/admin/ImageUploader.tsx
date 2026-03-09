@@ -3,7 +3,6 @@
 import { useState, useCallback } from "react";
 import Image from "next/image";
 import { Upload, X, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 interface ImageUploaderProps {
   images: string[];
@@ -17,6 +16,7 @@ export function ImageUploader({
   maxImages = 6,
 }: ImageUploaderProps) {
   const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleUpload = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -24,31 +24,43 @@ export function ImageUploader({
       if (!files?.length) return;
 
       setUploading(true);
+      setError(null);
       const newImages: string[] = [];
 
-      for (const file of Array.from(files)) {
-        if (images.length + newImages.length >= maxImages) break;
+      try {
+        for (const file of Array.from(files)) {
+          if (images.length + newImages.length >= maxImages) break;
 
-        const formData = new FormData();
-        formData.append("file", file);
+          const formData = new FormData();
+          formData.append("file", file);
 
-        try {
           const res = await fetch("/api/upload", {
             method: "POST",
             body: formData,
           });
-          if (res.ok) {
-            const data = await res.json();
-            newImages.push(data.url);
-          }
-        } catch {
-          // Upload failed silently, user can retry
-        }
-      }
 
-      onChange([...images, ...newImages]);
-      setUploading(false);
-      e.target.value = "";
+          if (!res.ok) {
+            const payload = await res.json().catch(() => null);
+            const message =
+              payload?.error || "Upload failed. Check Cloudinary settings and try again.";
+            throw new Error(message);
+          }
+
+          const data = await res.json();
+          newImages.push(data.url);
+        }
+
+        onChange([...images, ...newImages]);
+      } catch (uploadError) {
+        setError(
+          uploadError instanceof Error
+            ? uploadError.message
+            : "Upload failed. Check Cloudinary settings and try again."
+        );
+      } finally {
+        setUploading(false);
+        e.target.value = "";
+      }
     },
     [images, onChange, maxImages]
   );
@@ -83,13 +95,13 @@ export function ImageUploader({
         ))}
 
         {images.length < maxImages && (
-          <label className="aspect-square rounded-lg border-2 border-dashed border-neutral-200 flex flex-col items-center justify-center cursor-pointer hover:border-brand-green/50 hover:bg-brand-green/[0.02] transition-colors">
+          <label className="aspect-square rounded-lg border-2 border-dashed border-neutral-300 flex flex-col items-center justify-center cursor-pointer hover:border-neutral-900 hover:bg-neutral-50 transition-colors">
             {uploading ? (
               <Loader2 className="h-5 w-5 text-neutral-400 animate-spin" />
             ) : (
               <>
-                <Upload className="h-5 w-5 text-neutral-400 mb-1" />
-                <span className="text-[10px] text-neutral-400">Upload</span>
+                <Upload className="mb-1 h-5 w-5 text-neutral-500" />
+                <span className="text-[10px] text-neutral-600">Upload</span>
               </>
             )}
             <input
@@ -103,6 +115,7 @@ export function ImageUploader({
           </label>
         )}
       </div>
+      {error && <p className="text-xs font-medium text-red-600">{error}</p>}
       <p className="text-xs text-neutral-400">
         {images.length}/{maxImages} images. Max 5MB each.
       </p>

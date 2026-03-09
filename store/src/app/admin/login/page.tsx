@@ -61,13 +61,13 @@ export default function AdminLoginPage() {
             <ShieldCheck className="h-9 w-9 text-brand-green" />
           </div>
 
-          <p className="text-[11px] font-semibold uppercase tracking-[0.4em] text-brand-gold/80">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.4em] text-white/65">
             Admin Portal
           </p>
           <h2 className="mt-4 text-4xl font-light text-white" style={{ fontFamily: "'Playfair Display', serif" }}>
             Commonwealth Lab
           </h2>
-          <p className="mt-4 text-[15px] leading-relaxed text-white/40">
+          <p className="mt-4 text-[15px] leading-relaxed text-white/55">
             Premium artisan marketplace — connecting Pakistan&apos;s finest
             craftspeople with the world.
           </p>
@@ -77,7 +77,7 @@ export default function AdminLoginPage() {
             {["Products", "Categories", "Artisans", "Sales", "Analytics"].map((item) => (
               <span
                 key={item}
-                className="rounded-full border border-white/[0.08] bg-white/[0.03] px-4 py-1.5 text-[10px] font-medium uppercase tracking-[0.2em] text-white/30"
+                className="rounded-full border border-white/[0.08] bg-white/[0.03] px-4 py-1.5 text-[10px] font-medium uppercase tracking-[0.2em] text-white/45"
               >
                 {item}
               </span>

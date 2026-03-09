@@ -22,6 +22,7 @@ interface CategoryFormProps {
 export function CategoryForm({ category }: CategoryFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [images, setImages] = useState<string[]>(
     category?.image ? [category.image] : []
   );
@@ -44,6 +45,7 @@ export function CategoryForm({ category }: CategoryFormProps) {
 
   async function onSubmit(data: CategoryFormData) {
     setLoading(true);
+    setSubmitError(null);
     try {
       const url = category
         ? `/api/categories/${category.id}`
@@ -53,13 +55,19 @@ export function CategoryForm({ category }: CategoryFormProps) {
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, image: images[0] || null }),
+        body: JSON.stringify({ ...data, image: images[0] ?? undefined }),
       });
 
       if (res.ok) {
         router.push("/admin/categories");
         router.refresh();
+        return;
       }
+
+      const payload = await res.json().catch(() => null);
+      setSubmitError(
+        payload?.error || payload?.message || "Unable to save category."
+      );
     } finally {
       setLoading(false);
     }
@@ -121,6 +129,12 @@ export function CategoryForm({ category }: CategoryFormProps) {
       </section>
 
       <div className="h-px bg-neutral-100" />
+
+      {submitError && (
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {submitError}
+        </div>
+      )}
 
       <div className="flex gap-3 pt-2">
         <Button type="submit" variant="primary" disabled={loading}>

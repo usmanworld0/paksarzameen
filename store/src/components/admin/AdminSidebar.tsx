@@ -47,7 +47,7 @@ export function AdminSidebar({ open, onClose }: AdminSidebarProps) {
       )}
 
       <aside
-        className={`admin-sidebar fixed left-0 top-0 bottom-0 z-50 flex w-[260px] flex-col overflow-hidden transform transition-transform duration-300 ease-out md:z-40 md:translate-x-0 ${
+        className={`admin-sidebar fixed inset-y-0 left-0 z-50 flex w-[260px] flex-col overflow-hidden transform transition-transform duration-300 ease-out md:z-40 md:translate-x-0 ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -58,7 +58,7 @@ export function AdminSidebar({ open, onClose }: AdminSidebarProps) {
               <ShieldCheck className="h-[18px] w-[18px] text-brand-green" />
             </span>
             <span className="leading-tight">
-              <span className="block text-[9px] font-semibold uppercase tracking-[0.25em] text-brand-gold/60">
+              <span className="block text-[9px] font-semibold uppercase tracking-[0.25em] text-white/55">
                 Admin
               </span>
               <span className="block text-[14px] font-semibold text-white/90">

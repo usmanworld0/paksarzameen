@@ -22,7 +22,7 @@ export function StatsCard({
     success: "bg-emerald-50 text-emerald-600",
     warning: "bg-amber-50 text-amber-600",
     danger: "bg-red-50 text-red-500",
-    gold: "bg-brand-gold/10 text-brand-gold",
+    gold: "bg-neutral-900/5 text-neutral-700",
   }[variant];
 
   const cardBg = {

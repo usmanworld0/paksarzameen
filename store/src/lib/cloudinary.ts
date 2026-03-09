@@ -12,6 +12,14 @@ export async function uploadImage(
   file: string,
   folder: string = "commonwealth-lab"
 ): Promise<{ url: string; publicId: string }> {
+  if (
+    !process.env.CLOUDINARY_CLOUD_NAME ||
+    !process.env.CLOUDINARY_API_KEY ||
+    !process.env.CLOUDINARY_API_SECRET
+  ) {
+    throw new Error("Cloudinary is not configured on the server.");
+  }
+
   const result = await cloudinary.uploader.upload(file, {
     folder,
     transformation: [

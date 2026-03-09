@@ -111,8 +111,8 @@ export default function SettingsPage() {
           {/* Notifications */}
           <div className="admin-form-card space-y-6">
             <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-gold/10">
-                <Bell className="h-4.5 w-4.5 text-brand-gold" />
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-neutral-100">
+                <Bell className="h-4.5 w-4.5 text-neutral-700" />
               </div>
               <div>
                 <h2 className="text-base font-semibold text-neutral-800">Notifications</h2>
@@ -220,8 +220,8 @@ export default function SettingsPage() {
                 <span className="text-[10px] text-neutral-400">Green</span>
               </div>
               <div className="space-y-1 text-center">
-                <div className="mx-auto h-8 w-8 rounded-lg bg-brand-gold" />
-                <span className="text-[10px] text-neutral-400">Gold</span>
+                <div className="mx-auto h-8 w-8 rounded-lg bg-neutral-500" />
+                <span className="text-[10px] text-neutral-400">Stone</span>
               </div>
               <div className="space-y-1 text-center">
                 <div className="mx-auto h-8 w-8 rounded-lg bg-brand-charcoal" />

@@ -31,6 +31,7 @@ interface ProductFormProps {
 export function ProductForm({ product, categories, artists }: ProductFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [images, setImages] = useState<string[]>(
     product?.images.map((i) => i.imageUrl) || []
   );
@@ -62,6 +63,7 @@ export function ProductForm({ product, categories, artists }: ProductFormProps) 
 
   async function onSubmit(data: ProductFormData) {
     setLoading(true);
+    setSubmitError(null);
     try {
       const url = product ? `/api/products/${product.id}` : "/api/products";
       const method = product ? "PATCH" : "POST";
@@ -75,7 +77,13 @@ export function ProductForm({ product, categories, artists }: ProductFormProps) 
       if (res.ok) {
         router.push("/admin/products");
         router.refresh();
+        return;
       }
+
+      const payload = await res.json().catch(() => null);
+      setSubmitError(
+        payload?.error || payload?.message || "Unable to save product."
+      );
     } finally {
       setLoading(false);
     }
@@ -241,6 +249,12 @@ export function ProductForm({ product, categories, artists }: ProductFormProps) 
       </section>
 
       <div className="h-px bg-neutral-100" />
+
+      {submitError && (
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {submitError}
+        </div>
+      )}
 
       <div className="flex gap-3 pt-2">
         <Button type="submit" variant="primary" disabled={loading}>

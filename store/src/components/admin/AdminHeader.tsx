@@ -12,7 +12,6 @@ import {
   LogOut,
   Store,
   Search,
-  User,
   Settings,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -40,12 +39,7 @@ export function AdminHeader({ onToggleSidebar, sidebarOpen }: AdminHeaderProps) 
   const { data: session } = useSession();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     if (showSearch && searchRef.current) {
@@ -61,7 +55,7 @@ export function AdminHeader({ onToggleSidebar, sidebarOpen }: AdminHeaderProps) 
   }));
 
   return (
-    <header className="sticky top-0 z-50 border-b border-neutral-100/80 bg-white/80 backdrop-blur-xl" suppressHydrationWarning>
+    <header className="sticky top-0 z-30 border-b border-neutral-100/80 bg-white/80 backdrop-blur-xl">
       <div className="flex h-[64px] items-center gap-3 px-4 sm:px-6">
         {/* Mobile menu toggle */}
         <Button
@@ -76,7 +70,7 @@ export function AdminHeader({ onToggleSidebar, sidebarOpen }: AdminHeaderProps) 
 
         {/* Breadcrumbs */}
         <nav className="hidden items-center gap-1.5 text-[11px] md:flex" aria-label="Breadcrumb">
-          {mounted && breadcrumbs.map((crumb, i) => (
+          {breadcrumbs.map((crumb, i) => (
             <span key={crumb.href} className="flex items-center gap-1.5">
               {i > 0 && <ChevronRight className="h-3 w-3 text-neutral-200" />}
               {crumb.isLast ? (
@@ -93,7 +87,7 @@ export function AdminHeader({ onToggleSidebar, sidebarOpen }: AdminHeaderProps) 
           ))}
         </nav>
 
-        <div className="ml-auto flex items-center gap-1.5" suppressHydrationWarning>
+        <div className="ml-auto flex items-center gap-1.5">
           {/* Search toggle */}
           <Button
             variant="ghost"
@@ -122,60 +116,58 @@ export function AdminHeader({ onToggleSidebar, sidebarOpen }: AdminHeaderProps) 
           </Button>
 
           {/* User menu */}
-          {mounted && (
-            <div className="relative ml-1">
-              <button
-                onClick={() => setShowUserMenu(!showUserMenu)}
-                className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-neutral-50"
-              >
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-brand-green/20 to-brand-green/10 text-xs font-bold text-brand-green ring-1 ring-brand-green/10">
-                  {session?.user?.name?.[0]?.toUpperCase() || "A"}
+          <div className="relative ml-1">
+            <button
+              onClick={() => setShowUserMenu(!showUserMenu)}
+              className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-neutral-50"
+            >
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-brand-green/20 to-brand-green/10 text-xs font-bold text-brand-green ring-1 ring-brand-green/10">
+                {session?.user?.name?.[0]?.toUpperCase() || "A"}
+              </span>
+              <span className="hidden sm:block text-left">
+                <span className="block text-[12px] font-semibold text-neutral-700">
+                  {session?.user?.name || "Admin"}
                 </span>
-                <span className="hidden sm:block text-left">
-                  <span className="block text-[12px] font-semibold text-neutral-700">
-                    {session?.user?.name || "Admin"}
-                  </span>
-                  <span className="block text-[10px] text-neutral-400">
-                    Administrator
-                  </span>
+                <span className="block text-[10px] text-neutral-400">
+                  Administrator
                 </span>
-              </button>
+              </span>
+            </button>
 
-              {showUserMenu && (
-                <>
-                  <div className="fixed inset-0 z-40" onClick={() => setShowUserMenu(false)} />
-                  <div className="absolute right-0 top-full z-50 mt-2 w-60 rounded-xl border border-neutral-100 bg-white p-1.5 shadow-xl shadow-black/5">
-                    <div className="border-b border-neutral-100 px-3 py-2.5 mb-1">
-                      <p className="text-[13px] font-semibold text-neutral-800">{session?.user?.name || "Admin"}</p>
-                      <p className="text-[11px] text-neutral-400">{session?.user?.email}</p>
-                    </div>
-                    <Link
-                      href="/admin/settings"
-                      onClick={() => setShowUserMenu(false)}
-                      className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] text-neutral-600 hover:bg-neutral-50"
-                    >
-                      <Settings className="h-3.5 w-3.5" /> Settings
-                    </Link>
-                    <Link
-                      href={STORE_URL}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] text-neutral-600 hover:bg-neutral-50 sm:hidden"
-                    >
-                      <Store className="h-3.5 w-3.5" /> View Store
-                    </Link>
-                    <div className="my-1 h-px bg-neutral-100" />
-                    <button
-                      onClick={() => signOut({ callbackUrl: "/admin/login" })}
-                      className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] text-red-500 hover:bg-red-50"
-                    >
-                      <LogOut className="h-3.5 w-3.5" /> Sign Out
-                    </button>
+            {showUserMenu && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setShowUserMenu(false)} />
+                <div className="absolute right-0 top-full z-50 mt-2 w-60 rounded-xl border border-neutral-100 bg-white p-1.5 shadow-xl shadow-black/5">
+                  <div className="mb-1 border-b border-neutral-100 px-3 py-2.5">
+                    <p className="text-[13px] font-semibold text-neutral-800">{session?.user?.name || "Admin"}</p>
+                    <p className="text-[11px] text-neutral-400">{session?.user?.email}</p>
                   </div>
-                </>
-              )}
-            </div>
-          )}
+                  <Link
+                    href="/admin/settings"
+                    onClick={() => setShowUserMenu(false)}
+                    className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] text-neutral-600 hover:bg-neutral-50"
+                  >
+                    <Settings className="h-3.5 w-3.5" /> Settings
+                  </Link>
+                  <Link
+                    href={STORE_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] text-neutral-600 hover:bg-neutral-50 sm:hidden"
+                  >
+                    <Store className="h-3.5 w-3.5" /> View Store
+                  </Link>
+                  <div className="my-1 h-px bg-neutral-100" />
+                  <button
+                    onClick={() => signOut({ callbackUrl: "/admin/login" })}
+                    className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] text-red-500 hover:bg-red-50"
+                  >
+                    <LogOut className="h-3.5 w-3.5" /> Sign Out
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
 

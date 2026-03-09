@@ -1,24 +1,42 @@
 import { z } from "zod";
 
+const optionalText = z.preprocess(
+  (value) => {
+    if (value === null || value === undefined) return undefined;
+    if (typeof value !== "string") return value;
+    const trimmed = value.trim();
+    return trimmed.length === 0 ? undefined : trimmed;
+  },
+  z.string().optional()
+);
+
+const optionalPositiveNumber = z.preprocess(
+  (value) => {
+    if (value === null || value === undefined || value === "") return undefined;
+    return value;
+  },
+  z.coerce.number().positive().optional()
+);
+
 export const categorySchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   slug: z.string().min(2, "Slug must be at least 2 characters"),
-  description: z.string().optional(),
-  image: z.string().optional(),
+  description: optionalText,
+  image: optionalText,
   customizable: z.boolean().default(false),
 });
 
 export const artistSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   slug: z.string().min(2, "Slug must be at least 2 characters"),
-  bio: z.string().optional(),
-  location: z.string().optional(),
-  profileImage: z.string().optional(),
+  bio: optionalText,
+  location: optionalText,
+  profileImage: optionalText,
   socialLinks: z
     .object({
-      instagram: z.string().optional(),
-      facebook: z.string().optional(),
-      website: z.string().optional(),
+      instagram: optionalText,
+      facebook: optionalText,
+      website: optionalText,
     })
     .optional(),
 });
@@ -26,9 +44,9 @@ export const artistSchema = z.object({
 export const productSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   slug: z.string().min(2, "Slug must be at least 2 characters"),
-  description: z.string().optional(),
+  description: optionalText,
   price: z.coerce.number().positive("Price must be positive"),
-  compareAtPrice: z.coerce.number().positive().optional().nullable(),
+  compareAtPrice: optionalPositiveNumber.nullable(),
   stock: z.coerce.number().int().min(0, "Stock cannot be negative").default(0),
   categoryId: z.string().min(1, "Category is required"),
   artistId: z.string().optional().nullable(),

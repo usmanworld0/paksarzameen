@@ -13,36 +13,28 @@ export default function AdminLayout({
 }) {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const isLoginPage = pathname === "/admin/login";
 
   // Close mobile sidebar on route change
   useEffect(() => {
     setSidebarOpen(false);
   }, [pathname]);
 
-  if (pathname === "/admin/login") {
-    return <SessionProvider>{children}</SessionProvider>;
-  }
-
   return (
     <SessionProvider>
-      <div className="min-h-screen bg-[#faf9f6]">
-        {mounted && (
+      <div className={`min-h-screen overflow-x-hidden bg-[#faf9f6] ${isLoginPage ? "" : "md:pl-[260px]"}`}>
+        <div className={isLoginPage ? "hidden" : undefined} aria-hidden={isLoginPage}>
           <AdminSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-        )}
-        <div className="min-w-0 transition-all duration-300 md:ml-[260px]">
-          {mounted && (
+        </div>
+        <div className="min-w-0">
+          <div className={isLoginPage ? "hidden" : undefined} aria-hidden={isLoginPage}>
             <AdminHeader
               onToggleSidebar={() => setSidebarOpen((prev) => !prev)}
               sidebarOpen={sidebarOpen}
             />
-          )}
-          <main className="p-4 sm:p-6 lg:p-8 xl:p-10">
-            <div className="mx-auto max-w-7xl">
+          </div>
+          <main className={isLoginPage ? "p-0" : "p-4 sm:p-6 lg:p-8 xl:p-10"}>
+            <div className={isLoginPage ? "" : "mx-auto max-w-7xl"}>
               {children}
             </div>
           </main>

@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { productSchema } from "@/lib/validations";
 import { revalidatePath } from "next/cache";
+import { Prisma } from "@prisma/client";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -66,30 +67,42 @@ export async function POST(request: Request) {
   const parsed = productSchema.safeParse(body);
 
   if (!parsed.success) {
+    const fieldError = Object.values(parsed.error.flatten().fieldErrors)
+      .flat()
+      .find(Boolean);
     return NextResponse.json(
-      { error: parsed.error.flatten() },
+      { error: fieldError || "Please complete the required product fields." },
       { status: 400 }
     );
   }
 
   const { images, ...productData } = parsed.data;
 
-  const product = await prisma.product.create({
-    data: {
-      ...productData,
-      artistId: productData.artistId || null,
-      compareAtPrice: productData.compareAtPrice || null,
-      images: {
-        create: (images || []).map((url, i) => ({
-          imageUrl: url,
-          position: i,
-        })),
+  try {
+    const product = await prisma.product.create({
+      data: {
+        ...productData,
+        artistId: productData.artistId || null,
+        compareAtPrice: productData.compareAtPrice || null,
+        images: {
+          create: (images || []).map((url, i) => ({
+            imageUrl: url,
+            position: i,
+          })),
+        },
       },
-    },
-    include: { images: true },
-  });
+      include: { images: true },
+    });
 
-  revalidatePath("/");
-  revalidatePath("/products");
-  return NextResponse.json(product, { status: 201 });
+    revalidatePath("/");
+    revalidatePath("/products");
+    revalidatePath("/admin/products");
+    return NextResponse.json(product, { status: 201 });
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+      return NextResponse.json({ error: "Product slug already exists." }, { status: 409 });
+    }
+
+    return NextResponse.json({ error: "Failed to create product." }, { status: 500 });
+  }
 }

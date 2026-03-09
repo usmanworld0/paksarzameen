@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { formatPrice, getDiscountedPrice } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
 import type { ProductWithRelations } from "@/types";
 
 interface ProductCardProps {
@@ -20,7 +19,7 @@ export function ProductCard({ product, discountPercent }: ProductCardProps) {
     <Link href={`/products/${product.slug}`} className="group block">
       <article className="overflow-hidden">
         {/* Image */}
-        <div className="relative aspect-[3/4] overflow-hidden bg-neutral-50 rounded-sm">
+        <div className="relative aspect-[3/4] sm:aspect-[4/5] overflow-hidden bg-[#f5f4f2]">
           <Image
             src={mainImage}
             alt={product.name}
@@ -30,40 +29,41 @@ export function ProductCard({ product, discountPercent }: ProductCardProps) {
             loading="lazy"
           />
           {/* Badges */}
-          <div className="absolute top-3 left-3 flex flex-col gap-1.5">
-            {product.featured && (
-              <Badge variant="gold" className="text-[10px]">Featured</Badge>
-            )}
-            {hasDiscount && (
-              <Badge variant="destructive" className="text-[10px]">
+          {product.stock === 0 && (
+            <div className="absolute top-3 left-3">
+              <span className="bg-neutral-900 text-white text-[9px] tracking-[0.15em] uppercase px-2.5 py-1">
+                Sold Out
+              </span>
+            </div>
+          )}
+          {hasDiscount && (
+            <div className="absolute top-3 right-3">
+              <span className="bg-[#0c2e1a] text-white text-[9px] tracking-[0.15em] uppercase px-2.5 py-1">
                 -{discountPercent}%
-              </Badge>
-            )}
-            {product.stock === 0 && (
-              <Badge variant="secondary" className="text-[10px]">Sold Out</Badge>
-            )}
-          </div>
+              </span>
+            </div>
+          )}
         </div>
 
-        {/* Info */}
-        <div className="pt-3 pb-1">
-          <p className="text-[11px] text-neutral-400 uppercase tracking-wider mb-1">
+        {/* Info — centered, minimal, LV-style */}
+        <div className="px-2 pt-3 pb-4 text-center">
+          <p className="text-[8px] sm:text-[9px] tracking-[0.25em] uppercase text-[#0c2e1a]/60 mb-1">
             {product.category.name}
           </p>
-          <h3 className="text-sm font-medium text-brand-charcoal group-hover:text-brand-gold transition-colors line-clamp-1">
+          <h3 className="text-xs sm:text-sm text-neutral-900 leading-snug line-clamp-2 mb-1.5">
             {product.name}
           </h3>
           {product.artist && (
-            <p className="text-xs text-neutral-500 mt-0.5">
+            <p className="text-[10px] text-neutral-400 mb-1">
               by {product.artist.name}
             </p>
           )}
-          <div className="flex items-center gap-2 mt-2">
-            <span className="text-sm font-semibold text-brand-charcoal">
+          <div className="flex items-center justify-center gap-2 mt-1">
+            <span className="text-xs sm:text-sm text-neutral-900">
               {formatPrice(finalPrice)}
             </span>
             {hasDiscount && (
-              <span className="text-xs text-neutral-400 line-through">
+              <span className="text-[10px] text-neutral-400 line-through">
                 {formatPrice(product.price)}
               </span>
             )}

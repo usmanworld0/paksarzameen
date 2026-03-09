@@ -86,39 +86,39 @@ export function AddToCartButton({
       ))}
 
       {/* Quantity + Add to Cart */}
-      <div className="flex items-center gap-4 pt-2">
-        <div className="flex items-center border rounded-sm">
+      <div className="space-y-3 pt-2">
+        {/* Quantity selector — rounded pill style */}
+        <div className="inline-flex items-center rounded-full border border-neutral-200">
           <button
             onClick={() => setQuantity(Math.max(1, quantity - 1))}
-            className="px-3 py-2 hover:bg-neutral-50 transition-colors"
+            className="w-10 h-10 flex items-center justify-center text-neutral-500 hover:text-neutral-900 transition-colors"
             type="button"
           >
-            <Minus className="h-4 w-4" />
+            <Minus className="h-3.5 w-3.5" />
           </button>
-          <span className="px-4 py-2 text-sm font-medium min-w-[3rem] text-center">
+          <span className="px-4 text-sm min-w-[2.5rem] text-center">
             {quantity}
           </span>
           <button
             onClick={() =>
               setQuantity(Math.min(product.stock, quantity + 1))
             }
-            className="px-3 py-2 hover:bg-neutral-50 transition-colors"
+            className="w-10 h-10 flex items-center justify-center text-neutral-500 hover:text-neutral-900 transition-colors"
             type="button"
           >
-            <Plus className="h-4 w-4" />
+            <Plus className="h-3.5 w-3.5" />
           </button>
         </div>
 
-        <Button
+        {/* Full-width CTA */}
+        <button
           onClick={handleAdd}
-          variant="primary"
-          size="lg"
           disabled={product.stock === 0}
-          className="flex-1"
+          className="w-full bg-[#0c2e1a] text-white text-[11px] tracking-[0.25em] uppercase py-4 hover:bg-[#0c2e1a]/90 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+          type="button"
         >
-          <ShoppingBag className="h-4 w-4 mr-2" />
-          {added ? "Added!" : product.stock === 0 ? "Out of Stock" : "Add to Cart"}
-        </Button>
+          {added ? "Added to Cart" : product.stock === 0 ? "Out of Stock" : "Add to Cart"}
+        </button>
       </div>
     </div>
   );

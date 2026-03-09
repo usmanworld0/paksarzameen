@@ -1,37 +1,44 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 
 export function HeroSection() {
   return (
-    <section className="relative min-h-[85vh] flex items-center justify-center bg-brand-charcoal overflow-hidden">
-      {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-brand-charcoal via-brand-charcoal/95 to-brand-green-dark/40" />
+    <section className="relative w-full min-h-screen flex items-center justify-center overflow-hidden bg-[#0c2e1a]">
+      {/* Gradient overlay (replaces background image) */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#0c2e1a] via-[#0c2e1a]/90 to-[#1a4d30]/60" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_40%,rgba(196,162,101,0.08),transparent_60%),radial-gradient(circle_at_70%_70%,rgba(255,255,255,0.03),transparent_50%)]" />
 
-      {/* Decorative elements */}
-      <div className="absolute top-20 right-10 w-72 h-72 rounded-full bg-brand-gold/5 blur-3xl" />
-      <div className="absolute bottom-20 left-10 w-96 h-96 rounded-full bg-brand-green/5 blur-3xl" />
-
-      <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
-        <p className="text-brand-gold text-xs font-semibold tracking-[0.3em] uppercase mb-6 animate-fade-in">
-          By PakSarZameen
+      <div className="relative z-10 text-center px-4 sm:px-6">
+        {/* Eyebrow */}
+        <p className="text-[10px] sm:text-xs tracking-[0.4em] uppercase text-white/60 mb-6">
+          PakSarZameen &middot; Commonwealth
         </p>
-        <h1 className="text-4xl sm:text-5xl md:text-7xl font-serif font-light text-white leading-[1.1] tracking-tight mb-6 animate-fade-in [animation-delay:100ms]">
+
+        {/* Title */}
+        <h1 className="text-[2.5rem] sm:text-6xl md:text-7xl lg:text-8xl font-light text-white leading-[1.05] tracking-tight mb-6">
           Commonwealth
           <br />
-          <span className="text-brand-gold font-normal italic">Lab</span>
+          <span className="italic font-normal">Lab</span>
         </h1>
-        <p className="text-neutral-400 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed mb-10 animate-fade-in [animation-delay:200ms]">
+
+        {/* Subtitle */}
+        <p className="text-white/50 text-sm sm:text-base max-w-md mx-auto leading-relaxed mb-10">
           A curated marketplace connecting Pakistan&apos;s finest artisans with
           the world. Every purchase builds community wealth.
         </p>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in [animation-delay:300ms]">
-          <Button asChild size="xl" variant="gold">
-            <Link href="/products">Explore Collection</Link>
-          </Button>
-          <Button asChild size="xl" variant="outline" className="border-neutral-600 text-white hover:bg-white/5 hover:text-white">
-            <Link href="/artists">Meet the Artisans</Link>
-          </Button>
-        </div>
+
+        {/* CTA */}
+        <Link
+          href="/products"
+          className="inline-block border border-white/60 text-white text-[11px] sm:text-xs tracking-[0.3em] uppercase px-8 py-3.5 hover:bg-white hover:text-[#0c2e1a] transition-all duration-300"
+        >
+          Shop Collection
+        </Link>
+      </div>
+
+      {/* Scroll hint */}
+      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
+        <span className="text-[9px] tracking-[0.3em] uppercase text-white/30">Scroll</span>
+        <div className="w-px h-8 bg-gradient-to-b from-white/30 to-transparent animate-pulse" />
       </div>
     </section>
   );

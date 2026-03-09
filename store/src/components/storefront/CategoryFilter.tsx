@@ -28,10 +28,10 @@ export function CategoryFilter({ categories }: CategoryFilterProps) {
     <div className="flex flex-wrap gap-2">
       <button
         onClick={() => handleFilter("")}
-        className={`px-4 py-2 text-xs font-medium uppercase tracking-wider rounded-sm border transition-colors ${
+        className={`px-5 py-2 text-[10px] tracking-[0.2em] uppercase rounded-full border transition-all ${
           !currentCategory
-            ? "bg-brand-charcoal text-white border-brand-charcoal"
-            : "bg-white text-neutral-600 border-neutral-200 hover:border-brand-charcoal"
+            ? "bg-neutral-900 text-white border-neutral-900"
+            : "bg-transparent text-neutral-600 border-neutral-300 hover:border-neutral-900"
         }`}
       >
         All
@@ -40,10 +40,10 @@ export function CategoryFilter({ categories }: CategoryFilterProps) {
         <button
           key={cat.id}
           onClick={() => handleFilter(cat.slug)}
-          className={`px-4 py-2 text-xs font-medium uppercase tracking-wider rounded-sm border transition-colors ${
+          className={`px-5 py-2 text-[10px] tracking-[0.2em] uppercase rounded-full border transition-all ${
             currentCategory === cat.slug
-              ? "bg-brand-charcoal text-white border-brand-charcoal"
-              : "bg-white text-neutral-600 border-neutral-200 hover:border-brand-charcoal"
+              ? "bg-neutral-900 text-white border-neutral-900"
+              : "bg-transparent text-neutral-600 border-neutral-300 hover:border-neutral-900"
           }`}
         >
           {cat.name}

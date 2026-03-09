@@ -14,7 +14,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
 
   if (images.length === 0) {
     return (
-      <div className="aspect-[3/4] bg-neutral-100 rounded-sm flex items-center justify-center">
+      <div className="aspect-[3/4] bg-[#f5f4f2] flex items-center justify-center">
         <span className="text-neutral-400">No image available</span>
       </div>
     );
@@ -23,7 +23,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
   return (
     <div className="flex flex-col gap-4">
       {/* Main image */}
-      <div className="relative aspect-[3/4] overflow-hidden bg-neutral-50 rounded-sm">
+      <div className="relative aspect-[3/4] overflow-hidden bg-[#f5f4f2]">
         <Image
           src={images[selectedIndex].imageUrl}
           alt={images[selectedIndex].altText || productName}
@@ -42,9 +42,9 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
             <button
               key={img.id}
               onClick={() => setSelectedIndex(index)}
-              className={`relative w-16 h-20 sm:w-20 sm:h-24 flex-shrink-0 rounded-sm overflow-hidden border-2 transition-all ${
+              className={`relative w-16 h-20 sm:w-20 sm:h-24 flex-shrink-0 overflow-hidden border-2 transition-all ${
                 index === selectedIndex
-                  ? "border-brand-charcoal"
+                  ? "border-[#0c2e1a]"
                   : "border-transparent opacity-60 hover:opacity-100"
               }`}
               aria-label={`View image ${index + 1}`}

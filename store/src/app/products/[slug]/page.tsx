@@ -3,11 +3,11 @@ import { notFound } from "next/navigation";
 import { Navbar } from "@/components/storefront/Navbar";
 import { Footer } from "@/components/storefront/Footer";
 import { ProductGallery } from "@/components/storefront/ProductGallery";
-import { Badge } from "@/components/ui/badge";
 import { getProductBySlug } from "@/actions/products";
 import { getProductDiscount } from "@/actions/sales";
 import { formatPrice } from "@/lib/utils";
 import { AddToCartButton } from "./AddToCartButton";
+import { ProductAccordion } from "./ProductAccordion";
 import Link from "next/link";
 
 export const dynamic = 'force-dynamic';
@@ -48,109 +48,95 @@ export default async function ProductPage({ params }: ProductPageProps) {
   return (
     <>
       <Navbar />
-      <main className="container-wide py-10">
+      <main className="pt-[72px]">
         {/* Breadcrumb */}
-        <nav className="text-sm text-muted-foreground mb-8">
-          <Link href="/products" className="hover:text-foreground">
-            Products
-          </Link>
-          <span className="mx-2">/</span>
-          <Link
-            href={`/products?category=${product.category.slug}`}
-            className="hover:text-foreground"
-          >
-            {product.category.name}
-          </Link>
-          <span className="mx-2">/</span>
-          <span className="text-foreground">{product.name}</span>
+        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 pt-8 pb-4">
+          <div className="flex items-center gap-2 text-[10px] tracking-[0.2em] uppercase text-neutral-400">
+            <Link href="/products" className="hover:text-neutral-900 transition-colors">
+              Products
+            </Link>
+            <span>/</span>
+            <Link
+              href={`/products?category=${product.category.slug}`}
+              className="hover:text-neutral-900 transition-colors"
+            >
+              {product.category.name}
+            </Link>
+            <span>/</span>
+            <span className="text-neutral-700">{product.name}</span>
+          </div>
         </nav>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Gallery */}
-          <ProductGallery images={product.images} productName={product.name} />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 pb-20">
+          <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-10 lg:gap-16">
+            {/* Gallery — 2/3 */}
+            <ProductGallery images={product.images} productName={product.name} />
 
-          {/* Details */}
-          <div className="space-y-6">
-            <div>
-              {product.featured && (
-                <Badge variant="gold" className="mb-3">
-                  Featured
-                </Badge>
-              )}
-              <h1 className="text-3xl font-semibold mb-2">{product.name}</h1>
+            {/* Details — 1/3, sticky */}
+            <div className="lg:sticky lg:top-24 lg:self-start space-y-6">
+              {/* Category badge */}
+              <span className="inline-block text-[9px] tracking-[0.25em] uppercase text-[#0c2e1a]/60 border border-[#0c2e1a]/15 px-3 py-1">
+                {product.category.name}
+              </span>
+
+              <h1 className="text-2xl sm:text-3xl font-light tracking-tight text-neutral-900">
+                {product.name}
+              </h1>
+
               {product.artist && (
-                <p className="text-muted-foreground">
+                <p className="text-sm text-neutral-400">
                   by{" "}
                   <Link
                     href={`/artists/${product.artist.id}`}
-                    className="text-brand-green hover:underline"
+                    className="text-[#0c2e1a] hover:underline"
                   >
                     {product.artist.name}
                   </Link>
                 </p>
               )}
-            </div>
 
-            {/* Price */}
-            <div className="flex items-baseline gap-3">
-              <span className="text-2xl font-bold">
-                {formatPrice(discountedPrice || product.price)}
-              </span>
-              {discountedPrice && (
-                <>
-                  <span className="text-lg text-muted-foreground line-through">
-                    {formatPrice(product.price)}
-                  </span>
-                  <Badge variant="destructive">-{discount}%</Badge>
-                </>
-              )}
-            </div>
-
-            {/* Stock */}
-            <p
-              className={`text-sm ${product.stock > 0 ? "text-green-600" : "text-red-500"}`}
-            >
-              {product.stock > 0
-                ? `${product.stock} in stock`
-                : "Out of stock"}
-            </p>
-
-            {/* Description */}
-            {product.description && (
-              <div className="prose prose-neutral max-w-none">
-                <p>{product.description}</p>
+              {/* Price */}
+              <div className="flex items-baseline gap-3">
+                <span className="text-xl text-neutral-900">
+                  {formatPrice(discountedPrice || product.price)}
+                </span>
+                {discountedPrice && (
+                  <>
+                    <span className="text-sm text-neutral-400 line-through">
+                      {formatPrice(product.price)}
+                    </span>
+                    <span className="text-[9px] tracking-[0.15em] uppercase bg-[#0c2e1a] text-white px-2 py-0.5">
+                      -{discount}%
+                    </span>
+                  </>
+                )}
               </div>
-            )}
 
-            {/* Add to Cart */}
-            <AddToCartButton
-              product={{
-                id: product.id,
-                name: product.name,
-                slug: product.slug,
-                price: product.price,
-                discountedPrice: discountedPrice || undefined,
-                image: firstImage,
-                stock: product.stock,
-              }}
-              customizationOptions={
-                product.customizable
-                  ? product.category.customizationOptions
-                  : []
-              }
-            />
-
-            {/* Category */}
-            <div className="border-t pt-6 mt-6">
-              <p className="text-sm text-muted-foreground">
-                Category:{" "}
-                <Link
-                  href={`/products?category=${product.category.slug}`}
-                  className="text-brand-green hover:underline"
-                >
-                  {product.category.name}
-                </Link>
+              {/* Stock */}
+              <p className={`text-[11px] tracking-wide ${product.stock > 0 ? "text-[#0c2e1a]" : "text-red-500"}`}>
+                {product.stock > 0 ? `${product.stock} in stock` : "Out of stock"}
               </p>
+
+              {/* Add to Cart */}
+              <AddToCartButton
+                product={{
+                  id: product.id,
+                  name: product.name,
+                  slug: product.slug,
+                  price: product.price,
+                  discountedPrice: discountedPrice || undefined,
+                  image: firstImage,
+                  stock: product.stock,
+                }}
+                customizationOptions={
+                  product.customizable
+                    ? product.category.customizationOptions
+                    : []
+                }
+              />
+
+              {/* Accordion sections */}
+              <ProductAccordion description={product.description} />
             </div>
           </div>
         </div>

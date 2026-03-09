@@ -5,15 +5,17 @@ import { ProductCard } from "@/components/storefront/ProductCard";
 import { CategoryCard } from "@/components/storefront/CategoryCard";
 import { getProducts } from "@/actions/products";
 import { getCategories } from "@/actions/categories";
+import { getArtists } from "@/actions/artists";
+import { ArtistCard } from "@/components/storefront/ArtistCard";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
-  const [{ products: featured }, categories] = await Promise.all([
+  const [{ products: featured }, categories, artists] = await Promise.all([
     getProducts({ featured: true, limit: 8 }),
     getCategories(),
+    getArtists(),
   ]);
 
   return (
@@ -22,71 +24,109 @@ export default async function HomePage() {
       <main>
         <HeroSection />
 
-        {/* Categories */}
+        {/* Categories Grid */}
         {categories.length > 0 && (
-          <section className="container-wide py-20">
-            <div className="flex items-end justify-between mb-10">
-              <div>
-                <h2 className="text-3xl font-semibold">Shop by Category</h2>
-                <p className="text-muted-foreground mt-2">
-                  Discover artisan craftsmanship across traditions
+          <section className="py-16 sm:py-28 px-4 sm:px-6 lg:px-10">
+            <div className="max-w-7xl mx-auto">
+              <div className="text-center mb-12">
+                <p className="text-[10px] tracking-[0.4em] uppercase text-[#0c2e1a]/50 mb-3">
+                  Browse
                 </p>
+                <h2 className="text-2xl sm:text-3xl font-light text-neutral-900 tracking-tight">
+                  Shop by Category
+                </h2>
               </div>
-              <Link
-                href="/products"
-                className="hidden sm:inline-flex items-center gap-1 text-sm text-brand-green hover:underline"
-              >
-                View All <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-              {categories.slice(0, 8).map((cat) => (
-                <CategoryCard key={cat.id} category={cat} />
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* Featured Products */}
-        {featured.length > 0 && (
-          <section className="bg-white py-20">
-            <div className="container-wide">
-              <div className="flex items-end justify-between mb-10">
-                <div>
-                  <h2 className="text-3xl font-semibold">Featured Collection</h2>
-                  <p className="text-muted-foreground mt-2">
-                    Hand-selected pieces from our finest artisans
-                  </p>
-                </div>
-                <Link
-                  href="/products"
-                  className="hidden sm:inline-flex items-center gap-1 text-sm text-brand-green hover:underline"
-                >
-                  Shop All <ArrowRight className="h-3.5 w-3.5" />
-                </Link>
-              </div>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {featured.map((product) => (
-                  <ProductCard key={product.id} product={product} />
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+                {categories.slice(0, 8).map((cat) => (
+                  <CategoryCard key={cat.id} category={cat} />
                 ))}
               </div>
             </div>
           </section>
         )}
 
-        {/* CTA Banner */}
-        <section className="container-wide py-20">
-          <div className="bg-brand-charcoal rounded-sm p-10 md:p-16 text-center text-white">
-            <h2 className="text-3xl md:text-4xl font-semibold mb-4">
+        {/* Meet the Artisans */}
+        {artists.length > 0 && (
+          <section className="py-16 sm:py-28 px-4 sm:px-6 lg:px-10 bg-[#f5f4f2]">
+            <div className="max-w-7xl mx-auto">
+              <div className="text-center mb-12">
+                <p className="text-[10px] tracking-[0.4em] uppercase text-[#0c2e1a]/50 mb-3">
+                  Craftsmanship
+                </p>
+                <h2 className="text-2xl sm:text-3xl font-light text-neutral-900 tracking-tight">
+                  Meet the Artisans
+                </h2>
+                <p className="text-sm text-neutral-500 mt-3 max-w-md mx-auto">
+                  Each artisan brings generations of tradition to their craft.
+                </p>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
+                {artists.slice(0, 5).map((artist) => (
+                  <ArtistCard key={artist.id} artist={artist} />
+                ))}
+              </div>
+              {artists.length > 5 && (
+                <div className="text-center mt-10">
+                  <Link
+                    href="/artists"
+                    className="inline-block border border-neutral-300 text-neutral-700 text-[11px] tracking-[0.25em] uppercase px-8 py-3 hover:bg-neutral-900 hover:text-white hover:border-neutral-900 transition-all"
+                  >
+                    View All Artisans
+                  </Link>
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+
+        {/* Featured Products */}
+        {featured.length > 0 && (
+          <section className="py-16 sm:py-28 px-4 sm:px-6 lg:px-10">
+            <div className="max-w-7xl mx-auto">
+              <div className="text-center mb-12">
+                <p className="text-[10px] tracking-[0.4em] uppercase text-[#0c2e1a]/50 mb-3">
+                  Curated
+                </p>
+                <h2 className="text-2xl sm:text-3xl font-light text-neutral-900 tracking-tight">
+                  Featured Collection
+                </h2>
+              </div>
+              <div className="grid grid-cols-2 gap-x-3 gap-y-6 lg:grid-cols-3 xl:grid-cols-4">
+                {featured.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+              <div className="text-center mt-12">
+                <Link
+                  href="/products"
+                  className="inline-block border border-neutral-300 text-neutral-700 text-[11px] tracking-[0.25em] uppercase px-8 py-3 hover:bg-neutral-900 hover:text-white hover:border-neutral-900 transition-all"
+                >
+                  View All Products
+                </Link>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Green Divider Strip */}
+        <div className="h-1 bg-[#0c2e1a]" />
+
+        {/* CTA Section */}
+        <section className="py-20 sm:py-28 px-4 sm:px-6 lg:px-10 bg-[#0c2e1a] text-white text-center">
+          <div className="max-w-xl mx-auto">
+            <p className="text-[10px] tracking-[0.4em] uppercase text-white/40 mb-4">
+              PakSarZameen
+            </p>
+            <h2 className="text-2xl sm:text-3xl font-light tracking-tight mb-4">
               Empower Pakistani Artisans
             </h2>
-            <p className="text-neutral-300 max-w-xl mx-auto mb-8">
-              Every purchase supports local craftspeople and preserves centuries-old
-              traditions. Shop with purpose.
+            <p className="text-white/50 text-sm leading-relaxed mb-10">
+              Every purchase supports local craftspeople and preserves
+              centuries-old traditions. Shop with purpose.
             </p>
             <Link
               href="/products"
-              className="inline-flex items-center px-8 py-3 bg-brand-gold text-brand-charcoal font-medium rounded-sm hover:bg-brand-gold/90 transition-colors text-sm"
+              className="inline-block border border-white/60 text-white text-[11px] tracking-[0.3em] uppercase px-8 py-3.5 hover:bg-white hover:text-[#0c2e1a] transition-all duration-300"
             >
               Explore the Collection
             </Link>

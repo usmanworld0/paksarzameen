@@ -11,11 +11,17 @@ import { Loader2, AlertCircle, Eye, EyeOff, ShieldCheck } from "lucide-react";
 export default function AdminLoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const authError = searchParams.get("error");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  const configErrorMessage =
+    authError === "Configuration"
+      ? "Sign-in is unavailable because the production auth configuration is incomplete. Verify the store deployment environment variables and redeploy."
+      : "";
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -162,10 +168,10 @@ export default function AdminLoginPage() {
               </div>
             </div>
 
-            {error && (
+            {(configErrorMessage || error) && (
               <div className="flex items-center gap-2.5 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600 ring-1 ring-red-100">
                 <AlertCircle className="h-4 w-4 flex-shrink-0" />
-                <span>{error}</span>
+                <span>{configErrorMessage || error}</span>
               </div>
             )}
 

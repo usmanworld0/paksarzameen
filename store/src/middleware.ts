@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
+import { getAuthSecret } from "@/lib/auth-env";
 
 export default async function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
@@ -11,7 +12,7 @@ export default async function middleware(request: NextRequest) {
 
   const token = await getToken({
     req: request,
-    secret: process.env.NEXTAUTH_SECRET,
+    secret: getAuthSecret(),
   });
 
   const isLoginPage = pathname === "/admin/login";

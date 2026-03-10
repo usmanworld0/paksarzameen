@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,6 +10,7 @@ import { Loader2, AlertCircle, Eye, EyeOff, ShieldCheck } from "lucide-react";
 
 export default function AdminLoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -25,13 +26,14 @@ export default function AdminLoginPage() {
       email,
       password,
       redirect: false,
+      callbackUrl: searchParams.get("callbackUrl") || "/admin",
     });
 
     if (result?.error) {
       setError("Invalid credentials. Please try again.");
       setLoading(false);
     } else {
-      router.push("/admin");
+      router.push(result?.url || searchParams.get("callbackUrl") || "/admin");
       router.refresh();
     }
   }

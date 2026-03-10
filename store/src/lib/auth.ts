@@ -2,11 +2,28 @@ import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
 import { prisma } from "./prisma";
+import { getAuthSecret, getAuthUrl } from "./auth-env";
 
 export const authOptions: NextAuthOptions = {
+  secret: getAuthSecret(),
+  debug: process.env.NODE_ENV !== "production",
   session: { strategy: "jwt" },
   pages: {
     signIn: "/admin/login",
+    error: "/admin/login",
+  },
+  cookies: {
+    sessionToken: {
+      name: getAuthUrl().startsWith("https://")
+        ? "__Secure-next-auth.session-token"
+        : "next-auth.session-token",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: getAuthUrl().startsWith("https://"),
+      },
+    },
   },
   providers: [
     CredentialsProvider({
@@ -20,20 +37,24 @@ export const authOptions: NextAuthOptions = {
 
         const normalizedEmail = credentials.email.trim().toLowerCase();
 
-        const admin = await prisma.admin.findUnique({
-          where: { email: normalizedEmail },
-        });
-        if (!admin) return null;
+        try {
+          const admin = await prisma.admin.findUnique({
+            where: { email: normalizedEmail },
+          });
+          if (!admin) return null;
 
-        const isValid = await compare(credentials.password, admin.password);
-        if (!isValid) return null;
+          const isValid = await compare(credentials.password, admin.password);
+          if (!isValid) return null;
 
-        return {
-          id: admin.id,
-          email: admin.email,
-          name: admin.name,
-          role: admin.role,
-        };
+          return {
+            id: admin.id,
+            email: admin.email,
+            name: admin.name,
+            role: admin.role,
+          };
+        } catch {
+          return null;
+        }
       },
     }),
   ],

@@ -2,7 +2,7 @@ import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
 import { prisma } from "./prisma";
-import { getAuthSecret, getAuthUrl } from "./auth-env";
+import { getAuthSecret, getAuthUrl, getHardcodedAdminCredentials } from "./auth-env";
 
 export const authOptions: NextAuthOptions = {
   secret: getAuthSecret(),
@@ -36,6 +36,19 @@ export const authOptions: NextAuthOptions = {
         if (!credentials?.email || !credentials?.password) return null;
 
         const normalizedEmail = credentials.email.trim().toLowerCase();
+        const hardcodedAdmin = getHardcodedAdminCredentials();
+
+        if (
+          normalizedEmail === hardcodedAdmin.email.toLowerCase() &&
+          credentials.password === hardcodedAdmin.password
+        ) {
+          return {
+            id: "hardcoded-admin",
+            email: hardcodedAdmin.email.toLowerCase(),
+            name: "Admin",
+            role: "admin",
+          };
+        }
 
         try {
           const admin = await prisma.admin.findUnique({

@@ -20,7 +20,7 @@ export default function AdminLoginPage() {
 
   const configErrorMessage =
     authError === "Configuration"
-      ? "Sign-in is unavailable because the production auth configuration is incomplete. Verify the store deployment environment variables and redeploy."
+      ? "Sign-in is temporarily unavailable. If the issue persists, refresh and try again."
       : "";
 
   async function handleSubmit(e: React.FormEvent) {
@@ -122,6 +122,9 @@ export default function AdminLoginPage() {
             </h1>
             <p className="mt-2 text-sm text-neutral-400">
               Sign in to access your admin dashboard
+            </p>
+            <p className="mt-3 text-xs text-neutral-400">
+              Default access: abdullahtanseer@gmail.com / CommonWe@lth!
             </p>
           </div>
 

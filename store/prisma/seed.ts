@@ -5,8 +5,8 @@ const prisma = new PrismaClient();
 
 async function main() {
   // Seed admin user
-  const adminEmail = process.env.ADMIN_EMAIL || "admin@gmail.com";
-  const adminPassword = process.env.ADMIN_PASSWORD || "admin123";
+  const adminEmail = process.env.ADMIN_EMAIL || "abdullahtanseer@gmail.com";
+  const adminPassword = process.env.ADMIN_PASSWORD || "CommonWe@lth!";
 
   await prisma.admin.upsert({
     where: { email: adminEmail.toLowerCase() },

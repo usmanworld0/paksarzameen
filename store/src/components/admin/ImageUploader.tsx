@@ -41,8 +41,7 @@ export function ImageUploader({
 
           if (!res.ok) {
             const payload = await res.json().catch(() => null);
-            const message =
-              payload?.error || "Upload failed. Check Cloudinary settings and try again.";
+            const message = payload?.error || "Upload failed. Please try again.";
             throw new Error(message);
           }
 
@@ -55,7 +54,7 @@ export function ImageUploader({
         setError(
           uploadError instanceof Error
             ? uploadError.message
-            : "Upload failed. Check Cloudinary settings and try again."
+            : "Upload failed. Please try again."
         );
       } finally {
         setUploading(false);

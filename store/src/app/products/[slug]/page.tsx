@@ -6,7 +6,12 @@ import { ProductGallery } from "@/components/storefront/ProductGallery";
 import { ProductCard } from "@/components/storefront/ProductCard";
 import { getProductBySlug, getProducts } from "@/actions/products";
 import { getProductDiscount } from "@/actions/sales";
-import { formatPrice } from "@/lib/utils";
+import {
+  formatRegionalPrice,
+  getRegionBadgeLabel,
+  resolveProductRegionalPricing,
+} from "@/lib/pricing";
+import { getRequestRegion } from "@/lib/pricing-server";
 import { AddToCartButton } from "./AddToCartButton";
 import { ProductAccordion } from "./ProductAccordion";
 import Link from "next/link";
@@ -37,12 +42,15 @@ export async function generateMetadata({
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
+  const region = await getRequestRegion();
   const product = await getProductBySlug(params.slug);
   if (!product) notFound();
 
+  const regionalPricing = resolveProductRegionalPricing(product, region);
+
   const discount = await getProductDiscount(product.id, product.categoryId);
   const discountedPrice =
-    discount > 0 ? product.price * (1 - discount / 100) : null;
+    discount > 0 ? regionalPricing.price * (1 - discount / 100) : null;
 
   const firstImage = product.images[0]?.imageUrl || "";
 
@@ -112,13 +120,16 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
               {/* Price */}
               <div className="mb-6">
+                <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-neutral-400">
+                  {getRegionBadgeLabel(region)}
+                </p>
                 <span className="text-3xl font-bold text-neutral-900">
-                  {formatPrice(discountedPrice || product.price)}
+                  {formatRegionalPrice(discountedPrice || regionalPricing.price, region)}
                 </span>
                 {discountedPrice && (
                   <>
                     <span className="ml-3 text-lg text-neutral-400 line-through">
-                      {formatPrice(product.price)}
+                      {formatRegionalPrice(regionalPricing.price, region)}
                     </span>
                     <span className="ml-2 text-[9px] tracking-[0.15em] uppercase bg-[#0c2e1a] text-white px-2 py-0.5">
                       -{discount}%
@@ -134,11 +145,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 </p>
               )}
 
-              {/* Stock Status */}
+              {/* Availability */}
               <div className="mb-8">
                 <p className="text-xs font-medium uppercase tracking-wider text-neutral-500 mb-2">Availability</p>
                 <p className={`text-sm font-medium ${product.stock > 0 ? "text-green-700" : "text-red-500"}`}>
-                  {product.stock > 0 ? "In Stock" : "Out of Stock"}
+                  {product.stock > 0 ? "Yes" : "No • Sold Out"}
                 </p>
               </div>
 
@@ -148,10 +159,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
                   id: product.id,
                   name: product.name,
                   slug: product.slug,
-                  price: product.price,
+                  price: regionalPricing.price,
                   discountedPrice: discountedPrice || undefined,
                   image: firstImage,
-                  stock: product.stock,
+                  available: product.stock > 0,
+                  region,
                 }}
                 customizationOptions={
                   product.customizable
@@ -200,7 +212,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             </h2>
             <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
               {relatedProducts.map((p) => (
-                <ProductCard key={p.id} product={p} />
+                <ProductCard key={p.id} product={p} region={region} />
               ))}
             </div>
           </div>

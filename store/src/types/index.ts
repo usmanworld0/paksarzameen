@@ -3,14 +3,18 @@ import type {
   Category,
   Artist,
   ProductImage,
+  ProductRegionPrice,
   Sale,
   CustomizationOption,
+  StoreRegion as PrismaStoreRegion,
 } from "@prisma/client";
+import type { StoreRegion } from "@/lib/pricing";
 
 export type ProductWithRelations = Product & {
   category: Category;
   artist: Artist | null;
   images: ProductImage[];
+  regionPrices: (ProductRegionPrice & { region: PrismaStoreRegion })[];
 };
 
 export type CategoryWithCount = Category & {
@@ -33,6 +37,7 @@ export type CartItem = {
   discountedPrice?: number;
   image: string;
   quantity: number;
+  region?: StoreRegion;
   customizations?: Record<string, string>;
 };
 
@@ -48,5 +53,5 @@ export type AdminStats = {
   totalArtists: number;
   totalSales: number;
   featuredProducts: number;
-  lowStockProducts: number;
+  soldOutProducts: number;
 };

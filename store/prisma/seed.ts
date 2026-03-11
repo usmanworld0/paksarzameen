@@ -3,6 +3,36 @@ import { hash } from "bcryptjs";
 
 const prisma = new PrismaClient();
 
+const STORE_REGIONS = [
+  {
+    code: "PAK",
+    name: "Pakistan",
+    currency: "PKR",
+    locale: "en-PK",
+    countryCodes: ["PK"],
+    active: true,
+    isDefault: true,
+  },
+  {
+    code: "US",
+    name: "United States",
+    currency: "USD",
+    locale: "en-US",
+    countryCodes: ["US"],
+    active: false,
+    isDefault: false,
+  },
+  {
+    code: "UK",
+    name: "United Kingdom",
+    currency: "GBP",
+    locale: "en-GB",
+    countryCodes: ["GB", "UK"],
+    active: false,
+    isDefault: false,
+  },
+] as const;
+
 async function main() {
   // Seed admin user
   const adminEmail = process.env.ADMIN_EMAIL || "abdullahtanseer@gmail.com";
@@ -23,6 +53,25 @@ async function main() {
     },
   });
   console.log(`Admin user upserted: ${adminEmail.toLowerCase()}`);
+
+  for (const region of STORE_REGIONS) {
+    await prisma.storeRegion.upsert({
+      where: { code: region.code },
+      update: {
+        name: region.name,
+        currency: region.currency,
+        locale: region.locale,
+        countryCodes: region.countryCodes,
+      },
+      create: region,
+    });
+  }
+
+  await prisma.storeRegion.updateMany({
+    where: { code: { not: "PAK" }, isDefault: true },
+    data: { isDefault: false },
+  });
+  console.log("Store regions seeded");
 
   // Seed categories
   const categories = [

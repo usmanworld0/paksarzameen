@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { ProductForm } from "@/components/admin/ProductForm";
+import { getAllStoreRegions } from "@/lib/store-regions";
 import { ArrowLeft } from "lucide-react";
 
 export const dynamic = 'force-dynamic';
@@ -13,13 +14,17 @@ interface EditProductPageProps {
 export default async function EditProductPage({
   params,
 }: EditProductPageProps) {
-  const [product, categories, artists] = await Promise.all([
+  const [product, categories, artists, regions] = await Promise.all([
     prisma.product.findUnique({
       where: { id: params.id },
-      include: { images: { orderBy: { position: "asc" } } },
+      include: {
+        images: { orderBy: { position: "asc" } },
+        regionPrices: { include: { region: true } },
+      },
     }),
     prisma.category.findMany({ orderBy: { name: "asc" } }),
     prisma.artist.findMany({ orderBy: { name: "asc" } }),
+    getAllStoreRegions(),
   ]);
 
   if (!product) notFound();
@@ -43,6 +48,7 @@ export default async function EditProductPage({
           product={product}
           categories={categories}
           artists={artists}
+          regions={regions}
         />
       </div>
     </div>

@@ -1,12 +1,14 @@
 import { ProductCard } from "./ProductCard";
+import type { StoreRegion } from "@/lib/pricing";
 import type { ProductWithRelations } from "@/types";
 
 interface ProductGridProps {
   products: ProductWithRelations[];
   discounts?: Record<string, number>;
+  region?: StoreRegion;
 }
 
-export function ProductGrid({ products, discounts = {} }: ProductGridProps) {
+export function ProductGrid({ products, discounts = {}, region = "PAK" }: ProductGridProps) {
   if (products.length === 0) {
     return (
       <div className="text-center py-20">
@@ -21,6 +23,7 @@ export function ProductGrid({ products, discounts = {} }: ProductGridProps) {
         <ProductCard
           key={product.id}
           product={product}
+          region={region}
           discountPercent={discounts[product.id] || discounts["*"] || 0}
         />
       ))}

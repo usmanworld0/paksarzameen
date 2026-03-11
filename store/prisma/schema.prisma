@@ -60,11 +60,47 @@ model Product {
   category Category      @relation(fields: [categoryId], references: [id])
   artist   Artist?       @relation(fields: [artistId], references: [id])
   images   ProductImage[]
+  regionPrices ProductRegionPrice[]
 
   @@index([slug])
   @@index([categoryId])
   @@index([artistId])
   @@index([featured])
+}
+
+model StoreRegion {
+  id           String   @id @default(cuid())
+  code         String   @unique
+  name         String
+  currency     String
+  locale       String
+  countryCodes Json
+  active       Boolean  @default(false)
+  isDefault    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  productPrices ProductRegionPrice[]
+
+  @@index([active])
+  @@index([isDefault])
+}
+
+model ProductRegionPrice {
+  id             String   @id @default(cuid())
+  productId      String
+  regionId       String
+  price          Float
+  compareAtPrice Float?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  product Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  region  StoreRegion @relation(fields: [regionId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, regionId])
+  @@index([productId])
+  @@index([regionId])
 }
 
 model ProductImage {

@@ -5,6 +5,7 @@ import { Navbar } from "@/components/storefront/Navbar";
 import { Footer } from "@/components/storefront/Footer";
 import { ProductCard } from "@/components/storefront/ProductCard";
 import { getArtistById } from "@/actions/artists";
+import { getRequestRegion } from "@/lib/pricing-server";
 
 export const dynamic = 'force-dynamic';
 
@@ -24,6 +25,7 @@ export async function generateMetadata({
 }
 
 export default async function ArtistPage({ params }: ArtistPageProps) {
+  const region = await getRequestRegion();
   const artist = await getArtistById(params.id);
   if (!artist) notFound();
 
@@ -132,6 +134,7 @@ export default async function ArtistPage({ params }: ArtistPageProps) {
                 <ProductCard
                   key={product.id}
                   product={product as Parameters<typeof ProductCard>[0]["product"]}
+                  region={region}
                 />
               ))}
             </div>

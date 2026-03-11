@@ -5,6 +5,7 @@ import { Footer } from "@/components/storefront/Footer";
 import { ProductCard } from "@/components/storefront/ProductCard";
 import { getCategoryBySlug } from "@/actions/categories";
 import { getProducts } from "@/actions/products";
+import { getRequestRegion } from "@/lib/pricing-server";
 
 export const dynamic = 'force-dynamic';
 
@@ -29,6 +30,7 @@ export default async function CategoryPage({
   params,
   searchParams,
 }: CategoryPageProps) {
+  const region = await getRequestRegion();
   const category = await getCategoryBySlug(params.slug);
   if (!category) notFound();
 
@@ -74,7 +76,7 @@ export default async function CategoryPage({
               <>
                 <div className="grid grid-cols-2 gap-x-3 gap-y-6 sm:gap-y-10 lg:grid-cols-3 xl:grid-cols-4">
                   {products.map((product) => (
-                    <ProductCard key={product.id} product={product} />
+                    <ProductCard key={product.id} product={product} region={region} />
                   ))}
                 </div>
 

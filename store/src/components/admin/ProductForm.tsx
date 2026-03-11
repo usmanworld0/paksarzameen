@@ -4,7 +4,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import type { Product, Category, Artist } from "@prisma/client";
+import type { Product, Category, Artist, ProductRegionPrice, StoreRegion as PrismaStoreRegion } from "@prisma/client";
+import type { StoreRegionRecord } from "@/lib/pricing";
 import { productSchema, type ProductFormData } from "@/lib/validations";
 import { slugify } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -23,18 +24,25 @@ import {
 import { Loader2 } from "lucide-react";
 
 interface ProductFormProps {
-  product?: Product & { images: { imageUrl: string }[] };
+  product?: Product & {
+    images: { imageUrl: string }[];
+    regionPrices?: (ProductRegionPrice & { region: PrismaStoreRegion })[];
+  };
   categories: Category[];
   artists: Artist[];
+  regions: StoreRegionRecord[];
 }
 
-export function ProductForm({ product, categories, artists }: ProductFormProps) {
+export function ProductForm({ product, categories, artists, regions }: ProductFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [images, setImages] = useState<string[]>(
     product?.images.map((i) => i.imageUrl) || []
   );
+  const activeRegions = regions.filter((region) => region.active);
+  const defaultRegion = activeRegions.find((region) => region.isDefault) || activeRegions[0];
+  const alternateRegions = activeRegions.filter((region) => !region.isDefault);
 
   const {
     register,
@@ -50,16 +58,29 @@ export function ProductForm({ product, categories, artists }: ProductFormProps) 
       description: product?.description || "",
       price: product?.price || 0,
       compareAtPrice: product?.compareAtPrice || null,
-      stock: product?.stock || 0,
+      availability: (product?.stock ?? 0) > 0,
       categoryId: product?.categoryId || "",
       artistId: product?.artistId || null,
       customizable: product?.customizable || false,
       featured: product?.featured || false,
       active: product?.active ?? true,
+      regionPrices: alternateRegions.map((region) => {
+        const existing = product?.regionPrices?.find(
+          (entry) => entry.region.code === region.code
+        );
+
+        return {
+          regionCode: region.code,
+          price: existing?.price ?? 0,
+          compareAtPrice: existing?.compareAtPrice ?? null,
+        };
+      }),
     },
   });
 
   const nameValue = watch("name");
+  const availabilityValue = watch("availability");
+  const regionPriceValues = watch("regionPrices");
 
   async function onSubmit(data: ProductFormData) {
     setLoading(true);
@@ -126,13 +147,20 @@ export function ProductForm({ product, categories, artists }: ProductFormProps) 
 
       <div className="h-px bg-neutral-100" />
 
-      {/* Pricing & Inventory */}
+      {/* Pricing & Availability */}
       <section className="space-y-4">
-        <h3 className="text-sm font-semibold uppercase tracking-wider text-neutral-500">Pricing &amp; Inventory</h3>
+        <h3 className="text-sm font-semibold uppercase tracking-wider text-neutral-500">Pricing &amp; Availability</h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="price">Price (PKR)</Label>
+          <Label htmlFor="price">
+            Price{defaultRegion ? ` (${defaultRegion.currency})` : ""}
+          </Label>
           <Input id="price" type="number" step="1" {...register("price")} />
+          {defaultRegion && (
+            <p className="text-xs text-neutral-500">
+              Base price for {defaultRegion.name}.
+            </p>
+          )}
           {errors.price && (
             <p className="text-sm text-red-500">{errors.price.message}</p>
           )}
@@ -146,14 +174,91 @@ export function ProductForm({ product, categories, artists }: ProductFormProps) 
             {...register("compareAtPrice")}
           />
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="stock">Stock</Label>
-          <Input id="stock" type="number" {...register("stock")} />
-          {errors.stock && (
-            <p className="text-sm text-red-500">{errors.stock.message}</p>
-          )}
+        <div className="space-y-2 rounded-lg border border-neutral-200 bg-neutral-50 px-4 py-3">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <Label htmlFor="availability">Availability</Label>
+              <p className="mt-1 text-xs text-neutral-500">
+                Mark unavailable products as sold out.
+              </p>
+            </div>
+            <Switch
+              id="availability"
+              checked={availabilityValue}
+              onCheckedChange={(val) => setValue("availability", val, { shouldValidate: true })}
+            />
+          </div>
+          <p className={`mt-3 text-xs font-medium ${availabilityValue ? "text-green-700" : "text-red-500"}`}>
+            {availabilityValue ? "Available" : "Sold Out"}
+          </p>
         </div>
         </div>
+
+        {alternateRegions.length > 0 && (
+          <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-4 sm:p-5">
+            <div className="mb-4">
+              <h4 className="text-sm font-semibold text-neutral-800">Regional Prices</h4>
+              <p className="mt-1 text-xs text-neutral-500">
+                Every active non-default region needs a product price before this item can be saved.
+              </p>
+            </div>
+            <div className="space-y-4">
+              {alternateRegions.map((region, index) => (
+                <div key={region.code} className="grid grid-cols-1 gap-4 rounded-lg border border-neutral-200 bg-white p-4 sm:grid-cols-2">
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-neutral-900">
+                      {region.name}
+                    </p>
+                    <p className="text-xs text-neutral-500">
+                      {region.currency} pricing for this region.
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor={`region-price-${region.code}`}>Price ({region.currency})</Label>
+                      <Input
+                        id={`region-price-${region.code}`}
+                        type="number"
+                        step="0.01"
+                        value={regionPriceValues?.[index]?.price || ""}
+                        onChange={(event) => {
+                          const nextValues = [...(regionPriceValues || [])];
+                          nextValues[index] = {
+                            regionCode: region.code,
+                            price: Number(event.target.value || 0),
+                            compareAtPrice: nextValues[index]?.compareAtPrice ?? null,
+                          };
+                          setValue("regionPrices", nextValues, { shouldValidate: true });
+                        }}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor={`region-compare-${region.code}`}>Compare At ({region.currency})</Label>
+                      <Input
+                        id={`region-compare-${region.code}`}
+                        type="number"
+                        step="0.01"
+                        value={regionPriceValues?.[index]?.compareAtPrice || ""}
+                        onChange={(event) => {
+                          const nextValues = [...(regionPriceValues || [])];
+                          nextValues[index] = {
+                            regionCode: region.code,
+                            price: nextValues[index]?.price ?? 0,
+                            compareAtPrice: event.target.value ? Number(event.target.value) : null,
+                          };
+                          setValue("regionPrices", nextValues, { shouldValidate: true });
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            {errors.regionPrices && (
+              <p className="mt-3 text-sm text-red-500">Please add valid prices for each active region.</p>
+            )}
+          </div>
+        )}
       </section>
 
       <div className="h-px bg-neutral-100" />

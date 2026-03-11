@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+const supportedRegionSchema = z.enum(["PAK", "US", "UK"]);
+
 const optionalText = z.preprocess(
   (value) => {
     if (value === null || value === undefined) return undefined;
@@ -47,12 +49,21 @@ export const productSchema = z.object({
   description: optionalText,
   price: z.coerce.number().positive("Price must be positive"),
   compareAtPrice: optionalPositiveNumber.nullable(),
-  stock: z.coerce.number().int().min(0, "Stock cannot be negative").default(0),
+  availability: z.boolean().default(true),
   categoryId: z.string().min(1, "Category is required"),
   artistId: z.string().optional().nullable(),
   customizable: z.boolean().default(false),
   featured: z.boolean().default(false),
   active: z.boolean().default(true),
+  regionPrices: z
+    .array(
+      z.object({
+        regionCode: supportedRegionSchema,
+        price: z.coerce.number().positive("Regional price must be positive"),
+        compareAtPrice: optionalPositiveNumber.nullable(),
+      })
+    )
+    .default([]),
   images: z.array(z.string()).optional(),
 });
 

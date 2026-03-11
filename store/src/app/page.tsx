@@ -7,11 +7,13 @@ import { ArtistCard } from "@/components/storefront/ArtistCard";
 import { getProducts } from "@/actions/products";
 import { getCategories } from "@/actions/categories";
 import { getArtists } from "@/actions/artists";
+import { getRequestRegion } from "@/lib/pricing-server";
 import Link from "next/link";
 
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
+  const region = await getRequestRegion();
   const [{ products: featured }, categories, artists] = await Promise.all([
     getProducts({ featured: true, limit: 8 }),
     getCategories(),
@@ -119,7 +121,7 @@ export default async function HomePage() {
 
               <div className="grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-4 sm:gap-y-12 lg:grid-cols-4">
                 {featured.map((product) => (
-                  <ProductCard key={product.id} product={product} />
+                  <ProductCard key={product.id} product={product} region={region} />
                 ))}
               </div>
             </div>

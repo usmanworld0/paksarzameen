@@ -1,14 +1,16 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { ProductForm } from "@/components/admin/ProductForm";
+import { getAllStoreRegions } from "@/lib/store-regions";
 import { ArrowLeft } from "lucide-react";
 
 export const dynamic = 'force-dynamic';
 
 export default async function NewProductPage() {
-  const [categories, artists] = await Promise.all([
+  const [categories, artists, regions] = await Promise.all([
     prisma.category.findMany({ orderBy: { name: "asc" } }),
     prisma.artist.findMany({ orderBy: { name: "asc" } }),
+    getAllStoreRegions(),
   ]);
 
   return (
@@ -26,7 +28,7 @@ export default async function NewProductPage() {
       </div>
       <div className="h-px bg-neutral-100" />
       <div className="admin-form-card">
-        <ProductForm categories={categories} artists={artists} />
+        <ProductForm categories={categories} artists={artists} regions={regions} />
       </div>
     </div>
   );

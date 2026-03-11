@@ -1,19 +1,27 @@
 import Image from "next/image";
 import Link from "next/link";
-import { formatPrice, getDiscountedPrice } from "@/lib/utils";
+import { getDiscountedPrice } from "@/lib/utils";
+import {
+  formatRegionalPrice,
+  resolveProductRegionalPricing,
+  type StoreRegion,
+} from "@/lib/pricing";
 import type { ProductWithRelations } from "@/types";
 
 interface ProductCardProps {
   product: ProductWithRelations;
   discountPercent?: number;
+  region?: StoreRegion;
 }
 
-export function ProductCard({ product, discountPercent }: ProductCardProps) {
+export function ProductCard({ product, discountPercent, region = "PAK" }: ProductCardProps) {
   const mainImage = product.images[0]?.imageUrl || "/placeholder.svg";
   const hasDiscount = discountPercent && discountPercent > 0;
+  const isAvailable = product.stock > 0;
+  const regionalPricing = resolveProductRegionalPricing(product, region);
   const finalPrice = hasDiscount
-    ? getDiscountedPrice(product.price, discountPercent)
-    : product.price;
+    ? getDiscountedPrice(regionalPricing.price, discountPercent)
+    : regionalPricing.price;
 
   return (
     <article className="group flex flex-col bg-white">
@@ -31,7 +39,7 @@ export function ProductCard({ product, discountPercent }: ProductCardProps) {
           quality={80}
         />
         {/* Badges */}
-        {product.stock === 0 && (
+        {!isAvailable && (
           <div className="absolute top-3 left-3">
             <span className="bg-neutral-900 text-white text-[9px] tracking-[0.15em] uppercase px-2.5 py-1">
               Sold Out
@@ -62,11 +70,11 @@ export function ProductCard({ product, discountPercent }: ProductCardProps) {
         )}
         <div className="mt-1 flex items-center gap-2 sm:mt-2">
           <span className="text-xs font-medium tracking-tight text-neutral-800 sm:text-sm">
-            {formatPrice(finalPrice)}
+            {formatRegionalPrice(finalPrice, region)}
           </span>
           {hasDiscount && (
             <span className="text-[10px] text-neutral-400 line-through">
-              {formatPrice(product.price)}
+              {formatRegionalPrice(regionalPricing.price, region)}
             </span>
           )}
         </div>

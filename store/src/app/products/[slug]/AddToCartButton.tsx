@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ShoppingBag, Minus, Plus } from "lucide-react";
 import type { CustomizationOption } from "@prisma/client";
+import type { StoreRegion } from "@/lib/pricing";
 
 interface AddToCartButtonProps {
   product: {
@@ -16,7 +17,8 @@ interface AddToCartButtonProps {
     price: number;
     discountedPrice?: number;
     image: string;
-    stock: number;
+    available: boolean;
+    region: StoreRegion;
   };
   customizationOptions: CustomizationOption[];
 }
@@ -41,6 +43,7 @@ export function AddToCartButton({
       discountedPrice: product.discountedPrice,
       image: product.image,
       quantity,
+      region: product.region,
       customizations:
         Object.keys(customizations).length > 0 ? customizations : undefined,
     });
@@ -101,7 +104,7 @@ export function AddToCartButton({
           </span>
           <button
             onClick={() =>
-              setQuantity(Math.min(product.stock, quantity + 1))
+              setQuantity(quantity + 1)
             }
             className="w-10 h-10 flex items-center justify-center text-neutral-500 hover:text-neutral-900 transition-colors"
             type="button"
@@ -113,11 +116,11 @@ export function AddToCartButton({
         {/* Full-width CTA */}
         <button
           onClick={handleAdd}
-          disabled={product.stock === 0}
+          disabled={!product.available}
           className="w-full bg-neutral-900 text-white text-sm font-medium tracking-wider uppercase py-4 hover:bg-neutral-700 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
           type="button"
         >
-          {added ? "Added to Cart" : product.stock === 0 ? "Out of Stock" : "Add to Cart"}
+          {added ? "Added to Cart" : product.available ? "Add to Cart" : "Sold Out"}
         </button>
       </div>
     </div>

@@ -12,7 +12,7 @@ type ProductRow = {
   imageUrl: string;
   name: string;
   price: string;
-  stock: number;
+  availability: string;
   category: string;
   status: string;
 };
@@ -21,7 +21,7 @@ const columns: Column<ProductRow>[] = [
   { key: "imageUrl", label: "Image", kind: "image", sortable: false, searchable: false },
   { key: "name", label: "Name", sortable: true },
   { key: "price", label: "Price", sortable: true },
-  { key: "stock", label: "Stock", sortable: true },
+  { key: "availability", label: "Availability", sortable: true },
   { key: "category", label: "Category", sortable: true },
   {
     key: "status",
@@ -51,7 +51,7 @@ export default async function AdminProductsPage() {
     imageUrl: product.images[0]?.imageUrl ?? "",
     name: product.name,
     price: formatPrice(product.price),
-    stock: product.stock,
+    availability: product.stock > 0 ? "Yes" : "No • Sold Out",
     category: product.category.name,
     status: product.active
       ? product.featured

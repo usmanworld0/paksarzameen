@@ -2,15 +2,22 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useCartStore } from "@/store/cart";
+import { useMemo } from "react";
+import { getCartItemKey, useCartStore } from "@/store/cart";
 import { Navbar } from "@/components/storefront/Navbar";
 import { Footer } from "@/components/storefront/Footer";
-import { formatPrice } from "@/lib/utils";
+import { formatRegionalPrice, getRegionBadgeLabel } from "@/lib/pricing";
+import { useStoreRegion } from "@/hooks/useStoreRegion";
 import { Minus, Plus, X } from "lucide-react";
 
 export default function CartPage() {
   const { items, removeItem, updateQuantity, clearCart, subtotal } =
     useCartStore();
+  const detectedRegion = useStoreRegion();
+  const region = useMemo(
+    () => items[0]?.region || detectedRegion,
+    [items, detectedRegion]
+  );
 
   if (items.length === 0) {
     return (
@@ -53,8 +60,11 @@ export default function CartPage() {
             {/* Cart items */}
             <div className="divide-y divide-neutral-200">
               {items.map((item) => (
+                (() => {
+                  const itemKey = getCartItemKey(item);
+                  return (
                 <article
-                  key={`${item.productId}-${JSON.stringify(item.customizations)}`}
+                  key={itemKey}
                   className="flex gap-6 py-8 first:pt-0"
                 >
                   {item.image && (
@@ -77,7 +87,7 @@ export default function CartPage() {
                         {item.name}
                       </Link>
                       <button
-                        onClick={() => removeItem(item.productId)}
+                        onClick={() => removeItem(itemKey)}
                         className="text-neutral-400 hover:text-neutral-900 transition-colors ml-4"
                         type="button"
                       >
@@ -100,7 +110,7 @@ export default function CartPage() {
                       <div className="inline-flex items-center rounded-full border border-neutral-300">
                         <button
                           onClick={() =>
-                            updateQuantity(item.productId, item.quantity - 1)
+                            updateQuantity(itemKey, item.quantity - 1)
                           }
                           className="w-9 h-9 flex items-center justify-center text-neutral-500 hover:text-neutral-900 transition-colors"
                           type="button"
@@ -112,7 +122,7 @@ export default function CartPage() {
                         </span>
                         <button
                           onClick={() =>
-                            updateQuantity(item.productId, item.quantity + 1)
+                            updateQuantity(itemKey, item.quantity + 1)
                           }
                           className="w-9 h-9 flex items-center justify-center text-neutral-500 hover:text-neutral-900 transition-colors"
                           type="button"
@@ -123,19 +133,19 @@ export default function CartPage() {
 
                       <div className="text-right">
                         <p className="text-sm font-medium text-neutral-900">
-                          {formatPrice(
-                            (item.discountedPrice || item.price) * item.quantity
-                          )}
+                          {formatRegionalPrice((item.discountedPrice || item.price) * item.quantity, region)}
                         </p>
                         {item.discountedPrice && (
                           <p className="text-xs text-neutral-400 line-through mt-0.5">
-                            {formatPrice(item.price * item.quantity)}
+                            {formatRegionalPrice(item.price * item.quantity, region)}
                           </p>
                         )}
                       </div>
                     </div>
                   </div>
                 </article>
+                  );
+                })()
               ))}
 
               <div className="pt-6">
@@ -154,39 +164,36 @@ export default function CartPage() {
               <h2 className="text-lg font-bold text-neutral-900 mb-6">
                 Order Summary
               </h2>
+              <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.18em] text-neutral-400">
+                {getRegionBadgeLabel(region)}
+              </p>
               <div className="space-y-4 text-sm">
                 <div className="flex justify-between">
                   <span className="text-neutral-600">Subtotal</span>
-                  <span className="font-medium text-neutral-900">{formatPrice(subtotal())}</span>
+                  <span className="font-medium text-neutral-900">{formatRegionalPrice(subtotal(), region)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-neutral-600">Shipping</span>
                   <span className="text-neutral-500 text-xs">Calculated at checkout</span>
                 </div>
+                <div className="flex justify-between">
+                  <span className="text-neutral-600">Coupon Code</span>
+                  <span className="text-neutral-500 text-xs">Apply on billing page</span>
+                </div>
               </div>
               <div className="border-t border-neutral-300 mt-6 pt-6 flex justify-between text-sm">
                 <span className="font-bold text-neutral-900">Total</span>
-                <span className="font-bold text-neutral-900">{formatPrice(subtotal())}</span>
+                <span className="font-bold text-neutral-900">{formatRegionalPrice(subtotal(), region)}</span>
               </div>
               <p className="text-xs text-neutral-500 mt-6 leading-relaxed">
-                Contact us via WhatsApp to complete your order. We&apos;ll confirm
-                availability and arrange delivery.
+                Continue to billing to enter your details, apply a coupon code, and complete your advance payment securely by card through Stripe.
               </p>
-              <a
-                href={`https://wa.me/923001234567?text=${encodeURIComponent(
-                  `Hi! I'd like to order from Commonwealth Lab:\n${items
-                    .map(
-                      (i) =>
-                        `- ${i.name} x${i.quantity} (${formatPrice(i.discountedPrice || i.price)})`
-                    )
-                    .join("\n")}\n\nTotal: ${formatPrice(subtotal())}`
-                )}`}
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                href="/checkout"
                 className="block w-full text-center rounded-full bg-neutral-900 text-white text-sm font-medium py-4 mt-6 hover:bg-neutral-700 transition-colors"
               >
-                Complete via WhatsApp
-              </a>
+                Proceed to Billing
+              </Link>
               <Link
                 href="/products"
                 className="block w-full text-center text-sm font-medium text-neutral-600 hover:text-neutral-900 transition-colors mt-4 py-2"

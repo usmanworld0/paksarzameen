@@ -5,6 +5,12 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { productSchema } from "@/lib/validations";
 import { Prisma } from "@prisma/client";
+import {
+  buildProductRegionPriceCreateData,
+  normalizeProductRegionPrices,
+  type ProductRegionPriceInput,
+} from "@/lib/product-region-prices";
+import { getAllStoreRegions } from "@/lib/store-regions";
 
 export async function GET(
   _request: Request,
@@ -16,6 +22,7 @@ export async function GET(
       category: { include: { customizationOptions: true } },
       artist: true,
       images: { orderBy: { position: "asc" } },
+      regionPrices: { include: { region: true } },
     },
   });
 
@@ -48,15 +55,23 @@ export async function PATCH(
     );
   }
 
-  const { images, ...productData } = parsed.data;
+  const { images, availability, regionPrices, ...productData } = parsed.data;
 
   try {
     await prisma.productImage.deleteMany({ where: { productId: params.id } });
+    await prisma.productRegionPrice.deleteMany({ where: { productId: params.id } });
+
+    const storeRegions = await getAllStoreRegions();
+    const normalizedRegionPrices = normalizeProductRegionPrices(
+      regionPrices as ProductRegionPriceInput[],
+      storeRegions
+    );
 
     const product = await prisma.product.update({
       where: { id: params.id },
       data: {
         ...productData,
+        stock: availability ? 1 : 0,
         artistId: productData.artistId || null,
         compareAtPrice: productData.compareAtPrice || null,
         images: images
@@ -67,8 +82,11 @@ export async function PATCH(
               })),
             }
           : undefined,
+        regionPrices: {
+          create: buildProductRegionPriceCreateData(normalizedRegionPrices),
+        },
       },
-      include: { images: true },
+      include: { images: true, regionPrices: { include: { region: true } } },
     });
 
     revalidatePath("/");
@@ -77,6 +95,10 @@ export async function PATCH(
     revalidatePath("/admin/products");
     return NextResponse.json(product);
   } catch (error) {
+    if (error instanceof Error && error.message.startsWith("Add prices for all active regions:")) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
       return NextResponse.json({ error: "Product slug already exists." }, { status: 409 });
     }

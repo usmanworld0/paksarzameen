@@ -24,8 +24,8 @@ export default async function AnalyticsPage() {
     sales,
     orders,
     customers,
-    lowStockProducts,
-    outOfStockProducts,
+    availableProducts,
+    soldOutProducts,
     activeSales,
   ] = await Promise.all([
     prisma.product.findMany({
@@ -59,7 +59,7 @@ export default async function AnalyticsPage() {
       },
     }),
     prisma.customer.count(),
-    prisma.product.count({ where: { stock: { gt: 0, lte: 5 } } }),
+    prisma.product.count({ where: { stock: { gt: 0 } } }),
     prisma.product.count({ where: { stock: 0 } }),
     prisma.sale.count({
       where: { active: true, endDate: { gte: new Date() } },
@@ -69,7 +69,7 @@ export default async function AnalyticsPage() {
   const totalProducts = products.length;
   const activeProducts = products.filter((p) => p.active).length;
   const featuredProducts = products.filter((p) => p.featured).length;
-  const totalValue = products.reduce((s, p) => s + p.price * p.stock, 0);
+  const totalValue = products.reduce((sum, product) => sum + (product.stock > 0 ? product.price : 0), 0);
   const avgPrice =
     totalProducts > 0
       ? products.reduce((s, p) => s + p.price, 0) / totalProducts
@@ -112,7 +112,7 @@ export default async function AnalyticsPage() {
         <p className="admin-page-subtitle">Insights</p>
         <h1 className="admin-page-title mt-1">Analytics</h1>
         <p className="mt-1.5 text-sm text-neutral-400">
-          Overview of your store performance and inventory
+          Overview of your store performance and product availability
         </p>
       </div>
 
@@ -147,23 +147,22 @@ export default async function AnalyticsPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Inventory Health */}
+        {/* Availability Health */}
         <div className="admin-card p-6 space-y-5 lg:col-span-2">
           <h2 className="text-lg font-semibold text-neutral-800" style={{ fontFamily: "'Playfair Display', serif" }}>
-            Inventory Health
+            Availability Health
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <MiniStat label="Avg. Price" value={formatPrice(avgPrice)} />
-            <MiniStat label="Catalog Value" value={formatPrice(totalValue)} />
+            <MiniStat label="Available Value" value={formatPrice(totalValue)} />
             <MiniStat
-              label="Low Stock"
-              value={lowStockProducts.toString()}
-              alert={lowStockProducts > 0}
+              label="Available"
+              value={availableProducts.toString()}
             />
             <MiniStat
-              label="Out of Stock"
-              value={outOfStockProducts.toString()}
-              alert={outOfStockProducts > 0}
+              label="Sold Out"
+              value={soldOutProducts.toString()}
+              alert={soldOutProducts > 0}
             />
           </div>
 

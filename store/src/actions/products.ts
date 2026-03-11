@@ -2,6 +2,12 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import {
+  buildProductRegionPriceCreateData,
+  normalizeProductRegionPrices,
+  type ProductRegionPriceInput,
+} from "@/lib/product-region-prices";
+import { getAllStoreRegions } from "@/lib/store-regions";
 
 export async function getProducts(opts?: {
   categorySlug?: string;
@@ -47,7 +53,12 @@ export async function getProducts(opts?: {
   const [products, total] = await Promise.all([
     prisma.product.findMany({
       where,
-      include: { category: true, artist: true, images: { orderBy: { position: "asc" } } },
+      include: {
+        category: true,
+        artist: true,
+        images: { orderBy: { position: "asc" } },
+        regionPrices: { include: { region: true } },
+      },
       orderBy,
       skip: (page - 1) * limit,
       take: limit,
@@ -65,12 +76,18 @@ export async function getProductBySlug(slug: string) {
       category: { include: { customizationOptions: true } },
       artist: true,
       images: { orderBy: { position: "asc" } },
+      regionPrices: { include: { region: true } },
     },
   });
 }
 
 export async function createProduct(data: Record<string, unknown>) {
-  const { images, ...productData } = data;
+  const { images, availability, regionPrices = [], ...productData } = data;
+  const storeRegions = await getAllStoreRegions();
+  const normalizedRegionPrices = normalizeProductRegionPrices(
+    regionPrices as ProductRegionPriceInput[],
+    storeRegions
+  );
   const product = await prisma.product.create({
     data: {
       ...(productData as {
@@ -79,18 +96,25 @@ export async function createProduct(data: Record<string, unknown>) {
         description?: string;
         price: number;
         compareAtPrice?: number;
-        stock: number;
+        availability?: boolean;
         categoryId: string;
         artistId?: string;
         customizable: boolean;
         featured: boolean;
         active: boolean;
       }),
+      stock: availability === false ? 0 : 1,
+      artistId: (productData as { artistId?: string | null }).artistId || null,
+      compareAtPrice:
+        (productData as { compareAtPrice?: number | null }).compareAtPrice || null,
       images: {
         create: ((images as string[]) || []).map((url, i) => ({
           imageUrl: url,
           position: i,
         })),
+      },
+      regionPrices: {
+        create: buildProductRegionPriceCreateData(normalizedRegionPrices),
       },
     },
   });
@@ -104,10 +128,16 @@ export async function updateProduct(
   id: string,
   data: Record<string, unknown>
 ) {
-  const { images, ...productData } = data;
+  const { images, availability, regionPrices = [], ...productData } = data;
+  const storeRegions = await getAllStoreRegions();
+  const normalizedRegionPrices = normalizeProductRegionPrices(
+    regionPrices as ProductRegionPriceInput[],
+    storeRegions
+  );
 
   // Delete existing images and re-create
   await prisma.productImage.deleteMany({ where: { productId: id } });
+  await prisma.productRegionPrice.deleteMany({ where: { productId: id } });
 
   const product = await prisma.product.update({
     where: { id },
@@ -118,18 +148,25 @@ export async function updateProduct(
         description?: string;
         price?: number;
         compareAtPrice?: number;
-        stock?: number;
+        availability?: boolean;
         categoryId?: string;
         artistId?: string;
         customizable?: boolean;
         featured?: boolean;
         active?: boolean;
       }),
+      artistId: (productData as { artistId?: string | null }).artistId || null,
+      compareAtPrice:
+        (productData as { compareAtPrice?: number | null }).compareAtPrice || null,
+      stock: availability === false ? 0 : 1,
       images: {
         create: ((images as string[]) || []).map((url, i) => ({
           imageUrl: url,
           position: i,
         })),
+      },
+      regionPrices: {
+        create: buildProductRegionPriceCreateData(normalizedRegionPrices),
       },
     },
   });

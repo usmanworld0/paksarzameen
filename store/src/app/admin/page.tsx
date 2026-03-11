@@ -25,7 +25,7 @@ export default async function AdminDashboard() {
     totalArtists,
     totalSales,
     featuredProducts,
-    lowStockProducts,
+    soldOutProducts,
     recentProducts,
     totalValue,
     recentCategories,
@@ -35,7 +35,7 @@ export default async function AdminDashboard() {
     prisma.artist.count(),
     prisma.sale.count({ where: { active: true } }),
     prisma.product.count({ where: { featured: true } }),
-    prisma.product.count({ where: { stock: { lt: 5 }, active: true } }),
+    prisma.product.count({ where: { stock: 0, active: true } }),
     prisma.product.findMany({
       take: 6,
       orderBy: { createdAt: "desc" },
@@ -80,11 +80,11 @@ export default async function AdminDashboard() {
         <StatsCard title="Active Sales" value={totalSales} icon={Tag} variant="success" />
         <StatsCard title="Featured" value={featuredProducts} icon={Star} variant="gold" />
         <StatsCard
-          title="Low Stock"
-          value={lowStockProducts}
+          title="Sold Out"
+          value={soldOutProducts}
           icon={AlertTriangle}
-          description="< 5 items"
-          variant={lowStockProducts > 0 ? "danger" : "default"}
+          description="Unavailable products"
+          variant={soldOutProducts > 0 ? "danger" : "default"}
         />
       </div>
 
@@ -157,8 +157,8 @@ export default async function AdminDashboard() {
                       <p className="text-[13px] font-semibold text-neutral-800">
                         {formatPrice(product.price)}
                       </p>
-                      <p className={`text-[10px] font-medium ${product.stock < 5 ? "text-red-500" : "text-neutral-400"}`}>
-                        {product.stock} in stock
+                      <p className={`text-[10px] font-medium ${product.stock > 0 ? "text-green-700" : "text-red-500"}`}>
+                        {product.stock > 0 ? "Available" : "Sold Out"}
                       </p>
                     </div>
                   </Link>

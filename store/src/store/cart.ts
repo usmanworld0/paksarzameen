@@ -4,11 +4,17 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { CartItem } from "@/types";
 
+export function getCartItemKey(item: CartItem) {
+  return `${item.productId}::${item.region ?? "PAK"}::${JSON.stringify(
+    item.customizations ?? {}
+  )}`;
+}
+
 interface CartStore {
   items: CartItem[];
   addItem: (item: CartItem) => void;
-  removeItem: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
+  removeItem: (itemKey: string) => void;
+  updateQuantity: (itemKey: string, quantity: number) => void;
   clearCart: () => void;
   itemCount: () => number;
   subtotal: () => number;
@@ -21,13 +27,14 @@ export const useCartStore = create<CartStore>()(
 
       addItem: (item) =>
         set((state) => {
+          const itemKey = getCartItemKey(item);
           const existing = state.items.find(
-            (i) => i.productId === item.productId
+            (entry) => getCartItemKey(entry) === itemKey
           );
           if (existing) {
             return {
               items: state.items.map((i) =>
-                i.productId === item.productId
+                getCartItemKey(i) === itemKey
                   ? { ...i, quantity: i.quantity + item.quantity }
                   : i
               ),
@@ -36,18 +43,18 @@ export const useCartStore = create<CartStore>()(
           return { items: [...state.items, item] };
         }),
 
-      removeItem: (productId) =>
+      removeItem: (itemKey) =>
         set((state) => ({
-          items: state.items.filter((i) => i.productId !== productId),
+          items: state.items.filter((item) => getCartItemKey(item) !== itemKey),
         })),
 
-      updateQuantity: (productId, quantity) =>
+      updateQuantity: (itemKey, quantity) =>
         set((state) => ({
           items:
             quantity <= 0
-              ? state.items.filter((i) => i.productId !== productId)
+              ? state.items.filter((item) => getCartItemKey(item) !== itemKey)
               : state.items.map((i) =>
-                  i.productId === productId ? { ...i, quantity } : i
+                  getCartItemKey(i) === itemKey ? { ...i, quantity } : i
                 ),
         })),
 

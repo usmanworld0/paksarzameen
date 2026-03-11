@@ -80,7 +80,26 @@ export const saleSchema = z.object({
   active: z.boolean().default(true),
 });
 
+export const couponSchema = z.object({
+  name: z.string().trim().min(2, "Name must be at least 2 characters"),
+  code: z
+    .string()
+    .trim()
+    .min(3, "Code must be at least 3 characters")
+    .max(32, "Code must be 32 characters or less")
+    .regex(/^[A-Za-z0-9_-]+$/, "Use letters, numbers, hyphens, or underscores only")
+    .transform((value) => value.toUpperCase()),
+  description: optionalText,
+  discountPercent: z.coerce
+    .number()
+    .min(1, "Minimum 1%")
+    .max(100, "Maximum 100%"),
+  minSubtotal: optionalPositiveNumber.nullable(),
+  active: z.boolean().default(true),
+});
+
 export type CategoryFormData = z.infer<typeof categorySchema>;
 export type ArtistFormData = z.infer<typeof artistSchema>;
 export type ProductFormData = z.infer<typeof productSchema>;
 export type SaleFormData = z.infer<typeof saleSchema>;
+export type CouponFormData = z.infer<typeof couponSchema>;

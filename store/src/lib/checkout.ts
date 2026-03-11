@@ -27,11 +27,16 @@ export function getCartSubtotal(items: CartItem[]) {
   );
 }
 
-export function getCheckoutPricing(items: CartItem[], couponCode?: string | null): CheckoutPricing {
+export async function getCheckoutPricing(
+  items: CartItem[],
+  couponCode?: string | null,
+  region: StoreRegion = "PAK"
+): Promise<CheckoutPricing> {
   const subtotal = getCartSubtotal(items);
-  const { coupon, discountAmount, error } = calculateCouponDiscount(
+  const { coupon, discountAmount, error } = await calculateCouponDiscount(
     subtotal,
-    couponCode
+    couponCode,
+    region
   );
   const total = Math.max(subtotal - discountAmount, 0);
 
@@ -54,13 +59,17 @@ function flattenCartItems(items: CartItem[]): FlattenedCartUnit[] {
   );
 }
 
-export function buildDiscountedStripeLineItems(
+export async function buildDiscountedStripeLineItems(
   items: CartItem[],
   couponCode?: string | null,
   region: StoreRegion = "PAK"
 ) {
   const units = flattenCartItems(items);
-  const { subtotal, discountAmount, total } = getCheckoutPricing(items, couponCode);
+  const { subtotal, discountAmount, total } = await getCheckoutPricing(
+    items,
+    couponCode,
+    region
+  );
   const currency = getCurrencyForRegion(region).toLowerCase();
 
   if (subtotal <= 0 || total <= 0) {

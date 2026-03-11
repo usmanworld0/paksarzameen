@@ -82,6 +82,22 @@ export function ProductForm({ product, categories, artists, regions }: ProductFo
   const availabilityValue = watch("availability");
   const regionPriceValues = watch("regionPrices");
 
+  function updateRegionalPrice(
+    index: number,
+    regionCode: StoreRegionRecord["code"],
+    nextPrice: number,
+    nextCompareAtPrice: number | null
+  ) {
+    const nextValues = [...(regionPriceValues || [])];
+    nextValues[index] = {
+      regionCode,
+      price: nextPrice,
+      compareAtPrice: nextCompareAtPrice,
+    };
+
+    setValue("regionPrices", nextValues, { shouldValidate: true });
+  }
+
   async function onSubmit(data: ProductFormData) {
     setLoading(true);
     setSubmitError(null);
@@ -150,115 +166,127 @@ export function ProductForm({ product, categories, artists, regions }: ProductFo
       {/* Pricing & Availability */}
       <section className="space-y-4">
         <h3 className="text-sm font-semibold uppercase tracking-wider text-neutral-500">Pricing &amp; Availability</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="price">
-            Price{defaultRegion ? ` (${defaultRegion.currency})` : ""}
-          </Label>
-          <Input id="price" type="number" step="1" {...register("price")} />
-          {defaultRegion && (
-            <p className="text-xs text-neutral-500">
-              Base price for {defaultRegion.name}.
-            </p>
-          )}
-          {errors.price && (
-            <p className="text-sm text-red-500">{errors.price.message}</p>
-          )}
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="compareAtPrice">Compare At Price</Label>
-          <Input
-            id="compareAtPrice"
-            type="number"
-            step="1"
-            {...register("compareAtPrice")}
-          />
-        </div>
-        <div className="space-y-2 rounded-lg border border-neutral-200 bg-neutral-50 px-4 py-3">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <Label htmlFor="availability">Availability</Label>
-              <p className="mt-1 text-xs text-neutral-500">
-                Mark unavailable products as sold out.
-              </p>
-            </div>
-            <Switch
-              id="availability"
-              checked={availabilityValue}
-              onCheckedChange={(val) => setValue("availability", val, { shouldValidate: true })}
-            />
-          </div>
-          <p className={`mt-3 text-xs font-medium ${availabilityValue ? "text-green-700" : "text-red-500"}`}>
-            {availabilityValue ? "Available" : "Sold Out"}
-          </p>
-        </div>
-        </div>
-
-        {alternateRegions.length > 0 && (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-[minmax(0,1fr)_320px]">
           <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-4 sm:p-5">
             <div className="mb-4">
               <h4 className="text-sm font-semibold text-neutral-800">Regional Prices</h4>
               <p className="mt-1 text-xs text-neutral-500">
-                Every active non-default region needs a product price before this item can be saved.
+                Add pricing for every active region before saving this product.
               </p>
             </div>
             <div className="space-y-4">
-              {alternateRegions.map((region, index) => (
-                <div key={region.code} className="grid grid-cols-1 gap-4 rounded-lg border border-neutral-200 bg-white p-4 sm:grid-cols-2">
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium text-neutral-900">
-                      {region.name}
-                    </p>
-                    <p className="text-xs text-neutral-500">
-                      {region.currency} pricing for this region.
-                    </p>
-                  </div>
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <div className="space-y-2">
-                      <Label htmlFor={`region-price-${region.code}`}>Price ({region.currency})</Label>
-                      <Input
-                        id={`region-price-${region.code}`}
-                        type="number"
-                        step="0.01"
-                        value={regionPriceValues?.[index]?.price || ""}
-                        onChange={(event) => {
-                          const nextValues = [...(regionPriceValues || [])];
-                          nextValues[index] = {
-                            regionCode: region.code,
-                            price: Number(event.target.value || 0),
-                            compareAtPrice: nextValues[index]?.compareAtPrice ?? null,
-                          };
-                          setValue("regionPrices", nextValues, { shouldValidate: true });
-                        }}
-                      />
+              {activeRegions.map((region) => {
+                const regionIndex = alternateRegions.findIndex(
+                  (entry) => entry.code === region.code
+                );
+                const isDefaultRegion = region.isDefault || region.code === defaultRegion?.code;
+
+                return (
+                  <div
+                    key={region.code}
+                    className="grid grid-cols-1 gap-4 rounded-lg border border-neutral-200 bg-white p-4 sm:grid-cols-2"
+                  >
+                    <div className="space-y-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="text-sm font-medium text-neutral-900">{region.name}</p>
+                        {isDefaultRegion && (
+                          <span className="rounded-full bg-brand-green/10 px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide text-brand-green">
+                            Default
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-neutral-500">
+                        {region.currency} pricing for this region.
+                      </p>
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor={`region-compare-${region.code}`}>Compare At ({region.currency})</Label>
-                      <Input
-                        id={`region-compare-${region.code}`}
-                        type="number"
-                        step="0.01"
-                        value={regionPriceValues?.[index]?.compareAtPrice || ""}
-                        onChange={(event) => {
-                          const nextValues = [...(regionPriceValues || [])];
-                          nextValues[index] = {
-                            regionCode: region.code,
-                            price: nextValues[index]?.price ?? 0,
-                            compareAtPrice: event.target.value ? Number(event.target.value) : null,
-                          };
-                          setValue("regionPrices", nextValues, { shouldValidate: true });
-                        }}
-                      />
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                      <div className="space-y-2">
+                        <Label htmlFor={`region-price-${region.code}`}>Price ({region.currency})</Label>
+                        {isDefaultRegion ? (
+                          <>
+                            <Input
+                              id={`region-price-${region.code}`}
+                              type="number"
+                              step="1"
+                              {...register("price")}
+                            />
+                            {errors.price && (
+                              <p className="text-sm text-red-500">{errors.price.message}</p>
+                            )}
+                          </>
+                        ) : (
+                          <Input
+                            id={`region-price-${region.code}`}
+                            type="number"
+                            step="0.01"
+                            value={regionIndex >= 0 ? regionPriceValues?.[regionIndex]?.price || "" : ""}
+                            onChange={(event) => {
+                              updateRegionalPrice(
+                                regionIndex,
+                                region.code,
+                                Number(event.target.value || 0),
+                                regionPriceValues?.[regionIndex]?.compareAtPrice ?? null
+                              );
+                            }}
+                          />
+                        )}
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor={`region-compare-${region.code}`}>
+                          Compare At ({region.currency})
+                        </Label>
+                        {isDefaultRegion ? (
+                          <Input
+                            id={`region-compare-${region.code}`}
+                            type="number"
+                            step="1"
+                            {...register("compareAtPrice")}
+                          />
+                        ) : (
+                          <Input
+                            id={`region-compare-${region.code}`}
+                            type="number"
+                            step="0.01"
+                            value={regionIndex >= 0 ? regionPriceValues?.[regionIndex]?.compareAtPrice || "" : ""}
+                            onChange={(event) => {
+                              updateRegionalPrice(
+                                regionIndex,
+                                region.code,
+                                regionPriceValues?.[regionIndex]?.price ?? 0,
+                                event.target.value ? Number(event.target.value) : null
+                              );
+                            }}
+                          />
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
             {errors.regionPrices && (
               <p className="mt-3 text-sm text-red-500">Please add valid prices for each active region.</p>
             )}
           </div>
-        )}
+          <div className="space-y-2 rounded-lg border border-neutral-200 bg-neutral-50 px-4 py-3">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <Label htmlFor="availability">Availability</Label>
+                <p className="mt-1 text-xs text-neutral-500">
+                  Mark unavailable products as sold out.
+                </p>
+              </div>
+              <Switch
+                id="availability"
+                checked={availabilityValue}
+                onCheckedChange={(val) => setValue("availability", val, { shouldValidate: true })}
+              />
+            </div>
+            <p className={`mt-3 text-xs font-medium ${availabilityValue ? "text-green-700" : "text-red-500"}`}>
+              {availabilityValue ? "Available" : "Sold Out"}
+            </p>
+          </div>
+        </div>
       </section>
 
       <div className="h-px bg-neutral-100" />

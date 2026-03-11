@@ -187,7 +187,7 @@ export function RegionSettingsPanel({
             </div>
           </div>
           <p className="text-xs leading-relaxed text-neutral-500">
-            Products must have a price for every active non-default region before they can be saved.
+            Products must have a price for every active region before they can be saved.
           </p>
         </div>
       </div>

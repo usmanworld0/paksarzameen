@@ -5,8 +5,7 @@ import { useMemo, useState } from "react";
 import { getCartItemKey, useCartStore } from "@/store/cart";
 import { Navbar } from "@/components/storefront/Navbar";
 import { Footer } from "@/components/storefront/Footer";
-import { COUPON_CONFIGS } from "@/lib/coupons";
-import { getCheckoutPricing } from "@/lib/checkout";
+import { getCartSubtotal } from "@/lib/checkout";
 import { formatRegionalPrice, getRegionBadgeLabel } from "@/lib/pricing";
 import { useStoreRegion } from "@/hooks/useStoreRegion";
 import { Loader2, CreditCard, Tag } from "lucide-react";
@@ -45,14 +44,17 @@ export default function CheckoutPage() {
   const [billing, setBilling] = useState<BillingFormState>(initialBillingState);
   const [couponInput, setCouponInput] = useState("");
   const [appliedCouponCode, setAppliedCouponCode] = useState<string | null>(null);
+  const [couponDiscountAmount, setCouponDiscountAmount] = useState(0);
   const [couponMessage, setCouponMessage] = useState<string | null>(null);
   const [couponError, setCouponError] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [applyingCoupon, setApplyingCoupon] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  const pricing = useMemo(
-    () => getCheckoutPricing(items, appliedCouponCode),
-    [items, appliedCouponCode]
+  const subtotal = useMemo(() => getCartSubtotal(items), [items]);
+  const total = useMemo(
+    () => Math.max(subtotal - couponDiscountAmount, 0),
+    [couponDiscountAmount, subtotal]
   );
 
   if (items.length === 0) {
@@ -82,23 +84,53 @@ export default function CheckoutPage() {
     setBilling((current) => ({ ...current, [field]: value }));
   }
 
-  function applyCoupon() {
-    const nextPricing = getCheckoutPricing(items, couponInput);
-
-    if (nextPricing.couponError) {
-      setCouponError(nextPricing.couponError);
-      setCouponMessage(null);
+  async function applyCoupon() {
+    if (!couponInput.trim()) {
       setAppliedCouponCode(null);
+      setCouponDiscountAmount(0);
+      setCouponError(null);
+      setCouponMessage("Coupon removed.");
       return;
     }
 
-    setAppliedCouponCode(nextPricing.appliedCouponCode);
+    setApplyingCoupon(true);
     setCouponError(null);
-    setCouponMessage(
-      nextPricing.appliedCouponCode
-        ? `${nextPricing.appliedCouponCode} applied successfully.`
-        : "Coupon removed."
-    );
+    setCouponMessage(null);
+
+    try {
+      const response = await fetch("/api/coupons/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items,
+          couponCode: couponInput,
+          region,
+        }),
+      });
+
+      const payload = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        throw new Error(payload?.error || "Unable to validate coupon.");
+      }
+
+      setAppliedCouponCode(payload?.appliedCouponCode ?? null);
+      setCouponDiscountAmount(payload?.discountAmount ?? 0);
+      setCouponInput(payload?.appliedCouponCode ?? "");
+      setCouponMessage(
+        payload?.appliedCouponCode
+          ? `${payload.appliedCouponCode} applied successfully.`
+          : "Coupon removed."
+      );
+    } catch (error) {
+      setAppliedCouponCode(null);
+      setCouponDiscountAmount(0);
+      setCouponError(
+        error instanceof Error ? error.message : "Unable to validate coupon."
+      );
+    } finally {
+      setApplyingCoupon(false);
+    }
   }
 
   async function handleCheckout(event: React.FormEvent<HTMLFormElement>) {
@@ -112,7 +144,7 @@ export default function CheckoutPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           items,
-          couponCode: appliedCouponCode,
+          couponCode: couponInput.trim() || null,
           billing,
         }),
       });
@@ -153,7 +185,7 @@ export default function CheckoutPage() {
             </p>
             <h1 className="mt-3 text-3xl font-bold text-neutral-900">Billing Details</h1>
             <p className="mt-3 text-sm text-neutral-500">
-              Complete your billing information, apply a coupon if you have one, and continue to Stripe for secure card payment.
+              Complete your billing information, enter a coupon code manually if you have one, and continue to Stripe for secure card payment.
             </p>
           </div>
 
@@ -186,7 +218,7 @@ export default function CheckoutPage() {
                   <Tag className="h-5 w-5 text-[#0c2e1a]" />
                   <div>
                     <h2 className="text-lg font-semibold text-neutral-900">Coupon Code</h2>
-                    <p className="text-sm text-neutral-500">Apply an active coupon before you continue to Stripe.</p>
+                    <p className="text-sm text-neutral-500">Enter an active coupon code manually before you continue to Stripe.</p>
                   </div>
                 </div>
 
@@ -194,16 +226,27 @@ export default function CheckoutPage() {
                   <input
                     type="text"
                     value={couponInput}
-                    onChange={(event) => setCouponInput(event.target.value.toUpperCase())}
+                    onChange={(event) => {
+                      const nextValue = event.target.value.toUpperCase();
+                      setCouponInput(nextValue);
+                      setCouponError(null);
+                      setCouponMessage(null);
+
+                      if (appliedCouponCode && nextValue.trim() !== appliedCouponCode) {
+                        setAppliedCouponCode(null);
+                        setCouponDiscountAmount(0);
+                      }
+                    }}
                     placeholder="Enter coupon code"
                     className="h-12 flex-1 rounded-xl border border-neutral-200 px-4 text-sm text-neutral-900 outline-none transition-colors focus:border-[#0c2e1a]/40"
                   />
                   <button
                     type="button"
                     onClick={applyCoupon}
+                    disabled={applyingCoupon}
                     className="h-12 rounded-xl border border-neutral-900 px-5 text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-900 hover:text-white"
                   >
-                    Apply Coupon
+                    {applyingCoupon ? "Checking..." : "Apply Coupon"}
                   </button>
                 </div>
 
@@ -212,19 +255,6 @@ export default function CheckoutPage() {
                     {couponError || couponMessage}
                   </p>
                 )}
-
-                <div className="mt-5 flex flex-wrap gap-2">
-                  {COUPON_CONFIGS.filter((coupon) => coupon.active).map((coupon) => (
-                    <button
-                      key={coupon.code}
-                      type="button"
-                      onClick={() => setCouponInput(coupon.code)}
-                      className="rounded-full border border-neutral-200 px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.15em] text-neutral-600 transition-colors hover:border-neutral-900 hover:text-neutral-900"
-                    >
-                      {coupon.code}
-                    </button>
-                  ))}
-                </div>
               </section>
             </div>
 
@@ -252,17 +282,23 @@ export default function CheckoutPage() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-neutral-600">Subtotal</span>
-                  <span className="font-medium text-neutral-900">{formatRegionalPrice(pricing.subtotal, region)}</span>
+                  <span className="font-medium text-neutral-900">{formatRegionalPrice(subtotal, region)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-neutral-600">Coupon Discount</span>
-                  <span className="font-medium text-green-700">-{formatRegionalPrice(pricing.discountAmount, region)}</span>
+                  <span className="font-medium text-green-700">-{formatRegionalPrice(couponDiscountAmount, region)}</span>
                 </div>
                 <div className="flex justify-between border-t border-neutral-200 pt-4 text-base">
                   <span className="font-semibold text-neutral-900">Total</span>
-                  <span className="font-semibold text-neutral-900">{formatRegionalPrice(pricing.total, region)}</span>
+                  <span className="font-semibold text-neutral-900">{formatRegionalPrice(total, region)}</span>
                 </div>
               </div>
+
+              {appliedCouponCode && (
+                <p className="mt-3 text-xs font-medium uppercase tracking-[0.18em] text-green-700">
+                  Applied: {appliedCouponCode}
+                </p>
+              )}
 
               <div className="mt-6 rounded-xl border border-[#0c2e1a]/10 bg-white px-4 py-4">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#0c2e1a]">

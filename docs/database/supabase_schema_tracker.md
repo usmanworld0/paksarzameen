@@ -28,3 +28,15 @@ CREATE TABLE IF NOT EXISTS impact_stats (
 	value integer NOT NULL,
 	icon text NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS coupons (
+	id uuid PRIMARY KEY,
+	name text NOT NULL,
+	code text NOT NULL UNIQUE,
+	description text,
+	discount_percent double precision NOT NULL,
+	min_subtotal double precision,
+	active boolean NOT NULL DEFAULT true,
+	created_at timestamptz NOT NULL DEFAULT now(),
+	updated_at timestamptz NOT NULL DEFAULT now()
+);

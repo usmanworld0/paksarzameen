@@ -33,6 +33,25 @@ const STORE_REGIONS = [
   },
 ] as const;
 
+const COUPONS = [
+  {
+    name: "Welcome Offer",
+    code: "WELCOME10",
+    description: "10% off your first Commonwealth Lab order.",
+    discountPercent: 10,
+    minSubtotal: 5000,
+    active: true,
+  },
+  {
+    name: "Artisan Collection",
+    code: "ARTISAN15",
+    description: "15% off artisan collections above PKR 12,000.",
+    discountPercent: 15,
+    minSubtotal: 12000,
+    active: true,
+  },
+] as const;
+
 async function main() {
   // Seed admin user
   const adminEmail = process.env.ADMIN_EMAIL || "abdullahtanseer@gmail.com";
@@ -72,6 +91,15 @@ async function main() {
     data: { isDefault: false },
   });
   console.log("Store regions seeded");
+
+  for (const coupon of COUPONS) {
+    await prisma.coupon.upsert({
+      where: { code: coupon.code },
+      update: coupon,
+      create: coupon,
+    });
+  }
+  console.log("Coupons seeded");
 
   // Seed categories
   const categories = [

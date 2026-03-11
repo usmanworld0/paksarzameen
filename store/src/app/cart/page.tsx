@@ -186,7 +186,7 @@ export default function CartPage() {
                 <span className="font-bold text-neutral-900">{formatRegionalPrice(subtotal(), region)}</span>
               </div>
               <p className="text-xs text-neutral-500 mt-6 leading-relaxed">
-                Continue to billing to enter your details, apply a coupon code, and complete your advance payment securely by card through Stripe.
+                Continue to billing to enter your details, manually enter a coupon code if you have one, and complete your advance payment securely by card through Stripe.
               </p>
               <Link
                 href="/checkout"

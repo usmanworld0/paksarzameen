@@ -29,6 +29,7 @@ const BREADCRUMB_LABELS: Record<string, string> = {
   categories: "Categories",
   artists: "Artisans",
   sales: "Sales & Discounts",
+  coupons: "Coupons",
   analytics: "Analytics",
   settings: "Settings",
   new: "New",

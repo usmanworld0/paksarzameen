@@ -1,49 +1,36 @@
-export type CouponConfig = {
-  code: string;
-  discountPercent: number;
-  description: string;
-  minSubtotal?: number;
-  active: boolean;
-};
+import "server-only";
 
-export const COUPON_CONFIGS: CouponConfig[] = [
-  {
-    code: "WELCOME10",
-    discountPercent: 10,
-    description: "10% off your first Commonwealth Lab order.",
-    minSubtotal: 5000,
-    active: true,
-  },
-  {
-    code: "ARTISAN15",
-    discountPercent: 15,
-    description: "15% off artisan collections above PKR 12,000.",
-    minSubtotal: 12000,
-    active: true,
-  },
-];
+import type { Coupon } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
+import { formatRegionalPrice, type StoreRegion } from "./pricing";
 
 export function normalizeCouponCode(code: string) {
   return code.trim().toUpperCase();
 }
 
-export function getCouponByCode(code?: string | null) {
-  if (!code) return null;
+export async function getCouponByCode(code?: string | null) {
+  if (!code || !code.trim()) {
+    return null;
+  }
 
   const normalizedCode = normalizeCouponCode(code);
-  return (
-    COUPON_CONFIGS.find(
-      (coupon) => coupon.active && coupon.code === normalizedCode
-    ) ?? null
-  );
+  const coupon = await prisma.coupon.findUnique({
+    where: { code: normalizedCode },
+  });
+
+  return coupon?.active ? coupon : null;
 }
 
-export function validateCouponCode(subtotal: number, code?: string | null) {
+export async function validateCouponCode(
+  subtotal: number,
+  code?: string | null,
+  region: StoreRegion = "PAK"
+) {
   if (!code || !code.trim()) {
     return { coupon: null, error: null };
   }
 
-  const coupon = getCouponByCode(code);
+  const coupon = await getCouponByCode(code);
 
   if (!coupon) {
     return { coupon: null, error: "Invalid coupon code." };
@@ -52,15 +39,23 @@ export function validateCouponCode(subtotal: number, code?: string | null) {
   if (coupon.minSubtotal && subtotal < coupon.minSubtotal) {
     return {
       coupon: null,
-      error: `This coupon requires a minimum order of PKR ${coupon.minSubtotal.toLocaleString("en-PK")}.`,
+      error: `This coupon requires a minimum order of ${formatRegionalPrice(coupon.minSubtotal, region)}.`,
     };
   }
 
   return { coupon, error: null };
 }
 
-export function calculateCouponDiscount(subtotal: number, code?: string | null) {
-  const { coupon, error } = validateCouponCode(subtotal, code);
+export async function calculateCouponDiscount(
+  subtotal: number,
+  code?: string | null,
+  region: StoreRegion = "PAK"
+): Promise<{
+  coupon: Coupon | null;
+  discountAmount: number;
+  error: string | null;
+}> {
+  const { coupon, error } = await validateCouponCode(subtotal, code, region);
 
   if (!coupon) {
     return {

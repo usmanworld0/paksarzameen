@@ -52,12 +52,12 @@ export async function POST(request: Request) {
     }
 
     const { items, couponCode, billing } = parsed.data;
-    const pricing = getCheckoutPricing(items as CartItem[], couponCode);
     const regionFromItems = items[0]?.region;
     const region =
       regionFromItems && isStoreRegion(regionFromItems)
         ? regionFromItems
         : detectRegionFromHeaders(request.headers);
+    const pricing = await getCheckoutPricing(items as CartItem[], couponCode, region);
 
     if (pricing.couponError) {
       return NextResponse.json({ error: pricing.couponError }, { status: 400 });
@@ -65,7 +65,11 @@ export async function POST(request: Request) {
 
     const stripe = getStripeClient();
     const origin = getStoreUrl();
-    const lineItems = buildDiscountedStripeLineItems(items as CartItem[], couponCode, region);
+    const lineItems = await buildDiscountedStripeLineItems(
+      items as CartItem[],
+      couponCode,
+      region
+    );
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",

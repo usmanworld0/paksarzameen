@@ -201,7 +201,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
       </section>
 
       {/* Accordion Section */}
-      <ProductAccordion description={product.description} />
+      <ProductAccordion
+        description={product.description}
+        materials={product.materials}
+        careInstructions={product.careInstructions}
+        heritageStory={product.heritageStory}
+      />
 
       {/* Related Products Section */}
       {relatedProducts.length > 0 && (

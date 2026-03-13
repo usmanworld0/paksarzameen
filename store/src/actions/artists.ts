@@ -4,34 +4,58 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
 export async function getArtists() {
-  return prisma.artist.findMany({
-    include: { _count: { select: { products: true } } },
-    orderBy: { name: "asc" },
-  });
+  if (!process.env.DATABASE_URL) {
+    return [];
+  }
+
+  try {
+    return await prisma.artist.findMany({
+      include: { _count: { select: { products: true } } },
+      orderBy: { name: "asc" },
+    });
+  } catch {
+    return [];
+  }
 }
 
 export async function getArtistById(id: string) {
-  return prisma.artist.findUnique({
-    where: { id },
-    include: {
-      products: {
-        where: { active: true },
-        include: { images: { orderBy: { position: "asc" } }, category: true },
+  if (!process.env.DATABASE_URL) {
+    return null;
+  }
+
+  try {
+    return await prisma.artist.findUnique({
+      where: { id },
+      include: {
+        products: {
+          where: { active: true },
+          include: { images: { orderBy: { position: "asc" } }, category: true },
+        },
       },
-    },
-  });
+    });
+  } catch {
+    return null;
+  }
 }
 
 export async function getArtistBySlug(slug: string) {
-  return prisma.artist.findUnique({
-    where: { slug },
-    include: {
-      products: {
-        where: { active: true },
-        include: { images: { orderBy: { position: "asc" } }, category: true },
+  if (!process.env.DATABASE_URL) {
+    return null;
+  }
+
+  try {
+    return await prisma.artist.findUnique({
+      where: { slug },
+      include: {
+        products: {
+          where: { active: true },
+          include: { images: { orderBy: { position: "asc" } }, category: true },
+        },
       },
-    },
-  });
+    });
+  } catch {
+    return null;
+  }
 }
 
 export async function createArtist(data: {

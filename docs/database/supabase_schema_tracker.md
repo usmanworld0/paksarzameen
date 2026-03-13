@@ -40,3 +40,8 @@ CREATE TABLE IF NOT EXISTS coupons (
 	created_at timestamptz NOT NULL DEFAULT now(),
 	updated_at timestamptz NOT NULL DEFAULT now()
 );
+
+-- Commonwealth Store (Product Information accordion fields)
+ALTER TABLE products ADD COLUMN IF NOT EXISTS materials text;
+ALTER TABLE products ADD COLUMN IF NOT EXISTS care_instructions text;
+ALTER TABLE products ADD COLUMN IF NOT EXISTS heritage_story text;

@@ -56,6 +56,9 @@ export function ProductForm({ product, categories, artists, regions }: ProductFo
       name: product?.name || "",
       slug: product?.slug || "",
       description: product?.description || "",
+      materials: product?.materials || "",
+      careInstructions: product?.careInstructions || "",
+      heritageStory: product?.heritageStory || "",
       price: product?.price || 0,
       compareAtPrice: product?.compareAtPrice || null,
       availability: (product?.stock ?? 0) > 0,
@@ -158,6 +161,21 @@ export function ProductForm({ product, categories, artists, regions }: ProductFo
         <div className="space-y-2">
           <Label htmlFor="description">Description</Label>
           <Textarea id="description" rows={4} {...register("description")} />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="materials">Materials &amp; Composition</Label>
+          <Textarea id="materials" rows={3} {...register("materials")} />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="careInstructions">Care &amp; Usage</Label>
+          <Textarea id="careInstructions" rows={3} {...register("careInstructions")} />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="heritageStory">Heritage &amp; Story</Label>
+          <Textarea id="heritageStory" rows={3} {...register("heritageStory")} />
         </div>
       </section>
 

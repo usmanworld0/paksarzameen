@@ -5029,6 +5029,16 @@ html {
   gap: 0.6rem;
 }
 
+.commonwealth-loading .skeleton-pulse {
+  background: linear-gradient(90deg, #eef3ef 25%, #dde8e0 50%, #eef3ef 75%);
+  background-size: 200% 100%;
+}
+
+.commonwealth-loading .skeleton-hero-bg {
+  background: linear-gradient(90deg, #121a15 25%, #1a2b20 50%, #121a15 75%);
+  background-size: 200% 100%;
+}
+
 @media (max-width: 768px) {
   .skeleton-grid {
     grid-template-columns: repeat(2, 1fr);

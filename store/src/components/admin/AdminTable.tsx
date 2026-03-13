@@ -37,7 +37,7 @@ type BadgeVariant =
   | "destructive"
   | "outline"
   | "success"
-  | "gold";
+  | "neutral";
 
 export interface Column<T> {
   key: keyof T & string;

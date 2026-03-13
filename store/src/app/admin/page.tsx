@@ -19,35 +19,63 @@ import {
 } from "lucide-react";
 
 export default async function AdminDashboard() {
-  const [
-    totalProducts,
-    totalCategories,
-    totalArtists,
-    totalSales,
-    featuredProducts,
-    soldOutProducts,
-    recentProducts,
-    totalValue,
-    recentCategories,
-  ] = await Promise.all([
-    prisma.product.count(),
-    prisma.category.count(),
-    prisma.artist.count(),
-    prisma.sale.count({ where: { active: true } }),
-    prisma.product.count({ where: { featured: true } }),
-    prisma.product.count({ where: { stock: 0, active: true } }),
-    prisma.product.findMany({
-      take: 6,
-      orderBy: { createdAt: "desc" },
-      include: { category: true, images: { take: 1, orderBy: { position: "asc" } } },
-    }),
-    prisma.product.aggregate({ _sum: { price: true }, where: { active: true } }),
-    prisma.category.findMany({
-      take: 4,
-      orderBy: { createdAt: "desc" },
-      include: { _count: { select: { products: true } } },
-    }),
-  ]);
+  let totalProducts = 0;
+  let totalCategories = 0;
+  let totalArtists = 0;
+  let totalSales = 0;
+  let featuredProducts = 0;
+  let soldOutProducts = 0;
+  let recentProducts: Array<{
+    id: string;
+    name: string;
+    price: number;
+    stock: number;
+    category: { name: string };
+    images: { imageUrl: string }[];
+  }> = [];
+  let totalValue = { _sum: { price: null as number | null } };
+  let recentCategories: Array<{
+    id: string;
+    name: string;
+    _count: { products: number };
+  }> = [];
+
+  const dbAvailable = Boolean(process.env.DATABASE_URL);
+  if (dbAvailable) {
+    try {
+      [
+        totalProducts,
+        totalCategories,
+        totalArtists,
+        totalSales,
+        featuredProducts,
+        soldOutProducts,
+        recentProducts,
+        totalValue,
+        recentCategories,
+      ] = await Promise.all([
+        prisma.product.count(),
+        prisma.category.count(),
+        prisma.artist.count(),
+        prisma.sale.count({ where: { active: true } }),
+        prisma.product.count({ where: { featured: true } }),
+        prisma.product.count({ where: { stock: 0, active: true } }),
+        prisma.product.findMany({
+          take: 6,
+          orderBy: { createdAt: "desc" },
+          include: { category: true, images: { take: 1, orderBy: { position: "asc" } } },
+        }),
+        prisma.product.aggregate({ _sum: { price: true }, where: { active: true } }),
+        prisma.category.findMany({
+          take: 4,
+          orderBy: { createdAt: "desc" },
+          include: { _count: { select: { products: true } } },
+        }),
+      ]);
+    } catch {
+      // Keep fallback values so the dashboard stays accessible without DB connectivity.
+    }
+  }
 
   return (
     <div className="space-y-8">
@@ -72,13 +100,19 @@ export default async function AdminDashboard() {
       {/* Divider */}
       <div className="h-px bg-neutral-100" />
 
+      {!dbAvailable && (
+        <div className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+          Database is not configured. Add DATABASE_URL in store/.env.local, then run Prisma db push and seed.
+        </div>
+      )}
+
       {/* Stats grid */}
       <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-6">
         <StatsCard title="Products" value={totalProducts} icon={Package} />
-        <StatsCard title="Categories" value={totalCategories} icon={Layers} variant="gold" />
+        <StatsCard title="Categories" value={totalCategories} icon={Layers} variant="neutral" />
         <StatsCard title="Artisans" value={totalArtists} icon={Users} />
         <StatsCard title="Active Sales" value={totalSales} icon={Tag} variant="success" />
-        <StatsCard title="Featured" value={featuredProducts} icon={Star} variant="gold" />
+        <StatsCard title="Featured" value={featuredProducts} icon={Star} variant="neutral" />
         <StatsCard
           title="Sold Out"
           value={soldOutProducts}

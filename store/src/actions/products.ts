@@ -50,35 +50,51 @@ export async function getProducts(opts?: {
           ? { name: "asc" }
           : { createdAt: "desc" };
 
-  const [products, total] = await Promise.all([
-    prisma.product.findMany({
-      where,
+  if (!process.env.DATABASE_URL) {
+    return { products: [], total: 0, pages: 0 };
+  }
+
+  try {
+    const [products, total] = await Promise.all([
+      prisma.product.findMany({
+        where,
+        include: {
+          category: true,
+          artist: true,
+          images: { orderBy: { position: "asc" } },
+          regionPrices: { include: { region: true } },
+        },
+        orderBy,
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      prisma.product.count({ where }),
+    ]);
+
+    return { products, total, pages: Math.ceil(total / limit) };
+  } catch {
+    return { products: [], total: 0, pages: 0 };
+  }
+}
+
+export async function getProductBySlug(slug: string) {
+  if (!process.env.DATABASE_URL) {
+    return null;
+  }
+
+  try {
+    return await prisma.product.findUnique({
+      where: { slug },
       include: {
-        category: true,
+        category: { include: { customizationOptions: true } },
         artist: true,
         images: { orderBy: { position: "asc" } },
         regionPrices: { include: { region: true } },
       },
-      orderBy,
-      skip: (page - 1) * limit,
-      take: limit,
-    }),
-    prisma.product.count({ where }),
-  ]);
-
-  return { products, total, pages: Math.ceil(total / limit) };
-}
-
-export async function getProductBySlug(slug: string) {
-  return prisma.product.findUnique({
-    where: { slug },
-    include: {
-      category: { include: { customizationOptions: true } },
-      artist: true,
-      images: { orderBy: { position: "asc" } },
-      regionPrices: { include: { region: true } },
-    },
-  });
+    });
+  } catch {
+    return null;
+  }
 }
 
 export async function createProduct(data: Record<string, unknown>) {

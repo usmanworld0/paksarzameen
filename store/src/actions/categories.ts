@@ -4,20 +4,36 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
 export async function getCategories() {
-  return prisma.category.findMany({
-    include: { _count: { select: { products: true } } },
-    orderBy: { name: "asc" },
-  });
+  if (!process.env.DATABASE_URL) {
+    return [];
+  }
+
+  try {
+    return await prisma.category.findMany({
+      include: { _count: { select: { products: true } } },
+      orderBy: { name: "asc" },
+    });
+  } catch {
+    return [];
+  }
 }
 
 export async function getCategoryBySlug(slug: string) {
-  return prisma.category.findUnique({
-    where: { slug },
-    include: {
-      _count: { select: { products: true } },
-      customizationOptions: true,
-    },
-  });
+  if (!process.env.DATABASE_URL) {
+    return null;
+  }
+
+  try {
+    return await prisma.category.findUnique({
+      where: { slug },
+      include: {
+        _count: { select: { products: true } },
+        customizationOptions: true,
+      },
+    });
+  } catch {
+    return null;
+  }
 }
 
 export async function createCategory(data: {

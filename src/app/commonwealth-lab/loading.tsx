@@ -1,6 +1,6 @@
 export default function CommonwealthLabLoading() {
   return (
-    <div className="loading-skeleton" aria-label="Loading marketplace">
+    <div className="loading-skeleton commonwealth-loading" aria-label="Loading marketplace">
       <div className="skeleton-hero">
         <div className="skeleton-pulse skeleton-hero-bg" />
         <div className="skeleton-hero-content">

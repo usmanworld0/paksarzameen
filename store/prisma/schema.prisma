@@ -46,6 +46,9 @@ model Product {
   name           String
   slug           String   @unique
   description    String?
+  materials      String?
+  careInstructions String?
+  heritageStory  String?
   price          Float
   compareAtPrice Float?
   stock          Int      @default(0)

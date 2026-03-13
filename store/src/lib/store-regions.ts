@@ -9,9 +9,18 @@ import {
 } from "@/lib/pricing";
 
 export async function getAllStoreRegions() {
-  const regions = await prisma.storeRegion.findMany({
-    orderBy: [{ isDefault: "desc" }, { code: "asc" }],
-  });
+  if (!process.env.DATABASE_URL) {
+    return getFallbackStoreRegions();
+  }
+
+  let regions: Awaited<ReturnType<typeof prisma.storeRegion.findMany>>;
+  try {
+    regions = await prisma.storeRegion.findMany({
+      orderBy: [{ isDefault: "desc" }, { code: "asc" }],
+    });
+  } catch {
+    return getFallbackStoreRegions();
+  }
 
   const normalized = regions
     .map((region) => normalizeStoreRegionRecord(region))
@@ -33,6 +42,12 @@ export async function getDefaultActiveStoreRegion() {
 export async function updateStoreRegions(
   updates: Array<{ code: StoreRegion; active: boolean; isDefault: boolean }>
 ) {
+  if (!process.env.DATABASE_URL) {
+    throw new Error(
+      "DATABASE_URL is required to update store regions. Add it to store/.env.local."
+    );
+  }
+
   const fallbackRegions = getFallbackStoreRegions();
   const nextRegions = fallbackRegions.map((region) => {
     const incoming = updates.find((entry) => entry.code === region.code);

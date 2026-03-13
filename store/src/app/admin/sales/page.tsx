@@ -25,7 +25,7 @@ const columns: Column<SaleRow>[] = [
     badgeVariantMap: {
       STORE: "outline",
       CATEGORY: "secondary",
-      PRODUCT: "gold",
+      PRODUCT: "neutral",
     },
   },
   { key: "discount", label: "Discount", sortable: true },

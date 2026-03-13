@@ -5,7 +5,7 @@ interface StatsCardProps {
   value: number | string;
   icon: LucideIcon;
   description?: string;
-  variant?: "default" | "warning" | "success" | "gold" | "danger";
+  variant?: "default" | "warning" | "success" | "neutral" | "danger";
   trend?: { value: string; positive: boolean };
 }
 
@@ -20,9 +20,9 @@ export function StatsCard({
   const iconBg = {
     default: "bg-brand-green/[0.08] text-brand-green",
     success: "bg-emerald-50 text-emerald-600",
-    warning: "bg-amber-50 text-amber-600",
+    warning: "bg-slate-100 text-slate-600",
     danger: "bg-red-50 text-red-500",
-    gold: "bg-neutral-900/5 text-neutral-700",
+    neutral: "bg-neutral-900/5 text-neutral-700",
   }[variant];
 
   const cardBg = {
@@ -30,7 +30,7 @@ export function StatsCard({
     success: "stat-card-green",
     warning: "stat-card-warning",
     danger: variant === "danger" && Number(value) > 0 ? "stat-card-danger" : "",
-    gold: "stat-card-gold",
+    neutral: "stat-card-neutral",
   }[variant];
 
   return (

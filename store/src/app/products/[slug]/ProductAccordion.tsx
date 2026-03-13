@@ -4,6 +4,9 @@ import { useState } from "react";
 
 interface ProductAccordionProps {
   description?: string | null;
+  materials?: string | null;
+  careInstructions?: string | null;
+  heritageStory?: string | null;
 }
 
 const SECTIONS = [
@@ -13,7 +16,12 @@ const SECTIONS = [
   { key: "heritage", label: "Heritage & Story" },
 ] as const;
 
-export function ProductAccordion({ description }: ProductAccordionProps) {
+export function ProductAccordion({
+  description,
+  materials,
+  careInstructions,
+  heritageStory,
+}: ProductAccordionProps) {
   const [openSection, setOpenSection] = useState<string | null>("description");
 
   function toggle(key: string) {
@@ -25,11 +33,11 @@ export function ProductAccordion({ description }: ProductAccordionProps) {
       case "description":
         return description || "No description available.";
       case "materials":
-        return "Handcrafted with locally sourced, premium materials selected for quality and authenticity. Each component is carefully chosen to honour traditional craftsmanship.";
+        return materials || "No materials information available.";
       case "care":
-        return "Handle with care. Avoid prolonged exposure to direct sunlight or moisture. Store in a cool, dry place when not in use. Clean gently with a soft cloth.";
+        return careInstructions || "No care instructions available.";
       case "heritage":
-        return "Each piece is crafted by skilled artisans preserving centuries-old Pakistani craft traditions, supported by the PakSarZameen Commonwealth initiative. Your purchase directly sustains these heritage art forms.";
+        return heritageStory || "No heritage story available.";
       default:
         return "";
     }

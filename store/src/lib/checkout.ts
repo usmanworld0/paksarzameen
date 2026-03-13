@@ -1,5 +1,8 @@
+import "server-only";
+
 import type { CartItem } from "@/types";
 import { calculateCouponDiscount } from "./coupons";
+import { getCartItemUnitPrice, getCartSubtotal } from "./cart-pricing";
 import { getCurrencyForRegion, type StoreRegion } from "./pricing";
 
 export type CheckoutPricing = {
@@ -15,17 +18,6 @@ type FlattenedCartUnit = {
   image: string;
   amount: number;
 };
-
-export function getCartItemUnitPrice(item: CartItem) {
-  return item.discountedPrice ?? item.price;
-}
-
-export function getCartSubtotal(items: CartItem[]) {
-  return items.reduce(
-    (sum, item) => sum + getCartItemUnitPrice(item) * item.quantity,
-    0
-  );
-}
 
 export async function getCheckoutPricing(
   items: CartItem[],

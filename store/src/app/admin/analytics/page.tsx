@@ -129,7 +129,7 @@ export default async function AnalyticsPage() {
           label="Orders"
           value={totalOrders.toString()}
           sub={`${pendingOrders} pending`}
-          variant="gold"
+          variant="neutral"
         />
         <MetricCard
           icon={<Package className="h-5 w-5" />}
@@ -304,13 +304,13 @@ function MetricCard({
   label: string;
   value: string;
   sub?: string;
-  variant?: "default" | "green" | "gold";
+  variant?: "default" | "green" | "neutral";
 }) {
   const bg =
     variant === "green"
       ? "stat-card-green"
-      : variant === "gold"
-        ? "stat-card-gold"
+      : variant === "neutral"
+        ? "stat-card-neutral"
         : "";
   return (
     <div className={`admin-card p-5 ${bg}`}>

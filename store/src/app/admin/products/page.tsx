@@ -31,7 +31,7 @@ const columns: Column<ProductRow>[] = [
     badgeVariantMap: {
       Active: "success",
       Draft: "secondary",
-      "Active • Featured": "gold",
+      "Active • Featured": "neutral",
     },
   },
 ];

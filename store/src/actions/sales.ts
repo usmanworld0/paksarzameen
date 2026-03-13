@@ -70,19 +70,29 @@ export async function getProductDiscount(
   productId: string,
   categoryId: string
 ): Promise<number> {
+  if (!process.env.DATABASE_URL) {
+    return 0;
+  }
+
   const now = new Date();
-  const sales = await prisma.sale.findMany({
-    where: {
-      active: true,
-      startDate: { lte: now },
-      endDate: { gte: now },
-      OR: [
-        { type: "STORE" },
-        { type: "CATEGORY", targetId: categoryId },
-        { type: "PRODUCT", targetId: productId },
-      ],
-    },
-  });
+  let sales: Awaited<ReturnType<typeof prisma.sale.findMany>>;
+  try {
+    sales = await prisma.sale.findMany({
+      where: {
+        active: true,
+        startDate: { lte: now },
+        endDate: { gte: now },
+        OR: [
+          { type: "STORE" },
+          { type: "CATEGORY", targetId: categoryId },
+          { type: "PRODUCT", targetId: productId },
+        ],
+      },
+    });
+  } catch {
+    return 0;
+  }
+
   if (sales.length === 0) return 0;
   return Math.max(...sales.map((s) => s.discountPercent));
 }

@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import { getCartItemKey, useCartStore } from "@/store/cart";
 import { Navbar } from "@/components/storefront/Navbar";
 import { Footer } from "@/components/storefront/Footer";
-import { getCartSubtotal } from "@/lib/checkout";
+import { getCartSubtotal } from "@/lib/cart-pricing";
 import { formatRegionalPrice, getRegionBadgeLabel } from "@/lib/pricing";
 import { useStoreRegion } from "@/hooks/useStoreRegion";
 import { Loader2, CreditCard, Tag } from "lucide-react";

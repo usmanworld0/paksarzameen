@@ -68,6 +68,29 @@ export function HomeClient() {
   const introRef = useRef<HTMLDivElement>(null);
   const heroVideoRef = useRef<HTMLVideoElement | null>(null);
 
+  const revealHeroImmediately = useCallback(() => {
+    const intro = introRef.current;
+    if (intro) {
+      intro.style.display = "none";
+      intro.style.pointerEvents = "none";
+      intro.setAttribute("aria-hidden", "true");
+    }
+
+    document.body.style.overflow = "";
+
+    const heroVideo = (containerRef.current?.querySelector(
+      ".hero-section video"
+    ) || heroVideoRef.current) as HTMLVideoElement | null;
+
+    if (heroVideo) {
+      gsap.set(heroVideo, { autoAlpha: 1 });
+    }
+
+    gsap.set(".hero-label", { opacity: 1, y: 0 });
+    gsap.set(".hero-title", { opacity: 1, y: 0 });
+    gsap.set(".hero-desc", { opacity: 1, y: 0 });
+  }, []);
+
   /* ─── Cinematic intro timeline ─── */
   const playIntro = useCallback(() => {
     const intro = introRef.current;
@@ -715,6 +738,24 @@ export function HomeClient() {
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let lenis: any;
+    let idleHandle: number | null = null;
+    let timeoutHandle: ReturnType<typeof setTimeout> | null = null;
+
+    const isMobileLite =
+      window.matchMedia("(max-width: 768px)").matches ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (isMobileLite) {
+      revealHeroImmediately();
+      return () => {
+        if (idleHandle !== null && "cancelIdleCallback" in window) {
+          window.cancelIdleCallback(idleHandle);
+        }
+        if (timeoutHandle) {
+          clearTimeout(timeoutHandle);
+        }
+      };
+    }
 
     const initAll = async () => {
       try {
@@ -738,20 +779,31 @@ export function HomeClient() {
       // Use requestAnimationFrame to ensure DOM is ready
       requestAnimationFrame(() => {
         playIntro();
-        // Add small delay to ensure page layout is complete before setting up ScrollTrigger
-        setTimeout(() => {
+        timeoutHandle = setTimeout(() => {
           setupGSAPAnimations();
         }, 100);
       });
     };
 
-    initAll();
+    if ("requestIdleCallback" in window) {
+      idleHandle = window.requestIdleCallback(() => {
+        void initAll();
+      }, { timeout: 1200 });
+    } else {
+      void initAll();
+    }
 
     return () => {
+      if (idleHandle !== null && "cancelIdleCallback" in window) {
+        window.cancelIdleCallback(idleHandle);
+      }
+      if (timeoutHandle) {
+        clearTimeout(timeoutHandle);
+      }
       ScrollTrigger.getAll().forEach((t) => t.kill());
       if (lenis) lenis.destroy();
     };
-  }, [setupGSAPAnimations, playIntro]);
+  }, [setupGSAPAnimations, playIntro, revealHeroImmediately]);
 
   return (
     <div ref={containerRef}>

@@ -1,7 +1,9 @@
 export default function Loading() {
   return (
-    <div className="loading-skeleton" aria-label="Loading content">
-      {/* Hero skeleton */}
+    <div className="loading-skeleton page-loading-state" aria-label="Loading content">
+      <div className="page-loading-wheel-wrap" aria-hidden="true">
+        <div className="page-loading-wheel" />
+      </div>
       <div className="skeleton-hero">
         <div className="skeleton-pulse skeleton-hero-bg" />
         <div className="skeleton-hero-content">
@@ -10,7 +12,6 @@ export default function Loading() {
           <div className="skeleton-pulse skeleton-line skeleton-line-md" />
         </div>
       </div>
-      {/* Body sections skeleton */}
       <div className="skeleton-body">
         <div className="skeleton-section">
           <div className="skeleton-pulse skeleton-line skeleton-line-md" />

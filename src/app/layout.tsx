@@ -83,11 +83,14 @@ export default function RootLayout({
         {/* Force light theme to avoid any theme toggling */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{document.documentElement.setAttribute('data-theme','light');}catch(e){}})();`,
+            __html: `(function(){try{document.documentElement.setAttribute('data-theme','light');var ready=function(){document.documentElement.classList.add('app-ready');};if(document.readyState==='interactive'||document.readyState==='complete'){requestAnimationFrame(ready);}else{document.addEventListener('DOMContentLoaded',ready,{once:true});window.addEventListener('load',ready,{once:true});}setTimeout(ready,2500);}catch(e){}})();`,
           }}
         />
       </head>
       <body className={`${inter.variable} antialiased`}>
+        <div className="app-boot-loader" aria-hidden="true">
+          <div className="app-boot-loader__spinner" />
+        </div>
         <Navbar />
         <main id="main-content">
           {children}

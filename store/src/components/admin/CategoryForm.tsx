@@ -12,7 +12,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
 import { ImageUploader } from "./ImageUploader";
 import { Loader2, Plus, Trash2, Image as ImageIcon, X } from "lucide-react";
 
@@ -95,7 +94,6 @@ export function CategoryForm({ category }: CategoryFormProps) {
   const [options, setOptions] = useState<OptionDraft[]>(
     category?.customizationOptions?.map(toOptionDraft) || []
   );
-  const [customizable, setCustomizable] = useState(category?.customizable || false);
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<CategoryFormData>({
@@ -232,13 +230,37 @@ export function CategoryForm({ category }: CategoryFormProps) {
     setLoading(true);
     setSubmitError(null);
     try {
+      const cleanedOptions = options
+        .filter((o) => o.name.trim())
+        .map((o, index) => ({
+          name: o.name.trim(),
+          required: true,
+          position: index,
+          options: o.subOptions
+            .filter((s) => s.label.trim())
+            .map((s) => ({
+              label: s.label.trim(),
+              values: s.valueOptions
+                .filter((v) => v.value.trim() && v.label.trim())
+                .map((v) => ({
+                  value: v.value.trim(),
+                  label: v.label.trim(),
+                  image: v.image || null,
+                })),
+            })),
+        }));
+
       const url = category ? `/api/categories/${category.id}` : "/api/categories";
       const method = category ? "PATCH" : "POST";
 
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, customizable, image: images[0] ?? undefined }),
+        body: JSON.stringify({
+          ...data,
+          customizable: cleanedOptions.length > 0,
+          image: images[0] ?? undefined,
+        }),
       });
 
       if (!res.ok) {
@@ -248,29 +270,6 @@ export function CategoryForm({ category }: CategoryFormProps) {
       }
 
       const savedCategory = (await res.json()) as { id: string };
-
-      const cleanedOptions = customizable
-        ? options
-            .filter((o) => o.name.trim())
-            .map((o, index) => ({
-              name: o.name.trim(),
-              required: true,
-              position: index,
-              options: o.subOptions
-                .filter((s) => s.label.trim())
-                .map((s) => ({
-                  label: s.label.trim(),
-                  values: s.valueOptions
-                    .filter((v) => v.value.trim() && v.label.trim())
-                    .map((v) => ({
-                      value: v.value.trim(),
-                      label: v.label.trim(),
-                      image: v.image || null,
-                    })),
-                })),
-            }))
-        : [];
-
       const customizationRes = await fetch(
         `/api/categories/${savedCategory.id}/customizations`,
         {
@@ -335,23 +334,17 @@ export function CategoryForm({ category }: CategoryFormProps) {
       <section className="space-y-4">
         <h3 className="text-sm font-semibold uppercase tracking-wider text-neutral-500">Customization Options</h3>
 
-        <div className="flex items-center gap-2">
-          <Switch
-            id="customizable"
-            checked={customizable}
-            onCheckedChange={(val) => { setCustomizable(val); setValue("customizable", val); }}
-          />
-          <Label htmlFor="customizable">Enable Customization Options</Label>
-        </div>
+        <p className="text-sm text-neutral-500">
+          Add option groups here. The category will become customizable automatically once at least one option is saved.
+        </p>
 
-        {customizable && (
-          <div className="space-y-4">
-            {options.length === 0 && (
-              <p className="text-sm text-neutral-400">No options yet. Add one below.</p>
-            )}
+        <div className="space-y-4">
+          {options.length === 0 && (
+            <p className="text-sm text-neutral-400">No options yet. Add one below.</p>
+          )}
 
-            {options.map((opt, optIdx) => (
-              <div key={opt.id} className="rounded-xl border border-neutral-200 bg-neutral-50 p-4 space-y-4">
+          {options.map((opt, optIdx) => (
+            <div key={opt.id} className="rounded-xl border border-neutral-200 bg-neutral-50 p-4 space-y-4">
                 {/* Option header */}
                 <div className="flex items-start gap-3">
                   <span className="mt-2.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-neutral-200 text-[10px] font-bold text-neutral-600">
@@ -510,20 +503,19 @@ export function CategoryForm({ category }: CategoryFormProps) {
                     Add sub-option
                   </button>
                 </div>
-              </div>
-            ))}
+            </div>
+          ))}
 
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setOptions((prev) => [...prev, newOption()])}
-              className="w-full"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Add Option
-            </Button>
-          </div>
-        )}
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setOptions((prev) => [...prev, newOption()])}
+            className="w-full"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Add Option
+          </Button>
+        </div>
       </section>
 
       <div className="h-px bg-neutral-100" />

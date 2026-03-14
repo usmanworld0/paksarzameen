@@ -1,81 +1,101 @@
 "use client";
 
-import { useState } from "react";
-import Image from "next/image";
-import { Check } from "lucide-react";
+import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
+import type { CustomizationOption } from "@prisma/client";
 import { formatRegionalPrice } from "@/lib/pricing";
-
-type ValueOption = {
-  value: string;
-  label: string;
-  image?: string | null;
-  priceAdjustment?: number;
-};
-
-type SubOptionGroup = {
-  label: string;
-  values: ValueOption[];
-};
-
-type CustomizationOption = {
-  id: string;
-  name: string;
-  required: boolean;
-  options: unknown;
-};
+import { parseCustomizationOptions } from "@/lib/customizations";
+import { useStoreRegion } from "@/hooks/useStoreRegion";
+import { useCartStore } from "@/store/cart";
 
 interface CategoryCustomizationPanelProps {
   categoryName: string;
+  categorySlug: string;
   options: CustomizationOption[];
-}
-
-function parseSubOptionGroups(raw: unknown): SubOptionGroup[] {
-  if (!Array.isArray(raw)) return [];
-  return raw
-    .filter((item) => item && typeof item === "object" && !Array.isArray(item))
-    .map((item) => {
-      const obj = item as Record<string, unknown>;
-      const values = Array.isArray(obj.values) ? obj.values : [];
-      return {
-        label: typeof obj.label === "string" ? obj.label : "",
-        values: values.map((v) => {
-          const vo = v as Record<string, unknown>;
-          return {
-            value: String(vo.value ?? ""),
-            label: String(vo.label ?? vo.value ?? ""),
-            image: typeof vo.image === "string" ? vo.image : null,
-            priceAdjustment:
-              typeof vo.priceAdjustment === "number" && Number.isFinite(vo.priceAdjustment)
-                ? vo.priceAdjustment
-                : 0,
-          };
-        }),
-      };
-    })
-    .filter((g) => g.label && g.values.length > 0);
-}
-
-function findValueLabel(groups: SubOptionGroup[], value: string): string {
-  for (const g of groups) {
-    const found = g.values.find((v) => v.value === value);
-    if (found) return found.label;
-  }
-  return value;
 }
 
 export function CategoryCustomizationPanel({
   categoryName,
+  categorySlug,
   options,
 }: CategoryCustomizationPanelProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [selections, setSelections] = useState<Record<string, string>>({});
+  const router = useRouter();
+  const region = useStoreRegion();
+  const addItem = useCartStore((state) => state.addItem);
+  const [selections, setSelections] = useState<
+    Record<
+      string,
+      {
+        optionName: string;
+        groupLabel: string;
+        value: string;
+        valueLabel: string;
+        priceAdjustment: number;
+      }
+    >
+  >({});
+  const [submitting, setSubmitting] = useState(false);
 
-  if (options.length === 0) return null;
+  const parsedOptions = useMemo(() => parseCustomizationOptions(options), [options]);
+
+  const requiredGroupKeys = useMemo(
+    () =>
+      parsedOptions.flatMap((option) =>
+        option.groups.map((group) => `${option.id}::${group.label}`)
+      ),
+    [parsedOptions]
+  );
+
+  const missingRequiredCount = requiredGroupKeys.filter(
+    (groupKey) => !selections[groupKey]
+  ).length;
+
+  const optionsTotal = useMemo(
+    () =>
+      Object.values(selections).reduce(
+        (sum, selection) => sum + selection.priceAdjustment,
+        0
+      ),
+    [selections]
+  );
+
+  async function proceedToBilling() {
+    if (missingRequiredCount > 0) return;
+
+    setSubmitting(true);
+
+    const customizations = Object.entries(selections)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([key, selection]) => ({
+        key,
+        optionName: selection.optionName,
+        groupLabel: selection.groupLabel,
+        value: selection.value,
+        valueLabel: selection.valueLabel,
+        priceAdjustment: selection.priceAdjustment,
+      }));
+
+    addItem({
+      productId: `custom-order-${categorySlug}`,
+      name: `${categoryName} Custom Order`,
+      slug: `categories/${categorySlug}`,
+      price: optionsTotal,
+      discountedPrice: undefined,
+      image: "",
+      quantity: 1,
+      region,
+      customizations,
+    });
+
+    router.push("/checkout");
+  }
+
+  if (parsedOptions.length === 0) return null;
 
   return (
     <section className="mb-12 rounded-2xl border border-neutral-200 bg-neutral-50 p-6 sm:p-8">
-      {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div className="flex flex-col gap-3">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-400">
             Customization
@@ -84,136 +104,97 @@ export function CategoryCustomizationPanel({
             Customize Your {categoryName}
           </h2>
           <p className="mt-1 text-sm text-neutral-500">
-            Select your preferred options below.
+            Select options and proceed directly to billing.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => setIsOpen((p) => !p)}
-          className="inline-flex items-center justify-center rounded-full border border-neutral-300 bg-white px-5 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-neutral-700 transition-colors hover:border-neutral-900 hover:text-neutral-900 whitespace-nowrap"
-        >
-          {isOpen ? "Hide Options" : "Customize"}
-        </button>
       </div>
 
-      {isOpen && (
-        <div className="mt-8 space-y-10">
-          {options.map((opt) => {
-            const groups = parseSubOptionGroups(opt.options);
-
-            return (
-              <div key={opt.id}>
-                {/* Option label */}
-                <div className="mb-4 flex items-center gap-2">
-                  <p className="text-sm font-semibold text-neutral-800">
-                    {opt.name}
-                    <span className="ml-1 text-red-400">*</span>
-                  </p>
-                </div>
-
-                {/* Sub-option groups */}
-                <div className="space-y-5">
-                  {groups.map((group) => {
-                    const groupKey = `${opt.id}::${group.label}`;
-                    const selected = selections[groupKey];
-
-                    return (
-                      <div key={group.label}>
-                        <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-neutral-500">
-                          {group.label}
-                        </p>
-                        <div className="flex flex-wrap gap-3">
-                          {group.values.map((val) => {
-                            const isSelected = selected === val.value;
-                            const hasImage = !!val.image;
-
-                            return (
-                              <button
-                                key={val.value}
-                                type="button"
-                                onClick={() =>
-                                  setSelections((prev) => ({
-                                    ...prev,
-                                    [groupKey]: isSelected ? "" : val.value,
-                                  }))
-                                }
-                                className={`group relative flex flex-col items-center gap-2 rounded-xl border-2 p-2 transition-all ${
-                                  isSelected
-                                    ? "border-neutral-900 bg-white shadow-md"
-                                    : "border-neutral-200 bg-white hover:border-neutral-400"
-                                }`}
-                                style={{ minWidth: hasImage ? "80px" : "auto" }}
-                              >
-                                {isSelected && (
-                                  <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-neutral-900 text-white shadow">
-                                    <Check className="h-3 w-3" />
-                                  </span>
-                                )}
-
-                                {hasImage && (
-                                  <div className="relative h-14 w-14 overflow-hidden rounded-lg bg-neutral-100">
-                                    <Image
-                                      src={val.image!}
-                                      alt={val.label}
-                                      fill
-                                      sizes="56px"
-                                      className="object-cover"
-                                    />
-                                  </div>
-                                )}
-
-                                <span
-                                  className={`text-[11px] font-medium leading-tight text-center ${
-                                    isSelected ? "text-neutral-900" : "text-neutral-600"
-                                  }`}
-                                  style={{ maxWidth: "72px" }}
-                                >
-                                  {val.label}
-                                </span>
-                                <span className="text-[10px] font-semibold text-neutral-500">
-                                  {val.priceAdjustment === 0
-                                    ? formatRegionalPrice(0, "PAK")
-                                    : `+${formatRegionalPrice(val.priceAdjustment ?? 0, "PAK")}`}
-                                </span>
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            );
-          })}
-
-          {/* Summary */}
-          {Object.values(selections).some(Boolean) && (
-            <div className="rounded-xl border border-neutral-200 bg-white p-4">
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-neutral-400">
-                Your selections
+      <div className="mt-8 space-y-10">
+        {parsedOptions.map((option) => (
+          <div key={option.id}>
+            <div className="mb-4 flex items-center gap-2">
+              <p className="text-sm font-semibold text-neutral-800">
+                {option.name}
+                <span className="ml-1 text-red-400">*</span>
               </p>
-              <ul className="space-y-1">
-                {options.map((opt) => {
-                  const groups = parseSubOptionGroups(opt.options);
-                  return groups.map((group) => {
-                    const groupKey = `${opt.id}::${group.label}`;
-                    const val = selections[groupKey];
-                    if (!val) return null;
-                    const label = findValueLabel([group], val);
-                    return (
-                      <li key={groupKey} className="flex items-center justify-between text-sm">
-                        <span className="text-neutral-500">{opt.name} • {group.label}</span>
-                        <span className="font-medium text-neutral-900">{label}</span>
-                      </li>
-                    );
-                  });
-                })}
-              </ul>
             </div>
-          )}
+
+            <div className="space-y-5">
+              {option.groups.map((group) => {
+                const groupKey = `${option.id}::${group.label}`;
+                const selected = selections[groupKey]?.value;
+
+                return (
+                  <div key={groupKey}>
+                    <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-neutral-500">
+                      {group.label}
+                    </p>
+                    <div className="flex flex-wrap gap-3">
+                      {group.values.map((value) => {
+                        const isSelected = selected === value.value;
+
+                        return (
+                          <button
+                            key={value.value}
+                            type="button"
+                            onClick={() =>
+                              setSelections((previous) => ({
+                                ...previous,
+                                [groupKey]: {
+                                  optionName: option.name,
+                                  groupLabel: group.label,
+                                  value: value.value,
+                                  valueLabel: value.label,
+                                  priceAdjustment: value.priceAdjustment,
+                                },
+                              }))
+                            }
+                            className={`rounded-full border px-3 py-2 text-xs transition-colors ${
+                              isSelected
+                                ? "border-neutral-900 bg-neutral-900 text-white"
+                                : "border-neutral-300 bg-white text-neutral-700 hover:border-neutral-900"
+                            }`}
+                          >
+                            <span>{value.label}</span>
+                            <span className="ml-1.5 font-semibold">
+                              {value.priceAdjustment === 0
+                                ? formatRegionalPrice(0, region)
+                                : `+${formatRegionalPrice(value.priceAdjustment, region)}`}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+
+        <div className="rounded-xl border border-neutral-200 bg-white p-4">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-neutral-600">Options Total</span>
+            <span className="font-semibold text-neutral-900">
+              {formatRegionalPrice(optionsTotal, region)}
+            </span>
+          </div>
+          <p className="mt-2 text-xs text-neutral-500">
+            {missingRequiredCount > 0
+              ? `${missingRequiredCount} required selection${missingRequiredCount > 1 ? "s are" : " is"} missing.`
+              : "All required options selected."}
+          </p>
+
+          <button
+            type="button"
+            onClick={proceedToBilling}
+            disabled={missingRequiredCount > 0 || submitting}
+            className="mt-4 flex h-11 w-full items-center justify-center rounded-full bg-neutral-900 text-sm font-medium text-white transition-colors hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Proceed to Billing"}
+          </button>
         </div>
-      )}
+      </div>
     </section>
   );
 }

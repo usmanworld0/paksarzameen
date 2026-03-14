@@ -10,10 +10,12 @@ import { useCartStore } from "@/store/cart";
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const itemCount = useCartStore((s) => s.itemCount());
+  const marqueeLine =
+    "Bespoke Customization Available • Choose your options, confirm your sub-options, and place your order with transparent pricing";
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-neutral-200/60 bg-white/90 backdrop-blur-xl">
-      <nav className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-10">
+      <nav className="mx-auto flex h-[48px] max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-10">
         {/* Logo */}
         <Link href="/" className="group flex items-center gap-3">
           <span className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-sm border border-[#0c2e1a]/20 bg-[#0c2e1a]/5">
@@ -88,6 +90,18 @@ export function Navbar() {
           </button>
         </div>
       </nav>
+
+      <Link
+        href="/customizations"
+        className="customization-marquee-strip block border-t border-neutral-200/70"
+        aria-label="View customization options"
+      >
+        <div className="customization-marquee-track">
+          <span>{marqueeLine}</span>
+          <span>{marqueeLine}</span>
+          <span>{marqueeLine}</span>
+        </div>
+      </Link>
 
       {/* Mobile menu */}
       {mobileOpen && (

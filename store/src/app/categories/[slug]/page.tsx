@@ -31,15 +31,21 @@ export default async function CategoryPage({
   params,
   searchParams,
 }: CategoryPageProps) {
-  const region = await getRequestRegion();
   const category = await getCategoryBySlug(params.slug);
   if (!category) notFound();
 
-  const { products, total, pages } = await getProducts({
-    categorySlug: params.slug,
-    sort: searchParams.sort,
-    page: searchParams.page ? parseInt(searchParams.page) : 1,
-  });
+  const hasCustomizationFlow =
+    category.customizable && category.customizationOptions.length > 0;
+
+  const region = hasCustomizationFlow ? null : await getRequestRegion();
+
+  const { products, total, pages } = hasCustomizationFlow
+    ? { products: [], total: 0, pages: 0 }
+    : await getProducts({
+        categorySlug: params.slug,
+        sort: searchParams.sort,
+        page: searchParams.page ? parseInt(searchParams.page) : 1,
+      });
 
   const currentPage = searchParams.page ? parseInt(searchParams.page) : 1;
 
@@ -62,51 +68,55 @@ export default async function CategoryPage({
                   {category.description}
                 </p>
               )}
-              <p className="text-xs text-neutral-400 mt-3">
-                {total} {total === 1 ? "product" : "products"}
-              </p>
+              {!hasCustomizationFlow && (
+                <p className="text-xs text-neutral-400 mt-3">
+                  {total} {total === 1 ? "product" : "products"}
+                </p>
+              )}
             </div>
 
-            {category.customizable && category.customizationOptions.length > 0 && (
+            {hasCustomizationFlow && (
               <CategoryCustomizationPanel
                 categoryName={category.name}
+                categorySlug={category.slug}
                 options={category.customizationOptions}
               />
             )}
 
-            {products.length === 0 ? (
-              <div className="text-center py-20">
-                <p className="text-neutral-400 text-sm">
-                  No products in this category yet.
-                </p>
-              </div>
-            ) : (
-              <>
-                <div className="grid grid-cols-2 gap-x-3 gap-y-6 sm:gap-y-10 lg:grid-cols-3 xl:grid-cols-4">
-                  {products.map((product) => (
-                    <ProductCard key={product.id} product={product} region={region} />
-                  ))}
+            {!hasCustomizationFlow &&
+              (products.length === 0 ? (
+                <div className="text-center py-20">
+                  <p className="text-neutral-400 text-sm">
+                    No products in this category yet.
+                  </p>
                 </div>
-
-                {pages > 1 && (
-                  <div className="flex justify-center gap-2 mt-16">
-                    {Array.from({ length: pages }, (_, i) => i + 1).map((p) => (
-                      <a
-                        key={p}
-                        href={`/categories/${params.slug}?page=${p}`}
-                        className={`rounded-full h-9 w-9 flex items-center justify-center text-xs font-semibold transition-all ${
-                          p === currentPage
-                            ? "bg-neutral-900 text-white"
-                            : "border border-neutral-300 text-neutral-500 hover:border-neutral-900 hover:text-neutral-900"
-                        }`}
-                      >
-                        {p}
-                      </a>
+              ) : (
+                <>
+                  <div className="grid grid-cols-2 gap-x-3 gap-y-6 sm:gap-y-10 lg:grid-cols-3 xl:grid-cols-4">
+                    {products.map((product) => (
+                      <ProductCard key={product.id} product={product} region={region!} />
                     ))}
                   </div>
-                )}
-              </>
-            )}
+
+                  {pages > 1 && (
+                    <div className="flex justify-center gap-2 mt-16">
+                      {Array.from({ length: pages }, (_, i) => i + 1).map((p) => (
+                        <a
+                          key={p}
+                          href={`/categories/${params.slug}?page=${p}`}
+                          className={`rounded-full h-9 w-9 flex items-center justify-center text-xs font-semibold transition-all ${
+                            p === currentPage
+                              ? "bg-neutral-900 text-white"
+                              : "border border-neutral-300 text-neutral-500 hover:border-neutral-900 hover:text-neutral-900"
+                          }`}
+                        >
+                          {p}
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                </>
+              ))}
           </div>
         </section>
       </main>

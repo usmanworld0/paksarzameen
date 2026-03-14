@@ -3,6 +3,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { CartItem } from "@/types";
+import { getCartItemUnitPrice } from "@/lib/cart-pricing";
 
 export function getCartItemKey(item: CartItem) {
   const customizationKey = (item.customizations ?? [])
@@ -69,7 +70,7 @@ export const useCartStore = create<CartStore>()(
 
       subtotal: () =>
         get().items.reduce(
-          (sum, i) => sum + (i.discountedPrice ?? i.price) * i.quantity,
+          (sum, i) => sum + getCartItemUnitPrice(i) * i.quantity,
           0
         ),
     }),

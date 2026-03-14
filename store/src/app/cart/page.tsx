@@ -26,13 +26,13 @@ export default function CartPage() {
       <>
         <Navbar />
         <main className="pt-[72px] min-h-[60vh] flex flex-col items-center justify-center px-6">
-          <h1 className="text-3xl font-bold text-neutral-900 mb-3">Your Cart</h1>
+          <h1 className="text-4xl text-neutral-900 mb-3">Your Cart</h1>
           <p className="text-sm text-neutral-500 mb-8">
             Your cart is empty. Discover our collection and add something beautiful.
           </p>
           <Link
             href="/products"
-            className="inline-flex items-center justify-center rounded-full bg-neutral-900 text-white text-sm font-medium px-8 py-3 hover:bg-neutral-700 transition-colors"
+            className="store-button-primary"
           >
             Continue Shopping
           </Link>
@@ -45,9 +45,9 @@ export default function CartPage() {
   return (
     <>
       <Navbar />
-      <main className="pt-[72px]">
+      <main className="bg-[#fffaf6] pt-[72px]">
         {/* Breadcrumb */}
-        <nav className="mx-auto max-w-7xl px-6 pt-8 pb-4">
+        <nav className="store-container pt-8 pb-4">
           <div className="flex items-center gap-2 text-xs text-neutral-400">
             <Link href="/" className="hover:text-neutral-900 transition-colors">Home</Link>
             <span>/</span>
@@ -55,12 +55,12 @@ export default function CartPage() {
           </div>
         </nav>
 
-        <div className="mx-auto max-w-7xl px-6 pb-24">
-          <h1 className="text-3xl font-bold text-neutral-900 mb-12">Your Cart</h1>
+        <div className="store-container pb-24">
+          <h1 className="mb-12 text-4xl leading-[0.95] text-neutral-900">Your Cart</h1>
 
           <div className="grid grid-cols-1 gap-12 lg:grid-cols-[1fr_380px]">
             {/* Cart items */}
-            <div className="divide-y divide-neutral-200">
+            <div className="store-card divide-y divide-neutral-200 rounded-[22px] p-6 sm:p-8">
               {items.map((item) => (
                 (() => {
                   const itemKey = getCartItemKey(item);
@@ -167,8 +167,8 @@ export default function CartPage() {
             </div>
 
             {/* Summary — sticky aside */}
-            <aside className="rounded-lg border border-neutral-200 bg-neutral-50 p-8 h-fit lg:sticky lg:top-24">
-              <h2 className="text-lg font-bold text-neutral-900 mb-6">
+            <aside className="store-card h-fit rounded-[22px] border p-8 lg:sticky lg:top-24">
+              <h2 className="mb-6 text-2xl leading-tight text-neutral-900">
                 Order Summary
               </h2>
               <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.18em] text-neutral-400">
@@ -197,7 +197,7 @@ export default function CartPage() {
               </p>
               <Link
                 href="/checkout"
-                className="block w-full text-center rounded-full bg-neutral-900 text-white text-sm font-medium py-4 mt-6 hover:bg-neutral-700 transition-colors"
+                className="store-button-primary mt-6 w-full"
               >
                 Proceed to Billing
               </Link>

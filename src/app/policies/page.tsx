@@ -38,7 +38,7 @@ const FAQ_ITEMS = [
   {
     question: "How long does order processing take?",
     answer:
-      "Orders are typically processed within 1–2 business days after confirmation.",
+      "Orders are typically processed within 5–10 business days after confirmation.",
   },
   {
     question: "How long does delivery take?",
@@ -108,7 +108,7 @@ export default function PoliciesPage() {
           <div className="mt-4 space-y-4 text-sm leading-relaxed text-neutral-600">
             <div>
               <h3 className="font-semibold text-neutral-900">Order Processing</h3>
-              <p>Orders are processed within 1–2 business days after confirmation.</p>
+              <p>Orders are processed within 5–10 business days after confirmation.</p>
             </div>
             <div>
               <h3 className="font-semibold text-neutral-900">Shipping Time</h3>

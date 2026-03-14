@@ -65,8 +65,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
     <>
       <Navbar />
       {/* Hero Section with Back Button */}
-      <div className="sticky top-0 z-40 bg-white border-b border-neutral-200">
-        <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
+      <div className="sticky top-0 z-40 border-b border-[#e3d7ce] bg-[#fffaf6]">
+        <div className="store-container flex items-center justify-between py-4">
           <Link
             href="/products"
             className="group flex items-center gap-2 text-sm font-medium text-neutral-600 hover:text-neutral-900 transition-colors"
@@ -86,8 +86,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
       </div>
 
       {/* Main Product Section */}
-      <section className="bg-white">
-        <div className="mx-auto max-w-7xl px-6 py-12 lg:py-24">
+      <section className="bg-[#fffaf6]">
+        <div className="store-container py-12 lg:py-20">
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-3 lg:gap-12">
             {/* Left: Product Gallery (larger) */}
             <div className="lg:col-span-2 sticky top-24 h-fit">
@@ -98,13 +98,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <div className="flex flex-col h-fit sticky top-24">
               {/* Category Badge */}
               <div className="mb-4">
-                <span className="inline-block px-3 py-1 text-xs font-medium uppercase tracking-wider text-neutral-600 border border-neutral-300 rounded-full">
+                <span className="inline-block rounded-full border border-[#d9ccc2] bg-white px-3 py-1 text-xs font-medium uppercase tracking-wider text-neutral-600">
                   {product.category.name}
                 </span>
               </div>
 
               {/* Product Title */}
-              <h1 className="text-3xl lg:text-4xl font-serif font-bold text-neutral-900 mb-2 leading-tight">
+              <h1 className="mb-2 text-4xl leading-[0.95] text-neutral-900 lg:text-5xl">
                 {product.name}
               </h1>
 
@@ -112,7 +112,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               {product.artist && (
                 <p className="text-sm text-neutral-500 mb-4">
                   by{" "}
-                  <Link href={`/artists/${product.artist.id}`} className="text-[#0c2e1a] hover:underline">
+                  <Link href={`/artists/${product.artist.id}`} className="text-[#2c3d31] hover:underline">
                     {product.artist.name}
                   </Link>
                 </p>
@@ -131,7 +131,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                     <span className="ml-3 text-lg text-neutral-400 line-through">
                       {formatRegionalPrice(regionalPricing.price, region)}
                     </span>
-                    <span className="ml-2 text-[9px] tracking-[0.15em] uppercase bg-[#0c2e1a] text-white px-2 py-0.5">
+                    <span className="ml-2 bg-[#2c3d31] px-2 py-0.5 text-[9px] uppercase tracking-[0.15em] text-white">
                       -{discount}%
                     </span>
                   </>
@@ -210,9 +210,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
       {/* Related Products Section */}
       {relatedProducts.length > 0 && (
-        <section className="bg-white py-12 lg:py-24">
-          <div className="mx-auto max-w-7xl px-6">
-            <h2 className="text-2xl lg:text-3xl font-serif font-bold text-neutral-900 mb-12 text-center">
+        <section className="bg-[#fff8f2] py-12 lg:py-20">
+          <div className="store-container">
+            <h2 className="mb-12 text-center text-4xl leading-tight text-neutral-900 lg:text-5xl">
               Explore More
             </h2>
             <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">

@@ -24,56 +24,55 @@ export function ProductCard({ product, discountPercent, region = "PAK" }: Produc
     : regionalPricing.price;
 
   return (
-    <article className="group flex flex-col bg-white">
-      {/* Image — full-width portrait, no border or shadow */}
+    <article className="group store-card overflow-hidden rounded-[22px] transition-transform duration-300 hover:-translate-y-1">
       <Link
         href={`/products/${product.slug}`}
-        className="relative aspect-[3/4] w-full overflow-hidden bg-[#f5f4f2] sm:aspect-[4/5]"
+        className="relative aspect-[3/4] w-full overflow-hidden bg-[#f7eee8]"
       >
         <Image
           src={mainImage}
           alt={product.name}
           fill
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 22vw"
-          className="object-cover transition-transform duration-700 group-hover:scale-105"
+          className="object-cover transition-transform duration-700 group-hover:scale-110"
           quality={80}
         />
+        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/28 to-transparent" />
         {/* Badges */}
         {!isAvailable && (
-          <div className="absolute top-3 left-3">
-            <span className="bg-neutral-900 text-white text-[9px] tracking-[0.15em] uppercase px-2.5 py-1">
+          <div className="absolute left-3 top-3">
+            <span className="rounded-full bg-neutral-900 px-2.5 py-1 text-[9px] uppercase tracking-[0.15em] text-white">
               Sold Out
             </span>
           </div>
         )}
         {hasDiscount && (
-          <div className="absolute top-3 right-3">
-            <span className="bg-[#0c2e1a] text-white text-[9px] tracking-[0.15em] uppercase px-2.5 py-1">
+          <div className="absolute right-3 top-3">
+            <span className="rounded-full bg-[#2c3d31] px-2.5 py-1 text-[9px] uppercase tracking-[0.15em] text-white">
               -{discountPercent}%
             </span>
           </div>
         )}
       </Link>
 
-      {/* Info — centered, LV style */}
-      <div className="flex flex-col items-center gap-0.5 px-2 pt-3 pb-4 text-center sm:gap-1 sm:px-3 sm:pt-4 sm:pb-6">
-        <p className="text-[8px] font-semibold uppercase tracking-[0.25em] text-[#0c2e1a] sm:text-[9px] sm:tracking-[0.3em]">
+      <div className="flex flex-col items-center px-3 pb-6 pt-4 text-center sm:px-4">
+        <p className="text-[9px] font-semibold uppercase tracking-[0.24em] text-[#2c3d31]">
           {product.category.name}
         </p>
-        <h3 className="mt-0.5 text-xs font-light leading-snug text-neutral-900 line-clamp-2 sm:text-sm">
+        <h3 className="mt-1 line-clamp-2 text-base leading-tight text-neutral-900 sm:text-lg">
           {product.name}
         </h3>
         {product.artist && (
-          <p className="text-[10px] text-neutral-400">
+          <p className="mt-1 text-xs text-neutral-500">
             by {product.artist.name}
           </p>
         )}
-        <div className="mt-1 flex items-center gap-2 sm:mt-2">
-          <span className="text-xs font-medium tracking-tight text-neutral-800 sm:text-sm">
+        <div className="mt-3 flex items-center gap-2">
+          <span className="text-sm font-semibold tracking-tight text-neutral-900 sm:text-base">
             {formatRegionalPrice(finalPrice, region)}
           </span>
           {hasDiscount && (
-            <span className="text-[10px] text-neutral-400 line-through">
+            <span className="text-xs text-neutral-400 line-through">
               {formatRegionalPrice(regionalPricing.price, region)}
             </span>
           )}

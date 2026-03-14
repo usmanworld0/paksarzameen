@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import type { CustomizationOption } from "@prisma/client";
@@ -132,6 +133,7 @@ export function CategoryCustomizationPanel({
                     <div className="flex flex-wrap gap-3">
                       {group.values.map((value) => {
                         const isSelected = selected === value.value;
+                        const hasImage = Boolean(value.image);
 
                         return (
                           <button
@@ -149,12 +151,23 @@ export function CategoryCustomizationPanel({
                                 },
                               }))
                             }
-                            className={`rounded-full border px-3 py-2 text-xs transition-colors ${
+                            className={`flex items-center gap-2 rounded-full border px-3 py-2 text-xs transition-colors ${
                               isSelected
                                 ? "border-neutral-900 bg-neutral-900 text-white"
                                 : "border-neutral-300 bg-white text-neutral-700 hover:border-neutral-900"
                             }`}
                           >
+                            {hasImage && (
+                              <span className="relative h-7 w-7 overflow-hidden rounded-full border border-black/10">
+                                <Image
+                                  src={value.image!}
+                                  alt={value.label}
+                                  fill
+                                  sizes="28px"
+                                  className="object-cover"
+                                />
+                              </span>
+                            )}
                             <span>{value.label}</span>
                             <span className="ml-1.5 font-semibold">
                               {value.priceAdjustment === 0

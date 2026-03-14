@@ -10,41 +10,39 @@ import { useCartStore } from "@/store/cart";
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const itemCount = useCartStore((s) => s.itemCount());
-  const marqueeLine =
-    "Bespoke Customization Available • Choose your options, confirm your sub-options, and place your order with transparent pricing";
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 border-b border-neutral-200/60 bg-white/90 backdrop-blur-xl">
-      <nav className="mx-auto flex h-[48px] max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-10">
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-[#d9cdc4]/80 bg-[#fffcf8]/85 backdrop-blur-xl">
+      <nav className="store-container flex h-[72px] items-center justify-between">
         {/* Logo */}
         <Link href="/" className="group flex items-center gap-3">
-          <span className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-sm border border-[#0c2e1a]/20 bg-[#0c2e1a]/5">
+          <span className="relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl border border-[#2c3d31]/20 bg-white">
             <Image
               src={COMMONWEALTH_LOGO_URL}
               alt="Paksarzameen Store logo"
               fill
-              sizes="40px"
+              sizes="44px"
               className="object-contain p-1"
               priority
             />
           </span>
           <span className="leading-tight">
-            <span className="block text-[10px] font-semibold uppercase tracking-[0.3em] text-[#0c2e1a]/70">
+            <span className="block text-[9px] font-semibold uppercase tracking-[0.32em] text-[#2c3d31]/60">
               PakSarZameen
             </span>
-            <span className="block text-lg tracking-tight text-neutral-900">
+            <span className="block text-[1.35rem] leading-none tracking-tight text-neutral-900">
               Paksarzameen Store
             </span>
           </span>
         </Link>
 
         {/* Desktop nav */}
-        <ul className="hidden md:flex items-center gap-7">
+        <ul className="hidden items-center gap-7 lg:flex">
           {NAV_LINKS.map((link) => (
             <li key={link.href}>
               <Link
                 href={link.href}
-                className="text-[11px] font-medium text-neutral-500 hover:text-neutral-900 transition-colors tracking-[0.25em] uppercase"
+                className="text-[10px] font-semibold uppercase tracking-[0.26em] text-neutral-500 transition-colors hover:text-[#2c3d31]"
               >
                 {link.label}
               </Link>
@@ -53,7 +51,7 @@ export function Navbar() {
           <li>
             <Link
               href={MAIN_SITE_URL}
-              className="rounded-full border border-[#0c2e1a]/20 bg-[#0c2e1a]/5 px-4 py-1.5 text-[10px] font-medium text-[#0c2e1a] hover:bg-[#0c2e1a] hover:text-white transition-all tracking-[0.25em] uppercase"
+              className="rounded-full border border-[#2c3d31]/25 bg-white px-4 py-1.5 text-[10px] font-semibold uppercase tracking-[0.22em] text-[#2c3d31] transition-all hover:bg-[#2c3d31] hover:text-white"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -65,12 +63,12 @@ export function Navbar() {
         {/* Right actions */}
         <div className="flex items-center gap-4">
           <Link href="/products" className="hidden md:block">
-            <Search className="h-5 w-5 text-neutral-500 hover:text-brand-charcoal transition-colors" />
+            <Search className="h-5 w-5 text-neutral-500 transition-colors hover:text-[#2c3d31]" />
           </Link>
-          <Link href="/cart" className="relative">
-            <ShoppingBag className="h-5 w-5 text-neutral-500 hover:text-brand-charcoal transition-colors" />
+          <Link href="/cart" className="relative rounded-full border border-transparent p-1 transition-colors hover:border-[#2c3d31]/20">
+            <ShoppingBag className="h-5 w-5 text-neutral-500 transition-colors hover:text-[#2c3d31]" />
             {itemCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 h-4 w-4 rounded-full bg-[#0c2e1a] text-[10px] font-bold text-white flex items-center justify-center">
+              <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#2c3d31] text-[10px] font-bold text-white">
                 {itemCount}
               </span>
             )}
@@ -79,39 +77,27 @@ export function Navbar() {
           {/* Mobile toggle */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="md:hidden"
+            className="rounded-md border border-[#2c3d31]/20 p-1.5 lg:hidden"
             aria-label="Toggle menu"
           >
             {mobileOpen ? (
-              <X className="h-5 w-5" />
+              <X className="h-5 w-5 text-neutral-700" />
             ) : (
-              <Menu className="h-5 w-5" />
+              <Menu className="h-5 w-5 text-neutral-700" />
             )}
           </button>
         </div>
       </nav>
 
-      <Link
-        href="/customizations"
-        className="customization-marquee-strip block border-t border-neutral-200/70"
-        aria-label="View customization options"
-      >
-        <div className="customization-marquee-track">
-          <span>{marqueeLine}</span>
-          <span>{marqueeLine}</span>
-          <span>{marqueeLine}</span>
-        </div>
-      </Link>
-
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden border-t border-neutral-100 bg-white">
-          <ul className="flex flex-col py-4 px-6 gap-4">
+        <div className="border-t border-[#e6dbd3] bg-[#fffaf5] lg:hidden">
+          <ul className="store-container flex flex-col gap-4 py-6">
             {NAV_LINKS.map((link) => (
               <li key={link.href}>
                 <Link
                   href={link.href}
-                  className="text-xs font-medium text-neutral-600 tracking-[0.25em] uppercase"
+                  className="text-xs font-semibold uppercase tracking-[0.24em] text-neutral-600"
                   onClick={() => setMobileOpen(false)}
                 >
                   {link.label}
@@ -121,7 +107,7 @@ export function Navbar() {
             <li>
               <Link
                 href={MAIN_SITE_URL}
-                className="text-xs font-medium text-[#0c2e1a] tracking-[0.25em] uppercase"
+                className="text-xs font-semibold uppercase tracking-[0.24em] text-[#2c3d31]"
                 target="_blank"
                 rel="noopener noreferrer"
               >

@@ -8,7 +8,7 @@ import { getProducts } from "@/actions/products";
 import { getCategories } from "@/actions/categories";
 import { getRequestRegion } from "@/lib/pricing-server";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Products",
@@ -29,7 +29,7 @@ export default async function ProductsPage({
   searchParams,
 }: ProductsPageProps) {
   const region = await getRequestRegion();
-  const [{ products, total, pages }, categories] = await Promise.all([
+  const [{ products, pages }, categories] = await Promise.all([
     getProducts({
       categorySlug: searchParams.category,
       search: searchParams.search,
@@ -45,38 +45,34 @@ export default async function ProductsPage({
     <>
       <Navbar />
       <main className="pt-[72px]">
-        <section className="bg-white py-24">
-          <div className="mx-auto max-w-screen-2xl px-6 sm:px-10 lg:px-16">
-            {/* Header */}
-            <header className="mb-10">
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-400">
+        <section className="store-section bg-[#fffaf6]">
+          <div className="store-container max-w-[1320px]">
+            <header className="mb-10 sm:mb-12">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[#2c3d31]/80">
                 Paksarzameen Store
               </p>
-              <h1 className="mt-2 text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl">
-                All Products
-              </h1>
+              <h1 className="store-heading mt-2">All Products</h1>
             </header>
 
-            {/* Controls */}
-            <div className="mb-10 flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-              <CategoryFilter categories={categories} />
-              <SearchBar />
+            <div className="store-card mb-10 rounded-[22px] p-5 sm:p-6 lg:mb-12">
+              <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+                <CategoryFilter categories={categories} />
+                <SearchBar />
+              </div>
             </div>
 
-            {/* Grid */}
             {products.length === 0 ? (
-              <div className="flex min-h-[300px] items-center justify-center">
+              <div className="store-card flex min-h-[300px] items-center justify-center rounded-[22px]">
                 <p className="text-lg text-neutral-400">No products found.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-x-3 gap-y-6 sm:gap-x-4 sm:gap-y-10 lg:grid-cols-3 xl:grid-cols-4">
+              <div className="grid grid-cols-2 gap-x-3 gap-y-6 sm:gap-x-4 sm:gap-y-8 lg:grid-cols-3 xl:grid-cols-4">
                 {products.map((product) => (
                   <ProductCard key={product.id} product={product} region={region} />
                 ))}
               </div>
             )}
 
-            {/* Pagination */}
             {pages > 1 && (
               <nav
                 aria-label="Pagination"
@@ -91,8 +87,8 @@ export default async function ProductsPage({
                     })}`}
                     className={`flex h-9 w-9 items-center justify-center rounded-full text-xs font-semibold transition-colors ${
                       n === currentPage
-                        ? "bg-neutral-900 text-white"
-                        : "text-neutral-600 hover:bg-neutral-100"
+                        ? "bg-[#2c3d31] text-white"
+                        : "text-neutral-600 hover:bg-[#efe3d9]"
                     }`}
                   >
                     {n}

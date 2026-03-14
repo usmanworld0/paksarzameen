@@ -29,18 +29,13 @@ export default async function HomePage() {
 
         {/* Category Grid */}
         {categories.length > 0 && (
-          <section className="bg-white py-16 sm:py-28">
-            <div className="mx-auto max-w-screen-2xl px-6 sm:px-10 lg:px-16">
-              <div className="mb-16 border-b border-neutral-100 pb-10">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-[#0c2e1a]">
+          <section className="store-section bg-[#fffaf6]">
+            <div className="store-container">
+              <div className="mb-12 border-b border-[#e7ddd4] pb-8 sm:mb-16 sm:pb-10">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-[#2c3d31]">
                   Browse By
                 </p>
-                <h2
-                  className="mt-2 text-3xl font-light tracking-tight text-neutral-900 sm:text-4xl"
-                  style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
-                >
-                  Shop Categories
-                </h2>
+                <h2 className="store-heading mt-2">Shop Categories</h2>
               </div>
 
               <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
@@ -54,20 +49,15 @@ export default async function HomePage() {
 
         {/* Meet the Artisans */}
         {artists.length > 0 && (
-          <section className="bg-neutral-50 py-16 sm:py-28">
-            <div className="mx-auto max-w-screen-2xl px-6 sm:px-10 lg:px-16">
+          <section className="store-section-soft">
+            <div className="store-container">
               {/* Section header */}
-              <div className="mb-16 border-b border-neutral-100 pb-10">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-[#0c2e1a]">
+              <div className="mb-12 border-b border-[#e6d9cf] pb-8 sm:mb-16 sm:pb-10">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-[#2c3d31]">
                   Stories & Heritage
                 </p>
-                <h2
-                  className="mt-2 text-3xl font-light tracking-tight text-neutral-900 sm:text-4xl"
-                  style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
-                >
-                  Meet the Artists
-                </h2>
-                <p className="mt-4 text-sm font-light text-neutral-600">
+                <h2 className="store-heading mt-2">Meet the Artists</h2>
+                <p className="store-subheading mt-4 max-w-3xl">
                   Discover the talented artisans behind Paksarzameen Store&apos;s finest collections.
                   Each piece represents decades of heritage, skill, and dedication to traditional craftsmanship.
                 </p>
@@ -84,7 +74,7 @@ export default async function HomePage() {
                 <div className="mt-12 text-center">
                   <Link
                     href="/artists"
-                    className="text-[10px] font-semibold uppercase tracking-[0.25em] text-neutral-500 transition-colors hover:text-neutral-900"
+                    className="text-[10px] font-semibold uppercase tracking-[0.25em] text-neutral-500 transition-colors hover:text-[#2c3d31]"
                   >
                     View All Artisans →
                   </Link>
@@ -96,30 +86,25 @@ export default async function HomePage() {
 
         {/* Featured Products */}
         {featured.length > 0 && (
-          <section id="featured" className="bg-white py-16 sm:py-28">
-            <div className="mx-auto max-w-screen-2xl px-6 sm:px-10 lg:px-16">
+          <section id="featured" className="store-section bg-[#fffefc]">
+            <div className="store-container">
               {/* Section header */}
-              <div className="mb-16 flex flex-col items-start gap-4 border-b border-neutral-100 pb-10 sm:flex-row sm:items-end sm:justify-between">
+              <div className="mb-12 flex flex-col items-start gap-4 border-b border-[#ebe1d8] pb-8 sm:mb-16 sm:flex-row sm:items-end sm:justify-between sm:pb-10">
                 <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-[#0c2e1a]">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-[#2c3d31]">
                     Curated Selection
                   </p>
-                  <h2
-                    className="mt-2 text-3xl font-light tracking-tight text-neutral-900 sm:text-4xl"
-                    style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
-                  >
-                    Featured Products
-                  </h2>
+                  <h2 className="store-heading mt-2">Featured Products</h2>
                 </div>
                 <Link
                   href="/products"
-                  className="shrink-0 text-[10px] font-semibold uppercase tracking-[0.25em] text-neutral-500 transition-colors hover:text-neutral-900"
+                  className="shrink-0 text-[10px] font-semibold uppercase tracking-[0.25em] text-neutral-500 transition-colors hover:text-[#2c3d31]"
                 >
                   View All →
                 </Link>
               </div>
 
-              <div className="grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-4 sm:gap-y-12 lg:grid-cols-4">
+              <div className="grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-4 sm:gap-y-10 lg:grid-cols-4">
                 {featured.map((product) => (
                   <ProductCard key={product.id} product={product} region={region} />
                 ))}
@@ -128,46 +113,39 @@ export default async function HomePage() {
           </section>
         )}
 
-        {/* Divider strip — PSZ green accent */}
-        <div className="bg-[#0c2e1a] py-10">
-          <div className="mx-auto max-w-screen-2xl px-6 lg:px-16">
-            <p className="text-center text-[10px] font-semibold uppercase tracking-[0.4em] text-white/80">
+        <div className="bg-[#2c3d31] py-8">
+          <div className="store-container">
+            <p className="text-center text-[10px] font-semibold uppercase tracking-[0.35em] text-white/80">
               100% of profits support artisan communities &amp; PSZ social programmes
             </p>
           </div>
         </div>
 
         {/* CTA */}
-        <section className="bg-white py-20 sm:py-32 border-t border-neutral-100">
-          <div className="mx-auto max-w-3xl px-4 sm:px-6 text-center">
+        <section className="store-section border-t border-[#e6dbd2] bg-[#fff8f2]">
+          <div className="store-container max-w-3xl text-center">
             <div className="mb-8 flex items-center justify-center gap-4">
-              <span className="h-px w-12 bg-neutral-200" />
-              <p className="text-[10px] font-semibold uppercase tracking-[0.4em] text-neutral-400">
+              <span className="h-px w-12 bg-[#d7c8bc]" />
+              <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-neutral-500">
                 Paksarzameen Store
               </p>
-              <span className="h-px w-12 bg-neutral-200" />
+              <span className="h-px w-12 bg-[#d7c8bc]" />
             </div>
-            <h2
-              className="text-3xl font-light tracking-tight text-neutral-900 sm:text-5xl"
-              style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
-            >
+            <h2 className="store-heading">
               Every Purchase Makes an Impact
             </h2>
-            <div className="mx-auto my-8 h-px w-16 bg-neutral-200" />
-            <p className="text-sm font-light leading-relaxed tracking-wide text-neutral-500">
+            <div className="mx-auto my-8 h-px w-16 bg-[#d7c8bc]" />
+            <p className="store-subheading">
               When you shop at Paksarzameen Store, 100&nbsp;% of profits go directly
               to artisan communities and PakSarZameen social programmes.
             </p>
-            <div className="mt-12 flex flex-wrap items-center justify-center gap-5">
-              <Link
-                href="/products"
-                className="border border-neutral-900 px-10 py-3.5 text-[10px] font-semibold uppercase tracking-[0.25em] text-neutral-900 transition-all duration-300 hover:bg-neutral-900 hover:text-white"
-              >
+            <div className="mt-12 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+              <Link href="/products" className="store-button-primary">
                 Explore Collection
               </Link>
               <Link
                 href={process.env.NEXT_PUBLIC_MAIN_SITE_URL || "https://paksarzameenwfo.com"}
-                className="px-10 py-3.5 text-[10px] font-semibold uppercase tracking-[0.25em] text-neutral-400 transition-colors duration-300 hover:text-neutral-900"
+                className="store-button-secondary"
                 target="_blank"
                 rel="noopener noreferrer"
               >

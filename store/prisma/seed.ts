@@ -207,22 +207,39 @@ async function main() {
         {
           categoryId: clothingCat.id,
           name: "Size",
-          type: "size",
-          options: ["XS", "S", "M", "L", "XL", "XXL"],
+          options: [
+            {
+              label: "Standard Sizes",
+              values: [
+                { value: "XS", label: "XS" },
+                { value: "S", label: "S" },
+                { value: "M", label: "M" },
+                { value: "L", label: "L" },
+                { value: "XL", label: "XL" },
+                { value: "XXL", label: "XXL" },
+              ],
+            },
+          ],
           required: true,
-        },
-        {
-          categoryId: clothingCat.id,
-          name: "Custom Text Embroidery",
-          type: "text",
-          required: false,
+          position: 0,
         },
         {
           categoryId: clothingCat.id,
           name: "Thread Colour",
-          type: "color",
-          options: ["Gold", "Silver", "Maroon", "Green", "Blue"],
+          options: [
+            {
+              label: "Available Shades",
+              values: [
+                { value: "gold", label: "Gold" },
+                { value: "silver", label: "Silver" },
+                { value: "maroon", label: "Maroon" },
+                { value: "green", label: "Green" },
+                { value: "blue", label: "Blue" },
+              ],
+            },
+          ],
           required: false,
+          position: 1,
         },
       ],
       skipDuplicates: true,
@@ -235,15 +252,37 @@ async function main() {
         {
           categoryId: jewelleryCat.id,
           name: "Ring Size",
-          type: "select",
-          options: ["5", "6", "7", "8", "9", "10"],
+          options: [
+            {
+              label: "Size Guide",
+              values: [
+                { value: "5", label: "5" },
+                { value: "6", label: "6" },
+                { value: "7", label: "7" },
+                { value: "8", label: "8" },
+                { value: "9", label: "9" },
+                { value: "10", label: "10" },
+              ],
+            },
+          ],
           required: false,
+          position: 0,
         },
         {
           categoryId: jewelleryCat.id,
-          name: "Engraving Text",
-          type: "text",
+          name: "Finish",
+          options: [
+            {
+              label: "Metal Finish",
+              values: [
+                { value: "gold-plated", label: "Gold Plated" },
+                { value: "silver-tone", label: "Silver Tone" },
+                { value: "oxidized", label: "Oxidized" },
+              ],
+            },
+          ],
           required: false,
+          position: 1,
         },
       ],
       skipDuplicates: true,

@@ -2,12 +2,20 @@
 
 import { useState } from "react";
 import { useCartStore } from "@/store/cart";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ShoppingBag, Minus, Plus } from "lucide-react";
+import { Minus, Plus } from "lucide-react";
 import type { CustomizationOption } from "@prisma/client";
 import type { StoreRegion } from "@/lib/pricing";
+
+type ValueOption = {
+  value: string;
+  label: string;
+};
+
+type OptionGroup = {
+  label: string;
+  values: ValueOption[];
+};
 
 interface AddToCartButtonProps {
   product: {
@@ -23,6 +31,33 @@ interface AddToCartButtonProps {
   customizationOptions: CustomizationOption[];
 }
 
+function parseOptionGroups(raw: unknown): OptionGroup[] {
+  if (!Array.isArray(raw)) return [];
+
+  return raw
+    .filter((item) => item && typeof item === "object" && !Array.isArray(item))
+    .map((item) => {
+      const group = item as Record<string, unknown>;
+      const values = Array.isArray(group.values) ? group.values : [];
+
+      return {
+        label: typeof group.label === "string" ? group.label : "Options",
+        values: values
+          .filter((value) => value && typeof value === "object" && !Array.isArray(value))
+          .map((value) => {
+            const option = value as Record<string, unknown>;
+
+            return {
+              value: String(option.value ?? ""),
+              label: String(option.label ?? option.value ?? ""),
+            };
+          })
+          .filter((value) => value.value),
+      };
+    })
+    .filter((group) => group.values.length > 0);
+}
+
 export function AddToCartButton({
   product,
   customizationOptions,
@@ -33,6 +68,9 @@ export function AddToCartButton({
     Record<string, string>
   >({});
   const [added, setAdded] = useState(false);
+  const hasMissingRequiredCustomization = customizationOptions.some(
+    (option) => option.required && !customizations[option.name]
+  );
 
   function handleAdd() {
     addItem({
@@ -54,39 +92,45 @@ export function AddToCartButton({
   return (
     <div className="space-y-4">
       {/* Customization fields */}
-      {customizationOptions.map((opt) => (
-        <div key={opt.id} className="space-y-1.5">
-          <Label>
-            {opt.name}
-            {opt.required && <span className="text-red-500 ml-0.5">*</span>}
-          </Label>
-          {opt.type === "text" ? (
-            <Input
-              placeholder={`Enter ${opt.name.toLowerCase()}`}
-              onChange={(e) =>
-                setCustomizations((p) => ({ ...p, [opt.name]: e.target.value }))
-              }
-            />
-          ) : (
+      {customizationOptions.map((opt) => {
+        const groups = parseOptionGroups(opt.options);
+
+        if (groups.length === 0) {
+          return null;
+        }
+
+        return (
+          <div key={opt.id} className="space-y-1.5">
+            <Label>
+              {opt.name}
+              {opt.required && <span className="ml-0.5 text-red-500">*</span>}
+            </Label>
             <select
-              className="w-full border rounded-sm px-3 py-2 text-sm bg-white"
+              className="w-full rounded-sm border bg-white px-3 py-2 text-sm"
               onChange={(e) =>
-                setCustomizations((p) => ({ ...p, [opt.name]: e.target.value }))
+                setCustomizations((previous) => ({
+                  ...previous,
+                  [opt.name]: e.target.value,
+                }))
               }
-              defaultValue=""
+              value={customizations[opt.name] ?? ""}
             >
               <option value="" disabled>
                 Select {opt.name.toLowerCase()}
               </option>
-              {(opt.options as string[])?.map((val) => (
-                <option key={val} value={val}>
-                  {val}
-                </option>
+              {groups.map((group) => (
+                <optgroup key={group.label} label={group.label}>
+                  {group.values.map((value) => (
+                    <option key={value.value} value={value.label}>
+                      {value.label}
+                    </option>
+                  ))}
+                </optgroup>
               ))}
             </select>
-          )}
-        </div>
-      ))}
+          </div>
+        );
+      })}
 
       {/* Quantity + Add to Cart */}
       <div className="space-y-3 pt-2">
@@ -116,7 +160,7 @@ export function AddToCartButton({
         {/* Full-width CTA */}
         <button
           onClick={handleAdd}
-          disabled={!product.available}
+          disabled={!product.available || hasMissingRequiredCustomization}
           className="w-full bg-neutral-900 text-white text-sm font-medium tracking-wider uppercase py-4 hover:bg-neutral-700 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
           type="button"
         >

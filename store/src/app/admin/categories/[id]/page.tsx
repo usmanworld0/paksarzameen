@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { CategoryForm } from "@/components/admin/CategoryForm";
 import { ArrowLeft } from "lucide-react";
@@ -8,14 +9,16 @@ interface EditCategoryPageProps {
   params: { id: string };
 }
 
+type CategoryWithCustomizations = Prisma.CategoryGetPayload<{
+  include: {
+    customizationOptions: true;
+  };
+}>;
+
 export default async function EditCategoryPage({
   params,
 }: EditCategoryPageProps) {
-  let category:
-    | (Awaited<ReturnType<typeof prisma.category.findUnique>> & {
-        customizationOptions?: unknown[];
-      })
-    | null = null;
+  let category: CategoryWithCustomizations | null = null;
 
   try {
     category = await prisma.category.findUnique({

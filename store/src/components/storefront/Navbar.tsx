@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { ShoppingBag, Menu, X, Search } from "lucide-react";
-import { NAV_LINKS, MAIN_SITE_URL } from "@/lib/constants";
+import { NAV_LINKS, MAIN_SITE_URL, COMMONWEALTH_LOGO_URL } from "@/lib/constants";
 import { useCartStore } from "@/store/cart";
 
 export function Navbar() {
@@ -15,8 +16,15 @@ export function Navbar() {
       <nav className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-10">
         {/* Logo */}
         <Link href="/" className="group flex items-center gap-3">
-          <span className="flex h-10 w-10 items-center justify-center rounded-sm border border-[#0c2e1a]/20 bg-[#0c2e1a]/5 text-xs font-bold uppercase tracking-[0.2em] text-[#0c2e1a]">
-            CL
+          <span className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-sm border border-[#0c2e1a]/20 bg-[#0c2e1a]/5">
+            <Image
+              src={COMMONWEALTH_LOGO_URL}
+              alt="Commonwealth Lab logo"
+              fill
+              sizes="40px"
+              className="object-contain p-1"
+              priority
+            />
           </span>
           <span className="leading-tight">
             <span className="block text-[10px] font-semibold uppercase tracking-[0.3em] text-[#0c2e1a]/70">

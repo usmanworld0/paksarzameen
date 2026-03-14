@@ -34,6 +34,9 @@ export function Footer() {
             <li>
               <Link href="/commonwealth">Commonwealth</Link>
             </li>
+            <li>
+              <Link href="/policies">Policies &amp; Terms</Link>
+            </li>
           </ul>
         </div>
 

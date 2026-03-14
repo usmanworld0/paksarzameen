@@ -14,6 +14,7 @@ const nextConfig = {
       { protocol: "https", hostname: "res.cloudinary.com" },
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "images.pexels.com" },
+      { protocol: "https", hostname: "paksarzameenwfo.com" },
     ],
     minimumCacheTTL: 60 * 60 * 24 * 30,
   },

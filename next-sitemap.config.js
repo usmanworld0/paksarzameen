@@ -21,6 +21,7 @@ module.exports = {
     const importantPaths = [
       "/",
       "/about",
+      "/policies",
       "/projects",
       "/volunteer",
       "/contact",

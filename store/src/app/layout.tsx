@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
-import { SITE_NAME, SITE_DESCRIPTION, SITE_URL } from "@/lib/constants";
+import {
+  SITE_NAME,
+  SITE_DESCRIPTION,
+  SITE_URL,
+  COMMONWEALTH_LOGO_URL,
+} from "@/lib/constants";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -9,17 +14,33 @@ export const metadata: Metadata = {
   },
   description: SITE_DESCRIPTION,
   metadataBase: new URL(SITE_URL),
+  icons: {
+    icon: [
+      { url: COMMONWEALTH_LOGO_URL, type: "image/png" },
+    ],
+    apple: [{ url: COMMONWEALTH_LOGO_URL, type: "image/png" }],
+    shortcut: [{ url: COMMONWEALTH_LOGO_URL, type: "image/png" }],
+  },
   openGraph: {
     type: "website",
     siteName: SITE_NAME,
     title: SITE_NAME,
     description: SITE_DESCRIPTION,
     url: SITE_URL,
+    images: [
+      {
+        url: COMMONWEALTH_LOGO_URL,
+        width: 512,
+        height: 512,
+        alt: "Commonwealth Lab logo",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: SITE_NAME,
     description: SITE_DESCRIPTION,
+    images: [COMMONWEALTH_LOGO_URL],
   },
   robots: { index: true, follow: true },
 };

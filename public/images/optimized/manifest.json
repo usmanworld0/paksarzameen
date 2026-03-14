@@ -15,6 +15,16 @@
     },
     "blurDataURL": "data:image/webp;base64,UklGRkoAAABXRUJQVlA4ID4AAADwAQCdASoQAAkABUB8JZgCdAED+5StK4AA/t2H2SN7sfWIecyRwWZYhYEqR2wI7dNuFUKC9tMK0ULeQAAAAA=="
   },
+  "/images/commonwealth_logo.PNG": {
+    "optimized": {
+      "sm": "/images/optimized/commonwealth-logo-sm.webp",
+      "md": "/images/optimized/commonwealth-logo-md.webp",
+      "lg": "/images/optimized/commonwealth-logo-lg.webp",
+      "xl": "/images/optimized/commonwealth-logo-xl.webp",
+      "full": "/images/optimized/commonwealth-logo.webp"
+    },
+    "blurDataURL": "data:image/webp;base64,UklGRk4AAABXRUJQVlA4IEIAAAAwAwCdASoQABQAPzmEuVOvKKWisAgB4CcJaQAAW+v/huQAAP7qaFFC9BIMdyV93f1P3FPpZo5LdK08oTN7fD6AAAA="
+  },
   "/images/contrast_ajrak.png": {
     "optimized": {
       "sm": "/images/optimized/contrast-ajrak-sm.webp",

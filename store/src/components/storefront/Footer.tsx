@@ -35,6 +35,11 @@ export function Footer() {
                   Artisans
                 </Link>
               </li>
+              <li>
+                <Link href="/policies" className="text-sm text-white/50 hover:text-white transition-colors">
+                  Policies &amp; Terms
+                </Link>
+              </li>
             </ul>
           </nav>
 

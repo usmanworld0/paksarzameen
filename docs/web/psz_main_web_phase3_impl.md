@@ -1,5 +1,19 @@
 # Implementation: PSZ Main Web Phase 3 (Homepage Assembly)
 
+## 2026-03-14 Premium Homepage Upgrade
+- Replaced the legacy monolithic GSAP homepage implementation with a modular, Framer Motion-driven architecture in `src/features/home/components/HomeClient.tsx`.
+- Added a premium first-fold hero with layered gradient atmosphere, subtle particle motion, animated phrase swapping, and CTA pair (`Join Us`, `Donate`).
+- Added an in-page sticky section navigation with smooth scroll and mobile hamburger behavior.
+- Implemented animated impact counters that count up on scroll into view.
+- Added dynamically imported homepage sections for volunteer highlights, story journey, and featured projects to keep the initial bundle lean.
+- Added NGO storytelling blocks with alternating text/media layouts and optimized landmark-oriented imagery via `next/image`.
+- Added a prominent animated donation/volunteer CTA block with accessible semantics and responsive behavior.
+- New modular section components:
+	- `src/features/home/components/sections/VolunteerHighlightSection.tsx`
+	- `src/features/home/components/sections/StoryJourneySection.tsx`
+	- `src/features/home/components/sections/FeaturedProjectsSection.tsx`
+	- `src/features/home/components/sections/types.ts`
+
 ## Overview
 Phase 3 assembles `src/app/page.tsx` into modular homepage sections, using service-driven data from the Phase 2 dummy layer.
 The page remains a server component and delegates interactivity to isolated client components where required.

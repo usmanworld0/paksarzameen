@@ -8,6 +8,8 @@ import { Navbar } from "@/components/storefront/Navbar";
 import { Footer } from "@/components/storefront/Footer";
 import { formatRegionalPrice, getRegionBadgeLabel } from "@/lib/pricing";
 import { useStoreRegion } from "@/hooks/useStoreRegion";
+import { getCartItemUnitPrice } from "@/lib/cart-pricing";
+import { getCustomizationTotal } from "@/lib/customizations";
 import { Minus, Plus, X } from "lucide-react";
 
 export default function CartPage() {
@@ -96,12 +98,12 @@ export default function CartPage() {
                     </div>
 
                     {item.customizations &&
-                      Object.entries(item.customizations).map(([key, val]) => (
+                      item.customizations.map((selection) => (
                         <p
-                          key={key}
+                          key={selection.key}
                           className="text-xs text-neutral-500 mt-1"
                         >
-                          {key}: {val}
+                          {selection.groupLabel}: {selection.valueLabel} ({selection.priceAdjustment === 0 ? formatRegionalPrice(0, region) : `+${formatRegionalPrice(selection.priceAdjustment, region)}`})
                         </p>
                       ))}
 
@@ -133,11 +135,16 @@ export default function CartPage() {
 
                       <div className="text-right">
                         <p className="text-sm font-medium text-neutral-900">
-                          {formatRegionalPrice((item.discountedPrice || item.price) * item.quantity, region)}
+                          {formatRegionalPrice(getCartItemUnitPrice(item) * item.quantity, region)}
                         </p>
                         {item.discountedPrice && (
                           <p className="text-xs text-neutral-400 line-through mt-0.5">
                             {formatRegionalPrice(item.price * item.quantity, region)}
+                          </p>
+                        )}
+                        {getCustomizationTotal(item) > 0 && (
+                          <p className="text-xs text-neutral-500 mt-0.5">
+                            Includes options +{formatRegionalPrice(getCustomizationTotal(item) * item.quantity, region)}
                           </p>
                         )}
                       </div>

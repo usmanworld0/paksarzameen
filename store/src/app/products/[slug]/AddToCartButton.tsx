@@ -1,21 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useCartStore } from "@/store/cart";
 import { Label } from "@/components/ui/label";
 import { Minus, Plus } from "lucide-react";
 import type { CustomizationOption } from "@prisma/client";
-import type { StoreRegion } from "@/lib/pricing";
-
-type ValueOption = {
-  value: string;
-  label: string;
-};
-
-type OptionGroup = {
-  label: string;
-  values: ValueOption[];
-};
+import { formatRegionalPrice, type StoreRegion } from "@/lib/pricing";
+import { parseCustomizationOptions } from "@/lib/customizations";
 
 interface AddToCartButtonProps {
   product: {
@@ -31,48 +22,65 @@ interface AddToCartButtonProps {
   customizationOptions: CustomizationOption[];
 }
 
-function parseOptionGroups(raw: unknown): OptionGroup[] {
-  if (!Array.isArray(raw)) return [];
-
-  return raw
-    .filter((item) => item && typeof item === "object" && !Array.isArray(item))
-    .map((item) => {
-      const group = item as Record<string, unknown>;
-      const values = Array.isArray(group.values) ? group.values : [];
-
-      return {
-        label: typeof group.label === "string" ? group.label : "Options",
-        values: values
-          .filter((value) => value && typeof value === "object" && !Array.isArray(value))
-          .map((value) => {
-            const option = value as Record<string, unknown>;
-
-            return {
-              value: String(option.value ?? ""),
-              label: String(option.label ?? option.value ?? ""),
-            };
-          })
-          .filter((value) => value.value),
-      };
-    })
-    .filter((group) => group.values.length > 0);
-}
-
 export function AddToCartButton({
   product,
   customizationOptions,
 }: AddToCartButtonProps) {
   const addItem = useCartStore((s) => s.addItem);
   const [quantity, setQuantity] = useState(1);
-  const [customizations, setCustomizations] = useState<
-    Record<string, string>
+  const [selectedByGroup, setSelectedByGroup] = useState<
+    Record<
+      string,
+      {
+        optionName: string;
+        groupLabel: string;
+        value: string;
+        valueLabel: string;
+        priceAdjustment: number;
+      }
+    >
   >({});
   const [added, setAdded] = useState(false);
-  const hasMissingRequiredCustomization = customizationOptions.some(
-    (option) => option.required && !customizations[option.name]
+  const parsedOptions = useMemo(
+    () => parseCustomizationOptions(customizationOptions),
+    [customizationOptions]
   );
 
+  const requiredGroupKeys = useMemo(
+    () =>
+      parsedOptions.flatMap((option) =>
+        option.groups.map((group) => `${option.id}::${group.label}`)
+      ),
+    [parsedOptions]
+  );
+
+  const missingRequiredCount = requiredGroupKeys.filter(
+    (groupKey) => !selectedByGroup[groupKey]
+  ).length;
+
+  const customizationTotal = useMemo(
+    () =>
+      Object.values(selectedByGroup).reduce(
+        (sum, selection) => sum + selection.priceAdjustment,
+        0
+      ),
+    [selectedByGroup]
+  );
+
+  const unitPrice = (product.discountedPrice ?? product.price) + customizationTotal;
+
   function handleAdd() {
+    const customizations = Object.entries(selectedByGroup)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([key, selection]) => ({
+        key,
+        optionName: selection.optionName,
+        groupLabel: selection.groupLabel,
+        value: selection.value,
+        valueLabel: selection.valueLabel,
+        priceAdjustment: selection.priceAdjustment,
+      }));
+
     addItem({
       productId: product.id,
       name: product.name,
@@ -82,8 +90,7 @@ export function AddToCartButton({
       image: product.image,
       quantity,
       region: product.region,
-      customizations:
-        Object.keys(customizations).length > 0 ? customizations : undefined,
+      customizations: customizations.length > 0 ? customizations : undefined,
     });
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
@@ -92,45 +99,95 @@ export function AddToCartButton({
   return (
     <div className="space-y-4">
       {/* Customization fields */}
-      {customizationOptions.map((opt) => {
-        const groups = parseOptionGroups(opt.options);
+      {parsedOptions.map((option) => (
+        <div key={option.id} className="space-y-4">
+          <Label>
+            {option.name}
+            <span className="ml-0.5 text-red-500">*</span>
+          </Label>
 
-        if (groups.length === 0) {
-          return null;
-        }
+          <div className="space-y-3 rounded-xl border border-neutral-200 bg-neutral-50 p-3">
+            {option.groups.map((group) => {
+              const groupKey = `${option.id}::${group.label}`;
+              const selectedValue = selectedByGroup[groupKey]?.value;
 
-        return (
-          <div key={opt.id} className="space-y-1.5">
-            <Label>
-              {opt.name}
-              {opt.required && <span className="ml-0.5 text-red-500">*</span>}
-            </Label>
-            <select
-              className="w-full rounded-sm border bg-white px-3 py-2 text-sm"
-              onChange={(e) =>
-                setCustomizations((previous) => ({
-                  ...previous,
-                  [opt.name]: e.target.value,
-                }))
-              }
-              value={customizations[opt.name] ?? ""}
-            >
-              <option value="" disabled>
-                Select {opt.name.toLowerCase()}
-              </option>
-              {groups.map((group) => (
-                <optgroup key={group.label} label={group.label}>
-                  {group.values.map((value) => (
-                    <option key={value.value} value={value.label}>
-                      {value.label}
-                    </option>
-                  ))}
-                </optgroup>
-              ))}
-            </select>
+              return (
+                <div key={groupKey} className="space-y-2">
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500">
+                    {group.label}
+                  </p>
+
+                  <div className="flex flex-wrap gap-2">
+                    {group.values.map((value) => {
+                      const isSelected = selectedValue === value.value;
+
+                      return (
+                        <button
+                          key={value.value}
+                          type="button"
+                          onClick={() =>
+                            setSelectedByGroup((previous) => ({
+                              ...previous,
+                              [groupKey]: {
+                                optionName: option.name,
+                                groupLabel: group.label,
+                                value: value.value,
+                                valueLabel: value.label,
+                                priceAdjustment: value.priceAdjustment,
+                              },
+                            }))
+                          }
+                          className={`rounded-full border px-3 py-2 text-xs transition-colors ${
+                            isSelected
+                              ? "border-neutral-900 bg-neutral-900 text-white"
+                              : "border-neutral-300 bg-white text-neutral-700 hover:border-neutral-900"
+                          }`}
+                        >
+                          <span>{value.label}</span>
+                          <span className="ml-1.5 font-semibold">
+                            {value.priceAdjustment === 0
+                              ? formatRegionalPrice(0, product.region)
+                              : `+${formatRegionalPrice(value.priceAdjustment, product.region)}`}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
           </div>
-        );
-      })}
+        </div>
+      ))}
+
+      {requiredGroupKeys.length > 0 && (
+        <p className="text-xs text-neutral-500">
+          {missingRequiredCount > 0
+            ? `${missingRequiredCount} required selection${
+                missingRequiredCount > 1 ? "s are" : " is"
+              } still missing.`
+            : "All required customization selections completed."}
+        </p>
+      )}
+
+      <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-4 text-sm">
+        <div className="flex items-center justify-between text-neutral-600">
+          <span>Base Price</span>
+          <span>{formatRegionalPrice(product.discountedPrice ?? product.price, product.region)}</span>
+        </div>
+        <div className="mt-2 flex items-center justify-between text-neutral-600">
+          <span>Options Total</span>
+          <span>
+            {customizationTotal === 0
+              ? formatRegionalPrice(0, product.region)
+              : `+${formatRegionalPrice(customizationTotal, product.region)}`}
+          </span>
+        </div>
+        <div className="mt-3 flex items-center justify-between border-t border-neutral-200 pt-3 font-semibold text-neutral-900">
+          <span>Unit Total</span>
+          <span>{formatRegionalPrice(unitPrice, product.region)}</span>
+        </div>
+      </div>
 
       {/* Quantity + Add to Cart */}
       <div className="space-y-3 pt-2">
@@ -160,7 +217,7 @@ export function AddToCartButton({
         {/* Full-width CTA */}
         <button
           onClick={handleAdd}
-          disabled={!product.available || hasMissingRequiredCustomization}
+          disabled={!product.available || missingRequiredCount > 0}
           className="w-full bg-neutral-900 text-white text-sm font-medium tracking-wider uppercase py-4 hover:bg-neutral-700 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
           type="button"
         >

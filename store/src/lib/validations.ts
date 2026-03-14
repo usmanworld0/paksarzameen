@@ -32,6 +32,7 @@ export const valueOptionSchema = z.object({
   value: z.string().trim().min(1, "Value is required"),
   label: z.string().trim().min(1, "Label is required"),
   image: z.string().url().optional().nullable(),
+  priceAdjustment: z.coerce.number().default(0),
 });
 
 export const subOptionSchema = z.object({

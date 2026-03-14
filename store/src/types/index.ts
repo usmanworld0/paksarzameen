@@ -38,7 +38,14 @@ export type CartItem = {
   image: string;
   quantity: number;
   region?: StoreRegion;
-  customizations?: Record<string, string>;
+  customizations?: Array<{
+    key: string;
+    optionName: string;
+    groupLabel: string;
+    value: string;
+    valueLabel: string;
+    priceAdjustment: number;
+  }>;
 };
 
 export type CustomizationField = CustomizationOption & {

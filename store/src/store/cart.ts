@@ -5,8 +5,13 @@ import { persist } from "zustand/middleware";
 import type { CartItem } from "@/types";
 
 export function getCartItemKey(item: CartItem) {
+  const customizationKey = (item.customizations ?? [])
+    .slice()
+    .sort((a, b) => a.key.localeCompare(b.key))
+    .map((entry) => `${entry.key}:${entry.value}:${entry.priceAdjustment}`);
+
   return `${item.productId}::${item.region ?? "PAK"}::${JSON.stringify(
-    item.customizations ?? {}
+    customizationKey
   )}`;
 }
 

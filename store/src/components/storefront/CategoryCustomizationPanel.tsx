@@ -3,11 +3,13 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Check } from "lucide-react";
+import { formatRegionalPrice } from "@/lib/pricing";
 
 type ValueOption = {
   value: string;
   label: string;
   image?: string | null;
+  priceAdjustment?: number;
 };
 
 type SubOptionGroup = {
@@ -42,6 +44,10 @@ function parseSubOptionGroups(raw: unknown): SubOptionGroup[] {
             value: String(vo.value ?? ""),
             label: String(vo.label ?? vo.value ?? ""),
             image: typeof vo.image === "string" ? vo.image : null,
+            priceAdjustment:
+              typeof vo.priceAdjustment === "number" && Number.isFinite(vo.priceAdjustment)
+                ? vo.priceAdjustment
+                : 0,
           };
         }),
       };
@@ -94,7 +100,6 @@ export function CategoryCustomizationPanel({
         <div className="mt-8 space-y-10">
           {options.map((opt) => {
             const groups = parseSubOptionGroups(opt.options);
-            const selected = selections[opt.id];
 
             return (
               <div key={opt.id}>
@@ -104,74 +109,79 @@ export function CategoryCustomizationPanel({
                     {opt.name}
                     <span className="ml-1 text-red-400">*</span>
                   </p>
-                  {selected && (
-                    <span className="rounded-full bg-neutral-900 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">
-                      {findValueLabel(groups, selected)}
-                    </span>
-                  )}
                 </div>
 
                 {/* Sub-option groups */}
                 <div className="space-y-5">
-                  {groups.map((group) => (
-                    <div key={group.label}>
-                      <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-neutral-500">
-                        {group.label}
-                      </p>
-                      <div className="flex flex-wrap gap-3">
-                        {group.values.map((val) => {
-                          const isSelected = selected === val.value;
-                          const hasImage = !!val.image;
+                  {groups.map((group) => {
+                    const groupKey = `${opt.id}::${group.label}`;
+                    const selected = selections[groupKey];
 
-                          return (
-                            <button
-                              key={val.value}
-                              type="button"
-                              onClick={() =>
-                                setSelections((prev) => ({
-                                  ...prev,
-                                  [opt.id]: isSelected ? "" : val.value,
-                                }))
-                              }
-                              className={`group relative flex flex-col items-center gap-2 rounded-xl border-2 p-2 transition-all ${
-                                isSelected
-                                  ? "border-neutral-900 bg-white shadow-md"
-                                  : "border-neutral-200 bg-white hover:border-neutral-400"
-                              }`}
-                              style={{ minWidth: hasImage ? "80px" : "auto" }}
-                            >
-                              {isSelected && (
-                                <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-neutral-900 text-white shadow">
-                                  <Check className="h-3 w-3" />
-                                </span>
-                              )}
+                    return (
+                      <div key={group.label}>
+                        <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-neutral-500">
+                          {group.label}
+                        </p>
+                        <div className="flex flex-wrap gap-3">
+                          {group.values.map((val) => {
+                            const isSelected = selected === val.value;
+                            const hasImage = !!val.image;
 
-                              {hasImage && (
-                                <div className="relative h-14 w-14 overflow-hidden rounded-lg bg-neutral-100">
-                                  <Image
-                                    src={val.image!}
-                                    alt={val.label}
-                                    fill
-                                    sizes="56px"
-                                    className="object-cover"
-                                  />
-                                </div>
-                              )}
-
-                              <span
-                                className={`text-[11px] font-medium leading-tight text-center ${
-                                  isSelected ? "text-neutral-900" : "text-neutral-600"
+                            return (
+                              <button
+                                key={val.value}
+                                type="button"
+                                onClick={() =>
+                                  setSelections((prev) => ({
+                                    ...prev,
+                                    [groupKey]: isSelected ? "" : val.value,
+                                  }))
+                                }
+                                className={`group relative flex flex-col items-center gap-2 rounded-xl border-2 p-2 transition-all ${
+                                  isSelected
+                                    ? "border-neutral-900 bg-white shadow-md"
+                                    : "border-neutral-200 bg-white hover:border-neutral-400"
                                 }`}
-                                style={{ maxWidth: "72px" }}
+                                style={{ minWidth: hasImage ? "80px" : "auto" }}
                               >
-                                {val.label}
-                              </span>
-                            </button>
-                          );
-                        })}
+                                {isSelected && (
+                                  <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-neutral-900 text-white shadow">
+                                    <Check className="h-3 w-3" />
+                                  </span>
+                                )}
+
+                                {hasImage && (
+                                  <div className="relative h-14 w-14 overflow-hidden rounded-lg bg-neutral-100">
+                                    <Image
+                                      src={val.image!}
+                                      alt={val.label}
+                                      fill
+                                      sizes="56px"
+                                      className="object-cover"
+                                    />
+                                  </div>
+                                )}
+
+                                <span
+                                  className={`text-[11px] font-medium leading-tight text-center ${
+                                    isSelected ? "text-neutral-900" : "text-neutral-600"
+                                  }`}
+                                  style={{ maxWidth: "72px" }}
+                                >
+                                  {val.label}
+                                </span>
+                                <span className="text-[10px] font-semibold text-neutral-500">
+                                  {val.priceAdjustment === 0
+                                    ? formatRegionalPrice(0, "PAK")
+                                    : `+${formatRegionalPrice(val.priceAdjustment ?? 0, "PAK")}`}
+                                </span>
+                              </button>
+                            );
+                          })}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             );
@@ -185,16 +195,19 @@ export function CategoryCustomizationPanel({
               </p>
               <ul className="space-y-1">
                 {options.map((opt) => {
-                  const val = selections[opt.id];
-                  if (!val) return null;
                   const groups = parseSubOptionGroups(opt.options);
-                  const label = findValueLabel(groups, val);
-                  return (
-                    <li key={opt.id} className="flex items-center justify-between text-sm">
-                      <span className="text-neutral-500">{opt.name}</span>
-                      <span className="font-medium text-neutral-900">{label}</span>
-                    </li>
-                  );
+                  return groups.map((group) => {
+                    const groupKey = `${opt.id}::${group.label}`;
+                    const val = selections[groupKey];
+                    if (!val) return null;
+                    const label = findValueLabel([group], val);
+                    return (
+                      <li key={groupKey} className="flex items-center justify-between text-sm">
+                        <span className="text-neutral-500">{opt.name} • {group.label}</span>
+                        <span className="font-medium text-neutral-900">{label}</span>
+                      </li>
+                    );
+                  });
                 })}
               </ul>
             </div>

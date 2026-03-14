@@ -5,7 +5,8 @@ import { useMemo, useState } from "react";
 import { getCartItemKey, useCartStore } from "@/store/cart";
 import { Navbar } from "@/components/storefront/Navbar";
 import { Footer } from "@/components/storefront/Footer";
-import { getCartSubtotal } from "@/lib/cart-pricing";
+import { getCartItemUnitPrice, getCartSubtotal } from "@/lib/cart-pricing";
+import { getCustomizationTotal } from "@/lib/customizations";
 import { formatRegionalPrice, getRegionBadgeLabel } from "@/lib/pricing";
 import { useStoreRegion } from "@/hooks/useStoreRegion";
 import { Loader2, CreditCard, Tag } from "lucide-react";
@@ -267,9 +268,14 @@ export default function CheckoutPage() {
                     <div>
                       <p className="font-medium text-neutral-900">{item.name}</p>
                       <p className="text-neutral-500">Qty {item.quantity}</p>
+                      {item.customizations?.map((selection) => (
+                        <p key={selection.key} className="text-xs text-neutral-500 mt-1">
+                          {selection.groupLabel}: {selection.valueLabel} ({selection.priceAdjustment === 0 ? formatRegionalPrice(0, region) : `+${formatRegionalPrice(selection.priceAdjustment, region)}`})
+                        </p>
+                      ))}
                     </div>
                     <p className="font-medium text-neutral-900">
-                      {formatRegionalPrice((item.discountedPrice ?? item.price) * item.quantity, region)}
+                      {formatRegionalPrice(getCartItemUnitPrice(item) * item.quantity, region)}
                     </p>
                   </div>
                 ))}
@@ -283,6 +289,18 @@ export default function CheckoutPage() {
                 <div className="flex justify-between">
                   <span className="text-neutral-600">Subtotal</span>
                   <span className="font-medium text-neutral-900">{formatRegionalPrice(subtotal, region)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-neutral-600">Options Total</span>
+                  <span className="font-medium text-neutral-900">
+                    {formatRegionalPrice(
+                      items.reduce(
+                        (sum, item) => sum + getCustomizationTotal(item) * item.quantity,
+                        0
+                      ),
+                      region
+                    )}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-neutral-600">Coupon Discount</span>

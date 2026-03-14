@@ -24,6 +24,7 @@ type ValueOptionDraft = {
   value: string;
   label: string;
   image: string | null;
+  priceAdjustment: number;
   uploading?: boolean;
 };
 
@@ -60,6 +61,10 @@ function parseSubOptions(raw: unknown): SubOptionDraft[] {
             value: String(vo.value ?? ""),
             label: String(vo.label ?? vo.value ?? ""),
             image: typeof vo.image === "string" ? vo.image : null,
+            priceAdjustment:
+              typeof vo.priceAdjustment === "number" && Number.isFinite(vo.priceAdjustment)
+                ? vo.priceAdjustment
+                : 0,
           };
         }),
       };
@@ -75,7 +80,13 @@ function toOptionDraft(option: CustomizationOption): OptionDraft {
 }
 
 function newValueOption(): ValueOptionDraft {
-  return { id: `val-${uid()}`, value: "", label: "", image: null };
+  return {
+    id: `val-${uid()}`,
+    value: "",
+    label: "",
+    image: null,
+    priceAdjustment: 0,
+  };
 }
 
 function newSubOption(): SubOptionDraft {
@@ -246,6 +257,7 @@ export function CategoryForm({ category }: CategoryFormProps) {
                   value: v.value.trim(),
                   label: v.label.trim(),
                   image: v.image || null,
+                  priceAdjustment: Number(v.priceAdjustment) || 0,
                 })),
             })),
         }));
@@ -469,6 +481,19 @@ export function CategoryForm({ category }: CategoryFormProps) {
                                 }
                                 placeholder="Value (e.g. light-cotton)"
                                 className="h-7 text-xs flex-1"
+                              />
+
+                              <Input
+                                type="number"
+                                step="1"
+                                value={val.priceAdjustment}
+                                onChange={(e) =>
+                                  updateValueOption(opt.id, sub.id, val.id, {
+                                    priceAdjustment: Number(e.target.value) || 0,
+                                  })
+                                }
+                                placeholder="Price"
+                                className="h-7 text-xs w-24"
                               />
 
                               <button

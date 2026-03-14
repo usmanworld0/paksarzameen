@@ -3,6 +3,7 @@ import "server-only";
 import type { CartItem } from "@/types";
 import { calculateCouponDiscount } from "./coupons";
 import { getCartItemUnitPrice, getCartSubtotal } from "./cart-pricing";
+import { getCustomizationSummary } from "./customizations";
 import { getCurrencyForRegion, type StoreRegion } from "./pricing";
 
 export type CheckoutPricing = {
@@ -17,6 +18,7 @@ type FlattenedCartUnit = {
   name: string;
   image: string;
   amount: number;
+  description?: string;
 };
 
 export async function getCheckoutPricing(
@@ -47,6 +49,7 @@ function flattenCartItems(items: CartItem[]): FlattenedCartUnit[] {
       name: item.name,
       image: item.image,
       amount: getCartItemUnitPrice(item),
+      description: getCustomizationSummary(item) || undefined,
     }))
   );
 }
@@ -88,6 +91,7 @@ export async function buildDiscountedStripeLineItems(
         currency,
         product_data: {
           name: unit.name,
+          description: unit.description,
           images: unit.image ? [unit.image] : undefined,
         },
         unit_amount: Math.max(Math.round(finalUnitAmount * 100), 50),

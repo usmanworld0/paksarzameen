@@ -12,7 +12,18 @@ const cartItemSchema = z.object({
   image: z.string().optional().default(""),
   quantity: z.number().int().min(1),
   region: z.enum(["PAK", "US", "UK"]).optional(),
-  customizations: z.record(z.string()).optional(),
+  customizations: z
+    .array(
+      z.object({
+        key: z.string().min(1),
+        optionName: z.string().min(1),
+        groupLabel: z.string().min(1),
+        value: z.string().min(1),
+        valueLabel: z.string().min(1),
+        priceAdjustment: z.number(),
+      })
+    )
+    .optional(),
 });
 
 const couponValidationSchema = z.object({

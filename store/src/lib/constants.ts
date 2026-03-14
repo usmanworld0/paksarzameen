@@ -12,6 +12,7 @@ export const COMMONWEALTH_LOGO_URL =
 
 export const NAV_LINKS = [
   { label: "Shop", href: "/products" },
+  { label: "Customizations", href: "/customizations" },
   { label: "Artisans", href: "/artists" },
   { label: "Policies", href: "/policies" },
   { label: "About", href: `${MAIN_SITE_URL}/about` },

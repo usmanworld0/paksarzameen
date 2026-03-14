@@ -53,18 +53,17 @@ export default async function CategoryPage({
     <>
       <Navbar />
       <main className="pt-[72px]">
-        <section className="bg-white py-24">
-          <div className="mx-auto max-w-screen-2xl px-6 sm:px-10 lg:px-16">
-            {/* Section header — left-aligned with border */}
-            <div className="border-b border-neutral-100 pb-10 mb-16">
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-400 mb-3">
+        <section className="store-section bg-[#fffaf6]">
+          <div className="store-container max-w-[1320px]">
+            <div className="mb-12 border-b border-[#e6d9cf] pb-8 sm:mb-16 sm:pb-10">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-[#2c3d31]/70">
                 Category
               </p>
-              <h1 className="text-3xl font-bold text-neutral-900 mb-2">
+              <h1 className="store-heading mb-2">
                 {category.name}
               </h1>
               {category.description && (
-                <p className="text-sm text-neutral-500 max-w-xl">
+                <p className="store-subheading max-w-xl">
                   {category.description}
                 </p>
               )}
@@ -85,7 +84,7 @@ export default async function CategoryPage({
 
             {!hasCustomizationFlow &&
               (products.length === 0 ? (
-                <div className="text-center py-20">
+                <div className="store-card rounded-[22px] py-20 text-center">
                   <p className="text-neutral-400 text-sm">
                     No products in this category yet.
                   </p>
@@ -106,8 +105,8 @@ export default async function CategoryPage({
                           href={`/categories/${params.slug}?page=${p}`}
                           className={`rounded-full h-9 w-9 flex items-center justify-center text-xs font-semibold transition-all ${
                             p === currentPage
-                              ? "bg-neutral-900 text-white"
-                              : "border border-neutral-300 text-neutral-500 hover:border-neutral-900 hover:text-neutral-900"
+                              ? "bg-[#2c3d31] text-white"
+                              : "border border-neutral-300 text-neutral-500 hover:border-[#2c3d31] hover:text-[#2c3d31]"
                           }`}
                         >
                           {p}

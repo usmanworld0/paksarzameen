@@ -40,10 +40,25 @@ export const subOptionSchema = z.object({
   values: z.array(valueOptionSchema).default([]),
 });
 
+export const customizationFieldTypeSchema = z.enum([
+  "select",
+  "text",
+  "number",
+  "textarea",
+]);
+
+const customizationOptionConfigSchema = z.object({
+  fieldType: customizationFieldTypeSchema.default("select"),
+  placeholder: optionalText,
+  min: z.coerce.number().optional(),
+  max: z.coerce.number().optional(),
+  groups: z.array(subOptionSchema).default([]),
+});
+
 export const customizationOptionInputSchema = z.object({
   name: z.string().trim().min(2, "Option name must be at least 2 characters"),
-  required: z.boolean().default(true),
-  options: z.array(subOptionSchema).default([]),
+  required: z.boolean().default(false),
+  options: z.union([z.array(subOptionSchema), customizationOptionConfigSchema]).default([]),
   position: z.coerce.number().int().min(0).default(0),
 });
 

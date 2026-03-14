@@ -75,17 +75,18 @@ export default function PoliciesPage() {
   };
 
   return (
-    <main className="container-wide py-28 sm:py-32">
+    <main className="store-section bg-[#fffaf6] pt-[72px]">
+      <div className="store-container">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
 
-      <header className="rounded-2xl border border-neutral-200 bg-white p-8 shadow-sm sm:p-10">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-brand-green">
+      <header className="store-card rounded-[24px] p-8 sm:p-10">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[#2c3d31]">
           Paksarzameen Store
         </p>
-        <h1 className="mt-3 text-3xl font-light tracking-tight text-neutral-900 sm:text-4xl" style={{ fontFamily: "'Playfair Display', serif" }}>
+        <h1 className="store-heading mt-3">
           Paksarzameen Store Policies &amp; Terms
         </h1>
         <p className="mt-4 max-w-3xl text-sm leading-relaxed text-neutral-500 sm:text-base">
@@ -94,8 +95,8 @@ export default function PoliciesPage() {
       </header>
 
       <div className="mt-8 space-y-6">
-        <section className="admin-card rounded-2xl p-6 sm:p-7">
-          <h2 className="text-2xl font-semibold text-neutral-900" style={{ fontFamily: "'Playfair Display', serif" }}>Shipping Policy</h2>
+        <section className="store-card rounded-[22px] p-6 sm:p-7">
+          <h2 className="text-4xl leading-tight text-neutral-900">Shipping Policy</h2>
           <div className="mt-4 space-y-4 text-sm leading-relaxed text-neutral-600">
             <div>
               <h3 className="font-semibold text-neutral-900">Order Processing</h3>
@@ -120,8 +121,8 @@ export default function PoliciesPage() {
           </div>
         </section>
 
-        <section className="admin-card rounded-2xl p-6 sm:p-7">
-          <h2 className="text-2xl font-semibold text-neutral-900" style={{ fontFamily: "'Playfair Display', serif" }}>Return &amp; Replacement Policy</h2>
+        <section className="store-card rounded-[22px] p-6 sm:p-7">
+          <h2 className="text-4xl leading-tight text-neutral-900">Return &amp; Replacement Policy</h2>
           <div className="mt-4 space-y-3 text-sm leading-relaxed text-neutral-600">
             <p><strong className="text-neutral-900">All sales are final.</strong></p>
             <p>Returns or refunds are not accepted once an order has been delivered and accepted.</p>
@@ -138,16 +139,16 @@ export default function PoliciesPage() {
           </div>
         </section>
 
-        <section className="admin-card rounded-2xl p-6 sm:p-7">
-          <h2 className="text-2xl font-semibold text-neutral-900" style={{ fontFamily: "'Playfair Display', serif" }}>Order Cancellation Policy</h2>
+        <section className="store-card rounded-[22px] p-6 sm:p-7">
+          <h2 className="text-4xl leading-tight text-neutral-900">Order Cancellation Policy</h2>
           <div className="mt-4 space-y-3 text-sm leading-relaxed text-neutral-600">
             <p>Orders may only be cancelled before they are processed or dispatched.</p>
             <p>Once an order enters processing or shipping stage, cancellation may not be possible.</p>
           </div>
         </section>
 
-        <section className="admin-card rounded-2xl p-6 sm:p-7">
-          <h2 className="text-2xl font-semibold text-neutral-900" style={{ fontFamily: "'Playfair Display', serif" }}>Terms &amp; Conditions</h2>
+        <section className="store-card rounded-[22px] p-6 sm:p-7">
+          <h2 className="text-4xl leading-tight text-neutral-900">Terms &amp; Conditions</h2>
           <div className="mt-4 space-y-4 text-sm leading-relaxed text-neutral-600">
             <div>
               <h3 className="font-semibold text-neutral-900">Acceptance of Terms</h3>
@@ -180,8 +181,8 @@ export default function PoliciesPage() {
           </div>
         </section>
 
-        <section className="admin-card rounded-2xl p-6 sm:p-7">
-          <h2 className="text-2xl font-semibold text-neutral-900" style={{ fontFamily: "'Playfair Display', serif" }}>Privacy Policy</h2>
+        <section className="store-card rounded-[22px] p-6 sm:p-7">
+          <h2 className="text-4xl leading-tight text-neutral-900">Privacy Policy</h2>
           <div className="mt-4 space-y-4 text-sm leading-relaxed text-neutral-600">
             <div>
               <h3 className="font-semibold text-neutral-900">Information Collection</h3>
@@ -206,19 +207,20 @@ export default function PoliciesPage() {
           </div>
         </section>
 
-        <section className="admin-card rounded-2xl p-6 sm:p-7">
-          <h2 className="text-2xl font-semibold text-neutral-900" style={{ fontFamily: "'Playfair Display', serif" }}>Contact &amp; Support</h2>
+        <section className="store-card rounded-[22px] p-6 sm:p-7">
+          <h2 className="text-4xl leading-tight text-neutral-900">Contact &amp; Support</h2>
           <p className="mt-4 text-sm leading-relaxed text-neutral-600">
             Customers can contact support using the contact information available on the website for any questions related to orders or policies.
           </p>
         </section>
 
-        <section className="admin-card rounded-2xl p-6 sm:p-7">
-          <h2 className="text-2xl font-semibold text-neutral-900" style={{ fontFamily: "'Playfair Display', serif" }}>Frequently Asked Questions (FAQ)</h2>
+        <section className="store-card rounded-[22px] p-6 sm:p-7">
+          <h2 className="text-4xl leading-tight text-neutral-900">Frequently Asked Questions (FAQ)</h2>
           <div className="mt-5">
             <PoliciesFaqAccordion items={[...FAQ_ITEMS]} />
           </div>
         </section>
+      </div>
       </div>
     </main>
   );

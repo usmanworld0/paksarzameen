@@ -62,15 +62,15 @@ export default function CheckoutPage() {
     return (
       <>
         <Navbar />
-        <main className="min-h-[60vh] px-6 pt-[96px] pb-20">
+        <main className="min-h-[60vh] bg-[#fffaf6] px-6 pb-20 pt-[96px]">
           <div className="mx-auto max-w-2xl text-center">
-            <h1 className="text-3xl font-bold text-neutral-900">Billing</h1>
+            <h1 className="text-5xl leading-tight text-neutral-900">Billing</h1>
             <p className="mt-3 text-sm text-neutral-500">
               Your cart is empty. Add products before moving to billing.
             </p>
             <Link
               href="/products"
-              className="mt-8 inline-flex rounded-full bg-neutral-900 px-8 py-3 text-sm font-medium text-white transition-colors hover:bg-neutral-700"
+              className="store-button-primary mt-8"
             >
               Browse Products
             </Link>
@@ -168,8 +168,8 @@ export default function CheckoutPage() {
   return (
     <>
       <Navbar />
-      <main className="pt-[72px]">
-        <nav className="mx-auto max-w-7xl px-6 pt-8 pb-4">
+      <main className="bg-[#fffaf6] pt-[72px]">
+        <nav className="store-container pt-8 pb-4">
           <div className="flex items-center gap-2 text-xs text-neutral-400">
             <Link href="/" className="hover:text-neutral-900 transition-colors">Home</Link>
             <span>/</span>
@@ -179,12 +179,12 @@ export default function CheckoutPage() {
           </div>
         </nav>
 
-        <div className="mx-auto max-w-7xl px-6 pb-24">
+        <div className="store-container pb-24">
           <div className="max-w-3xl">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#0c2e1a]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#2c3d31]">
               Secure Checkout
             </p>
-            <h1 className="mt-3 text-3xl font-bold text-neutral-900">Billing Details</h1>
+            <h1 className="mt-3 text-5xl leading-[0.92] text-neutral-900">Billing Details</h1>
             <p className="mt-3 text-sm text-neutral-500">
               Complete your billing information, enter a coupon code manually if you have one, and continue to Stripe for secure card payment.
             </p>
@@ -192,9 +192,9 @@ export default function CheckoutPage() {
 
           <form onSubmit={handleCheckout} className="mt-12 grid grid-cols-1 gap-12 lg:grid-cols-[1fr_380px]">
             <div className="space-y-8">
-              <section className="rounded-2xl border border-neutral-200 bg-white p-6 sm:p-8">
+              <section className="store-card rounded-[22px] border p-6 sm:p-8">
                 <div className="flex items-center gap-3">
-                  <CreditCard className="h-5 w-5 text-[#0c2e1a]" />
+                  <CreditCard className="h-5 w-5 text-[#2c3d31]" />
                   <div>
                     <h2 className="text-lg font-semibold text-neutral-900">Billing Information</h2>
                     <p className="text-sm text-neutral-500">Used to prepare your Stripe payment session.</p>
@@ -214,9 +214,9 @@ export default function CheckoutPage() {
                 </div>
               </section>
 
-              <section className="rounded-2xl border border-neutral-200 bg-white p-6 sm:p-8">
+              <section className="store-card rounded-[22px] border p-6 sm:p-8">
                 <div className="flex items-center gap-3">
-                  <Tag className="h-5 w-5 text-[#0c2e1a]" />
+                  <Tag className="h-5 w-5 text-[#2c3d31]" />
                   <div>
                     <h2 className="text-lg font-semibold text-neutral-900">Coupon Code</h2>
                     <p className="text-sm text-neutral-500">Enter an active coupon code manually before you continue to Stripe.</p>
@@ -239,13 +239,13 @@ export default function CheckoutPage() {
                       }
                     }}
                     placeholder="Enter coupon code"
-                    className="h-12 flex-1 rounded-xl border border-neutral-200 px-4 text-sm text-neutral-900 outline-none transition-colors focus:border-[#0c2e1a]/40"
+                    className="h-12 flex-1 rounded-xl border border-neutral-200 px-4 text-sm text-neutral-900 outline-none transition-colors focus:border-[#2c3d31]/40"
                   />
                   <button
                     type="button"
                     onClick={applyCoupon}
                     disabled={applyingCoupon}
-                    className="h-12 rounded-xl border border-neutral-900 px-5 text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-900 hover:text-white"
+                    className="h-12 rounded-xl border border-[#2c3d31] px-5 text-sm font-medium text-[#2c3d31] transition-colors hover:bg-[#2c3d31] hover:text-white"
                   >
                     {applyingCoupon ? "Checking..." : "Apply Coupon"}
                   </button>
@@ -259,7 +259,7 @@ export default function CheckoutPage() {
               </section>
             </div>
 
-            <aside className="h-fit rounded-2xl border border-neutral-200 bg-neutral-50 p-8 lg:sticky lg:top-24">
+            <aside className="store-card h-fit rounded-[22px] border p-8 lg:sticky lg:top-24">
               <h2 className="text-lg font-semibold text-neutral-900">Payment Summary</h2>
 
               <div className="mt-6 space-y-4">
@@ -318,8 +318,8 @@ export default function CheckoutPage() {
                 </p>
               )}
 
-              <div className="mt-6 rounded-xl border border-[#0c2e1a]/10 bg-white px-4 py-4">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#0c2e1a]">
+              <div className="mt-6 rounded-xl border border-[#2c3d31]/10 bg-white px-4 py-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#2c3d31]">
                   Advance Payment Method
                 </p>
                 <p className="mt-2 text-sm text-neutral-700">Credit / Debit Card</p>
@@ -335,7 +335,7 @@ export default function CheckoutPage() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="mt-6 flex h-12 w-full items-center justify-center rounded-full bg-neutral-900 px-6 text-sm font-medium text-white transition-colors hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-60"
+                className="mt-6 flex h-12 w-full items-center justify-center rounded-full bg-[#2c3d31] px-6 text-sm font-medium text-white transition-colors hover:bg-[#223126] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Continue to Stripe"}
               </button>
@@ -381,7 +381,7 @@ function Field({
         onChange={(event) => onChange(event.target.value)}
         required={required}
         maxLength={maxLength}
-        className="h-12 w-full rounded-xl border border-neutral-200 px-4 text-sm text-neutral-900 outline-none transition-colors focus:border-[#0c2e1a]/40"
+        className="h-12 w-full rounded-xl border border-neutral-200 px-4 text-sm text-neutral-900 outline-none transition-colors focus:border-[#2c3d31]/40"
       />
     </label>
   );

@@ -22,12 +22,12 @@ export function CategoryCard({ category }: CategoryCardProps) {
           quality={75}
         />
       )}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/78 via-black/28 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/86 via-black/36 to-transparent" />
       <div className="relative z-10 w-full p-5 sm:p-6">
-        <h3 className="text-2xl leading-tight text-white sm:text-[1.8rem]">
+        <h3 className="text-2xl leading-tight text-white [text-shadow:0_2px_8px_rgba(0,0,0,0.45)] sm:text-[1.8rem]">
           {category.name}
         </h3>
-        <p className="mt-2 text-[10px] font-semibold uppercase tracking-[0.25em] text-white/70 transition-colors duration-300 group-hover:text-white">
+        <p className="mt-2 text-[10px] font-semibold uppercase tracking-[0.25em] text-white/85 [text-shadow:0_2px_6px_rgba(0,0,0,0.4)] transition-colors duration-300 group-hover:text-white">
           {category._count.products} Product{category._count.products !== 1 ? "s" : ""} →
         </p>
       </div>

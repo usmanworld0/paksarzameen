@@ -23,27 +23,26 @@ export default async function ArtistsPage() {
     <>
       <Navbar />
       <main className="pt-[72px]">
-        <section className="bg-white py-24">
-          <div className="mx-auto max-w-screen-2xl px-6 sm:px-10 lg:px-16">
-            {/* Section header — left-aligned with border */}
-            <div className="border-b border-neutral-100 pb-10 mb-16">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-[#0c2e1a] mb-3">
+        <section className="store-section bg-[#fff8f2]">
+          <div className="store-container max-w-[1320px]">
+            <div className="mb-12 border-b border-[#e6d9cf] pb-8 sm:mb-16 sm:pb-10">
+              <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.35em] text-[#2c3d31]">
                 Stories & Heritage
               </p>
-              <h1 className="text-3xl font-bold text-neutral-900">
+              <h1 className="store-heading">
                 Our Artisans
               </h1>
-              <p className="text-sm text-neutral-500 mt-3 max-w-xl">
+              <p className="store-subheading mt-3 max-w-xl">
                 Meet the talented craftspeople behind every piece. Each artisan
                 brings generations of tradition to their work.
               </p>
-              <p className="text-xs text-neutral-400 mt-3 uppercase tracking-[0.2em]">
+              <p className="mt-3 text-xs uppercase tracking-[0.2em] text-neutral-500">
                 {artists.length} artisans · {totalProducts} live products
               </p>
             </div>
 
             {artists.length === 0 ? (
-              <div className="text-center py-20">
+              <div className="store-card rounded-[22px] py-20 text-center">
                 <p className="text-neutral-400 text-sm">
                   Artisan profiles coming soon.
                 </p>

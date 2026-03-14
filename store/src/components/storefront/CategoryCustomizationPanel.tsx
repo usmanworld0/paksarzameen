@@ -42,14 +42,18 @@ export function CategoryCustomizationPanel({
 
   const requiredGroupKeys = useMemo(
     () =>
-      parsedOptions.flatMap((option) =>
-        option.groups.map((group) => `${option.id}::${group.label}`)
-      ),
+      parsedOptions.flatMap((option) => {
+        if (!option.required) return [];
+        if (option.fieldType === "select") {
+          return option.groups.map((group) => `${option.id}::${group.label}`);
+        }
+        return [`${option.id}::value`];
+      }),
     [parsedOptions]
   );
 
   const missingRequiredCount = requiredGroupKeys.filter(
-    (groupKey) => !selections[groupKey]
+    (groupKey) => !(selections[groupKey]?.value ?? "").trim()
   ).length;
 
   const optionsTotal = useMemo(
@@ -116,72 +120,138 @@ export function CategoryCustomizationPanel({
             <div className="mb-4 flex items-center gap-2">
               <p className="text-sm font-semibold text-neutral-800">
                 {option.name}
-                <span className="ml-1 text-red-400">*</span>
+                {option.required && <span className="ml-1 text-red-400">*</span>}
               </p>
             </div>
 
-            <div className="space-y-5">
-              {option.groups.map((group) => {
-                const groupKey = `${option.id}::${group.label}`;
-                const selected = selections[groupKey]?.value;
+            {option.fieldType === "select" ? (
+              <div className="space-y-5">
+                {option.groups.map((group) => {
+                  const groupKey = `${option.id}::${group.label}`;
+                  const selected = selections[groupKey]?.value;
 
-                return (
-                  <div key={groupKey}>
-                    <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-neutral-500">
-                      {group.label}
-                    </p>
-                    <div className="flex flex-wrap gap-3">
-                      {group.values.map((value) => {
-                        const isSelected = selected === value.value;
-                        const hasImage = Boolean(value.image);
+                  return (
+                    <div key={groupKey}>
+                      <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-neutral-500">
+                        {group.label}
+                      </p>
+                      <div className="flex flex-wrap gap-3">
+                        {group.values.map((value) => {
+                          const isSelected = selected === value.value;
+                          const hasImage = Boolean(value.image);
 
-                        return (
-                          <button
-                            key={value.value}
-                            type="button"
-                            onClick={() =>
-                              setSelections((previous) => ({
-                                ...previous,
-                                [groupKey]: {
-                                  optionName: option.name,
-                                  groupLabel: group.label,
-                                  value: value.value,
-                                  valueLabel: value.label,
-                                  priceAdjustment: value.priceAdjustment,
-                                },
-                              }))
-                            }
-                            className={`flex items-center gap-2 rounded-full border px-3 py-2 text-xs transition-colors ${
-                              isSelected
-                                ? "border-neutral-900 bg-neutral-900 text-white"
-                                : "border-neutral-300 bg-white text-neutral-700 hover:border-neutral-900"
-                            }`}
-                          >
-                            {hasImage && (
-                              <span className="relative h-7 w-7 overflow-hidden rounded-full border border-black/10">
-                                <Image
-                                  src={value.image!}
-                                  alt={value.label}
-                                  fill
-                                  sizes="28px"
-                                  className="object-cover"
-                                />
+                          return (
+                            <button
+                              key={value.value}
+                              type="button"
+                              onClick={() =>
+                                setSelections((previous) => ({
+                                  ...previous,
+                                  [groupKey]: {
+                                    optionName: option.name,
+                                    groupLabel: group.label,
+                                    value: value.value,
+                                    valueLabel: value.label,
+                                    priceAdjustment: value.priceAdjustment,
+                                  },
+                                }))
+                              }
+                              className={`flex items-center gap-2 rounded-full border px-3 py-2 text-xs transition-colors ${
+                                isSelected
+                                  ? "border-neutral-900 bg-neutral-900 text-white"
+                                  : "border-neutral-300 bg-white text-neutral-700 hover:border-neutral-900"
+                              }`}
+                            >
+                              {hasImage && (
+                                <span className="relative h-7 w-7 overflow-hidden rounded-full border border-black/10">
+                                  <Image
+                                    src={value.image!}
+                                    alt={value.label}
+                                    fill
+                                    sizes="28px"
+                                    className="object-cover"
+                                  />
+                                </span>
+                              )}
+                              <span>{value.label}</span>
+                              <span className="ml-1.5 font-semibold">
+                                {value.priceAdjustment === 0
+                                  ? formatRegionalPrice(0, region)
+                                  : `+${formatRegionalPrice(value.priceAdjustment, region)}`}
                               </span>
-                            )}
-                            <span>{value.label}</span>
-                            <span className="ml-1.5 font-semibold">
-                              {value.priceAdjustment === 0
-                                ? formatRegionalPrice(0, region)
-                                : `+${formatRegionalPrice(value.priceAdjustment, region)}`}
-                            </span>
-                          </button>
-                        );
-                      })}
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="rounded-xl border border-neutral-200 bg-white p-3">
+                {(() => {
+                  const groupKey = `${option.id}::value`;
+                  const currentValue = selections[groupKey]?.value ?? "";
+
+                  const updateValue = (nextValue: string) => {
+                    setSelections((previous) => {
+                      const trimmed = nextValue.trim();
+                      if (!trimmed && !option.required) {
+                        const clone = { ...previous };
+                        delete clone[groupKey];
+                        return clone;
+                      }
+
+                      return {
+                        ...previous,
+                        [groupKey]: {
+                          optionName: option.name,
+                          groupLabel: option.name,
+                          value: nextValue,
+                          valueLabel: nextValue,
+                          priceAdjustment: 0,
+                        },
+                      };
+                    });
+                  };
+
+                  if (option.fieldType === "textarea") {
+                    return (
+                      <textarea
+                        value={currentValue}
+                        onChange={(event) => updateValue(event.target.value)}
+                        placeholder={option.placeholder || `Enter ${option.name.toLowerCase()}`}
+                        className="min-h-[96px] w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm text-neutral-900 outline-none transition-colors focus:border-neutral-900"
+                      />
+                    );
+                  }
+
+                  if (option.fieldType === "number") {
+                    return (
+                      <input
+                        type="number"
+                        min={option.min}
+                        max={option.max}
+                        value={currentValue}
+                        onChange={(event) => updateValue(event.target.value)}
+                        placeholder={option.placeholder || "Enter number"}
+                        className="h-10 w-full rounded-lg border border-neutral-200 px-3 text-sm text-neutral-900 outline-none transition-colors focus:border-neutral-900"
+                      />
+                    );
+                  }
+
+                  return (
+                    <input
+                      type="text"
+                      value={currentValue}
+                      onChange={(event) => updateValue(event.target.value)}
+                      placeholder={option.placeholder || `Enter ${option.name.toLowerCase()}`}
+                      className="h-10 w-full rounded-lg border border-neutral-200 px-3 text-sm text-neutral-900 outline-none transition-colors focus:border-neutral-900"
+                    />
+                  );
+                })()}
+              </div>
+            )}
           </div>
         ))}
 

@@ -35,8 +35,8 @@ export default async function ArtistPage({ params }: ArtistPageProps) {
       <Navbar />
       <main className="pt-[72px]">
         {/* Artist header */}
-        <div className="py-16 sm:py-24 px-6 sm:px-10 lg:px-16 border-b border-neutral-100 bg-neutral-50">
-          <div className="mx-auto max-w-screen-2xl">
+        <div className="border-b border-[#e6d9cf] bg-[#fff8f2] px-6 py-16 sm:px-10 sm:py-20 lg:px-16">
+          <div className="mx-auto max-w-[1320px]">
             <div className="mb-10 flex flex-wrap items-center gap-2 text-xs uppercase tracking-[0.16em] text-neutral-400">
               <a href="/artists" className="hover:text-neutral-700 transition-colors">Artisans</a>
               <span>/</span>
@@ -47,7 +47,7 @@ export default async function ArtistPage({ params }: ArtistPageProps) {
               {/* Profile image */}
               <div>
                 {artist.profileImage ? (
-                  <div className="aspect-[3/4] relative overflow-hidden rounded-lg bg-neutral-100">
+                  <div className="store-card relative aspect-[3/4] overflow-hidden rounded-[22px] bg-neutral-100">
                     <Image
                       src={artist.profileImage}
                       alt={artist.name}
@@ -57,7 +57,7 @@ export default async function ArtistPage({ params }: ArtistPageProps) {
                     />
                   </div>
                 ) : (
-                  <div className="aspect-[3/4] rounded-lg bg-neutral-800 flex items-center justify-center">
+                  <div className="store-card flex aspect-[3/4] items-center justify-center rounded-[22px] bg-neutral-800">
                     <span className="text-5xl text-white/40">
                       {artist.name[0]}
                     </span>
@@ -67,10 +67,10 @@ export default async function ArtistPage({ params }: ArtistPageProps) {
 
               {/* Info */}
               <div className="space-y-4">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-[#0c2e1a]">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-[#2c3d31]">
                   Artisan
                 </p>
-                <h1 className="text-3xl lg:text-4xl font-bold text-neutral-900">
+                <h1 className="text-5xl leading-[0.9] text-neutral-900">
                   {artist.name}
                 </h1>
                 {artist.location && (
@@ -101,7 +101,7 @@ export default async function ArtistPage({ params }: ArtistPageProps) {
                         href={(artist.socialLinks as Record<string, string>).instagram}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-[10px] tracking-[0.2em] uppercase text-[#0c2e1a] hover:underline"
+                        className="text-[10px] tracking-[0.2em] uppercase text-[#2c3d31] hover:underline"
                       >
                         Instagram
                       </a>
@@ -111,7 +111,7 @@ export default async function ArtistPage({ params }: ArtistPageProps) {
                         href={(artist.socialLinks as Record<string, string>).facebook}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-[10px] tracking-[0.2em] uppercase text-[#0c2e1a] hover:underline"
+                        className="text-[10px] tracking-[0.2em] uppercase text-[#2c3d31] hover:underline"
                       >
                         Facebook
                       </a>
@@ -121,7 +121,7 @@ export default async function ArtistPage({ params }: ArtistPageProps) {
                         href={(artist.socialLinks as Record<string, string>).website}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-[10px] tracking-[0.2em] uppercase text-[#0c2e1a] hover:underline"
+                        className="text-[10px] tracking-[0.2em] uppercase text-[#2c3d31] hover:underline"
                       >
                         Website
                       </a>
@@ -135,13 +135,13 @@ export default async function ArtistPage({ params }: ArtistPageProps) {
 
         {/* Artist's products */}
         {artist.products.length > 0 && (
-          <section className="bg-white py-24">
-            <div className="mx-auto max-w-screen-2xl px-6 sm:px-10 lg:px-16">
-            <div className="border-b border-neutral-100 pb-10 mb-16">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-[#0c2e1a] mb-3">
+          <section className="store-section bg-[#fffefc]">
+            <div className="store-container max-w-[1320px]">
+            <div className="mb-12 border-b border-[#e6d9cf] pb-8 sm:mb-16 sm:pb-10">
+              <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.35em] text-[#2c3d31]">
                 Collection
               </p>
-              <h2 className="text-2xl font-bold text-neutral-900">
+              <h2 className="text-4xl leading-tight text-neutral-900">
                 Products by {artist.name}
               </h2>
             </div>

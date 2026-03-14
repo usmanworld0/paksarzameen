@@ -6,20 +6,20 @@ export default function CheckoutCancelPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-[70vh] px-6 pt-[108px] pb-20">
-        <div className="mx-auto max-w-2xl rounded-3xl border border-neutral-200 bg-white px-8 py-12 text-center shadow-sm">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#0c2e1a]">
+      <main className="min-h-[70vh] bg-[#fffaf6] px-6 pb-20 pt-[108px]">
+        <div className="store-card mx-auto max-w-2xl rounded-[28px] px-8 py-12 text-center">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#2c3d31]">
             Checkout Interrupted
           </p>
-          <h1 className="mt-3 text-3xl font-bold text-neutral-900">Payment was not completed</h1>
+          <h1 className="mt-3 text-5xl leading-[0.92] text-neutral-900">Payment was not completed</h1>
           <p className="mt-4 text-sm leading-relaxed text-neutral-500">
             Your cart is still saved. You can return to billing, review your coupon code, and try the card payment again when ready.
           </p>
           <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:justify-center">
-            <Link href="/checkout" className="rounded-full bg-neutral-900 px-8 py-3 text-sm font-medium text-white transition-colors hover:bg-neutral-700">
+            <Link href="/checkout" className="store-button-primary">
               Return to Billing
             </Link>
-            <Link href="/cart" className="rounded-full border border-neutral-300 px-8 py-3 text-sm font-medium text-neutral-700 transition-colors hover:border-neutral-900 hover:text-neutral-900">
+            <Link href="/cart" className="store-button-secondary">
               Back to Cart
             </Link>
           </div>

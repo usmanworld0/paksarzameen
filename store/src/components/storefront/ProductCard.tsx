@@ -15,7 +15,8 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, discountPercent, region = "PAK" }: ProductCardProps) {
-  const mainImage = product.images[0]?.imageUrl || "/placeholder.svg";
+  const mainImage = product.images[0]?.imageUrl || "/images/commonwealth_header.jpeg";
+  const isRemoteImage = mainImage.startsWith("http://") || mainImage.startsWith("https://");
   const hasDiscount = discountPercent && discountPercent > 0;
   const isAvailable = product.stock > 0;
   const regionalPricing = resolveProductRegionalPricing(product, region);
@@ -36,8 +37,9 @@ export function ProductCard({ product, discountPercent, region = "PAK" }: Produc
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 22vw"
           className="object-cover transition-transform duration-700 group-hover:scale-110"
           quality={80}
+          unoptimized={isRemoteImage}
         />
-        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/28 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/36 to-transparent" />
         {/* Badges */}
         {!isAvailable && (
           <div className="absolute left-3 top-3">
@@ -59,7 +61,7 @@ export function ProductCard({ product, discountPercent, region = "PAK" }: Produc
         <p className="text-[9px] font-semibold uppercase tracking-[0.24em] text-[#2c3d31]">
           {product.category.name}
         </p>
-        <h3 className="mt-1 line-clamp-2 text-base leading-tight text-neutral-900 sm:text-lg">
+        <h3 className="mt-1 line-clamp-2 text-base leading-tight text-black sm:text-lg">
           {product.name}
         </h3>
         {product.artist && (

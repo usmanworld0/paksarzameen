@@ -28,11 +28,24 @@ export async function getCategoryBySlug(slug: string) {
       where: { slug },
       include: {
         _count: { select: { products: true } },
-        customizationOptions: true,
+        customizationOptions: {
+          orderBy: [{ position: "asc" }, { name: "asc" }],
+        },
       },
     });
   } catch {
-    return null;
+    try {
+      const category = await prisma.category.findUnique({
+        where: { slug },
+        include: {
+          _count: { select: { products: true } },
+        },
+      });
+
+      return category ? { ...category, customizationOptions: [] } : null;
+    } catch {
+      return null;
+    }
   }
 }
 

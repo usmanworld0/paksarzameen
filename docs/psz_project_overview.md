@@ -24,7 +24,7 @@ As PakSarZameen rapidly grows, it requires a robust, scalable digital presence. 
 * **Purpose:** To serve as the public face of the NGO, clearly presenting what PakSarZameen is, detailing the impact of the six departments, and encouraging public involvement (volunteering, collaborating).
 * **Architecture:** Built with Next.js (App Router) to guarantee maximum Search Engine Optimization (SEO), fast loading speeds, and deep indexing of news, resources, and departmental programs.
 
-### B. The Commonwealth Lab Marketplace (Flutter Web)
+### B. The Paksarzameen Store Marketplace (Flutter Web)
 * **Purpose:** To serve as the economic arm of PakSarZameen, connecting regional micro-entrepreneurs and artisans with global buyers to sell handicrafts, traditional dresses, and merchandise.
 * **Architecture:** Built with Flutter Web and hosted on a separate subdomain. It is designed to deliver a highly interactive, premium app-like experience for e-commerce, completely decoupled from the main informational site.
 

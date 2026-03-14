@@ -1,5 +1,5 @@
 /**
- * Product model for Commonwealth Lab Marketplace.
+ * Product model for Paksarzameen Store Marketplace.
  * Currently uses dummy data; will migrate to Supabase.
  */
 

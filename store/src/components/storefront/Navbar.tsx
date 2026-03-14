@@ -19,7 +19,7 @@ export function Navbar() {
           <span className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-sm border border-[#0c2e1a]/20 bg-[#0c2e1a]/5">
             <Image
               src={COMMONWEALTH_LOGO_URL}
-              alt="Commonwealth Lab logo"
+              alt="Paksarzameen Store logo"
               fill
               sizes="40px"
               className="object-contain p-1"
@@ -31,7 +31,7 @@ export function Navbar() {
               PakSarZameen
             </span>
             <span className="block text-lg tracking-tight text-neutral-900">
-              Commonwealth <span className="text-[#0c2e1a]">Lab</span>
+              Paksarzameen Store
             </span>
           </span>
         </Link>

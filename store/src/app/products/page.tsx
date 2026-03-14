@@ -50,7 +50,7 @@ export default async function ProductsPage({
             {/* Header */}
             <header className="mb-10">
               <p className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-400">
-                Commonwealth Lab
+                Paksarzameen Store
               </p>
               <h1 className="mt-2 text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl">
                 All Products

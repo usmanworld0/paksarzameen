@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!product) return { title: "Product Not Found" };
 
   return {
-    title: `${product.name} | Commonwealth Lab`,
+    title: `${product.name} | Paksarzameen Store`,
     description: product.description.slice(0, 160),
     openGraph: {
       title: product.name,

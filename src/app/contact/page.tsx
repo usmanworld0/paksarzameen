@@ -81,7 +81,7 @@ export default function ContactPage() {
             </li>
             <li>
               <a href={siteConfig.social.commonwealthInstagram} target="_blank" rel="noopener noreferrer" className="text-psz-green hover:underline">
-                Commonwealth Lab Instagram - @commonwealthlab.psz
+                Paksarzameen Store Instagram - @commonwealthlab.psz
               </a>
             </li>
           </ul>
@@ -92,7 +92,7 @@ export default function ContactPage() {
             <Link href="/about" className="text-psz-green hover:underline">About</Link> ·{" "}
             <Link href="/projects" className="text-psz-green hover:underline">Projects</Link> ·{" "}
             <Link href="/volunteer" className="text-psz-green hover:underline">Volunteer</Link> ·{" "}
-            <Link href="/commonwealth" className="text-psz-green hover:underline">Commonwealth</Link>
+            <Link href="/commonwealth" className="text-psz-green hover:underline">Paksarzameen Store</Link>
           </p>
         </article>
       </section>

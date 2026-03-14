@@ -9,15 +9,15 @@ interface MarketplaceHeroProps {
 }
 
 export function MarketplaceHero({
-  title = "Commonwealth Lab",
-  subtitle = "Ethically sourced. Artisan crafted. Every purchase builds community wealth across the Commonwealth region.",
+  title = "Paksarzameen Store",
+  subtitle = "Ethically sourced. Artisan crafted. Every purchase builds community wealth across our communities.",
 }: MarketplaceHeroProps) {
   return (
     <section className="relative flex h-screen w-full items-center justify-center overflow-hidden bg-neutral-950">
       {/* Background image */}
       <Image
         src="/images/commonwealth_header.jpeg"
-        alt="Commonwealth Lab banner"
+        alt="Paksarzameen Store banner"
         fill
         sizes="100vw"
         className="object-cover opacity-50"
@@ -34,7 +34,7 @@ export function MarketplaceHero({
         <div className="mb-8 flex items-center gap-4">
           <span className="h-px w-12 bg-white/30" />
           <p className="text-[10px] font-semibold uppercase tracking-[0.4em] text-white/60">
-            PakSarZameen · Commonwealth
+            PakSarZameen · Paksarzameen Store
           </p>
           <span className="h-px w-12 bg-white/30" />
         </div>

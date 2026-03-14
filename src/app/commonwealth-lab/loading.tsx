@@ -1,4 +1,4 @@
-export default function CommonwealthLabLoading() {
+export default function PaksarzameenStoreLoading() {
   return (
     <div className="loading-skeleton commonwealth-loading" aria-label="Loading marketplace">
       <div className="skeleton-hero">

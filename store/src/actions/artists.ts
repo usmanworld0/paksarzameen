@@ -24,8 +24,22 @@ export async function getArtistById(id: string) {
   }
 
   try {
-    return await prisma.artist.findUnique({
+    const artistById = await prisma.artist.findUnique({
       where: { id },
+      include: {
+        products: {
+          where: { active: true },
+          include: { images: { orderBy: { position: "asc" } }, category: true },
+        },
+      },
+    });
+
+    if (artistById) {
+      return artistById;
+    }
+
+    return await prisma.artist.findUnique({
+      where: { slug: id },
       include: {
         products: {
           where: { active: true },

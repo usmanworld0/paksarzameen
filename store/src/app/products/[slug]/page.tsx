@@ -29,8 +29,8 @@ export async function generateMetadata({
   if (!product) return { title: "Product Not Found" };
 
   return {
-    title: `${product.name} | Commonwealth Lab`,
-    description: product.description?.slice(0, 160) || `${product.name} — Commonwealth Lab`,
+    title: `${product.name} | Paksarzameen Store`,
+    description: product.description?.slice(0, 160) || `${product.name} — Paksarzameen Store`,
     openGraph: {
       title: product.name,
       description: product.description?.slice(0, 160) || undefined,

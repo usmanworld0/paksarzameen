@@ -1,4 +1,4 @@
-# Commonwealth Store Stripe Checkout
+# Paksarzameen Store Stripe Checkout
 
 ## Overview
 

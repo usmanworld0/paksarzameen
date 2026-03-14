@@ -4,16 +4,16 @@ import { siteConfig } from "@/config/site";
 import { PoliciesFaqAccordion } from "@/features/commonwealth-lab/components/PoliciesFaqAccordion";
 
 export const metadata: Metadata = {
-  title: "Commonwealth Store Policies & Terms",
+  title: "Paksarzameen Store Policies & Terms",
   description:
-    "Shipping policy, return policy, privacy policy, terms and FAQ for the Commonwealth store.",
+    "Shipping policy, return policy, privacy policy, terms and FAQ for the Paksarzameen Store.",
   alternates: {
     canonical: "/policies",
   },
   openGraph: {
-    title: "Commonwealth Store Policies & Terms",
+    title: "Paksarzameen Store Policies & Terms",
     description:
-      "Shipping policy, return policy, privacy policy, terms and FAQ for the Commonwealth store.",
+      "Shipping policy, return policy, privacy policy, terms and FAQ for the Paksarzameen Store.",
     url: `${siteConfig.siteUrl}/policies`,
     type: "website",
     images: [
@@ -21,15 +21,15 @@ export const metadata: Metadata = {
         url: "/images/hero-fallback.svg",
         width: 1600,
         height: 1000,
-        alt: "Commonwealth store policies and terms",
+        alt: "Paksarzameen Store policies and terms",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Commonwealth Store Policies & Terms",
+    title: "Paksarzameen Store Policies & Terms",
     description:
-      "Shipping policy, return policy, privacy policy, terms and FAQ for the Commonwealth store.",
+      "Shipping policy, return policy, privacy policy, terms and FAQ for the Paksarzameen Store.",
     images: ["/images/hero-fallback.svg"],
   },
 };
@@ -90,10 +90,10 @@ export default function PoliciesPage() {
 
       <header className="rounded-2xl border border-neutral-200 bg-white p-8 shadow-sm sm:p-10">
         <p className="text-xs font-semibold uppercase tracking-[0.3em] text-psz-green">
-          Commonwealth
+          Paksarzameen Store
         </p>
         <h1 className="mt-3 font-heading text-4xl font-bold tracking-tight text-neutral-900 sm:text-5xl">
-          Commonwealth Store Policies &amp; Terms
+          Paksarzameen Store Policies &amp; Terms
         </h1>
         <p className="mt-4 max-w-3xl text-base leading-relaxed text-neutral-500">
           Please review our store policies carefully before placing an order.
@@ -176,7 +176,7 @@ export default function PoliciesPage() {
             </div>
             <div>
               <h3 className="font-semibold text-neutral-900">Intellectual Property</h3>
-              <p>All logos, graphics, images, text, and design elements belong to Commonwealth.</p>
+              <p>All logos, graphics, images, text, and design elements belong to Paksarzameen Store.</p>
             </div>
             <div>
               <h3 className="font-semibold text-neutral-900">Limitation of Liability</h3>

@@ -68,7 +68,7 @@ export default async function HomePage() {
                   Meet the Artists
                 </h2>
                 <p className="mt-4 text-sm font-light text-neutral-600">
-                  Discover the talented artisans behind Commonwealth Lab&apos;s finest collections.
+                  Discover the talented artisans behind Paksarzameen Store&apos;s finest collections.
                   Each piece represents decades of heritage, skill, and dedication to traditional craftsmanship.
                 </p>
               </div>
@@ -143,7 +143,7 @@ export default async function HomePage() {
             <div className="mb-8 flex items-center justify-center gap-4">
               <span className="h-px w-12 bg-neutral-200" />
               <p className="text-[10px] font-semibold uppercase tracking-[0.4em] text-neutral-400">
-                Commonwealth Lab
+                Paksarzameen Store
               </p>
               <span className="h-px w-12 bg-neutral-200" />
             </div>
@@ -155,7 +155,7 @@ export default async function HomePage() {
             </h2>
             <div className="mx-auto my-8 h-px w-16 bg-neutral-200" />
             <p className="text-sm font-light leading-relaxed tracking-wide text-neutral-500">
-              When you shop at Commonwealth Lab, 100&nbsp;% of profits go directly
+              When you shop at Paksarzameen Store, 100&nbsp;% of profits go directly
               to artisan communities and PakSarZameen social programmes.
             </p>
             <div className="mt-12 flex flex-wrap items-center justify-center gap-5">

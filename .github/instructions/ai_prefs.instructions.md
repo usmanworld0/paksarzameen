@@ -13,7 +13,7 @@ applyTo: '**'
 ## 🎯 1. Project Overview
 PakSarZameen (PSZ) is a dual-platform web ecosystem serving two primary purposes:
 1. [cite_start]**Main NGO Website (Next.js):** A mission platform to present projects and impact[cite: 10, 11, 12].
-2. [cite_start]**Commonwealth Lab Subdomain (Flutter Web):** A premium marketplace connecting regional micro-entrepreneurs with buyers[cite: 13, 14, 136, 138].
+2. [cite_start]**Paksarzameen Store Subdomain (Flutter Web):** A premium marketplace connecting regional micro-entrepreneurs with buyers[cite: 13, 14, 136, 138].
 
 This project uses a decoupled architecture. Currently, all data layers MUST use dummy data implementations that adhere to strict interfaces, preparing for a future seamless Supabase integration.
 
@@ -39,7 +39,7 @@ src/features/[feature_name]/
 
 ```
 
-### B. Commonwealth Lab Marketplace: Flutter Web (`/psz_commonwealth_app/`)
+### B. Paksarzameen Store Marketplace: Flutter Web (`/psz_commonwealth_app/`)
 
 **Three-Tier Backend Integration (MANDATORY):**
 
@@ -70,18 +70,18 @@ lib/features/[feature_name]/
 
 
 * 
-**Commonwealth Lab (Flutter):** Inspiration is Louis Vuitton. Premium feel, large visuals, minimal clutter, elegant product displays.
+**Paksarzameen Store (Flutter):** Inspiration is Louis Vuitton. Premium feel, large visuals, minimal clutter, elegant product displays.
 
 
 
 ### Core Layout & Routing Requirements
 
 * 
-**Main Site Navigation:** Must include Home, About PSZ, Programs, Impact, Get Involved, News & Resources, Commonwealth Lab, Contact.
+**Main Site Navigation:** Must include Home, About PSZ, Programs, Impact, Get Involved, News & Resources, Paksarzameen Store, Contact.
 
 
 * 
-**The Bridge:** "Commonwealth Lab" replaces "Donate Now". It MUST open an external link in a new tab leading to the Flutter platform.
+**The Bridge:** "Paksarzameen Store" replaces "Donate Now". It MUST open an external link in a new tab leading to the Flutter platform.
 
 
 * **Flutter Routing:** Enforce `go_router` for all internal navigation to ensure deep linking.

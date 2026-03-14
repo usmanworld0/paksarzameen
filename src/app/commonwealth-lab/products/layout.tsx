@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Products | Commonwealth Lab",
+  title: "Products | Paksarzameen Store",
   description:
     "Browse our full collection of ethically sourced artisan products — traditional clothing, handicrafts, cultural goods, and PSZ merchandise.",
 };

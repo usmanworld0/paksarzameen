@@ -86,14 +86,43 @@ export async function getProductBySlug(slug: string) {
     return await prisma.product.findUnique({
       where: { slug },
       include: {
-        category: { include: { customizationOptions: true } },
+        category: {
+          include: {
+            customizationOptions: {
+              orderBy: [{ position: "asc" }, { name: "asc" }],
+            },
+          },
+        },
         artist: true,
         images: { orderBy: { position: "asc" } },
         regionPrices: { include: { region: true } },
       },
     });
   } catch {
-    return null;
+    try {
+      const product = await prisma.product.findUnique({
+        where: { slug },
+        include: {
+          category: true,
+          artist: true,
+          images: { orderBy: { position: "asc" } },
+          regionPrices: { include: { region: true } },
+        },
+      });
+
+      if (!product) {
+        return null;
+      }
+
+      return {
+        ...product,
+        category: product.category
+          ? { ...product.category, customizationOptions: [] }
+          : product.category,
+      };
+    } catch {
+      return null;
+    }
   }
 }
 

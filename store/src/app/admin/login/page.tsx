@@ -73,7 +73,7 @@ export default function AdminLoginPage() {
             Admin Portal
           </p>
           <h2 className="mt-4 text-4xl font-light text-white" style={{ fontFamily: "'Playfair Display', serif" }}>
-            Commonwealth Lab
+            Paksarzameen Store
           </h2>
           <p className="mt-4 text-[15px] leading-relaxed text-white/55">
             Premium artisan marketplace — connecting Pakistan&apos;s finest
@@ -112,7 +112,7 @@ export default function AdminLoginPage() {
               <ShieldCheck className="h-7 w-7 text-brand-green" />
             </div>
             <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-neutral-400">
-              Commonwealth Lab
+              Paksarzameen Store
             </p>
           </div>
 
@@ -198,7 +198,7 @@ export default function AdminLoginPage() {
           </div>
 
           <p className="mt-4 text-center text-[11px] text-neutral-300">
-            PakSarZameen &middot; Commonwealth Lab Admin Panel
+            PakSarZameen &middot; Paksarzameen Store Admin Panel
           </p>
         </div>
       </div>

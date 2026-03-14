@@ -4,14 +4,14 @@
 Phase 1 initialized the Next.js App Router foundation for `psz_main_web` and implemented the persistent global shell:
 - Tailwind CSS configuration with PSZ visual tokens.
 - Two-font typography system.
-- Responsive global Navbar including the external Commonwealth Lab bridge link.
+- Responsive global Navbar including the external Paksarzameen Store bridge link.
 - Global Footer with contact/social/newsletter placeholders.
 - Root `layout.tsx` integration with semantic structure.
 
 ## Requirements Addressed
 - Foundation and styling setup completed.
 - `framer-motion` added as a dependency for upcoming phases.
-- Navigation includes required links and external Commonwealth bridge behavior.
+- Navigation includes required links and external Paksarzameen Store bridge behavior.
 - Footer includes clean informational layout and placeholder newsletter capture.
 - Layout wraps all pages with `header`, `main`, and `footer` semantics.
 
@@ -33,5 +33,5 @@ Phase 1 initialized the Next.js App Router foundation for `psz_main_web` and imp
 - `psz_main_web/src/config/site.ts`
 
 ## Notes
-- The Commonwealth URL is configurable via `NEXT_PUBLIC_COMMONWEALTH_URL` with a temporary fallback until production domain setup is complete.
+- The Paksarzameen Store URL is configurable via `NEXT_PUBLIC_COMMONWEALTH_URL` with a temporary fallback until production domain setup is complete.
 - Homepage feature sections from Phase 3 are intentionally not implemented in this phase.

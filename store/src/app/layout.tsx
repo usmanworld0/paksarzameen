@@ -32,7 +32,7 @@ export const metadata: Metadata = {
         url: COMMONWEALTH_LOGO_URL,
         width: 512,
         height: 512,
-        alt: "Commonwealth Lab logo",
+        alt: "Paksarzameen Store logo",
       },
     ],
   },

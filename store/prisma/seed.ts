@@ -37,7 +37,7 @@ const COUPONS = [
   {
     name: "Welcome Offer",
     code: "WELCOME10",
-    description: "10% off your first Commonwealth Lab order.",
+    description: "10% off your first Paksarzameen Store order.",
     discountPercent: 10,
     minSubtotal: 5000,
     active: true,

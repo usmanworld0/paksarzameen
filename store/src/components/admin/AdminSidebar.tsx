@@ -64,7 +64,7 @@ export function AdminSidebar({ open, onClose }: AdminSidebarProps) {
                 Admin
               </span>
               <span className="block text-[14px] font-semibold text-white/90">
-                Commonwealth Lab
+                Paksarzameen Store
               </span>
             </span>
           </Link>

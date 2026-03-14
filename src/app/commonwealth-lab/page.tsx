@@ -38,16 +38,16 @@ const CATEGORY_IMAGES: Record<string, string> = {
 };
 
 export const metadata: Metadata = {
-  title: "Commonwealth Lab by PakSarzameen",
+  title: "Paksarzameen Store by PakSarzameen",
   description:
-    "Discover Commonwealth Lab by PakSarzameen, a premium artisan marketplace where every purchase supports local communities.",
+    "Discover Paksarzameen Store by PakSarzameen, a premium artisan marketplace where every purchase supports local communities.",
   alternates: {
     canonical: "/commonwealth-lab",
   },
   openGraph: {
-    title: "Commonwealth Lab by PakSarzameen",
+    title: "Paksarzameen Store by PakSarzameen",
     description:
-      "Discover Commonwealth Lab by PakSarzameen, a premium artisan marketplace where every purchase supports local communities.",
+      "Discover Paksarzameen Store by PakSarzameen, a premium artisan marketplace where every purchase supports local communities.",
     url: `${siteConfig.siteUrl}/commonwealth-lab`,
     type: "website",
     images: [
@@ -61,14 +61,14 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Commonwealth Lab by PakSarzameen",
+    title: "Paksarzameen Store by PakSarzameen",
     description:
-      "Discover Commonwealth Lab by PakSarzameen, a premium artisan marketplace where every purchase supports local communities.",
+      "Discover Paksarzameen Store by PakSarzameen, a premium artisan marketplace where every purchase supports local communities.",
     images: ["/images/hero-fallback.svg"],
   },
 };
 
-export default function CommonwealthLabPage() {
+export default function PaksarzameenStorePage() {
   return (
     <>
       {/* Hero */}
@@ -174,7 +174,7 @@ export default function CommonwealthLabPage() {
           <div className="mb-8 flex items-center justify-center gap-4">
             <span className="h-px w-12 bg-neutral-200" />
             <p className="text-[10px] font-semibold uppercase tracking-[0.4em] text-neutral-400">
-              Commonwealth Lab
+              Paksarzameen Store
             </p>
             <span className="h-px w-12 bg-neutral-200" />
           </div>
@@ -186,7 +186,7 @@ export default function CommonwealthLabPage() {
           </h2>
           <div className="mx-auto my-8 h-px w-16 bg-neutral-200" />
           <p className="text-sm font-light leading-relaxed tracking-wide text-neutral-500">
-            When you shop at Commonwealth Lab, 100&nbsp;% of profits go directly
+            When you shop at Paksarzameen Store, 100&nbsp;% of profits go directly
             to artisan communities and PakSarZameen social programmes.
           </p>
           <p className="mt-4 text-xs uppercase tracking-[0.22em] text-neutral-500">

@@ -1,4 +1,4 @@
-# PSZ Developer Handover (Main Web Complete + Commonwealth Kickoff)
+# PSZ Developer Handover (Main Web Complete + Paksarzameen Store Kickoff)
 
 ## 1. Purpose
 This document provides a practical handover of the current PSZ codebase status for another developer.
@@ -120,7 +120,7 @@ Even with Phase 1-5 done from current execution plan, practical product completi
 - Some routes and visual content remain placeholder-oriented.
 - Filtering/search are client-side and suited for current dummy dataset size only.
 
-## 4. Commonwealth App Status (Flutter Web)
+## 4. Paksarzameen Store App Status (Flutter Web)
 Overall status: Scaffolding only; implementation has not started.
 
 ### 4.1 What Exists
@@ -144,7 +144,7 @@ Existing paths:
 - `safeExecute` implementation.
 - Localization keys and generated localization wiring.
 - Marketplace feature screens (storefront, category, product detail, cart, checkout).
-- Premium design system implementation per Commonwealth spec.
+- Premium design system implementation per Paksarzameen Store spec.
 
 ## 5. Recommended Next Implementation Order
 ### 5.1 Immediate Next Steps (Main Web short completion)
@@ -153,7 +153,7 @@ Existing paths:
 3. Add real newsletter submission flow.
 4. Run accessibility and responsive QA sweep.
 
-### 5.2 Commonwealth Day-1 Kickoff Plan
+### 5.2 Paksarzameen Store Day-1 Kickoff Plan
 1. Update `pubspec.yaml` dependencies:
 - `flutter_riverpod`, `go_router`, `intl`, and codegen packages.
 2. Implement `safeExecute` in `lib/core/error/safe_execute.dart`.
@@ -188,7 +188,7 @@ Manual verification routes:
 - `/news`
 - `/news/dar-ul-aloom-community-learning-pods`
 
-### Commonwealth App (current scaffold)
+### Paksarzameen Store App (current scaffold)
 Commands:
 ```powershell
 cd d:\Code\psz\psz_commonwealth_app
@@ -199,7 +199,7 @@ flutter run -d chrome
 ## 7. Handover Checklist
 - Confirm env vars for production domains.
 - Confirm approved media assets and delivery timeline.
-- Confirm design tokens/fonts for Commonwealth premium theme.
+- Confirm design tokens/fonts for Paksarzameen Store premium theme.
 - Confirm checkout and payment scope (mock vs production integration).
 - Confirm if auth/account flows are required for checkout.
 
@@ -207,7 +207,7 @@ flutter run -d chrome
 - Project preferences/rules: `.github/instructions/ai_prefs.instructions.md`
 - Main web plan: `docs/psz_main_web_execution_plan.md`
 - Main web spec: `docs/psz_main_web_spec.md`
-- Commonwealth spec: `docs/psz_commonwealth_app_spec.md`
+- Paksarzameen Store spec: `docs/psz_commonwealth_app_spec.md`
 - Database tracker: `docs/database/supabase_schema_tracker.md`
 - Implementation phase logs: `docs/web/psz_main_web_phase1_impl.md` to `docs/web/psz_main_web_phase5_impl.md`
 

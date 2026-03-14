@@ -28,6 +28,28 @@ export const categorySchema = z.object({
   customizable: z.boolean().default(false),
 });
 
+export const valueOptionSchema = z.object({
+  value: z.string().trim().min(1, "Value is required"),
+  label: z.string().trim().min(1, "Label is required"),
+  image: z.string().url().optional().nullable(),
+});
+
+export const subOptionSchema = z.object({
+  label: z.string().trim().min(1, "Sub-option label is required"),
+  values: z.array(valueOptionSchema).default([]),
+});
+
+export const customizationOptionInputSchema = z.object({
+  name: z.string().trim().min(2, "Option name must be at least 2 characters"),
+  required: z.boolean().default(true),
+  options: z.array(subOptionSchema).default([]),
+  position: z.coerce.number().int().min(0).default(0),
+});
+
+export const categoryCustomizationSchema = z.object({
+  options: z.array(customizationOptionInputSchema).default([]),
+});
+
 export const artistSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   slug: z.string().min(2, "Slug must be at least 2 characters"),
@@ -102,6 +124,13 @@ export const couponSchema = z.object({
 });
 
 export type CategoryFormData = z.infer<typeof categorySchema>;
+export type SubOptionInput = z.infer<typeof subOptionSchema>;
+export type CustomizationOptionInput = z.infer<
+  typeof customizationOptionInputSchema
+>;
+export type CategoryCustomizationInput = z.infer<
+  typeof categoryCustomizationSchema
+>;
 export type ArtistFormData = z.infer<typeof artistSchema>;
 export type ProductFormData = z.infer<typeof productSchema>;
 export type SaleFormData = z.infer<typeof saleSchema>;

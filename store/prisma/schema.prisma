@@ -122,13 +122,14 @@ model CustomizationOption {
   id         String  @id @default(cuid())
   categoryId String
   name       String
-  type       String // text, select, color, size
-  options    Json? // array of option values for select/color/size
+  options    Json? // array of { value, label, image? } objects
   required   Boolean @default(false)
+  position   Int @default(0)
 
   category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   @@index([categoryId])
+  @@index([categoryId, position])
 }
 
 model Sale {

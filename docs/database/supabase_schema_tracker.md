@@ -41,7 +41,14 @@ CREATE TABLE IF NOT EXISTS coupons (
 	updated_at timestamptz NOT NULL DEFAULT now()
 );
 
--- Commonwealth Store (Product Information accordion fields)
+-- Paksarzameen Store (Product Information accordion fields)
 ALTER TABLE products ADD COLUMN IF NOT EXISTS materials text;
 ALTER TABLE products ADD COLUMN IF NOT EXISTS care_instructions text;
 ALTER TABLE products ADD COLUMN IF NOT EXISTS heritage_story text;
+
+-- Paksarzameen Store (Category customization hierarchy)
+ALTER TABLE customization_options ADD COLUMN IF NOT EXISTS subcategory text NOT NULL DEFAULT 'General';
+ALTER TABLE customization_options ADD COLUMN IF NOT EXISTS position integer NOT NULL DEFAULT 0;
+
+CREATE INDEX IF NOT EXISTS customization_options_category_subcategory_position_idx
+ON customization_options (category_id, subcategory, position);

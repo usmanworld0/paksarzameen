@@ -1,7 +1,7 @@
 import type { Product } from "@/lib/models/Product";
 
 /**
- * 16 dummy products for the Commonwealth Lab Marketplace.
+ * 16 dummy products for the Paksarzameen Store Marketplace.
  * Uses local product images from /public/images/products.
  */
 const PRODUCT_IMAGE_NAMES = [
@@ -250,7 +250,7 @@ export const dummyProducts: Product[] = [
     price: 18,
     category: "Jewellery",
     description:
-      "A collector's set of three hard-enamel pins featuring the PSZ emblem, the Commonwealth Lab logo, and a 'Community First' badge.",
+      "A collector's set of three hard-enamel pins featuring the PSZ emblem, the Paksarzameen Store logo, and a 'Community First' badge.",
     details:
       "Gold-plated finish with butterfly clutch. Each pin is meticulously crafted using traditional enamel techniques. Perfect for collectors and PSZ enthusiasts.",
     application:

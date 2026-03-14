@@ -11,9 +11,30 @@ interface EditCategoryPageProps {
 export default async function EditCategoryPage({
   params,
 }: EditCategoryPageProps) {
-  const category = await prisma.category.findUnique({
-    where: { id: params.id },
-  });
+  let category:
+    | (Awaited<ReturnType<typeof prisma.category.findUnique>> & {
+        customizationOptions?: unknown[];
+      })
+    | null = null;
+
+  try {
+    category = await prisma.category.findUnique({
+      where: { id: params.id },
+      include: {
+        customizationOptions: {
+          orderBy: [{ position: "asc" }, { name: "asc" }],
+        },
+      },
+    });
+  } catch {
+    const baseCategory = await prisma.category.findUnique({
+      where: { id: params.id },
+    });
+
+    category = baseCategory
+      ? { ...baseCategory, customizationOptions: [] }
+      : null;
+  }
 
   if (!category) notFound();
 

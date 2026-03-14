@@ -1,5 +1,5 @@
 /**
- * Artist model representing featured artisans in the Commonwealth Lab marketplace.
+ * Artist model representing featured artisans in the Paksarzameen Store marketplace.
  */
 
 export interface Artist {

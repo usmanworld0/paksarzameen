@@ -11,7 +11,7 @@ export function Footer() {
           <div className="md:col-span-1">
             <p className="mb-2 text-[10px] uppercase tracking-[0.3em] text-white/40">PakSarZameen Ecosystem</p>
             <h3 className="text-xl tracking-tight mb-3">
-              Commonwealth Lab
+              Paksarzameen Store
             </h3>
             <p className="text-sm text-white/50 leading-relaxed">
               A premium artisan marketplace by PakSarZameen. Every purchase
@@ -73,7 +73,7 @@ export function Footer() {
               Contact
             </h4>
             <ul className="space-y-2.5 text-sm text-white/50">
-              <li>info@paksarzameenwfo.com</li>
+              <li>storepaksarzameen@gmail.com</li>
               <li>+92 303 5763435</li>
               <li>House no 1257, Street 47, Sector A, DHA Bahawalpur, Punjab, Pakistan</li>
               <li>
@@ -83,7 +83,7 @@ export function Footer() {
                   rel="noopener noreferrer"
                   className="hover:text-white transition-colors"
                 >
-                  Commonwealth Instagram
+                  Paksarzameen Store Instagram
                 </a>
               </li>
               <li>
@@ -102,7 +102,7 @@ export function Footer() {
 
         <div className="mt-14 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-[10px] text-white/25 tracking-wide">
-            &copy; {new Date().getFullYear()} Commonwealth Lab by PakSarZameen. All rights reserved.
+            &copy; {new Date().getFullYear()} Paksarzameen Store by PakSarZameen. All rights reserved.
           </p>
           <p className="text-[10px] text-white/15">
             Development by 04

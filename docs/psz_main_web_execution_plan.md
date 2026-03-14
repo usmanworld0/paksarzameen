@@ -9,7 +9,7 @@
 2. **Global Header (Navigation):**
    * Build a responsive `<Navbar>` component.
    * [cite_start]Include standard links: Home, About PSZ, Programs, Impact, Get Involved, News & Resources, Contact[cite: 36, 37, 38, 39, 40, 41, 42, 44].
-   * [cite_start]**The Bridge:** Add the "Commonwealth Lab" link[cite: 43]. [cite_start]This MUST be an `<a>` tag (or Next.js `<Link>`) with `target="_blank"` and `rel="noopener noreferrer"` pointing to the Flutter subdomain[cite: 46, 47, 48, 49]. Highlight this link visually so it replaces the traditional "Donate Now" button.
+   * [cite_start]**The Bridge:** Add the "Paksarzameen Store" link[cite: 43]. [cite_start]This MUST be an `<a>` tag (or Next.js `<Link>`) with `target="_blank"` and `rel="noopener noreferrer"` pointing to the Flutter subdomain[cite: 46, 47, 48, 49]. Highlight this link visually so it replaces the traditional "Donate Now" button.
 3. **Global Footer:**
    * Build a clean footer with social links, contact info, and a newsletter signup placeholder.
 4. **Integration:** Wrap `src/app/layout.tsx` with these global components.

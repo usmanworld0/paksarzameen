@@ -7,7 +7,7 @@ export function HeroSection() {
       {/* Background image */}
       <Image
         src="/images/commonwealth_header.jpeg"
-        alt="Commonwealth Lab banner"
+        alt="Paksarzameen Store banner"
         fill
         sizes="100vw"
         className="object-cover opacity-50"
@@ -24,7 +24,7 @@ export function HeroSection() {
         <div className="mb-8 flex items-center gap-4">
           <span className="h-px w-12 bg-white/30" />
           <p className="text-[10px] font-semibold uppercase tracking-[0.4em] text-white/60">
-            PakSarZameen · Commonwealth
+            PakSarZameen · Paksarzameen Store
           </p>
           <span className="h-px w-12 bg-white/30" />
         </div>
@@ -33,14 +33,14 @@ export function HeroSection() {
           className="text-5xl font-light leading-[1.05] tracking-[-0.02em] text-white sm:text-6xl lg:text-8xl"
           style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
         >
-          Commonwealth Lab
+          Paksarzameen Store
         </h1>
 
         {/* Thin divider */}
         <div className="my-8 h-px w-24 bg-white/20" />
 
         <p className="max-w-md text-sm font-light leading-relaxed tracking-wide text-white/60">
-          Ethically sourced. Artisan crafted. Every purchase builds community wealth across the Commonwealth region.
+          Ethically sourced. Artisan crafted. Every purchase builds community wealth across our communities.
         </p>
 
         <div className="mt-12 flex flex-wrap items-center justify-center gap-5">

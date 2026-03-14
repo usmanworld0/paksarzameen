@@ -14,7 +14,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       select: { slug: true, updatedAt: true },
     }),
     prisma.artist.findMany({
-      select: { id: true, updatedAt: true },
+      select: { slug: true, updatedAt: true },
     }),
   ]);
 
@@ -40,7 +40,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   const artistPages = artists.map((a) => ({
-    url: `${SITE_URL}/artists/${a.id}`,
+    url: `${SITE_URL}/artists/${a.slug}`,
     lastModified: a.updatedAt,
     changeFrequency: "monthly" as const,
     priority: 0.6,

@@ -32,7 +32,7 @@ export function Footer() {
               <Link href="/volunteer">Volunteer</Link>
             </li>
             <li>
-              <Link href="/commonwealth">Commonwealth</Link>
+              <Link href="/commonwealth">Paksarzameen Store</Link>
             </li>
             <li>
               <Link href="/policies">Policies &amp; Terms</Link>
@@ -59,7 +59,7 @@ export function Footer() {
             </li>
             <li>
               <a href={siteConfig.social.commonwealthInstagram} target="_blank" rel="noopener noreferrer" style={{ color: "rgba(255,255,255,0.75)", fontSize: "var(--fs-vs)" }}>
-                Commonwealth Lab Instagram
+                Paksarzameen Store Instagram
               </a>
             </li>
           </ul>

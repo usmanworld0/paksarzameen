@@ -30,7 +30,7 @@ const PROGRAM_OPTIONS = [
   "Tibi Imdad (Health)",
   "Insaani Khidmat (Welfare)",
   "Wajood-e-Zan (Women Empowerment)",
-  "Commonwealth Lab",
+  "Paksarzameen Store",
   "General / All Programs",
 ];
 

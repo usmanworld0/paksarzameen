@@ -20,7 +20,7 @@ export async function generateMetadata({
   if (!artist) return { title: "Artist Not Found" };
   return {
     title: artist.name,
-    description: artist.bio || `Products by ${artist.name} at Commonwealth Lab.`,
+    description: artist.bio || `Products by ${artist.name} at Paksarzameen Store.`,
   };
 }
 
@@ -28,6 +28,7 @@ export default async function ArtistPage({ params }: ArtistPageProps) {
   const region = await getRequestRegion();
   const artist = await getArtistById(params.id);
   if (!artist) notFound();
+  const productCount = artist.products.length;
 
   return (
     <>
@@ -36,6 +37,12 @@ export default async function ArtistPage({ params }: ArtistPageProps) {
         {/* Artist header */}
         <div className="py-16 sm:py-24 px-6 sm:px-10 lg:px-16 border-b border-neutral-100 bg-neutral-50">
           <div className="mx-auto max-w-screen-2xl">
+            <div className="mb-10 flex flex-wrap items-center gap-2 text-xs uppercase tracking-[0.16em] text-neutral-400">
+              <a href="/artists" className="hover:text-neutral-700 transition-colors">Artisans</a>
+              <span>/</span>
+              <span className="text-neutral-600">{artist.name}</span>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-12 items-start">
               {/* Profile image */}
               <div>
@@ -76,6 +83,15 @@ export default async function ArtistPage({ params }: ArtistPageProps) {
                     {artist.bio}
                   </p>
                 )}
+
+                <div className="pt-2">
+                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-neutral-400">
+                    Catalog Presence
+                  </p>
+                  <p className="mt-1 text-sm text-neutral-700">
+                    {productCount} {productCount === 1 ? "active product" : "active products"}
+                  </p>
+                </div>
 
                 {/* Social links */}
                 {artist.socialLinks && (

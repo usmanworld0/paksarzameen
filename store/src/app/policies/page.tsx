@@ -6,24 +6,24 @@ import { SITE_URL } from "@/lib/constants";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Commonwealth Store Policies & Terms",
+  title: "Paksarzameen Store Policies & Terms",
   description:
-    "Shipping policy, return policy, privacy policy, terms and FAQ for the Commonwealth store.",
+    "Shipping policy, return policy, privacy policy, terms and FAQ for the Paksarzameen Store.",
   alternates: {
     canonical: `${SITE_URL}/policies`,
   },
   openGraph: {
-    title: "Commonwealth Store Policies & Terms",
+    title: "Paksarzameen Store Policies & Terms",
     description:
-      "Shipping policy, return policy, privacy policy, terms and FAQ for the Commonwealth store.",
+      "Shipping policy, return policy, privacy policy, terms and FAQ for the Paksarzameen Store.",
     type: "website",
     url: `${SITE_URL}/policies`,
   },
   twitter: {
     card: "summary_large_image",
-    title: "Commonwealth Store Policies & Terms",
+    title: "Paksarzameen Store Policies & Terms",
     description:
-      "Shipping policy, return policy, privacy policy, terms and FAQ for the Commonwealth store.",
+      "Shipping policy, return policy, privacy policy, terms and FAQ for the Paksarzameen Store.",
   },
 };
 
@@ -83,10 +83,10 @@ export default function PoliciesPage() {
 
       <header className="rounded-2xl border border-neutral-200 bg-white p-8 shadow-sm sm:p-10">
         <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-brand-green">
-          Commonwealth Store
+          Paksarzameen Store
         </p>
         <h1 className="mt-3 text-3xl font-light tracking-tight text-neutral-900 sm:text-4xl" style={{ fontFamily: "'Playfair Display', serif" }}>
-          Commonwealth Store Policies &amp; Terms
+          Paksarzameen Store Policies &amp; Terms
         </h1>
         <p className="mt-4 max-w-3xl text-sm leading-relaxed text-neutral-500 sm:text-base">
           Please review these policies before placing an order. They are intended to provide clarity and a fair shopping experience.
@@ -167,7 +167,7 @@ export default function PoliciesPage() {
             </div>
             <div>
               <h3 className="font-semibold text-neutral-900">Intellectual Property</h3>
-              <p>All logos, graphics, images, text, and design elements belong to Commonwealth.</p>
+              <p>All logos, graphics, images, text, and design elements belong to Paksarzameen Store.</p>
             </div>
             <div>
               <h3 className="font-semibold text-neutral-900">Limitation of Liability</h3>

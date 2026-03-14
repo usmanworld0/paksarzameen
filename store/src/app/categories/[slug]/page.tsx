@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Navbar } from "@/components/storefront/Navbar";
 import { Footer } from "@/components/storefront/Footer";
 import { ProductCard } from "@/components/storefront/ProductCard";
+import { CategoryCustomizationPanel } from "@/components/storefront/CategoryCustomizationPanel";
 import { getCategoryBySlug } from "@/actions/categories";
 import { getProducts } from "@/actions/products";
 import { getRequestRegion } from "@/lib/pricing-server";
@@ -22,7 +23,7 @@ export async function generateMetadata({
   return {
     title: category.name,
     description:
-      category.description || `Browse ${category.name} products at Commonwealth Lab.`,
+      category.description || `Browse ${category.name} products at Paksarzameen Store.`,
   };
 }
 
@@ -65,6 +66,13 @@ export default async function CategoryPage({
                 {total} {total === 1 ? "product" : "products"}
               </p>
             </div>
+
+            {category.customizable && category.customizationOptions.length > 0 && (
+              <CategoryCustomizationPanel
+                categoryName={category.name}
+                options={category.customizationOptions}
+              />
+            )}
 
             {products.length === 0 ? (
               <div className="text-center py-20">

@@ -14,6 +14,10 @@ export const metadata: Metadata = {
 
 export default async function ArtistsPage() {
   const artists = await getArtists();
+  const totalProducts = artists.reduce(
+    (sum, artist) => sum + artist._count.products,
+    0
+  );
 
   return (
     <>
@@ -32,6 +36,9 @@ export default async function ArtistsPage() {
               <p className="text-sm text-neutral-500 mt-3 max-w-xl">
                 Meet the talented craftspeople behind every piece. Each artisan
                 brings generations of tradition to their work.
+              </p>
+              <p className="text-xs text-neutral-400 mt-3 uppercase tracking-[0.2em]">
+                {artists.length} artisans · {totalProducts} live products
               </p>
             </div>
 

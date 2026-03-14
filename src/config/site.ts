@@ -15,7 +15,7 @@ export const navLinks: NavLink[] = [
   { label: "Impact", href: "/impact" },
   { label: "Get Involved", href: "/get-involved" },
   { label: "News & Resources", href: "/news" },
-  { label: "Commonwealth Lab", href: "/commonwealth-lab" },
+  { label: "Paksarzameen Store", href: "/commonwealth-lab" },
   { label: "Contact", href: "/contact" }
 ];
 
@@ -26,7 +26,7 @@ export const siteConfig = {
     "PakSarzameen is a community-driven organization working for social development, volunteer programs, and humanitarian initiatives across Pakistan.",
   siteUrl:
     process.env.NEXT_PUBLIC_SITE_URL ?? "https://paksarzameenwfo.com",
-  commonwealthLabel: "Commonwealth Lab",
+  commonwealthLabel: "Paksarzameen Store",
   commonwealthUrl:
     process.env.NEXT_PUBLIC_COMMONWEALTH_URL ??
     DEFAULT_COMMONWEALTH_URL,
@@ -42,7 +42,7 @@ export const siteConfig = {
       "Punjab",
       "Pakistan",
     ],
-    email: "info@paksarzameenwfo.com",
+    email: "foundationpaksarzameen@gmail.com",
   },
   social: {
     instagram: "https://www.instagram.com/paksarzameen.wfo",

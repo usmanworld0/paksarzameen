@@ -22,10 +22,10 @@
 4. [cite_start]Impact [cite: 40]
 5. [cite_start]Get Involved [cite: 41]
 6. [cite_start]News & Resources [cite: 42]
-7. [cite_start]Commonwealth Lab [cite: 43]
+7. [cite_start]Paksarzameen Store [cite: 43]
 8. [cite_start]Contact [cite: 44]
 
-[cite_start]**CRITICAL ROUTING RULE:** The "Commonwealth Lab" button replaces the traditional "Donate Now" CTA[cite: 45, 46]. [cite_start]It MUST open in a new tab (`target="_blank"`) and link to the external Flutter marketplace subdomain[cite: 47, 48, 49].
+[cite_start]**CRITICAL ROUTING RULE:** The "Paksarzameen Store" button replaces the traditional "Donate Now" CTA[cite: 45, 46]. [cite_start]It MUST open in a new tab (`target="_blank"`) and link to the external Flutter marketplace subdomain[cite: 47, 48, 49].
 
 ## 4. Core Page Requirements
 

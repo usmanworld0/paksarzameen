@@ -813,14 +813,13 @@ export function HomeClient() {
       <div ref={introRef} className="intro-overlay">
         <div className="intro-text-wrapper">
           <div className="intro-content">
-            {/* Logo animated via GSAP 3D transforms — raw img required */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src="/paksarzameen_logo.png"
               alt="PakSarZameen Logo"
               className="intro-logo"
               width={140}
               height={140}
+              priority
             />
             {/* Animated text reveal */}
             <h1 className="intro-title" aria-hidden>

@@ -1,23 +1,37 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { siteConfig } from "@/config/site";
 
 /* eslint-disable react/no-unescaped-entities */
 
 export const metadata: Metadata = {
-  title: "About",
+  title: "About PakSarzameen | Our Mission and Vision",
   description:
-    "Learn about PakSarZameen — a Guinness World Record-holding NGO rooted in justice, compassion, and community-first development across Pakistan.",
+    "Learn about PakSarzameen, our mission, vision, and community development initiatives rooted in justice, compassion, and sustainable social impact.",
+  alternates: {
+    canonical: "/about",
+  },
   openGraph: {
-    title: "PSZ | About",
+    title: "About PakSarzameen | Our Mission and Vision",
     description:
-      "Learn about PakSarZameen — a Guinness World Record-holding NGO rooted in justice, compassion, and community-first development across Pakistan.",
+      "Learn about PakSarzameen, our mission, vision, and community development initiatives rooted in justice, compassion, and sustainable social impact.",
+    url: `${siteConfig.siteUrl}/about`,
     type: "website",
+    images: [
+      {
+        url: "/images/hero-fallback.svg",
+        width: 1600,
+        height: 1000,
+        alt: "PakSarZameen NGO Bahawalpur",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "PSZ | About",
+    title: "About PakSarzameen | Our Mission and Vision",
     description:
-      "Learn about PakSarZameen — a Guinness World Record-holding NGO rooted in justice, compassion, and community-first development across Pakistan.",
+      "Learn about PakSarzameen, our mission, vision, and community development initiatives rooted in justice, compassion, and sustainable social impact.",
+    images: ["/images/hero-fallback.svg"],
   },
 };
 
@@ -27,7 +41,7 @@ export default function AboutPage() {
       {/* Hero Section */}
       <section className="about-hero" data-scroll-section="about-hero">
         <div className="about-hero-content">
-          <h1 className="about-hero-title">Our Story</h1>
+          <h1 className="about-hero-title">About PakSarZameen</h1>
           <p className="about-hero-subtitle">
             Rooted in principles of justice, compassion, and sustainable community care
           </p>

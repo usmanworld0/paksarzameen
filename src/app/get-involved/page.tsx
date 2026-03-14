@@ -4,24 +4,33 @@ import { siteConfig } from "@/config/site";
 import { GetInvolvedForm } from "@/features/get-involved/components/GetInvolvedForm";
 
 export const metadata: Metadata = {
-  title: "Get Involved",
+  title: "Volunteer with PakSarzameen",
   description:
-    "Join PakSarZameen as a volunteer, partner, or donor. Fill in the form to connect with our team and start making a difference.",
+    "Volunteer with PakSarzameen and support social development, community welfare, and humanitarian initiatives across Pakistan.",
   alternates: {
     canonical: "/get-involved",
   },
   openGraph: {
-    title: "PSZ | Get Involved",
+    title: "Volunteer with PakSarzameen",
     description:
-      "Volunteer, partner, or support PakSarZameen's mission across education, health, environment, and community welfare.",
+      "Volunteer, partner, or support PakSarzameen's mission across education, health, environment, and community welfare.",
     url: `${siteConfig.siteUrl}/get-involved`,
     type: "website",
+    images: [
+      {
+        url: "/images/hero-fallback.svg",
+        width: 1600,
+        height: 1000,
+        alt: "PakSarZameen humanitarian activities",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "PSZ | Get Involved",
+    title: "Volunteer with PakSarzameen",
     description:
-      "Volunteer, partner, or support PakSarZameen's mission across education, health, environment, and community welfare.",
+      "Volunteer, partner, or support PakSarzameen's mission across education, health, environment, and community welfare.",
+    images: ["/images/hero-fallback.svg"],
   },
 };
 
@@ -35,7 +44,7 @@ export default function GetInvolvedPage() {
             Get Involved
           </p>
           <h1 className="mt-4 font-heading text-5xl font-bold leading-tight tracking-tight text-white sm:text-6xl">
-            Join the Movement
+            Volunteer with PakSarZameen
           </h1>
           <p className="mt-5 max-w-3xl text-base leading-relaxed text-neutral-100 sm:text-lg">
             Whether you want to volunteer on the ground, partner with us
@@ -97,12 +106,15 @@ export default function GetInvolvedPage() {
             <p className="mt-2 text-sm leading-relaxed text-neutral-500">
               Reach out directly at{" "}
               <a
-                href="mailto:info@paksarzameen.org"
+                href={`mailto:${siteConfig.contact.email}`}
                 className="font-medium text-psz-green hover:underline"
               >
-                info@paksarzameen.org
+                {siteConfig.contact.email}
               </a>{" "}
-              or visit us in Bahawalpur.
+              or call {siteConfig.contact.phone}. Visit us at {siteConfig.contact.address}.
+            </p>
+            <p className="mt-2 text-xs text-neutral-500">
+              Follow us: <a href={siteConfig.social.instagram} target="_blank" rel="noopener noreferrer" className="text-psz-green hover:underline">Instagram</a> · <a href={siteConfig.social.facebook} target="_blank" rel="noopener noreferrer" className="text-psz-green hover:underline">Facebook</a>
             </p>
           </div>
         </aside>

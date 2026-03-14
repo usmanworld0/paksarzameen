@@ -5,14 +5,14 @@ import { NewsHubClient } from "@/features/news/components/NewsHubClient";
 import { getArticles } from "@/lib/services/getArticles";
 
 export const metadata: Metadata = {
-  title: "News",
+  title: "PakSarzameen News and Resources",
   description:
     "Read the latest PakSarZameen impact stories, program announcements, and field updates.",
   alternates: {
     canonical: "/news",
   },
   openGraph: {
-    title: "PSZ | News",
+    title: "PakSarzameen News and Resources",
     description:
       "Explore categorized updates, search by topic, and discover related stories.",
     url: `${siteConfig.siteUrl}/news`,
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "PSZ | News",
+    title: "PakSarzameen News and Resources",
     description:
       "Explore categorized updates, search by topic, and discover related stories.",
     images: ["/images/placeholders/news-cover.svg"],
@@ -47,7 +47,7 @@ export default async function NewsPage() {
             News Hub
           </p>
           <h1 className="mt-4 max-w-3xl font-heading text-5xl font-bold leading-tight tracking-tight text-white sm:text-6xl">
-            Stories, Resources, And Field Updates
+            PakSarZameen News And Resources
           </h1>
           <p className="mt-5 max-w-3xl text-base leading-relaxed text-neutral-100 sm:text-lg">
             Filter by category, search across updates, and follow the latest PSZ

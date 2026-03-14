@@ -1,7 +1,7 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
+import type { Metadata } from "next";
+import { siteConfig } from "@/config/site";
 import { MarketplaceHero } from "@/features/commonwealth-lab/components/MarketplaceHero";
 import { ProductCard } from "@/features/commonwealth-lab/components/ProductCard";
 import { MeetTheArtistsSection } from "@/features/commonwealth-lab/components/MeetTheArtistsSection";
@@ -35,6 +35,37 @@ const CATEGORY_IMAGES: Record<string, string> = {
   "Leather": PRODUCT_IMAGES[5],
   "Musical Instruments": PRODUCT_IMAGES[6],
   "Textiles": PRODUCT_IMAGES[7],
+};
+
+export const metadata: Metadata = {
+  title: "Commonwealth Lab by PakSarzameen",
+  description:
+    "Discover Commonwealth Lab by PakSarzameen, a premium artisan marketplace where every purchase supports local communities.",
+  alternates: {
+    canonical: "/commonwealth-lab",
+  },
+  openGraph: {
+    title: "Commonwealth Lab by PakSarzameen",
+    description:
+      "Discover Commonwealth Lab by PakSarzameen, a premium artisan marketplace where every purchase supports local communities.",
+    url: `${siteConfig.siteUrl}/commonwealth-lab`,
+    type: "website",
+    images: [
+      {
+        url: "/images/hero-fallback.svg",
+        width: 1600,
+        height: 1000,
+        alt: "PakSarZameen humanitarian activities",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Commonwealth Lab by PakSarzameen",
+    description:
+      "Discover Commonwealth Lab by PakSarzameen, a premium artisan marketplace where every purchase supports local communities.",
+    images: ["/images/hero-fallback.svg"],
+  },
 };
 
 export default function CommonwealthLabPage() {
@@ -157,6 +188,9 @@ export default function CommonwealthLabPage() {
           <p className="text-sm font-light leading-relaxed tracking-wide text-neutral-500">
             When you shop at Commonwealth Lab, 100&nbsp;% of profits go directly
             to artisan communities and PakSarZameen social programmes.
+          </p>
+          <p className="mt-4 text-xs uppercase tracking-[0.22em] text-neutral-500">
+            Instagram: <a href={siteConfig.social.commonwealthInstagram} target="_blank" rel="noopener noreferrer" className="font-semibold text-[#0c2e1a] hover:underline">@commonwealthlab.psz</a>
           </p>
           <div className="mt-12 flex flex-wrap items-center justify-center gap-5">
             <Link

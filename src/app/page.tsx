@@ -3,16 +3,17 @@ import { siteConfig } from "@/config/site";
 import { HomeClient } from "@/features/home/components/HomeClient";
 
 export const metadata: Metadata = {
-  title: "PSZ | Home",
+  title: "PakSarzameen - Community Development Organization in Pakistan",
   description:
-    "Discover PakSarZameen's mission, core programs, impact metrics, and latest field updates.",
+    "PakSarzameen is a community-driven organization working for social development, volunteer programs, and humanitarian initiatives across Pakistan.",
+  keywords: siteConfig.seo.keywords,
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "PSZ | Home",
+    title: "PakSarzameen - Official Website",
     description:
-      "Explore the PSZ mission platform featuring programs, measurable impact, and community stories.",
+      "PakSarzameen is a community-driven organization working for social development, volunteer programs, and humanitarian initiatives across Pakistan.",
     url: siteConfig.siteUrl,
     type: "website",
     images: [
@@ -20,15 +21,15 @@ export const metadata: Metadata = {
         url: "/images/hero-fallback.svg",
         width: 1600,
         height: 1000,
-        alt: "PakSarZameen homepage hero image",
+        alt: "PakSarZameen volunteers working in community projects",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "PSZ | Home",
+    title: "PakSarzameen - Official Website",
     description:
-      "Explore the PSZ mission platform featuring programs, measurable impact, and community stories.",
+      "PakSarzameen is a community-driven organization working for social development, volunteer programs, and humanitarian initiatives across Pakistan.",
     images: ["/images/hero-fallback.svg"],
   },
 };

@@ -5,16 +5,16 @@ import { ProgramsHubClient } from "@/features/programs/components/ProgramsHubCli
 import { getPrograms } from "@/lib/services/getPrograms";
 
 export const metadata: Metadata = {
-  title: "Programs",
+  title: "Projects by PakSarzameen",
   description:
-    "Explore PakSarZameen programs across environmental care, education, health, welfare, and empowerment.",
+    "Explore PakSarzameen projects and programs across environmental care, education, health, welfare, and empowerment.",
   alternates: {
     canonical: "/programs",
   },
   openGraph: {
-    title: "PSZ | Programs",
+    title: "Projects by PakSarzameen",
     description:
-      "Discover all PSZ departments and initiatives with category filters and searchable previews.",
+      "Discover all PakSarzameen departments and initiatives with category filters and searchable previews.",
     url: `${siteConfig.siteUrl}/programs`,
     type: "website",
     images: [
@@ -22,15 +22,15 @@ export const metadata: Metadata = {
         url: "/images/placeholders/10.png",
         width: 1200,
         height: 800,
-        alt: "Programs hub preview image",
+        alt: "PakSarZameen volunteers working in community projects",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "PSZ | Programs",
+    title: "Projects by PakSarzameen",
     description:
-      "Discover all PSZ departments and initiatives with category filters and searchable previews.",
+      "Discover all PakSarzameen departments and initiatives with category filters and searchable previews.",
     images: ["/images/placeholders/10.png"],
   },
 };
@@ -47,7 +47,7 @@ export default async function ProgramsPage() {
             Programs Hub
           </p>
           <h1 className="mt-4 max-w-3xl font-heading text-5xl font-bold leading-tight tracking-tight text-white sm:text-6xl">
-            Departments Building Impact Across Communities
+            PakSarZameen Projects And Programs
           </h1>
           <p className="mt-5 max-w-3xl text-base leading-relaxed text-neutral-100 sm:text-lg">
             Browse all core PSZ initiatives, filter by category, and search for

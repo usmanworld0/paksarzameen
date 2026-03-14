@@ -18,10 +18,12 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.siteUrl),
   applicationName: siteConfig.name,
   title: {
-    default: "PSZ",
-    template: "PSZ | %s",
+    default: "PakSarzameen - Official Website",
+    template: "%s | PakSarzameen",
   },
-  description: siteConfig.description,
+  description:
+    "PakSarzameen is a community-driven organization working for social development, volunteer programs, and humanitarian initiatives across Pakistan.",
+  keywords: siteConfig.seo.keywords,
   icons: {
     icon: [
       { url: "/paksarzameen_logo.png", sizes: "512x512", type: "image/png" },
@@ -29,13 +31,6 @@ export const metadata: Metadata = {
     ],
     apple: { url: "/paksarzameen_logo.png", sizes: "1024x1024", type: "image/png" },
   },
-  keywords: [
-    "PakSarZameen",
-    "community development",
-    "NGO Pakistan",
-    "social impact",
-    "ethical enterprise",
-  ],
   alternates: {
     canonical: "/",
   },
@@ -43,8 +38,9 @@ export const metadata: Metadata = {
   creator: "PakSarZameen",
   publisher: "PakSarZameen",
   openGraph: {
-    title: "PSZ",
-    description: siteConfig.description,
+    title: "PakSarzameen - Official Website",
+    description:
+      "PakSarzameen is a community-driven organization working for social development, volunteer programs, and humanitarian initiatives across Pakistan.",
     type: "website",
     url: siteConfig.siteUrl,
     siteName: siteConfig.name,
@@ -54,15 +50,27 @@ export const metadata: Metadata = {
         url: "/images/hero-fallback.svg",
         width: 1600,
         height: 1000,
-        alt: "PakSarZameen mission platform",
+        alt: "PakSarZameen volunteers working in community projects",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "PSZ",
-    description: siteConfig.description,
+    title: "PakSarzameen - Official Website",
+    description:
+      "PakSarzameen is a community-driven organization working for social development, volunteer programs, and humanitarian initiatives across Pakistan.",
     images: ["/images/hero-fallback.svg"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
   },
 };
 
@@ -71,6 +79,22 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const organizationSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "PakSarZameen",
+    url: siteConfig.siteUrl,
+    telephone: siteConfig.contact.phone,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: `${siteConfig.contact.addressLines[0]}, ${siteConfig.contact.addressLines[1]}, ${siteConfig.contact.addressLines[2]}`,
+      addressLocality: siteConfig.contact.addressLines[3],
+      addressRegion: siteConfig.contact.addressLines[4],
+      addressCountry: siteConfig.contact.addressLines[5],
+    },
+    sameAs: [siteConfig.social.instagram, siteConfig.social.facebook],
+  };
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -85,6 +109,10 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `(function(){try{document.documentElement.setAttribute('data-theme','light');var ready=function(){document.documentElement.classList.add('app-ready');};if(document.readyState==='interactive'||document.readyState==='complete'){requestAnimationFrame(ready);}else{document.addEventListener('DOMContentLoaded',ready,{once:true});window.addEventListener('load',ready,{once:true});}setTimeout(ready,2500);}catch(e){}})();`,
           }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
         />
       </head>
       <body className={`${inter.variable} antialiased`}>

@@ -23,11 +23,40 @@ export const siteConfig = {
   name: "PakSarZameen",
   missionLine: "Building Community Wealth.",
   description:
-    "A mission-driven platform focused on education, welfare, and sustainable social progress.",
+    "PakSarzameen is a community-driven organization working for social development, volunteer programs, and humanitarian initiatives across Pakistan.",
   siteUrl:
-    process.env.NEXT_PUBLIC_SITE_URL ?? "https://psz-main-web.example.com",
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://paksarzameenwfo.com",
   commonwealthLabel: "Commonwealth Lab",
   commonwealthUrl:
     process.env.NEXT_PUBLIC_COMMONWEALTH_URL ??
-    DEFAULT_COMMONWEALTH_URL
+    DEFAULT_COMMONWEALTH_URL,
+  contact: {
+    phone: "+92 303 5763435",
+    address:
+      "House no 1257, Street 47, Sector A, DHA Bahawalpur, Punjab, Pakistan",
+    addressLines: [
+      "House no 1257",
+      "Street 47",
+      "Sector A",
+      "DHA Bahawalpur",
+      "Punjab",
+      "Pakistan",
+    ],
+    email: "info@paksarzameenwfo.com",
+  },
+  social: {
+    instagram: "https://www.instagram.com/paksarzameen.wfo",
+    facebook: "https://www.facebook.com/share/1CsHyybdfH/",
+    commonwealthInstagram: "https://www.instagram.com/commonwealthlab.psz",
+  },
+  seo: {
+    keywords: [
+      "paksarzameen",
+      "pak sarzameen",
+      "paksarzameen NGO",
+      "pak sar zameen volunteers",
+      "pakistan NGO",
+      "paksarzameen foundation",
+    ],
+  },
 };

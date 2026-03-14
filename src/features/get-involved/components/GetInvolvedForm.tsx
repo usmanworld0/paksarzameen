@@ -176,7 +176,7 @@ export function GetInvolvedForm() {
             type="tel"
             value={values.phone}
             onChange={handleChange}
-            placeholder="+92 300 0000000"
+            placeholder="+92 303 5763435"
             className="mt-2 w-full rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-900 outline-none placeholder:text-neutral-400 focus:border-psz-green/60 transition-colors"
           />
         </div>

@@ -69,7 +69,28 @@ export function Footer() {
             </h4>
             <ul className="space-y-2.5 text-sm text-white/50">
               <li>info@paksarzameenwfo.com</li>
-              <li>Lahore, Pakistan</li>
+              <li>+92 303 5763435</li>
+              <li>House no 1257, Street 47, Sector A, DHA Bahawalpur, Punjab, Pakistan</li>
+              <li>
+                <a
+                  href="https://www.instagram.com/commonwealthlab.psz"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-white transition-colors"
+                >
+                  Commonwealth Instagram
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://www.instagram.com/paksarzameen.wfo"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-white transition-colors"
+                >
+                  PakSarZameen Instagram
+                </a>
+              </li>
             </ul>
           </div>
         </div>

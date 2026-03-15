@@ -6,7 +6,7 @@ export function Footer() {
     <footer className="psz-footer">
       <div className="footer-inner">
         <div className="footer-brand">
-          <h3>
+          <h3 style={{ color: "#ffffff" }}>
             Pak<span className="green">Sar</span>Zameen
           </h3>
           <p>
@@ -80,7 +80,9 @@ export function Footer() {
       </div>
 
       <div className="footer-bottom">
-        <p>&copy; {new Date().getFullYear()} PakSarZameen. All rights reserved.</p>
+        <p>
+          &copy; {new Date().getFullYear()} <span style={{ color: "#ffffff", fontWeight: 600 }}>PakSarZameen</span>. All rights reserved.
+        </p>
         <p>
           Development by <span className="footer-dev">04</span>
         </p>

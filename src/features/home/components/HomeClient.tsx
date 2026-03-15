@@ -1508,25 +1508,6 @@ export function HomeClient() {
           </Link>
         </section>
 
-        <section
-          className="impact-text-section"
-          style={{
-            marginTop: "2rem",
-            borderTop: "1px solid rgba(255,255,255,0.16)",
-            paddingTop: "4rem",
-            paddingBottom: "4.5rem",
-          }}
-        >
-          <h5 style={{ color: "#ffcccc" }}>Need Blood Support?</h5>
-          <p>
-            Submit an urgent blood request through our Blood Bank page. Emergency contact details are listed there.
-          </p>
-          <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap", marginTop: "2rem" }}>
-            <Link href="/blood-bank" style={{ color: "#ffdede", fontSize: "var(--fs-vs)", fontWeight: 700 }}>
-              Open Blood Bank Form →
-            </Link>
-          </div>
-        </section>
       </div>
     </div>
   );

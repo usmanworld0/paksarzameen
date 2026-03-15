@@ -133,7 +133,9 @@ export function Navbar() {
           </Link>
 
           <div className="nav-links">
-            {navLinks.map((link) => {
+            {navLinks
+              .filter((link) => link.label !== "Paksarzameen Store")
+              .map((link) => {
               const panel = DROPDOWN_LABELS[link.label];
               const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
               const isBloodBank = link.label === "Blood Bank";
@@ -208,6 +210,33 @@ export function Navbar() {
             </button>
           </div>
         </nav>
+
+        {pathname !== "/" ? (
+          <div
+            style={{
+              background: "linear-gradient(90deg, rgba(123, 8, 8, 0.96), rgba(65, 7, 7, 0.96))",
+              borderTop: "1px solid rgba(255,255,255,0.16)",
+              borderBottom: "1px solid rgba(255,255,255,0.12)",
+              padding: "0.52rem 5%",
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "1rem",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <strong style={{ color: "#ffe5e5", fontSize: "1.2rem" }}>Emergency contacts:</strong>
+            {siteConfig.emergencyContacts.map((contact) => (
+              <a
+                key={contact.phone}
+                href={`tel:${contact.phone}`}
+                style={{ color: "#ffffff", fontWeight: 700, fontSize: "1.2rem" }}
+              >
+                {contact.name}: {contact.phone}
+              </a>
+            ))}
+          </div>
+        ) : null}
 
         {/* ══ Impact Mega Dropdown ══════════════════════════ */}
         <div
@@ -327,32 +356,7 @@ export function Navbar() {
         ) : null}
       </div>
 
-      {pathname !== "/" ? (
-        <div
-          style={{
-            background: "linear-gradient(90deg, rgba(123, 8, 8, 0.96), rgba(65, 7, 7, 0.96))",
-            borderTop: "1px solid rgba(255,255,255,0.16)",
-            borderBottom: "1px solid rgba(255,255,255,0.12)",
-            padding: "0.52rem 5%",
-            display: "flex",
-            flexWrap: "wrap",
-            gap: "1rem",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <strong style={{ color: "#ffe5e5", fontSize: "1.2rem" }}>Emergency contacts:</strong>
-          {siteConfig.emergencyContacts.map((contact) => (
-            <a
-              key={contact.phone}
-              href={`tel:${contact.phone}`}
-              style={{ color: "#ffffff", fontWeight: 700, fontSize: "1.2rem" }}
-            >
-              {contact.name}: {contact.phone}
-            </a>
-          ))}
-        </div>
-      ) : null}
+      
     </>
   );
 }

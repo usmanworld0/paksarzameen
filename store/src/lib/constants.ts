@@ -11,6 +11,7 @@ export const COMMONWEALTH_LOGO_URL =
   `${MAIN_SITE_URL}/images/commonwealth_logo.PNG`;
 
 export const NAV_LINKS = [
+  { label: "Home", href: "/" },
   { label: "Shop", href: "/products" },
   { label: "Customizations", href: "/customizations" },
   { label: "Artisans", href: "/artists" },

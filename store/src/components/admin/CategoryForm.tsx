@@ -40,7 +40,6 @@ type OptionDraft = {
   id: string;
   name: string;
   required: boolean;
-  fieldType: CustomFieldType;
   placeholder: string;
   min: string;
   max: string;
@@ -86,7 +85,6 @@ function asFieldType(value: unknown): CustomFieldType {
 }
 
 function toOptionDraft(option: CustomizationOption): OptionDraft {
-  let fieldType: CustomFieldType = "select";
   let placeholder = "";
   let min = "";
   let max = "";
@@ -100,7 +98,6 @@ function toOptionDraft(option: CustomizationOption): OptionDraft {
     !Array.isArray(option.options)
   ) {
     const config = option.options as Record<string, unknown>;
-    fieldType = asFieldType(config.fieldType);
     placeholder = typeof config.placeholder === "string" ? config.placeholder : "";
     min = config.min !== undefined && config.min !== null ? String(config.min) : "";
     max = config.max !== undefined && config.max !== null ? String(config.max) : "";
@@ -117,7 +114,6 @@ function toOptionDraft(option: CustomizationOption): OptionDraft {
     id: option.id,
     name: option.name,
     required: option.required,
-    fieldType,
     placeholder,
     min,
     max,
@@ -144,11 +140,10 @@ function newOption(): OptionDraft {
     id: `new-${uid()}`,
     name: "",
     required: false,
-    fieldType: "select",
     placeholder: "",
     min: "",
     max: "",
-    subOptions: [],
+    subOptions: [newSubOption()],
   };
 }
 
@@ -303,26 +298,20 @@ export function CategoryForm({ category }: CategoryFormProps) {
           required: o.required,
           position: index,
           options: {
-            fieldType: o.fieldType,
-            placeholder: o.placeholder.trim() || undefined,
-            min: o.fieldType === "number" && o.min.trim() ? Number(o.min) : undefined,
-            max: o.fieldType === "number" && o.max.trim() ? Number(o.max) : undefined,
-            groups:
-              o.fieldType === "select"
-                ? o.subOptions
-                    .filter((s) => s.label.trim())
-                    .map((s) => ({
-                      label: s.label.trim(),
-                      values: s.valueOptions
-                        .filter((v) => v.value.trim() && v.label.trim())
-                        .map((v) => ({
-                          value: v.value.trim(),
-                          label: v.label.trim(),
-                          image: v.image || null,
-                          priceAdjustment: Number(v.priceAdjustment) || 0,
-                        })),
-                    }))
-                : [],
+            fieldType: "select",
+            groups: o.subOptions
+              .filter((s) => s.label.trim())
+              .map((s) => ({
+                label: s.label.trim(),
+                values: s.valueOptions
+                  .filter((v) => v.value.trim() && v.label.trim())
+                  .map((v) => ({
+                    value: v.value.trim(),
+                    label: v.label.trim(),
+                    image: v.image || null,
+                    priceAdjustment: Number(v.priceAdjustment) || 0,
+                  })),
+              })),
           },
         }));
 
@@ -411,7 +400,7 @@ export function CategoryForm({ category }: CategoryFormProps) {
         <h3 className="text-sm font-semibold uppercase tracking-wider text-neutral-500">Customization Options</h3>
 
         <p className="text-sm text-neutral-500">
-          Add select, text, textarea, or number fields. Mark each field as required or optional. The category becomes customizable automatically once at least one field is saved.
+          Add options and define their sub-options. Mark each option as required or optional. The category becomes customizable automatically once at least one option is saved.
         </p>
 
         <div className="space-y-4">
@@ -436,29 +425,6 @@ export function CategoryForm({ category }: CategoryFormProps) {
                     />
                   </div>
 
-                  <div className="w-36 space-y-1">
-                    <Label className="text-xs">Field Type</Label>
-                    <select
-                      value={opt.fieldType}
-                      onChange={(e) => {
-                        const nextType = e.target.value as CustomFieldType;
-                        updateOption(opt.id, {
-                          fieldType: nextType,
-                          subOptions:
-                            nextType === "select" && opt.subOptions.length === 0
-                              ? [newSubOption()]
-                              : opt.subOptions,
-                        });
-                      }}
-                      className="h-10 w-full rounded-md border border-neutral-200 bg-white px-3 text-sm text-neutral-700"
-                    >
-                      <option value="select">Select</option>
-                      <option value="text">Text</option>
-                      <option value="textarea">Textarea</option>
-                      <option value="number">Number</option>
-                    </select>
-                  </div>
-
                   <label className="mt-7 inline-flex items-center gap-2 text-xs text-neutral-600">
                     <input
                       type="checkbox"
@@ -478,43 +444,7 @@ export function CategoryForm({ category }: CategoryFormProps) {
                   </button>
                 </div>
 
-                {opt.fieldType !== "select" && (
-                  <div className="grid grid-cols-1 gap-3 pl-8 sm:grid-cols-3">
-                    <div className={opt.fieldType === "number" ? "sm:col-span-1" : "sm:col-span-3"}>
-                      <Label className="text-xs">Placeholder</Label>
-                      <Input
-                        value={opt.placeholder}
-                        onChange={(e) => updateOption(opt.id, { placeholder: e.target.value })}
-                        placeholder="Hint text shown to customer"
-                      />
-                    </div>
-                    {opt.fieldType === "number" && (
-                      <>
-                        <div>
-                          <Label className="text-xs">Min</Label>
-                          <Input
-                            type="number"
-                            value={opt.min}
-                            onChange={(e) => updateOption(opt.id, { min: e.target.value })}
-                            placeholder="Optional"
-                          />
-                        </div>
-                        <div>
-                          <Label className="text-xs">Max</Label>
-                          <Input
-                            type="number"
-                            value={opt.max}
-                            onChange={(e) => updateOption(opt.id, { max: e.target.value })}
-                            placeholder="Optional"
-                          />
-                        </div>
-                      </>
-                    )}
-                  </div>
-                )}
-
                 {/* Sub-options */}
-                {opt.fieldType === "select" && (
                 <div className="space-y-3 pl-8">
                   <p className="text-xs font-medium text-neutral-500 uppercase tracking-wide">
                     Sub-options — each group contains selectable values with images
@@ -660,7 +590,6 @@ export function CategoryForm({ category }: CategoryFormProps) {
                     Add sub-option
                   </button>
                 </div>
-                )}
             </div>
           ))}
 

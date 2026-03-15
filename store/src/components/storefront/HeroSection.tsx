@@ -14,7 +14,7 @@ export function HeroSection() {
         priority
       />
 
-      <div className="absolute inset-0 bg-[linear-gradient(115deg,rgba(255,248,241,0.92)_10%,rgba(255,248,241,0.66)_46%,rgba(255,248,241,0.25)_100%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(115deg,rgba(255,248,241,0.60)_10%,rgba(255,248,241,0.45)_46%,rgba(255,248,241,0.12)_100%)]" />
       <div className="absolute -left-24 top-20 h-72 w-72 rounded-full bg-[#d19392]/28 blur-3xl" />
       <div className="absolute bottom-6 right-0 h-72 w-72 rounded-full bg-[#2c3d31]/14 blur-3xl" />
 

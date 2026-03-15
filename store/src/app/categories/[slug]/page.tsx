@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic';
 
 interface CategoryPageProps {
   params: { slug: string };
-  searchParams: { page?: string; sort?: string };
+  searchParams: { page?: string; sort?: string; option?: string };
 }
 
 export async function generateMetadata({

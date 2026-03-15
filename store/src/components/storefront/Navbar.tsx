@@ -12,6 +12,9 @@ type CustomizationCategory = {
   name: string;
   slug: string;
   customizable: boolean;
+  _count?: {
+    customizationOptions?: number;
+  };
 };
 
 export function Navbar() {
@@ -35,7 +38,11 @@ export function Navbar() {
         if (cancelled) return;
 
         setCustomizationCategories(
-          data.filter((category) => category.customizable)
+          data.filter(
+            (category) =>
+              category.customizable &&
+              (category._count?.customizationOptions ?? 0) > 0
+          )
         );
       } catch {
         if (!cancelled) setCustomizationCategories([]);

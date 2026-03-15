@@ -15,7 +15,10 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, discountPercent, region = "PAK" }: ProductCardProps) {
-  const mainImage = product.images[0]?.imageUrl || "/images/commonwealth_header.jpeg";
+  const rawImage = product.images[0]?.imageUrl || "/images/commonwealth_header.jpeg";
+  const mainImage = rawImage.startsWith("http://") || rawImage.startsWith("https://") || rawImage.startsWith("/")
+    ? rawImage
+    : `/${rawImage}`;
   const isRemoteImage = mainImage.startsWith("http://") || mainImage.startsWith("https://");
   const hasDiscount = discountPercent && discountPercent > 0;
   const isAvailable = product.stock > 0;
@@ -29,6 +32,11 @@ export function ProductCard({ product, discountPercent, region = "PAK" }: Produc
       <Link
         href={`/products/${product.slug}`}
         className="relative aspect-[3/4] w-full overflow-hidden bg-[#f7eee8]"
+        style={{
+          backgroundImage: "url('/images/commonwealth_header.jpeg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
       >
         <Image
           src={mainImage}

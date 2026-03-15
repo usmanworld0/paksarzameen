@@ -133,9 +133,10 @@ export function Navbar() {
           </Link>
 
           <div className="nav-links">
-            {navLinks.slice(0, 6).map((link) => {
+            {navLinks.map((link) => {
               const panel = DROPDOWN_LABELS[link.label];
               const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
+              const isBloodBank = link.label === "Blood Bank";
               if (panel) {
                 const isOpen = activePanel === panel;
                 return (
@@ -165,6 +166,18 @@ export function Navbar() {
                   key={link.label} 
                   href={link.href}
                   className={`nav-link${isActive ? " nav-link-active" : ""}`}
+                  style={
+                    isBloodBank
+                      ? {
+                          color: "#ffd9d9",
+                          border: "1px solid rgba(255, 115, 115, 0.55)",
+                          borderRadius: "999px",
+                          padding: "0.35rem 0.95rem",
+                          background: "rgba(139, 0, 0, 0.33)",
+                          fontWeight: 700,
+                        }
+                      : undefined
+                  }
                 >
                   {link.label}
                 </Link>
@@ -172,7 +185,7 @@ export function Navbar() {
             })}
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: "1.2rem" }}>
+          <div className="nav-actions">
             <Link
               href={siteConfig.commonwealthUrl}
               target="_blank"
@@ -228,12 +241,24 @@ export function Navbar() {
                       <span className="mega-cat-icon" aria-hidden="true">{cat.icon}</span>
                       <h4 className="mega-cat-title">{cat.title}</h4>
                     </div>
-                    <ul className="mega-cat-list">
-                      {cat.items.map((item) => (
-                        <li key={item}>
-                          <Link href="/impact">{item}</Link>
-                        </li>
-                      ))}
+                      <ul className="mega-cat-list">
+                      {cat.items.map((item) => {
+                        const isBloodItem = /24\/?7|Availability of Blood/i.test(item);
+                        return (
+                          <li key={item}>
+                            {isBloodItem ? (
+                              <Link
+                                href="/blood-bank"
+                                style={{ color: "#ffcccc", fontWeight: 800 }}
+                              >
+                                {item}
+                              </Link>
+                            ) : (
+                              <Link href="/impact">{item}</Link>
+                            )}
+                          </li>
+                        );
+                      })}
                     </ul>
                   </div>
                 ))}
@@ -284,7 +309,50 @@ export function Navbar() {
             {link.label}
           </Link>
         ))}
+        {pathname !== "/" ? (
+          <div style={{ marginTop: "1.2rem", textAlign: "center" }}>
+            <p style={{ color: "#ffb4b4", fontSize: "1.1rem", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+              Emergency Contacts
+            </p>
+            {siteConfig.emergencyContacts.map((contact) => (
+              <a
+                key={contact.phone}
+                href={`tel:${contact.phone}`}
+                style={{ color: "#ffffff", display: "block", fontSize: "1.25rem", marginTop: "0.45rem" }}
+              >
+                {contact.name}: {contact.phone}
+              </a>
+            ))}
+          </div>
+        ) : null}
       </div>
+
+      {pathname !== "/" ? (
+        <div
+          style={{
+            background: "linear-gradient(90deg, rgba(123, 8, 8, 0.96), rgba(65, 7, 7, 0.96))",
+            borderTop: "1px solid rgba(255,255,255,0.16)",
+            borderBottom: "1px solid rgba(255,255,255,0.12)",
+            padding: "0.52rem 5%",
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "1rem",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <strong style={{ color: "#ffe5e5", fontSize: "1.2rem" }}>Emergency contacts:</strong>
+          {siteConfig.emergencyContacts.map((contact) => (
+            <a
+              key={contact.phone}
+              href={`tel:${contact.phone}`}
+              style={{ color: "#ffffff", fontWeight: 700, fontSize: "1.2rem" }}
+            >
+              {contact.name}: {contact.phone}
+            </a>
+          ))}
+        </div>
+      ) : null}
     </>
   );
 }

@@ -19,7 +19,7 @@ interface CategoryFormProps {
   category?: Category & { customizationOptions?: CustomizationOption[] };
 }
 
-type CustomFieldType = "select" | "text" | "number" | "textarea";
+type CustomFieldType = "select" | "text" | "number" | "textarea" | "image";
 
 type ValueOptionDraft = {
   id: string;
@@ -33,6 +33,7 @@ type ValueOptionDraft = {
 type SubOptionDraft = {
   id: string;
   label: string;
+  required: boolean;
   fieldType: CustomFieldType;
   placeholder: string;
   min: string;
@@ -64,6 +65,7 @@ function parseSubOptions(raw: unknown): SubOptionDraft[] {
       return {
         id: uid(),
         label: typeof obj.label === "string" ? obj.label : "",
+        required: Boolean(obj.required),
         fieldType: asFieldType(obj.fieldType),
         placeholder: typeof obj.placeholder === "string" ? obj.placeholder : "",
         min: obj.min !== undefined && obj.min !== null ? String(obj.min) : "",
@@ -86,7 +88,7 @@ function parseSubOptions(raw: unknown): SubOptionDraft[] {
 }
 
 function asFieldType(value: unknown): CustomFieldType {
-  if (value === "text" || value === "number" || value === "textarea") {
+  if (value === "text" || value === "number" || value === "textarea" || value === "image") {
     return value;
   }
   return "select";
@@ -143,6 +145,7 @@ function newSubOption(): SubOptionDraft {
   return {
     id: `sub-${uid()}`,
     label: "",
+    required: false,
     fieldType: "select",
     placeholder: "",
     min: "",
@@ -319,6 +322,7 @@ export function CategoryForm({ category }: CategoryFormProps) {
               .filter((s) => s.label.trim())
               .map((s) => ({
                 label: s.label.trim(),
+                required: s.required,
                 fieldType: s.fieldType,
                 placeholder: s.placeholder.trim() || undefined,
                 min: s.fieldType === "number" && s.min.trim() ? Number(s.min) : undefined,
@@ -326,9 +330,9 @@ export function CategoryForm({ category }: CategoryFormProps) {
                 values:
                   s.fieldType === "select"
                     ? s.valueOptions
-                        .filter((v) => v.value.trim() && v.label.trim())
+                        .filter((v) => v.label.trim())
                         .map((v) => ({
-                          value: v.value.trim(),
+                          value: slugify(v.label.trim()),
                           label: v.label.trim(),
                           image: v.image || null,
                           priceAdjustment: Number(v.priceAdjustment) || 0,
@@ -509,7 +513,20 @@ export function CategoryForm({ category }: CategoryFormProps) {
                             <option value="text">Text</option>
                             <option value="textarea">Textarea</option>
                             <option value="number">Number</option>
+                            <option value="image">Image</option>
                           </select>
+                          <label className="inline-flex items-center gap-1 text-[11px] text-neutral-600">
+                            <input
+                              type="checkbox"
+                              checked={sub.required}
+                              onChange={(e) =>
+                                updateSubOption(opt.id, sub.id, {
+                                  required: e.target.checked,
+                                })
+                              }
+                            />
+                            Required
+                          </label>
                           <button
                             type="button"
                             onClick={() => removeSubOption(opt.id, sub.id)}
@@ -571,19 +588,10 @@ export function CategoryForm({ category }: CategoryFormProps) {
                                     const v = e.target.value;
                                     updateValueOption(opt.id, sub.id, val.id, {
                                       label: v,
-                                      value: val.value || slugify(v),
+                                      value: slugify(v),
                                     });
                                   }}
                                   placeholder="Label (e.g. Light Cotton)"
-                                  className="h-7 text-xs flex-1"
-                                />
-
-                                <Input
-                                  value={val.value}
-                                  onChange={(e) =>
-                                    updateValueOption(opt.id, sub.id, val.id, { value: e.target.value })
-                                  }
-                                  placeholder="Value (e.g. light-cotton)"
                                   className="h-7 text-xs flex-1"
                                 />
 

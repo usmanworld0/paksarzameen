@@ -1437,6 +1437,19 @@ export function HomeClient() {
 
         {/* Impact Detail 1 */}
         <section className="impact-text-section">
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: "1.2rem" }}>
+            <Link href="/blood-bank" style={{
+              background: "linear-gradient(90deg,#cf2c2c,#9f1717)",
+              color: "#fff",
+              padding: "0.8rem 1.2rem",
+              borderRadius: "999px",
+              fontWeight: 800,
+              boxShadow: "0 8px 30px rgba(207,44,44,0.18)",
+              textDecoration: "none",
+            }}>
+              24/7 Blood Availability — Open Blood Bank
+            </Link>
+          </div>
           <h5>Measurable Impact</h5>
           <p>
             Our <span>Room Zia</span> initiative powers <span>120+ schools</span> with solar electricity.
@@ -1470,6 +1483,14 @@ export function HomeClient() {
             <Link href="/contact" style={{ color: "var(--psz-green)", fontSize: "var(--fs-vs)", fontWeight: 500 }}>
               Partner With Us →
             </Link>
+            <a
+              href="https://pk.linkedin.com/company/pak-sar-zameen-development-org"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: "var(--psz-green)", fontSize: "var(--fs-vs)", fontWeight: 500 }}
+            >
+              LinkedIn →
+            </a>
           </div>
         </section>
 
@@ -1485,6 +1506,26 @@ export function HomeClient() {
           <Link href="/get-involved">
             <button className="final-btn" type="button">→ Get Involved</button>
           </Link>
+        </section>
+
+        <section
+          className="impact-text-section"
+          style={{
+            marginTop: "2rem",
+            borderTop: "1px solid rgba(255,255,255,0.16)",
+            paddingTop: "4rem",
+            paddingBottom: "4.5rem",
+          }}
+        >
+          <h5 style={{ color: "#ffcccc" }}>Need Blood Support?</h5>
+          <p>
+            Submit an urgent blood request through our Blood Bank page. Emergency contact details are listed there.
+          </p>
+          <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap", marginTop: "2rem" }}>
+            <Link href="/blood-bank" style={{ color: "#ffdede", fontSize: "var(--fs-vs)", fontWeight: 700 }}>
+              Open Blood Bank Form →
+            </Link>
+          </div>
         </section>
       </div>
     </div>

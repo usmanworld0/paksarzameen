@@ -52,3 +52,25 @@ ALTER TABLE customization_options ADD COLUMN IF NOT EXISTS position integer NOT 
 
 CREATE INDEX IF NOT EXISTS customization_options_category_subcategory_position_idx
 ON customization_options (category_id, subcategory, position);
+
+-- PSZ Main Web (Blood Bank emergency workflow)
+CREATE TABLE IF NOT EXISTS blood_bank_requests (
+	id text PRIMARY KEY,
+	name text NOT NULL,
+	needed_at timestamptz NOT NULL,
+	cnic text NOT NULL,
+	location text NOT NULL,
+	volume_ml integer NOT NULL,
+	contact_number text NOT NULL,
+	blood_group text,
+	notes text,
+	status text NOT NULL DEFAULT 'pending',
+	created_at timestamptz NOT NULL DEFAULT now(),
+	updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS blood_bank_requests_status_idx
+ON blood_bank_requests (status);
+
+CREATE INDEX IF NOT EXISTS blood_bank_requests_needed_at_idx
+ON blood_bank_requests (needed_at);

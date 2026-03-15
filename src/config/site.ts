@@ -11,6 +11,7 @@ const DEFAULT_COMMONWEALTH_URL =
 export const navLinks: NavLink[] = [
   { label: "Home", href: "/" },
   { label: "About PSZ", href: "/about" },
+  { label: "Blood Bank", href: "/blood-bank" },
   { label: "Programs", href: "/programs" },
   { label: "Impact", href: "/impact" },
   { label: "Get Involved", href: "/get-involved" },
@@ -47,8 +48,13 @@ export const siteConfig = {
   social: {
     instagram: "https://www.instagram.com/paksarzameen.wfo",
     facebook: "https://www.facebook.com/share/1CsHyybdfH/",
+    linkedin: "https://pk.linkedin.com/company/pak-sar-zameen-development-org",
     commonwealthInstagram: "https://www.instagram.com/commonwealthlab.psz",
   },
+  emergencyContacts: [
+    { name: "Umar Hafeez", phone: "03098237670" },
+    { name: "Ahmed Amir", phone: "03233609157" },
+  ],
   seo: {
     keywords: [
       "paksarzameen",

@@ -1,9 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2, Upload, X } from "lucide-react";
 import type { CustomizationOption } from "@prisma/client";
 import { formatRegionalPrice } from "@/lib/pricing";
 import { parseCustomizationOptions } from "@/lib/customizations";
@@ -40,6 +40,8 @@ export function CategoryCustomizationPanel({
     >
   >({});
   const [submitting, setSubmitting] = useState(false);
+  const [uploadingByGroup, setUploadingByGroup] = useState<Record<string, boolean>>({});
+  const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   const parsedOptions = useMemo(() => parseCustomizationOptions(options), [options]);
 
@@ -52,9 +54,12 @@ export function CategoryCustomizationPanel({
   const requiredGroupKeys = useMemo(
     () =>
       parsedOptions.flatMap((option) => {
-        if (!option.required) return [];
+        const requiredGroups = option.groups.filter(
+          (group) => option.required || group.required
+        );
+        if (requiredGroups.length === 0) return [];
         if (option.fieldType === "select") {
-          return option.groups.map((group) => `${option.id}::${group.label}`);
+          return requiredGroups.map((group) => `${option.id}::${group.label}`);
         }
         return [`${option.id}::value`];
       }),
@@ -85,6 +90,37 @@ export function CategoryCustomizationPanel({
     params.delete("option");
     const query = params.toString();
     router.replace(query ? `${pathname}?${query}` : pathname);
+  }
+
+  async function uploadGroupImage(
+    groupKey: string,
+    optionName: string,
+    groupLabel: string,
+    file: File
+  ) {
+    setUploadingByGroup((prev) => ({ ...prev, [groupKey]: true }));
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json().catch(() => null);
+      const url = typeof data?.url === "string" ? data.url : "";
+
+      if (res.ok && url) {
+        setSelections((previous) => ({
+          ...previous,
+          [groupKey]: {
+            optionName,
+            groupLabel,
+            value: url,
+            valueLabel: file.name || "Uploaded image",
+            priceAdjustment: 0,
+          },
+        }));
+      }
+    } finally {
+      setUploadingByGroup((prev) => ({ ...prev, [groupKey]: false }));
+    }
   }
 
   async function proceedToBilling() {
@@ -230,6 +266,9 @@ export function CategoryCustomizationPanel({
                     <div key={groupKey}>
                       <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-neutral-500">
                         {group.label}
+                        {(group.required || selectedOption.required) && (
+                          <span className="ml-1 text-red-500">*</span>
+                        )}
                       </p>
                       {group.fieldType === "select" ? (
                         <div className="flex flex-wrap gap-3.5">
@@ -286,7 +325,10 @@ export function CategoryCustomizationPanel({
                           onChange={(event) => {
                             const nextValue = event.target.value;
                             setSelections((previous) => {
-                              if (!nextValue.trim() && !selectedOption.required) {
+                              if (
+                                !nextValue.trim() &&
+                                !(selectedOption.required || group.required)
+                              ) {
                                 const clone = { ...previous };
                                 delete clone[groupKey];
                                 return clone;
@@ -307,6 +349,63 @@ export function CategoryCustomizationPanel({
                           placeholder={group.placeholder || `Enter ${group.label.toLowerCase()}`}
                           className="min-h-[120px] w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 text-base text-neutral-900 outline-none transition-colors focus:border-neutral-900"
                         />
+                      ) : group.fieldType === "image" ? (
+                        <div className="space-y-2">
+                          {selected ? (
+                            <div className="relative h-40 w-full overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100">
+                              <Image src={selected} alt={group.label} fill className="object-cover" />
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setSelections((previous) => {
+                                    const clone = { ...previous };
+                                    delete clone[groupKey];
+                                    return clone;
+                                  })
+                                }
+                                className="absolute right-2 top-2 rounded-full bg-black/65 p-1 text-white hover:bg-black"
+                                aria-label="Remove uploaded image"
+                              >
+                                <X className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => fileInputRefs.current[groupKey]?.click()}
+                              className="flex h-40 w-full items-center justify-center rounded-xl border border-dashed border-neutral-300 bg-white text-sm text-neutral-600 transition-colors hover:border-neutral-900 hover:text-neutral-900"
+                            >
+                              {uploadingByGroup[groupKey] ? (
+                                <Loader2 className="h-5 w-5 animate-spin" />
+                              ) : (
+                                <span className="inline-flex items-center gap-2">
+                                  <Upload className="h-4 w-4" />
+                                  Upload image
+                                </span>
+                              )}
+                            </button>
+                          )}
+                          <input
+                            ref={(el) => {
+                              fileInputRefs.current[groupKey] = el;
+                            }}
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(event) => {
+                              const file = event.target.files?.[0];
+                              if (file) {
+                                uploadGroupImage(
+                                  groupKey,
+                                  selectedOption.name,
+                                  group.label,
+                                  file
+                                );
+                              }
+                              event.target.value = "";
+                            }}
+                          />
+                        </div>
                       ) : (
                         <input
                           type={group.fieldType === "number" ? "number" : "text"}
@@ -316,7 +415,10 @@ export function CategoryCustomizationPanel({
                           onChange={(event) => {
                             const nextValue = event.target.value;
                             setSelections((previous) => {
-                              if (!nextValue.trim() && !selectedOption.required) {
+                              if (
+                                !nextValue.trim() &&
+                                !(selectedOption.required || group.required)
+                              ) {
                                 const clone = { ...previous };
                                 delete clone[groupKey];
                                 return clone;

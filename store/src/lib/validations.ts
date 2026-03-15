@@ -40,10 +40,12 @@ export const customizationFieldTypeSchema = z.enum([
   "text",
   "number",
   "textarea",
+  "image",
 ]);
 
 export const subOptionSchema = z.object({
   label: z.string().trim().min(1, "Sub-option label is required"),
+  required: z.boolean().default(false),
   fieldType: customizationFieldTypeSchema.default("select"),
   placeholder: optionalText,
   min: z.coerce.number().optional(),

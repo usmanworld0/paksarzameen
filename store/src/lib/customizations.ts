@@ -1,6 +1,6 @@
 import type { CartItem } from "@/types";
 
-export type CustomizationFieldType = "select" | "text" | "number" | "textarea";
+export type CustomizationFieldType = "select" | "text" | "number" | "textarea" | "image";
 
 export type ParsedCustomizationValue = {
   value: string;
@@ -11,6 +11,7 @@ export type ParsedCustomizationValue = {
 
 export type ParsedCustomizationGroup = {
   label: string;
+  required: boolean;
   fieldType: CustomizationFieldType;
   placeholder?: string;
   min?: number;
@@ -30,7 +31,7 @@ export type ParsedCustomizationOption = {
 };
 
 function toFieldType(value: unknown): CustomizationFieldType {
-  if (value === "text" || value === "number" || value === "textarea") {
+  if (value === "text" || value === "number" || value === "textarea" || value === "image") {
     return value;
   }
   return "select";
@@ -100,6 +101,7 @@ export function parseCustomizationOptions(
               typeof groupRecord.label === "string" && groupRecord.label.trim()
                 ? groupRecord.label
                 : "Option",
+            required: Boolean(groupRecord.required),
             fieldType: toFieldType(groupRecord.fieldType),
             placeholder:
               typeof groupRecord.placeholder === "string" && groupRecord.placeholder.trim()

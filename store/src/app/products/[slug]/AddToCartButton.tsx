@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useCartStore } from "@/store/cart";
 import { Label } from "@/components/ui/label";
-import { Minus, Plus } from "lucide-react";
+import Image from "next/image";
+import { Loader2, Minus, Plus, Upload, X } from "lucide-react";
 import type { CustomizationOption } from "@prisma/client";
 import { formatRegionalPrice, type StoreRegion } from "@/lib/pricing";
 import { parseCustomizationOptions } from "@/lib/customizations";
@@ -41,6 +42,8 @@ export function AddToCartButton({
     >
   >({});
   const [added, setAdded] = useState(false);
+  const [uploadingByGroup, setUploadingByGroup] = useState<Record<string, boolean>>({});
+  const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
   const parsedOptions = useMemo(
     () => parseCustomizationOptions(customizationOptions),
     [customizationOptions]
@@ -49,9 +52,12 @@ export function AddToCartButton({
   const requiredGroupKeys = useMemo(
     () =>
       parsedOptions.flatMap((option) => {
-        if (!option.required) return [];
+        const requiredGroups = option.groups.filter(
+          (group) => option.required || group.required
+        );
+        if (requiredGroups.length === 0) return [];
         if (option.fieldType === "select") {
-          return option.groups.map((group) => `${option.id}::${group.label}`);
+          return requiredGroups.map((group) => `${option.id}::${group.label}`);
         }
         return [`${option.id}::value`];
       }),
@@ -72,6 +78,32 @@ export function AddToCartButton({
   );
 
   const unitPrice = (product.discountedPrice ?? product.price) + customizationTotal;
+
+  async function uploadGroupImage(groupKey: string, optionName: string, groupLabel: string, file: File) {
+    setUploadingByGroup((prev) => ({ ...prev, [groupKey]: true }));
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json().catch(() => null);
+      const url = typeof data?.url === "string" ? data.url : "";
+
+      if (res.ok && url) {
+        setSelectedByGroup((previous) => ({
+          ...previous,
+          [groupKey]: {
+            optionName,
+            groupLabel,
+            value: url,
+            valueLabel: file.name || "Uploaded image",
+            priceAdjustment: 0,
+          },
+        }));
+      }
+    } finally {
+      setUploadingByGroup((prev) => ({ ...prev, [groupKey]: false }));
+    }
+  }
 
   function handleAdd() {
     const customizations = Object.entries(selectedByGroup)
@@ -120,6 +152,9 @@ export function AddToCartButton({
                   <div key={groupKey} className="space-y-2">
                     <p className="text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500">
                       {group.label}
+                      {(group.required || option.required) && (
+                        <span className="ml-1 text-red-500">*</span>
+                      )}
                     </p>
 
                     {group.fieldType === "select" ? (
@@ -165,7 +200,10 @@ export function AddToCartButton({
                         onChange={(event) => {
                           const nextValue = event.target.value;
                           setSelectedByGroup((previous) => {
-                            if (!nextValue.trim() && !option.required) {
+                            if (
+                              !nextValue.trim() &&
+                              !(option.required || group.required)
+                            ) {
                               const clone = { ...previous };
                               delete clone[groupKey];
                               return clone;
@@ -186,6 +224,58 @@ export function AddToCartButton({
                         placeholder={group.placeholder || `Enter ${group.label.toLowerCase()}`}
                         className="min-h-[88px] w-full rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-900 outline-none transition-colors focus:border-neutral-900"
                       />
+                    ) : group.fieldType === "image" ? (
+                      <div className="space-y-2">
+                        {selectedValue ? (
+                          <div className="relative h-32 w-full overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100">
+                            <Image src={selectedValue} alt={group.label} fill className="object-cover" />
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setSelectedByGroup((previous) => {
+                                  const clone = { ...previous };
+                                  delete clone[groupKey];
+                                  return clone;
+                                })
+                              }
+                              className="absolute right-2 top-2 rounded-full bg-black/65 p-1 text-white hover:bg-black"
+                              aria-label="Remove uploaded image"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => fileInputRefs.current[groupKey]?.click()}
+                            className="flex h-24 w-full items-center justify-center rounded-lg border border-dashed border-neutral-300 bg-white text-xs text-neutral-600 transition-colors hover:border-neutral-900 hover:text-neutral-900"
+                          >
+                            {uploadingByGroup[groupKey] ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <span className="inline-flex items-center gap-1.5">
+                                <Upload className="h-3.5 w-3.5" />
+                                Upload image
+                              </span>
+                            )}
+                          </button>
+                        )}
+                        <input
+                          ref={(el) => {
+                            fileInputRefs.current[groupKey] = el;
+                          }}
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(event) => {
+                            const file = event.target.files?.[0];
+                            if (file) {
+                              uploadGroupImage(groupKey, option.name, group.label, file);
+                            }
+                            event.target.value = "";
+                          }}
+                        />
+                      </div>
                     ) : (
                       <input
                         type={group.fieldType === "number" ? "number" : "text"}
@@ -195,7 +285,10 @@ export function AddToCartButton({
                         onChange={(event) => {
                           const nextValue = event.target.value;
                           setSelectedByGroup((previous) => {
-                            if (!nextValue.trim() && !option.required) {
+                            if (
+                              !nextValue.trim() &&
+                              !(option.required || group.required)
+                            ) {
                               const clone = { ...previous };
                               delete clone[groupKey];
                               return clone;

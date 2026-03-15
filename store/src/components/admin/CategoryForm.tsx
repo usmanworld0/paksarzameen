@@ -33,6 +33,10 @@ type ValueOptionDraft = {
 type SubOptionDraft = {
   id: string;
   label: string;
+  fieldType: CustomFieldType;
+  placeholder: string;
+  min: string;
+  max: string;
   valueOptions: ValueOptionDraft[];
 };
 
@@ -60,6 +64,10 @@ function parseSubOptions(raw: unknown): SubOptionDraft[] {
       return {
         id: uid(),
         label: typeof obj.label === "string" ? obj.label : "",
+        fieldType: asFieldType(obj.fieldType),
+        placeholder: typeof obj.placeholder === "string" ? obj.placeholder : "",
+        min: obj.min !== undefined && obj.min !== null ? String(obj.min) : "",
+        max: obj.max !== undefined && obj.max !== null ? String(obj.max) : "",
         valueOptions: values.map((v) => {
           const vo = v as Record<string, unknown>;
           return {
@@ -132,7 +140,15 @@ function newValueOption(): ValueOptionDraft {
 }
 
 function newSubOption(): SubOptionDraft {
-  return { id: `sub-${uid()}`, label: "", valueOptions: [newValueOption()] };
+  return {
+    id: `sub-${uid()}`,
+    label: "",
+    fieldType: "select",
+    placeholder: "",
+    min: "",
+    max: "",
+    valueOptions: [newValueOption()],
+  };
 }
 
 function newOption(): OptionDraft {
@@ -303,14 +319,21 @@ export function CategoryForm({ category }: CategoryFormProps) {
               .filter((s) => s.label.trim())
               .map((s) => ({
                 label: s.label.trim(),
-                values: s.valueOptions
-                  .filter((v) => v.value.trim() && v.label.trim())
-                  .map((v) => ({
-                    value: v.value.trim(),
-                    label: v.label.trim(),
-                    image: v.image || null,
-                    priceAdjustment: Number(v.priceAdjustment) || 0,
-                  })),
+                fieldType: s.fieldType,
+                placeholder: s.placeholder.trim() || undefined,
+                min: s.fieldType === "number" && s.min.trim() ? Number(s.min) : undefined,
+                max: s.fieldType === "number" && s.max.trim() ? Number(s.max) : undefined,
+                values:
+                  s.fieldType === "select"
+                    ? s.valueOptions
+                        .filter((v) => v.value.trim() && v.label.trim())
+                        .map((v) => ({
+                          value: v.value.trim(),
+                          label: v.label.trim(),
+                          image: v.image || null,
+                          priceAdjustment: Number(v.priceAdjustment) || 0,
+                        }))
+                    : [],
               })),
           },
         }));
@@ -468,6 +491,25 @@ export function CategoryForm({ category }: CategoryFormProps) {
                             placeholder="Sub-option label (e.g. Cotton, Floral, Royal Blue)"
                             className="h-8 text-xs flex-1"
                           />
+                          <select
+                            value={sub.fieldType}
+                            onChange={(e) => {
+                              const nextType = e.target.value as CustomFieldType;
+                              updateSubOption(opt.id, sub.id, {
+                                fieldType: nextType,
+                                valueOptions:
+                                  nextType === "select" && sub.valueOptions.length === 0
+                                    ? [newValueOption()]
+                                    : sub.valueOptions,
+                              });
+                            }}
+                            className="h-8 rounded-md border border-neutral-200 bg-white px-2 text-xs text-neutral-700"
+                          >
+                            <option value="select">Select</option>
+                            <option value="text">Text</option>
+                            <option value="textarea">Textarea</option>
+                            <option value="number">Number</option>
+                          </select>
                           <button
                             type="button"
                             onClick={() => removeSubOption(opt.id, sub.id)}
@@ -478,105 +520,134 @@ export function CategoryForm({ category }: CategoryFormProps) {
                           </button>
                         </div>
 
-                        {/* Value options */}
-                        <div className="space-y-1.5 pl-6">
-                          <p className="text-[10px] font-semibold uppercase tracking-wide text-neutral-400">Values</p>
-                          {sub.valueOptions.map((val) => (
-                            <div key={val.id} className="flex items-center gap-2 rounded-md border border-neutral-100 bg-neutral-50 p-1.5">
-                              {/* Image */}
-                              <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-md border border-neutral-200 bg-white">
-                                {val.uploading ? (
-                                  <div className="flex h-full w-full items-center justify-center">
-                                    <Loader2 className="h-3 w-3 animate-spin text-neutral-400" />
-                                  </div>
-                                ) : val.image ? (
-                                  <>
-                                    <Image src={val.image} alt={val.label} fill className="object-cover" sizes="40px" />
+                        {sub.fieldType === "select" ? (
+                          <div className="space-y-1.5 pl-6">
+                            <p className="text-[10px] font-semibold uppercase tracking-wide text-neutral-400">Values</p>
+                            {sub.valueOptions.map((val) => (
+                              <div key={val.id} className="flex items-center gap-2 rounded-md border border-neutral-100 bg-neutral-50 p-1.5">
+                                {/* Image */}
+                                <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-md border border-neutral-200 bg-white">
+                                  {val.uploading ? (
+                                    <div className="flex h-full w-full items-center justify-center">
+                                      <Loader2 className="h-3 w-3 animate-spin text-neutral-400" />
+                                    </div>
+                                  ) : val.image ? (
+                                    <>
+                                      <Image src={val.image} alt={val.label} fill className="object-cover" sizes="40px" />
+                                      <button
+                                        type="button"
+                                        onClick={() => updateValueOption(opt.id, sub.id, val.id, { image: null })}
+                                        className="absolute right-0.5 top-0.5 rounded-full bg-black/60 p-0.5 text-white hover:bg-black"
+                                      >
+                                        <X className="h-2 w-2" />
+                                      </button>
+                                    </>
+                                  ) : (
                                     <button
                                       type="button"
-                                      onClick={() => updateValueOption(opt.id, sub.id, val.id, { image: null })}
-                                      className="absolute right-0.5 top-0.5 rounded-full bg-black/60 p-0.5 text-white hover:bg-black"
+                                      onClick={() => fileInputRefs.current[val.id]?.click()}
+                                      className="flex h-full w-full items-center justify-center text-neutral-400 hover:text-neutral-600"
+                                      title="Upload image"
                                     >
-                                      <X className="h-2 w-2" />
+                                      <ImageIcon className="h-3 w-3" />
                                     </button>
-                                  </>
-                                ) : (
-                                  <button
-                                    type="button"
-                                    onClick={() => fileInputRefs.current[val.id]?.click()}
-                                    className="flex h-full w-full items-center justify-center text-neutral-400 hover:text-neutral-600"
-                                    title="Upload image"
-                                  >
-                                    <ImageIcon className="h-3 w-3" />
-                                  </button>
-                                )}
-                                <input
-                                  ref={(el) => { fileInputRefs.current[val.id] = el; }}
-                                  type="file"
-                                  accept="image/*"
-                                  className="hidden"
+                                  )}
+                                  <input
+                                    ref={(el) => { fileInputRefs.current[val.id] = el; }}
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={(e) => {
+                                      const file = e.target.files?.[0];
+                                      if (file) uploadValueOptionImage(opt.id, sub.id, val.id, file);
+                                      e.target.value = "";
+                                    }}
+                                  />
+                                </div>
+
+                                <Input
+                                  value={val.label}
                                   onChange={(e) => {
-                                    const file = e.target.files?.[0];
-                                    if (file) uploadValueOptionImage(opt.id, sub.id, val.id, file);
-                                    e.target.value = "";
+                                    const v = e.target.value;
+                                    updateValueOption(opt.id, sub.id, val.id, {
+                                      label: v,
+                                      value: val.value || slugify(v),
+                                    });
                                   }}
+                                  placeholder="Label (e.g. Light Cotton)"
+                                  className="h-7 text-xs flex-1"
+                                />
+
+                                <Input
+                                  value={val.value}
+                                  onChange={(e) =>
+                                    updateValueOption(opt.id, sub.id, val.id, { value: e.target.value })
+                                  }
+                                  placeholder="Value (e.g. light-cotton)"
+                                  className="h-7 text-xs flex-1"
+                                />
+
+                                <Input
+                                  type="number"
+                                  step="1"
+                                  value={val.priceAdjustment}
+                                  onChange={(e) =>
+                                    updateValueOption(opt.id, sub.id, val.id, {
+                                      priceAdjustment: Number(e.target.value) || 0,
+                                    })
+                                  }
+                                  placeholder="Price"
+                                  className="h-7 text-xs w-24"
+                                />
+
+                                <button
+                                  type="button"
+                                  onClick={() => removeValueOption(opt.id, sub.id, val.id)}
+                                  className="text-neutral-400 hover:text-red-500 transition-colors shrink-0"
+                                >
+                                  <X className="h-3 w-3" />
+                                </button>
+                              </div>
+                            ))}
+
+                            <button
+                              type="button"
+                              onClick={() => addValueOption(opt.id, sub.id)}
+                              className="inline-flex items-center gap-1 text-[11px] font-medium text-neutral-400 hover:text-neutral-700 transition-colors"
+                            >
+                              <Plus className="h-3 w-3" />
+                              Add value
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="space-y-2 pl-6">
+                            <p className="text-[10px] font-semibold uppercase tracking-wide text-neutral-400">Input Settings</p>
+                            <Input
+                              value={sub.placeholder}
+                              onChange={(e) => updateSubOption(opt.id, sub.id, { placeholder: e.target.value })}
+                              placeholder="Placeholder text"
+                              className="h-8 text-xs"
+                            />
+                            {sub.fieldType === "number" && (
+                              <div className="grid grid-cols-2 gap-2">
+                                <Input
+                                  type="number"
+                                  value={sub.min}
+                                  onChange={(e) => updateSubOption(opt.id, sub.id, { min: e.target.value })}
+                                  placeholder="Min"
+                                  className="h-8 text-xs"
+                                />
+                                <Input
+                                  type="number"
+                                  value={sub.max}
+                                  onChange={(e) => updateSubOption(opt.id, sub.id, { max: e.target.value })}
+                                  placeholder="Max"
+                                  className="h-8 text-xs"
                                 />
                               </div>
-
-                              <Input
-                                value={val.label}
-                                onChange={(e) => {
-                                  const v = e.target.value;
-                                  updateValueOption(opt.id, sub.id, val.id, {
-                                    label: v,
-                                    value: val.value || slugify(v),
-                                  });
-                                }}
-                                placeholder="Label (e.g. Light Cotton)"
-                                className="h-7 text-xs flex-1"
-                              />
-
-                              <Input
-                                value={val.value}
-                                onChange={(e) =>
-                                  updateValueOption(opt.id, sub.id, val.id, { value: e.target.value })
-                                }
-                                placeholder="Value (e.g. light-cotton)"
-                                className="h-7 text-xs flex-1"
-                              />
-
-                              <Input
-                                type="number"
-                                step="1"
-                                value={val.priceAdjustment}
-                                onChange={(e) =>
-                                  updateValueOption(opt.id, sub.id, val.id, {
-                                    priceAdjustment: Number(e.target.value) || 0,
-                                  })
-                                }
-                                placeholder="Price"
-                                className="h-7 text-xs w-24"
-                              />
-
-                              <button
-                                type="button"
-                                onClick={() => removeValueOption(opt.id, sub.id, val.id)}
-                                className="text-neutral-400 hover:text-red-500 transition-colors shrink-0"
-                              >
-                                <X className="h-3 w-3" />
-                              </button>
-                            </div>
-                          ))}
-
-                          <button
-                            type="button"
-                            onClick={() => addValueOption(opt.id, sub.id)}
-                            className="inline-flex items-center gap-1 text-[11px] font-medium text-neutral-400 hover:text-neutral-700 transition-colors"
-                          >
-                            <Plus className="h-3 w-3" />
-                            Add value
-                          </button>
-                        </div>
+                            )}
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>

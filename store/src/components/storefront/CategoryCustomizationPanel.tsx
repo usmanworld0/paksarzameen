@@ -231,54 +231,113 @@ export function CategoryCustomizationPanel({
                       <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-neutral-500">
                         {group.label}
                       </p>
-                      <div className="flex flex-wrap gap-3.5">
-                        {group.values.map((value) => {
-                          const isSelected = selected === value.value;
-                          const hasImage = Boolean(value.image);
+                      {group.fieldType === "select" ? (
+                        <div className="flex flex-wrap gap-3.5">
+                          {group.values.map((value) => {
+                            const isSelected = selected === value.value;
+                            const hasImage = Boolean(value.image);
 
-                          return (
-                            <button
-                              key={value.value}
-                              type="button"
-                              onClick={() =>
-                                setSelections((previous) => ({
-                                  ...previous,
-                                  [groupKey]: {
-                                    optionName: selectedOption.name,
-                                    groupLabel: group.label,
-                                    value: value.value,
-                                    valueLabel: value.label,
-                                    priceAdjustment: value.priceAdjustment,
-                                  },
-                                }))
-                              }
-                              className={`flex min-h-[56px] min-w-[200px] items-center gap-3 rounded-2xl border px-4 py-3 text-sm transition-colors ${
-                                isSelected
-                                  ? "border-neutral-900 bg-neutral-900 text-white"
-                                  : "border-neutral-300 bg-white text-neutral-700 hover:border-neutral-900"
-                              }`}
-                            >
-                              {hasImage && (
-                                <span className="relative h-10 w-10 overflow-hidden rounded-full border border-black/10">
-                                  <Image
-                                    src={value.image!}
-                                    alt={value.label}
-                                    fill
-                                    sizes="40px"
-                                    className="object-cover"
-                                  />
+                            return (
+                              <button
+                                key={value.value}
+                                type="button"
+                                onClick={() =>
+                                  setSelections((previous) => ({
+                                    ...previous,
+                                    [groupKey]: {
+                                      optionName: selectedOption.name,
+                                      groupLabel: group.label,
+                                      value: value.value,
+                                      valueLabel: value.label,
+                                      priceAdjustment: value.priceAdjustment,
+                                    },
+                                  }))
+                                }
+                                className={`flex min-h-[56px] min-w-[200px] items-center gap-3 rounded-2xl border px-4 py-3 text-sm transition-colors ${
+                                  isSelected
+                                    ? "border-neutral-900 bg-neutral-900 text-white"
+                                    : "border-neutral-300 bg-white text-neutral-700 hover:border-neutral-900"
+                                }`}
+                              >
+                                {hasImage && (
+                                  <span className="relative h-10 w-10 overflow-hidden rounded-full border border-black/10">
+                                    <Image
+                                      src={value.image!}
+                                      alt={value.label}
+                                      fill
+                                      sizes="40px"
+                                      className="object-cover"
+                                    />
+                                  </span>
+                                )}
+                                <span className="font-medium">{value.label}</span>
+                                <span className="ml-auto font-semibold">
+                                  {value.priceAdjustment === 0
+                                    ? formatRegionalPrice(0, region)
+                                    : `+${formatRegionalPrice(value.priceAdjustment, region)}`}
                                 </span>
-                              )}
-                              <span className="font-medium">{value.label}</span>
-                              <span className="ml-auto font-semibold">
-                                {value.priceAdjustment === 0
-                                  ? formatRegionalPrice(0, region)
-                                  : `+${formatRegionalPrice(value.priceAdjustment, region)}`}
-                              </span>
-                            </button>
-                          );
-                        })}
-                      </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      ) : group.fieldType === "textarea" ? (
+                        <textarea
+                          value={selected ?? ""}
+                          onChange={(event) => {
+                            const nextValue = event.target.value;
+                            setSelections((previous) => {
+                              if (!nextValue.trim() && !selectedOption.required) {
+                                const clone = { ...previous };
+                                delete clone[groupKey];
+                                return clone;
+                              }
+
+                              return {
+                                ...previous,
+                                [groupKey]: {
+                                  optionName: selectedOption.name,
+                                  groupLabel: group.label,
+                                  value: nextValue,
+                                  valueLabel: nextValue,
+                                  priceAdjustment: 0,
+                                },
+                              };
+                            });
+                          }}
+                          placeholder={group.placeholder || `Enter ${group.label.toLowerCase()}`}
+                          className="min-h-[120px] w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 text-base text-neutral-900 outline-none transition-colors focus:border-neutral-900"
+                        />
+                      ) : (
+                        <input
+                          type={group.fieldType === "number" ? "number" : "text"}
+                          min={group.fieldType === "number" ? group.min : undefined}
+                          max={group.fieldType === "number" ? group.max : undefined}
+                          value={selected ?? ""}
+                          onChange={(event) => {
+                            const nextValue = event.target.value;
+                            setSelections((previous) => {
+                              if (!nextValue.trim() && !selectedOption.required) {
+                                const clone = { ...previous };
+                                delete clone[groupKey];
+                                return clone;
+                              }
+
+                              return {
+                                ...previous,
+                                [groupKey]: {
+                                  optionName: selectedOption.name,
+                                  groupLabel: group.label,
+                                  value: nextValue,
+                                  valueLabel: nextValue,
+                                  priceAdjustment: 0,
+                                },
+                              };
+                            });
+                          }}
+                          placeholder={group.placeholder || `Enter ${group.label.toLowerCase()}`}
+                          className="h-12 w-full rounded-lg border border-neutral-200 bg-white px-4 text-base text-neutral-900 outline-none transition-colors focus:border-neutral-900"
+                        />
+                      )}
                     </div>
                   );
                 })}

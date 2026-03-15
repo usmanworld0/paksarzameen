@@ -122,42 +122,101 @@ export function AddToCartButton({
                       {group.label}
                     </p>
 
-                    <div className="flex flex-wrap gap-2">
-                      {group.values.map((value) => {
-                        const isSelected = selectedValue === value.value;
+                    {group.fieldType === "select" ? (
+                      <div className="flex flex-wrap gap-2">
+                        {group.values.map((value) => {
+                          const isSelected = selectedValue === value.value;
 
-                        return (
-                          <button
-                            key={value.value}
-                            type="button"
-                            onClick={() =>
-                              setSelectedByGroup((previous) => ({
-                                ...previous,
-                                [groupKey]: {
-                                  optionName: option.name,
-                                  groupLabel: group.label,
-                                  value: value.value,
-                                  valueLabel: value.label,
-                                  priceAdjustment: value.priceAdjustment,
-                                },
-                              }))
+                          return (
+                            <button
+                              key={value.value}
+                              type="button"
+                              onClick={() =>
+                                setSelectedByGroup((previous) => ({
+                                  ...previous,
+                                  [groupKey]: {
+                                    optionName: option.name,
+                                    groupLabel: group.label,
+                                    value: value.value,
+                                    valueLabel: value.label,
+                                    priceAdjustment: value.priceAdjustment,
+                                  },
+                                }))
+                              }
+                              className={`rounded-full border px-3 py-2 text-xs transition-colors ${
+                                isSelected
+                                  ? "border-neutral-900 bg-neutral-900 text-white"
+                                  : "border-neutral-300 bg-white text-neutral-700 hover:border-neutral-900"
+                              }`}
+                            >
+                              <span>{value.label}</span>
+                              <span className="ml-1.5 font-semibold">
+                                {value.priceAdjustment === 0
+                                  ? formatRegionalPrice(0, product.region)
+                                  : `+${formatRegionalPrice(value.priceAdjustment, product.region)}`}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    ) : group.fieldType === "textarea" ? (
+                      <textarea
+                        value={selectedValue ?? ""}
+                        onChange={(event) => {
+                          const nextValue = event.target.value;
+                          setSelectedByGroup((previous) => {
+                            if (!nextValue.trim() && !option.required) {
+                              const clone = { ...previous };
+                              delete clone[groupKey];
+                              return clone;
                             }
-                            className={`rounded-full border px-3 py-2 text-xs transition-colors ${
-                              isSelected
-                                ? "border-neutral-900 bg-neutral-900 text-white"
-                                : "border-neutral-300 bg-white text-neutral-700 hover:border-neutral-900"
-                            }`}
-                          >
-                            <span>{value.label}</span>
-                            <span className="ml-1.5 font-semibold">
-                              {value.priceAdjustment === 0
-                                ? formatRegionalPrice(0, product.region)
-                                : `+${formatRegionalPrice(value.priceAdjustment, product.region)}`}
-                            </span>
-                          </button>
-                        );
-                      })}
-                    </div>
+
+                            return {
+                              ...previous,
+                              [groupKey]: {
+                                optionName: option.name,
+                                groupLabel: group.label,
+                                value: nextValue,
+                                valueLabel: nextValue,
+                                priceAdjustment: 0,
+                              },
+                            };
+                          });
+                        }}
+                        placeholder={group.placeholder || `Enter ${group.label.toLowerCase()}`}
+                        className="min-h-[88px] w-full rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-900 outline-none transition-colors focus:border-neutral-900"
+                      />
+                    ) : (
+                      <input
+                        type={group.fieldType === "number" ? "number" : "text"}
+                        min={group.fieldType === "number" ? group.min : undefined}
+                        max={group.fieldType === "number" ? group.max : undefined}
+                        value={selectedValue ?? ""}
+                        onChange={(event) => {
+                          const nextValue = event.target.value;
+                          setSelectedByGroup((previous) => {
+                            if (!nextValue.trim() && !option.required) {
+                              const clone = { ...previous };
+                              delete clone[groupKey];
+                              return clone;
+                            }
+
+                            return {
+                              ...previous,
+                              [groupKey]: {
+                                optionName: option.name,
+                                groupLabel: group.label,
+                                value: nextValue,
+                                valueLabel: nextValue,
+                                priceAdjustment: 0,
+                              },
+                            };
+                          });
+                        }}
+                        placeholder={group.placeholder || `Enter ${group.label.toLowerCase()}`}
+                        className="h-10 w-full rounded-lg border border-neutral-200 bg-white px-3 text-sm text-neutral-900 outline-none transition-colors focus:border-neutral-900"
+                      />
+                    )}
                   </div>
                 );
               })}

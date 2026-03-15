@@ -35,17 +35,21 @@ export const valueOptionSchema = z.object({
   priceAdjustment: z.coerce.number().default(0),
 });
 
-export const subOptionSchema = z.object({
-  label: z.string().trim().min(1, "Sub-option label is required"),
-  values: z.array(valueOptionSchema).default([]),
-});
-
 export const customizationFieldTypeSchema = z.enum([
   "select",
   "text",
   "number",
   "textarea",
 ]);
+
+export const subOptionSchema = z.object({
+  label: z.string().trim().min(1, "Sub-option label is required"),
+  fieldType: customizationFieldTypeSchema.default("select"),
+  placeholder: optionalText,
+  min: z.coerce.number().optional(),
+  max: z.coerce.number().optional(),
+  values: z.array(valueOptionSchema).default([]),
+});
 
 const customizationOptionConfigSchema = z.object({
   fieldType: customizationFieldTypeSchema.default("select"),

@@ -11,6 +11,10 @@ export type ParsedCustomizationValue = {
 
 export type ParsedCustomizationGroup = {
   label: string;
+  fieldType: CustomizationFieldType;
+  placeholder?: string;
+  min?: number;
+  max?: number;
   values: ParsedCustomizationValue[];
 };
 
@@ -96,6 +100,25 @@ export function parseCustomizationOptions(
               typeof groupRecord.label === "string" && groupRecord.label.trim()
                 ? groupRecord.label
                 : "Option",
+            fieldType: toFieldType(groupRecord.fieldType),
+            placeholder:
+              typeof groupRecord.placeholder === "string" && groupRecord.placeholder.trim()
+                ? groupRecord.placeholder.trim()
+                : undefined,
+            min:
+              groupRecord.min !== undefined &&
+              groupRecord.min !== null &&
+              groupRecord.min !== "" &&
+              Number.isFinite(Number(groupRecord.min))
+                ? Number(groupRecord.min)
+                : undefined,
+            max:
+              groupRecord.max !== undefined &&
+              groupRecord.max !== null &&
+              groupRecord.max !== "" &&
+              Number.isFinite(Number(groupRecord.max))
+                ? Number(groupRecord.max)
+                : undefined,
             values: rawValues
               .filter(
                 (value) => value && typeof value === "object" && !Array.isArray(value)
@@ -120,7 +143,9 @@ export function parseCustomizationOptions(
               .filter((value) => value.value && value.label),
           };
         })
-        .filter((group) => group.values.length > 0);
+        .filter((group) =>
+          group.fieldType === "select" ? group.values.length > 0 : true
+        );
 
       return {
         id: option.id,

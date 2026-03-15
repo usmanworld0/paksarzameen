@@ -31,7 +31,7 @@ export function ProductCard({ product, discountPercent, region = "PAK" }: Produc
     <article className="group store-card overflow-hidden rounded-[22px] transition-transform duration-300 hover:-translate-y-1">
       <Link
         href={`/products/${product.slug}`}
-        className="relative aspect-[3/4] w-full overflow-hidden bg-[#f7eee8]"
+        className="relative block h-[220px] w-full overflow-hidden bg-[#f7eee8] sm:h-[260px] lg:h-[300px]"
         style={{
           backgroundImage: "url('/images/commonwealth_header.jpeg')",
           backgroundSize: "cover",
@@ -45,7 +45,7 @@ export function ProductCard({ product, discountPercent, region = "PAK" }: Produc
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 22vw"
           className="object-cover transition-transform duration-700 group-hover:scale-110"
           quality={80}
-          unoptimized={isRemoteImage}
+          unoptimized
         />
         <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/36 to-transparent" />
         {/* Badges */}

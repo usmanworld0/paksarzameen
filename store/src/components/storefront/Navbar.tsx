@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ShoppingBag, Menu, X, Search, ChevronDown } from "lucide-react";
 import { NAV_LINKS, MAIN_SITE_URL, COMMONWEALTH_LOGO_URL } from "@/lib/constants";
 import { useCartStore } from "@/store/cart";
@@ -24,6 +24,7 @@ export function Navbar() {
   const [customizationCategories, setCustomizationCategories] = useState<
     CustomizationCategory[]
   >([]);
+  const customizationsRef = useRef<HTMLLIElement | null>(null);
   const itemCount = useCartStore((s) => s.itemCount());
 
   useEffect(() => {
@@ -54,6 +55,20 @@ export function Navbar() {
     return () => {
       cancelled = true;
     };
+  }, []);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        customizationsRef.current &&
+        !customizationsRef.current.contains(event.target as Node)
+      ) {
+        setCustomizationsOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   return (
@@ -89,8 +104,7 @@ export function Navbar() {
                 <li
                   key={link.href}
                   className="relative"
-                  onMouseEnter={() => setCustomizationsOpen(true)}
-                  onMouseLeave={() => setCustomizationsOpen(false)}
+                  ref={customizationsRef}
                 >
                   <button
                     type="button"

@@ -60,12 +60,12 @@ const STORIES_OF_HOPE = [
   {
     name: "Zain Hashim",
     role: "Pakistan's First Blind Anchor",
-    image: "/images/members/1.png",
+    image: "/images/members/Abdullah_Tanseer.png",
   },
   {
     name: "Sahiba Jehan",
     role: "Pakistan's First Transgender Police Officer",
-    image: "/images/members/2.png",
+    image: "/images/members/Laibah_Shafique.png",
   },
 ];
 /* ────────────────────────────────────────────────────── */
@@ -75,22 +75,16 @@ const DROPDOWN_LABELS: Record<string, Panel> = { "Impact": "impact" };
 
 export function Navbar() {
   const pathname = usePathname();
-  
   const [hidden, setHidden]           = useState(false);
   const [scrolled, setScrolled]       = useState(false);
   const [menuOpen, setMenuOpen]       = useState(false);
   const [activePanel, setActivePanel] = useState<Panel>(null);
   const lastY = useRef(0);
 
-  // Determine if background is dark based on pathname
-  // Only homepage has a dark background; all other pages have white/light backgrounds
-  const isDarkBg = pathname === "/";
-
   useEffect(() => {
     const handleScroll = () => {
       const y = window.scrollY;
       setScrolled(y > 40);
-      
       if (y > lastY.current && y > 80) {
         setHidden(true);
         setActivePanel(null);
@@ -99,14 +93,12 @@ export function Navbar() {
       }
       lastY.current = y;
     };
-    
     window.addEventListener("scroll", handleScroll, { passive: true });
-    
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
-  
+
   // Hide navbar on product detail pages
   if (pathname.startsWith("/commonwealth-lab/products/")) {
     return null;
@@ -115,7 +107,7 @@ export function Navbar() {
   return (
     <>
       <header
-        className={`psz-header ${scrolled ? "scrolled" : ""} ${hidden ? "nav-hidden" : ""} ${isDarkBg ? "dark-text" : "light-text"}`}
+        className={`psz-header always-white-bg ${scrolled ? "scrolled" : ""} ${hidden ? "nav-hidden" : ""} light-text`}
         onMouseLeave={() => setActivePanel(null)}
       >
         <div className="blur-bg" />
@@ -211,33 +203,6 @@ export function Navbar() {
           </div>
         </nav>
 
-        {pathname !== "/" ? (
-          <div
-            style={{
-              background: "linear-gradient(90deg, rgba(123, 8, 8, 0.96), rgba(65, 7, 7, 0.96))",
-              borderTop: "1px solid rgba(255,255,255,0.16)",
-              borderBottom: "1px solid rgba(255,255,255,0.12)",
-              padding: "0.52rem 5%",
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "1rem",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <strong style={{ color: "#ffe5e5", fontSize: "1.2rem" }}>Emergency contacts:</strong>
-            {siteConfig.emergencyContacts.map((contact) => (
-              <a
-                key={contact.phone}
-                href={`tel:${contact.phone}`}
-                style={{ color: "#ffffff", fontWeight: 700, fontSize: "1.2rem" }}
-              >
-                {contact.name}: {contact.phone}
-              </a>
-            ))}
-          </div>
-        ) : null}
-
         {/* ══ Impact Mega Dropdown ══════════════════════════ */}
         <div
           className={`nav-mega-panel${activePanel === "impact" ? " open" : ""}`}
@@ -270,21 +235,16 @@ export function Navbar() {
                       <span className="mega-cat-icon" aria-hidden="true">{cat.icon}</span>
                       <h4 className="mega-cat-title">{cat.title}</h4>
                     </div>
-                      <ul className="mega-cat-list">
+                    <ul className="mega-cat-list">
                       {cat.items.map((item) => {
                         const isBloodItem = /24\/?7|Availability of Blood/i.test(item);
+                        // Link all items to the main category page; the category page contains sections for each item.
+                        const href = isBloodItem ? "/blood-bank" : `/impact/${cat.slug}`;
                         return (
                           <li key={item}>
-                            {isBloodItem ? (
-                              <Link
-                                href="/blood-bank"
-                                style={{ color: "#ffcccc", fontWeight: 800 }}
-                              >
-                                {item}
-                              </Link>
-                            ) : (
-                              <Link href="/impact">{item}</Link>
-                            )}
+                            <Link href={href} style={isBloodItem ? { color: "#ffcccc", fontWeight: 800 } : undefined}>
+                              {item}
+                            </Link>
                           </li>
                         );
                       })}
@@ -338,22 +298,6 @@ export function Navbar() {
             {link.label}
           </Link>
         ))}
-        {pathname !== "/" ? (
-          <div style={{ marginTop: "1.2rem", textAlign: "center" }}>
-            <p style={{ color: "#ffb4b4", fontSize: "1.1rem", letterSpacing: "0.08em", textTransform: "uppercase" }}>
-              Emergency Contacts
-            </p>
-            {siteConfig.emergencyContacts.map((contact) => (
-              <a
-                key={contact.phone}
-                href={`tel:${contact.phone}`}
-                style={{ color: "#ffffff", display: "block", fontSize: "1.25rem", marginTop: "0.45rem" }}
-              >
-                {contact.name}: {contact.phone}
-              </a>
-            ))}
-          </div>
-        ) : null}
       </div>
 
       

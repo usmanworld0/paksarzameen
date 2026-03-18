@@ -1,7 +1,19 @@
+      <div style={{margin: "2.5rem 0 2.5rem 0", display: "flex", justifyContent: "center"}}>
+        <section style={{width: "100%", maxWidth: 540}}>
+          <h2 style={{color: "#d32f2f", fontSize: "2rem", marginBottom: 8}}>14th August Blood Donation Drive</h2>
+          <p style={{color: "#fff", fontSize: "1.15rem", marginBottom: 12}}>
+            Schools, colleges, and universities are the main sources of blood collection for the Blood Bank. Since summer vacations blood banks are having a shortage of blood for emergency patients. Therefore, PakSarZameen conducted a blood donation drive on 14th August 2022 for thalassemia and emergency patients. Our prime objective to conduct such a drive on the day of independence was to promote a message of healthy and philanthropic activity to the youth.
+          </p>
+          <div style={{marginTop:16}}>
+            <InstagramEmbed permalink="https://www.instagram.com/p/ChW3ooxICQU/" />
+          </div>
+        </section>
+      </div>
 import type { Metadata } from "next";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { BloodBankRequestForm } from "@/features/blood-bank/components/BloodBankRequestForm";
+import InstagramEmbed from "@/components/InstagramEmbed";
 
 export const metadata: Metadata = {
   title: "Blood Bank Emergency Requests",
@@ -15,84 +27,182 @@ export const metadata: Metadata = {
 export default function BloodBankPage() {
   return (
     <section style={sectionStyle}>
-      <div style={heroStyle}>
-        <p style={eyebrowStyle}>24/7 Response Desk</p>
-        <h1 style={titleStyle}>PakSarZameen Blood Bank</h1>
-        <p style={subtitleStyle}>
-          Emergency contacts: Umar Hafeez: 03098237670, Ahmed Amir: 03233609157
-        </p>
-        <p style={subcopyStyle}>
-          For immediate support call directly, and also submit the form below so your request is tracked in backend with status updates.
-        </p>
-        <div style={linksRowStyle}>
-          <a href="tel:03098237670" style={phonePillStyle}>Call Umar Hafeez</a>
-          <a href="tel:03233609157" style={phonePillStyle}>Call Ahmed Amir</a>
-          <Link href="/contact" style={phonePillStyle}>Contact Page</Link>
+      <div style={pageShellStyle} className="blood-bank-shell">
+        <div style={heroStyle} className="blood-bank-hero">
+          <p style={eyebrowStyle}>Emergency Response Desk - 24/7</p>
+          <h1 style={titleStyle}>Need Blood Immediately? Call Now.</h1>
+          <p style={subtitleStyle}>
+            Do not wait for form processing. Our phone lines are the fastest way to dispatch support.
+          </p>
+
+          <div style={numbersGridStyle}>
+            <a href="tel:03098237670" style={numberCardStyle}>
+              <span style={numberLabelStyle}>Emergency Coordinator</span>
+              <span style={numberNameStyle}>Umar Hafeez</span>
+              <span style={numberValueStyle}>0309 8237670</span>
+              <span style={numberActionStyle}>Tap to call now</span>
+            </a>
+
+            <a href="tel:03233609157" style={numberCardStyle}>
+              <span style={numberLabelStyle}>Emergency Coordinator</span>
+              <span style={numberNameStyle}>Ahmed Amir</span>
+              <span style={numberValueStyle}>0323 3609157</span>
+              <span style={numberActionStyle}>Tap to call now</span>
+            </a>
+          </div>
+
+          <div style={alertRowStyle}>
+            <p style={alertTextStyle}>Critical sequence: Call first. Form second for tracking.</p>
+            <Link href="/contact" style={contactLinkStyle}>Open contact page</Link>
+          </div>
+        </div>
+
+        {/* Instagram embed moved to Community Health Impact page */}
+
+        <div style={formWrapStyle} className="blood-bank-form">
+          <p style={formIntroStyle}>
+            After calling, submit this form so our team can track hospital, blood group, and status updates.
+          </p>
+          <BloodBankRequestForm />
         </div>
       </div>
-
-      <BloodBankRequestForm />
     </section>
   );
 }
 
 const sectionStyle: CSSProperties = {
   minHeight: "100vh",
-  paddingTop: "12rem",
+  paddingTop: "11rem",
   paddingBottom: "5rem",
   background:
-    "radial-gradient(circle at 15% 10%, rgba(207,44,44,0.25), transparent 45%), radial-gradient(circle at 80% 20%, rgba(15,122,71,0.2), transparent 48%), #080f0b",
+    "radial-gradient(circle at 18% 6%, rgba(225, 45, 45, 0.42), transparent 42%), radial-gradient(circle at 78% 8%, rgba(178, 20, 20, 0.35), transparent 38%), linear-gradient(180deg, #120707 0%, #070c09 55%, #060b08 100%)",
   color: "#ffffff",
 };
 
+const pageShellStyle: CSSProperties = {
+  width: "min(1100px, 94vw)",
+  margin: "0 auto",
+};
+
 const heroStyle: CSSProperties = {
-  width: "min(980px, 92vw)",
-  margin: "0 auto 2.2rem",
+  marginBottom: "2.2rem",
+  padding: "2.2rem clamp(1.3rem, 2.4vw, 2.8rem)",
+  border: "1px solid rgba(255, 80, 80, 0.28)",
+  borderRadius: "2rem",
+  background:
+    "linear-gradient(150deg, rgba(140, 18, 18, 0.42) 0%, rgba(22, 7, 7, 0.84) 52%, rgba(8, 14, 10, 0.88) 100%)",
+  boxShadow: "0 30px 90px rgba(0, 0, 0, 0.52)",
 };
 
 const eyebrowStyle: CSSProperties = {
   margin: 0,
-  fontSize: "1.1rem",
-  letterSpacing: "0.16em",
+  fontSize: "1.2rem",
+  letterSpacing: "0.18em",
   textTransform: "uppercase",
-  color: "#ffffff",
+  color: "#ffd5d5",
+  fontWeight: 700,
 };
 
 const titleStyle: CSSProperties = {
-  marginTop: "0.8rem",
-  marginBottom: "0.75rem",
-  fontSize: "clamp(2.8rem, 6vw, 4.4rem)",
+  marginTop: "0.85rem",
+  marginBottom: "0.95rem",
+  fontSize: "clamp(3.2rem, 7.2vw, 5.5rem)",
   lineHeight: 1.05,
   color: "#ffffff",
+  maxWidth: "18ch",
 };
 
 const subtitleStyle: CSSProperties = {
   marginTop: 0,
-  marginBottom: "0.75rem",
-  color: "#ffffff",
+  marginBottom: "1.6rem",
+  color: "rgba(255, 245, 245, 0.94)",
+  fontWeight: 600,
+  fontSize: "clamp(1.45rem, 2.2vw, 1.95rem)",
+  maxWidth: "64ch",
+};
+
+const numbersGridStyle: CSSProperties = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+  gap: "1rem",
+};
+
+const numberCardStyle: CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  gap: "0.45rem",
+  borderRadius: "1.4rem",
+  border: "1px solid rgba(255, 120, 120, 0.32)",
+  background: "linear-gradient(160deg, rgba(255, 76, 76, 0.16), rgba(10, 14, 11, 0.78))",
+  padding: "1.1rem 1.15rem 1.2rem",
+  color: "#fff",
+  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.16)",
+};
+
+const numberLabelStyle: CSSProperties = {
+  fontSize: "1.1rem",
+  textTransform: "uppercase",
+  letterSpacing: "0.13em",
+  color: "#ffdede",
+};
+
+const numberNameStyle: CSSProperties = {
+  fontSize: "1.7rem",
   fontWeight: 700,
-  fontSize: "1.6rem",
 };
 
-const subcopyStyle: CSSProperties = {
-  marginTop: 0,
-  marginBottom: "1.3rem",
+const numberValueStyle: CSSProperties = {
+  fontSize: "clamp(2.2rem, 5vw, 3.4rem)",
+  lineHeight: 1,
+  fontWeight: 800,
+  letterSpacing: "0.03em",
   color: "#ffffff",
-  fontSize: "1.4rem",
 };
 
-const linksRowStyle: CSSProperties = {
+const numberActionStyle: CSSProperties = {
+  marginTop: "0.35rem",
+  fontSize: "1.3rem",
+  color: "#ffe7e7",
+};
+
+const alertRowStyle: CSSProperties = {
+  marginTop: "1.25rem",
   display: "flex",
   flexWrap: "wrap",
-  gap: "0.75rem",
+  alignItems: "center",
+  gap: "0.8rem",
 };
 
-const phonePillStyle: CSSProperties = {
+const alertTextStyle: CSSProperties = {
+  margin: 0,
   borderRadius: "999px",
-  border: "1px solid rgba(255,255,255,0.3)",
-  background: "rgba(255,255,255,0.08)",
-  padding: "0.62rem 1rem",
+  padding: "0.64rem 1rem",
+  fontWeight: 700,
+  fontSize: "1.2rem",
+  color: "#fff0f0",
+  border: "1px solid rgba(255, 148, 148, 0.35)",
+  background: "rgba(158, 24, 24, 0.35)",
+};
+
+const contactLinkStyle: CSSProperties = {
+  borderRadius: "999px",
+  border: "1px solid rgba(255,255,255,0.26)",
+  background: "rgba(255,255,255,0.1)",
+  padding: "0.62rem 0.98rem",
   fontSize: "1.2rem",
   fontWeight: 600,
   color: "#fff",
+};
+
+const formWrapStyle: CSSProperties = {
+  display: "grid",
+  gap: "0.9rem",
+};
+
+const formIntroStyle: CSSProperties = {
+  width: "min(920px, 100%)",
+  margin: "0 auto",
+  color: "rgba(255,255,255,0.86)",
+  fontSize: "1.35rem",
+  lineHeight: 1.5,
 };

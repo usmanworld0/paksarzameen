@@ -72,9 +72,9 @@ export function BloodBankRequestForm() {
 
   return (
     <form onSubmit={handleSubmit} style={formStyle}>
-      <h2 style={titleStyle}>Blood Bank Emergency Request</h2>
+      <h2 style={titleStyle}>Emergency Case Tracking Form</h2>
       <p style={descriptionStyle}>
-        Submit urgent blood requirements here. Status starts as pending and is tracked by the admin team.
+        This form is for tracking after your emergency call. Submit details so the admin team can update status in real time.
       </p>
 
       <div style={gridStyle}>
@@ -176,7 +176,7 @@ export function BloodBankRequestForm() {
       </div>
 
       <button type="submit" disabled={isSubmitting} style={buttonStyle}>
-        {isSubmitting ? "Submitting..." : "Submit Blood Request"}
+        {isSubmitting ? "Submitting..." : "Submit Case Details"}
       </button>
 
       {message ? <p style={successStyle}>{message}</p> : null}

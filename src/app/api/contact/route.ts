@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { siteConfig } from "@/config/site";
 
 export async function POST(request: Request) {
   try {

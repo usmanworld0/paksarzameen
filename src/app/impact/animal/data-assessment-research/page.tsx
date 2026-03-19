@@ -1,15 +1,7 @@
-import type { Metadata } from "next";
+import { makeImpactStoryRoute } from "../../_helpers";
 
-export const metadata: Metadata = {
-  title: "Data Assessment & Research | Animal Welfare Impact | PakSarZameen",
-  description: "Details about Data Assessment & Research in animal welfare by PakSarZameen.",
-};
+const route = makeImpactStoryRoute("animalDataResearch");
 
-export default function AnimalDataAssessmentResearchPage() {
-  return (
-    <main>
-      <h1>Data Assessment & Research</h1>
-      <p>Details about Data Assessment & Research in animal welfare will go here.</p>
-    </main>
-  );
-}
+export const metadata = route.metadata;
+
+export default route.Page;

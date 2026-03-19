@@ -1,15 +1,7 @@
-import type { Metadata } from "next";
+import { makeImpactStoryRoute } from "../../_helpers";
 
-export const metadata: Metadata = {
-  title: "Career Counselling & University Applications | Educational Empowerment Impact | PakSarZameen",
-  description: "Details about Career Counselling & University Applications by PakSarZameen.",
-};
+const route = makeImpactStoryRoute("educationCareerCounselling");
 
-export default function CareerCounsellingUniversityApplicationsPage() {
-  return (
-    <main>
-      <h1>Career Counselling & University Applications</h1>
-      <p>Details about Career Counselling & University Applications will go here.</p>
-    </main>
-  );
-}
+export const metadata = route.metadata;
+
+export default route.Page;

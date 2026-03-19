@@ -1,15 +1,7 @@
-import type { Metadata } from "next";
+import { makeImpactStoryRoute } from "../../_helpers";
 
-export const metadata: Metadata = {
-  title: "South Punjab Green Book Initiative | Impact | PakSarZameen",
-  description: "Details about the South Punjab Green Book Initiative by PakSarZameen.",
-};
+const route = makeImpactStoryRoute("environmentalSouthPunjabGreenBook");
 
-export default function SouthPunjabGreenBookPage() {
-  return (
-    <main>
-      <h1>South Punjab Green Book Initiative</h1>
-      <p>Details about the South Punjab Green Book Initiative will go here.</p>
-    </main>
-  );
-}
+export const metadata = route.metadata;
+
+export default route.Page;

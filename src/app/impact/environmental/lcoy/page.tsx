@@ -1,15 +1,7 @@
-import type { Metadata } from "next";
+import { makeImpactStoryRoute } from "../../_helpers";
 
-export const metadata: Metadata = {
-  title: "LCOY | Impact | PakSarZameen",
-  description: "Details about the LCOY (Local Conference of Youth) initiative by PakSarZameen.",
-};
+const route = makeImpactStoryRoute("environmentalLcoy");
 
-export default function LcoyPage() {
-  return (
-    <main>
-      <h1>LCOY (Local Conference of Youth)</h1>
-      <p>Details about the LCOY initiative will go here.</p>
-    </main>
-  );
-}
+export const metadata = route.metadata;
+
+export default route.Page;

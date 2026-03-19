@@ -1,15 +1,7 @@
-import type { Metadata } from "next";
+import { makeImpactStoryRoute } from "../../_helpers";
 
-export const metadata: Metadata = {
-  title: "COP in My City | Impact | PakSarZameen",
-  description: "Details about the COP in My City initiative by PakSarZameen.",
-};
+const route = makeImpactStoryRoute("environmentalCopInMyCity");
 
-export default function CopInMyCityPage() {
-  return (
-    <main>
-      <h1>COP in My City</h1>
-      <p>Details about the COP in My City initiative will go here.</p>
-    </main>
-  );
-}
+export const metadata = route.metadata;
+
+export default route.Page;

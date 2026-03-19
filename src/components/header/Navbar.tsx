@@ -5,69 +5,14 @@ import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { navLinks, siteConfig } from "@/config/site";
+import { impactCategories, impactHopeStories } from "@/content/impact";
 
 
 
 /* ── Impact mega-dropdown data ─────────────────────────── */
-const IMPACT_CATS = [
-  {
-    slug: "environmental",
-    icon: "",
-    title: "Environmental Impact",
-    items: [
-      "GWR",
-      "Miawuaki Forest",
-      "South Punjab Green Book Initiative",
-      "LCOY",
-      "COP in My City",
-      "Data Assessment & Research",
-    ],
-  },
-  {
-    slug: "animal",
-    icon: "",
-    title: "Animal Welfare Impact",
-    items: [
-      "Cat Feeding Points",
-      "Stray Dog Collar Project",
-      "Data Assessment & Research",
-    ],
-  },
-  {
-    slug: "education",
-    icon: "",
-    title: "Educational Empowerment Impact",
-    items: [
-      "Pakistan's Only Transgender School",
-      "Pakistan's First Blind Parliamentary Debating Team",
-      "Career Counselling & University Applications",
-      "Enrollment Rate & Data Assessment",
-    ],
-  },
-  {
-    slug: "health",
-    icon: "",
-    title: "Community Health Impact",
-    items: [
-      "24/7 Availability of Blood",
-      "Monthly Free Medical/Blood Camps",
-      "Data Assessment & Research",
-    ],
-  },
-];
+const IMPACT_CATS = impactCategories;
 
-const STORIES_OF_HOPE = [
-  {
-    name: "Zain Hashim",
-    role: "Pakistan's First Blind Anchor",
-    image: "/images/members/Abdullah_Tanseer.png",
-  },
-  {
-    name: "Sahiba Jehan",
-    role: "Pakistan's First Transgender Police Officer",
-    image: "/images/members/Laibah_Shafique.png",
-  },
-];
+const STORIES_OF_HOPE = impactHopeStories;
 /* ────────────────────────────────────────────────────── */
 
 type Panel = "impact" | null;
@@ -232,18 +177,15 @@ export function Navbar() {
                 {IMPACT_CATS.map((cat) => (
                   <div key={cat.slug} className="mega-cat">
                     <div className="mega-cat-header">
-                      <span className="mega-cat-icon" aria-hidden="true">{cat.icon}</span>
+                      <span className="mega-cat-icon" aria-hidden="true"></span>
                       <h4 className="mega-cat-title">{cat.title}</h4>
                     </div>
                     <ul className="mega-cat-list">
                       {cat.items.map((item) => {
-                        const isBloodItem = /24\/?7|Availability of Blood/i.test(item);
-                        // Link all items to the main category page; the category page contains sections for each item.
-                        const href = isBloodItem ? "/blood-bank" : `/impact/${cat.slug}`;
                         return (
-                          <li key={item}>
-                            <Link href={href} style={isBloodItem ? { color: "#ffcccc", fontWeight: 800 } : undefined}>
-                              {item}
+                          <li key={item.href}>
+                            <Link href={item.href}>
+                              {item.title}
                             </Link>
                           </li>
                         );
@@ -261,7 +203,7 @@ export function Navbar() {
                 </div>
                 <div className="mega-story-cards">
                   {STORIES_OF_HOPE.map((s) => (
-                    <Link href="/impact" key={s.name} className="mega-story-card">
+                    <Link href={s.href} key={s.name} className="mega-story-card">
                       <div className="mega-story-img-wrap">
                         <Image
                           src={s.image}

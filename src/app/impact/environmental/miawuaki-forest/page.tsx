@@ -1,15 +1,7 @@
-import type { Metadata } from "next";
+import { makeImpactStoryRoute } from "../../_helpers";
 
-export const metadata: Metadata = {
-  title: "Miawuaki Forest | Impact | PakSarZameen",
-  description: "Details about the Miawuaki Forest initiative by PakSarZameen.",
-};
+const route = makeImpactStoryRoute("environmentalMiawuakiForest");
 
-export default function MiawuakiForestPage() {
-  return (
-    <main>
-      <h1>Miawuaki Forest</h1>
-      <p>Details about the Miawuaki Forest initiative will go here.</p>
-    </main>
-  );
-}
+export const metadata = route.metadata;
+
+export default route.Page;

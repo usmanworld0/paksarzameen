@@ -3,6 +3,10 @@
 import { useEffect, useRef } from "react";
 import styles from "./impact-gwr.module.css";
 
+type InstagramWindow = Window & {
+  instgrm?: unknown;
+};
+
 export default function ImpactGwrSection() {
   const rootRef = useRef<HTMLElement | null>(null);
 
@@ -27,7 +31,8 @@ export default function ImpactGwrSection() {
   useEffect(() => {
     // Load Instagram embed script if not present
     if (typeof window === "undefined") return;
-    if ((window as any).instgrm) return;
+    const instagramWindow = window as InstagramWindow;
+    if (instagramWindow.instgrm) return;
     const s = document.createElement("script");
     s.async = true;
     s.src = "//www.instagram.com/embed.js";
@@ -64,7 +69,7 @@ export default function ImpactGwrSection() {
 
             <a
               className={styles.cta}
-              href="/impact/gwr"
+              href="/impact/environmental/gwr"
             >
               Read More
             </a>

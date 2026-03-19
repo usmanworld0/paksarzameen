@@ -87,7 +87,7 @@ export default function EnvironmentalImpactPage() {
         <section className={styles.sectionBox} aria-labelledby="cop-title">
           <h3 id="cop-title">COP in My City</h3>
           <p>
-            "COP in My City" Pakistan is a major youth-led climate action initiative, often organized in collaboration with UNICEF Pakistan, the Ministry of Climate Change, and various universities, aimed at empowering youth aged 12-24 to participate in climate advocacy.
+            &quot;COP in My City&quot; Pakistan is a major youth-led climate action initiative, often organized in collaboration with UNICEF Pakistan, the Ministry of Climate Change, and various universities, aimed at empowering youth aged 12-24 to participate in climate advocacy.
           </p>
           <ul style={{margin:'8px 0 12px 18px',color:'#233b31',fontSize:'1rem'}}>
             <li><b>Collaboration:</b> UNICEF Pakistan, Ministry of Climate Change, universities.</li>

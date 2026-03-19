@@ -8,8 +8,8 @@ export const metadata: Metadata = {
 export default function BlindParliamentaryDebatingTeamPage() {
   return (
     <main>
-      <h1>Pakistan's First Blind Parliamentary Debating Team</h1>
-      <p>Details about Pakistan's First Blind Parliamentary Debating Team will go here.</p>
+      <h1>Pakistan&apos;s First Blind Parliamentary Debating Team</h1>
+      <p>Details about Pakistan&apos;s First Blind Parliamentary Debating Team will go here.</p>
     </main>
   );
 }

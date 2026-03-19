@@ -42,7 +42,7 @@ export default function AnimalImpactPage() {
         <section className={styles.sectionBox}>
           <h3>Stray Dog Collar Project</h3>
           <p>
-            The Stray Dog Collar Project in Pakistan, specifically highlighted in the "Rabies Free Pakistan" initiative, uses green collars to identify vaccinated stray dogs, promoting a humane approach to managing stray dog populations and preventing rabies transmission.
+            The Stray Dog Collar Project in Pakistan, specifically highlighted in the &quot;Rabies Free Pakistan&quot; initiative, uses green collars to identify vaccinated stray dogs, promoting a humane approach to managing stray dog populations and preventing rabies transmission.
           </p>
           <p style={{marginTop:12}}>
             PakSarZameen is thrilled to introduce a heartfelt new initiative dedicated to the protection of stray dogs. 🐕 Through this project, GPS collars will be placed on stray dogs, enabling real-time tracking via our official app. Our team will be actively monitoring their movements to ensure their safety and well-being. Join us in this compassionate mission, as we extend our care beyond humans to these vulnerable animals. Together, we can create a kinder, safer world for all living beings. 🌍💙

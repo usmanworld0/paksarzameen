@@ -122,7 +122,7 @@ export default function ContactPage() {
 
         <article className="rounded-2xl border border-neutral-200 bg-white p-7 shadow-sm">
           <h2 className="font-heading text-2xl font-semibold text-neutral-900">Send a Message</h2>
-          <p className="mt-3 text-sm text-neutral-600">Use the form to send us a message and we'll get back to you.</p>
+          <p className="mt-3 text-sm text-neutral-600">Use the form to send us a message and we&apos;ll get back to you.</p>
           <div className="mt-4">
             <ContactForm />
           </div>

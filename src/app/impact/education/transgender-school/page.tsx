@@ -8,8 +8,8 @@ export const metadata: Metadata = {
 export default function TransgenderSchoolPage() {
   return (
     <main>
-      <h1>Pakistan's Only Transgender School</h1>
-      <p>Details about Pakistan's Only Transgender School will go here.</p>
+      <h1>Pakistan&apos;s Only Transgender School</h1>
+      <p>Details about Pakistan&apos;s Only Transgender School will go here.</p>
     </main>
   );
 }

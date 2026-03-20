@@ -67,6 +67,9 @@ export type ImpactStoryPageData = {
     description: string;
     permalink: string;
   }>;
+  hopeStoriesHeading?: string;
+  hopeStoriesIntro?: string;
+  hopeStories?: ImpactHopeStory[];
   relatedHeading?: string;
   relatedIntro?: string;
   relatedStories?: ImpactStoryLink[];
@@ -76,6 +79,23 @@ export type ImpactStoryPageData = {
   };
   accent: string;
   accentSoft: string;
+};
+
+export type ImpactHopeStory = {
+  name: string;
+  role: string;
+  summary: string;
+  href: string;
+  storyHref?: string;
+  storyLabel?: string;
+  image?: {
+    src: string;
+    alt: string;
+  };
+  gallery?: Array<{
+    src: string;
+    alt: string;
+  }>;
 };
 
 export type ImpactCategory = {
@@ -222,18 +242,38 @@ export const impactCategories: ImpactCategory[] = [
   },
 ];
 
-export const impactHopeStories = [
+export const impactHopeStories: ImpactHopeStory[] = [
   {
     name: "Zain Hashim",
     role: "Pakistan's First Blind Anchor",
-    image: "/images/members/Abdullah_Tanseer.png",
+    summary:
+      "Zain's story reflects what accessible debate, public speaking, and media visibility can unlock for blind youth in Pakistan.",
     href: "/impact/education/blind-parliamentary-debating-team",
+    storyHref: "https://share.google/xCCnaEMiKVGavQtQ0",
+    storyLabel: "Open Zain's story",
   },
   {
-    name: "Sahiba Jehan",
+    name: "Sahiba Jahan",
     role: "Pakistan's First Transgender Police Officer",
-    image: "/images/members/Laibah_Shafique.png",
+    summary:
+      "Sahiba Jahan's journey shows how inclusive education and visible support can help transgender students move toward leadership and public service.",
     href: "/impact/education/transgender-school",
+    storyHref: "https://youtu.be/SjjYS3O3IKI?si=GgcEPEEDfI4oeEFD",
+    storyLabel: "Watch Sahiba's story",
+    image: {
+      src: "/images/impact/Stories%20of%20Hope/Sahiba%20Jahan.PNG",
+      alt: "Portrait of Sahiba Jahan",
+    },
+    gallery: [
+      {
+        src: "/images/impact/Stories%20of%20Hope/Sahiba%20Jahan.PNG",
+        alt: "Portrait of Sahiba Jahan",
+      },
+      {
+        src: "/images/impact/Stories%20of%20Hope/Sahiba%20Jahan%20Group%20photo.PNG",
+        alt: "Sahiba Jahan with a group in a Stories of Hope field photo",
+      },
+    ],
   },
 ];
 

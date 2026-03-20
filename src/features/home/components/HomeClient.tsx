@@ -27,44 +27,13 @@ const VIDEOS = {
   banner: "/videos/banner.webm",
   mission: "/videos/programs.webm",
   // Reduced from UHD → 720p variants for faster loading
-  education:
-    "https://www.pexels.com/download/video/3209298/",
-  empowerment:
-    "https://videos.pexels.com/video-files/3191572/3191572-hd_1280_720_25fps.mp4",
-  enterprise:
-    "https://www.pexels.com/download/video/16118544/",
-  impact:
-    "https://videos.pexels.com/video-files/4492224/4492224-hd_1280_720_25fps.mp4",
-  volunteers:
-    "https://www.pexels.com/download/video/6646701/",
-  programs: "/videos/programs.webm",
 } as const;
 
 
 
 /* ─── Canvas frame animation images (optimized WebP versions) ─── */
-const CANVAS_FRAME_SEEDS = [
-  "/images/hero-fallback.svg",
-  "/images/optimized/placeholders/10-md.webp",
-  "/images/optimized/whatsapp-image-2026-03-06-at-5-01-33-am-md.webp",
-  "/images/optimized/whatsapp-image-2026-03-06-at-5-07-22-am-md.webp",
-  "/images/optimized/whatsapp-image-2026-03-06-at-5-08-52-am-sm.webp",
-  "/images/optimized/whatsapp-image-2026-03-06-at-5-00-43-am-md.webp",
-  "/images/hero-fallback.svg",
-  "https://images.pexels.com/photos/4614166/pexels-photo-4614166.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
-  "/images/optimized/placeholders/10-md.webp",
-  "/images/hero-fallback.svg",
-  "/images/optimized/full-team-md.webp",
-  "https://images.pexels.com/photos/4614166/pexels-photo-4614166.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
-] as const;
-
-function getCanvasFrameUrl(index: number): string {
-  return CANVAS_FRAME_SEEDS[index % CANVAS_FRAME_SEEDS.length];
-}
-
 export function HomeClient() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const introRef = useRef<HTMLDivElement>(null);
   const heroVideoRef = useRef<HTMLVideoElement | null>(null);
 
@@ -312,8 +281,6 @@ export function HomeClient() {
       createProgramsTimeline();
 
       /* ─── Canvas frame animation ─── */
-      setupCanvasAnimation();
-
       /* Force ScrollTrigger to recalculate positions after pinned sections are set up */
       requestAnimationFrame(() => {
         ScrollTrigger.refresh();
@@ -637,63 +604,6 @@ export function HomeClient() {
     tl.to({}, { duration: 0.5 }, total - 0.5);
   }
 
-  function setupCanvasAnimation() {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const context = canvas.getContext("2d");
-    if (!context) return;
-
-    canvas.width = 1200;
-    canvas.height = 800;
-
-    const frameCount = 12;
-    const images: HTMLImageElement[] = [];
-    const imageSeq = { frame: 0 };
-    let loadedCount = 0;
-
-    for (let i = 0; i < frameCount; i++) {
-      const img = new globalThis.Image();
-      img.crossOrigin = "anonymous";
-      img.src = getCanvasFrameUrl(i);
-      img.onload = () => {
-        loadedCount++;
-        if (loadedCount === 1) renderFrame(img, context);
-      };
-      images.push(img);
-    }
-
-    gsap.to(imageSeq, {
-      frame: frameCount - 1,
-      snap: "frame",
-      ease: "none",
-      scrollTrigger: {
-        trigger: ".canvas-section",
-        start: "top top",
-        end: "200% top",
-        scrub: 0.15,
-        pin: true,
-      },
-      onUpdate: () => {
-        const img = images[Math.round(imageSeq.frame)];
-        if (img && img.complete) renderFrame(img, context);
-      },
-    });
-  }
-
-  function renderFrame(img: HTMLImageElement, ctx: CanvasRenderingContext2D) {
-    const canvas = ctx.canvas;
-    const hRatio = canvas.width / img.width;
-    const vRatio = canvas.height / img.height;
-    const ratio = Math.min(hRatio, vRatio);
-    const shiftX = (canvas.width - img.width * ratio) / 2;
-    const shiftY = (canvas.height - img.height * ratio) / 2;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(
-      img, 0, 0, img.width, img.height,
-      shiftX, shiftY, img.width * ratio, img.height * ratio
-    );
-  }
-
   function createPinnedVideoTimeline(selector: string) {
     const tl = gsap.timeline({
       scrollTrigger: {
@@ -742,12 +652,15 @@ export function HomeClient() {
     let timeoutHandle: ReturnType<typeof setTimeout> | null = null;
 
     const isMobileLite =
-      window.matchMedia("(max-width: 768px)").matches ||
+      window.matchMedia("(max-width: 1024px)").matches ||
+      window.matchMedia("(pointer: coarse)").matches ||
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     if (isMobileLite) {
+      document.documentElement.classList.add("motion-lite");
       revealHeroImmediately();
       return () => {
+        document.documentElement.classList.remove("motion-lite");
         if (idleHandle !== null && "cancelIdleCallback" in window) {
           window.cancelIdleCallback(idleHandle);
         }
@@ -762,12 +675,12 @@ export function HomeClient() {
         const LenisModule = await import("lenis");
         const Lenis = LenisModule.default;
         lenis = new Lenis({
-          duration: 1.2,
+          duration: 1.05,
           easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
           smoothWheel: true,
-          lerp: 0.08,
-          wheelMultiplier: 0.9,
-          touchMultiplier: 1.5,
+          lerp: 0.075,
+          wheelMultiplier: 0.85,
+          touchMultiplier: 1.2,
         });
         lenis.on("scroll", ScrollTrigger.update);
         gsap.ticker.add((time: number) => lenis.raf(time * 1000));
@@ -794,6 +707,7 @@ export function HomeClient() {
     }
 
     return () => {
+      document.documentElement.classList.remove("motion-lite");
       if (idleHandle !== null && "cancelIdleCallback" in window) {
         window.cancelIdleCallback(idleHandle);
       }
@@ -838,7 +752,23 @@ export function HomeClient() {
               </span>
             ))}
             </h1>
-            <p className="intro-tagline">Community development rooted in character, care, and education.</p>
+            <p className="intro-tagline">
+              Community development rooted in character, care, and education.
+              <span
+                lang="ur"
+                dir="rtl"
+                style={{
+                  display: "block",
+                  marginTop: "0.55rem",
+                  fontSize: "1.05em",
+                  letterSpacing: 0,
+                  textTransform: "none",
+                  fontStyle: "normal",
+                }}
+              >
+                تربیت سے تعلیم
+              </span>
+            </p>
           </div>
         </div>
       </div>
@@ -868,7 +798,23 @@ export function HomeClient() {
             blood support, environmental action, animal welfare, and
             volunteer-led community programs.
             <br />
-            <em style={{ display: "block", marginTop: "0.6rem", fontSize: "0.95em" }}>Building dignity through practical community care.</em>
+            <em style={{ display: "block", marginTop: "0.6rem", fontSize: "0.95em" }}>
+              Building dignity through practical community care.
+            </em>
+            <span
+              lang="ur"
+              dir="rtl"
+              style={{
+                display: "block",
+                marginTop: "0.7rem",
+                fontSize: "1.02em",
+                fontWeight: 600,
+                letterSpacing: 0,
+                color: "rgba(255,255,255,0.94)",
+              }}
+            >
+              تربیت سے تعلیم
+            </span>
           </p>
         </div>
       </section>

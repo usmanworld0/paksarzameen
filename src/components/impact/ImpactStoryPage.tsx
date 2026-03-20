@@ -3,7 +3,11 @@ import Link from "next/link";
 import type { CSSProperties } from "react";
 
 import InstagramEmbed from "@/components/InstagramEmbed";
-import type { ImpactStoryLink, ImpactStoryPageData } from "@/content/impact";
+import type {
+  ImpactHopeStory,
+  ImpactStoryLink,
+  ImpactStoryPageData,
+} from "@/content/impact";
 
 import styles from "./ImpactStoryPage.module.css";
 
@@ -129,6 +133,66 @@ function CardLink({
     <Link href={card.href} className={className}>
       {content}
     </Link>
+  );
+}
+
+function HopeStoryCard({ story }: { story: ImpactHopeStory }) {
+  return (
+    <article className={styles.hopeCard}>
+      <div className={styles.hopeMedia}>
+        {story.image ? (
+          <Image
+            src={story.image.src}
+            alt={story.image.alt}
+            fill
+            sizes="(max-width: 720px) 100vw, (max-width: 1120px) 50vw, 33vw"
+          />
+        ) : (
+          <div className={styles.hopeFallback} aria-hidden="true">
+            <span>
+              {story.name
+                .split(" ")
+                .map((part) => part[0])
+                .join("")
+                .slice(0, 2)}
+            </span>
+          </div>
+        )}
+      </div>
+
+      {story.gallery && story.gallery.length > 1 ? (
+        <div className={styles.hopeGalleryStrip}>
+          {story.gallery.map((image) => (
+            <div key={image.src} className={styles.hopeGalleryThumb}>
+              <Image
+                src={image.src}
+                alt={image.alt}
+                fill
+                sizes="(max-width: 720px) 33vw, 120px"
+              />
+            </div>
+          ))}
+        </div>
+      ) : null}
+
+      <div className={styles.hopeBody}>
+        <p className={styles.sectionEyebrow}>Story of hope</p>
+        <h3>{story.name}</h3>
+        <p className={styles.hopeRole}>{story.role}</p>
+        <p>{story.summary}</p>
+
+        <div className={styles.hopeActions}>
+          <ActionLink href={story.href} label="View impact page" variant="secondary" />
+          {story.storyHref ? (
+            <ActionLink
+              href={story.storyHref}
+              label={story.storyLabel ?? "Open story"}
+              variant="primary"
+            />
+          ) : null}
+        </div>
+      </div>
+    </article>
   );
 }
 
@@ -276,6 +340,24 @@ export function ImpactStoryPage({ story }: { story: ImpactStoryPageData }) {
             ) : null}
           </div>
         </section>
+
+        {story.hopeStories && story.hopeStories.length > 0 ? (
+          <section className={styles.sectionPanel}>
+            <div className={styles.sectionHeader}>
+              <p className={styles.sectionEyebrow}>Stories of hope</p>
+              <h2>{story.hopeStoriesHeading ?? "People behind the impact"}</h2>
+              {story.hopeStoriesIntro ? (
+                <p className={styles.sectionIntro}>{story.hopeStoriesIntro}</p>
+              ) : null}
+            </div>
+
+            <div className={styles.hopeGrid}>
+              {story.hopeStories.map((hopeStory) => (
+                <HopeStoryCard key={hopeStory.name} story={hopeStory} />
+              ))}
+            </div>
+          </section>
+        ) : null}
 
         {story.resources && story.resources.length > 0 ? (
           <section className={styles.sectionPanel}>

@@ -53,6 +53,14 @@ export function LazyVideo({
     const video = videoRef.current;
     if (!video) return;
 
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    if (prefersReducedMotion) {
+      return;
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         const nowVisible = entry.isIntersecting;

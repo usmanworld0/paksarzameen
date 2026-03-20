@@ -44,6 +44,28 @@ export function Navbar() {
     };
   }, []);
 
+  useEffect(() => {
+    setMenuOpen(false);
+    setActivePanel(null);
+  }, [pathname]);
+
+  useEffect(() => {
+    document.body.classList.toggle("menu-open", menuOpen);
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+        setActivePanel(null);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.classList.remove("menu-open");
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [menuOpen]);
+
   // Hide navbar on product detail pages
   if (pathname.startsWith("/commonwealth-lab/products/")) {
     return null;
@@ -104,19 +126,7 @@ export function Navbar() {
                 <Link 
                   key={link.label} 
                   href={link.href}
-                  className={`nav-link${isActive ? " nav-link-active" : ""}`}
-                  style={
-                    isBloodBank
-                      ? {
-                          color: "#ffd9d9",
-                          border: "1px solid rgba(255, 115, 115, 0.55)",
-                          borderRadius: "999px",
-                          padding: "0.35rem 0.95rem",
-                          background: "rgba(139, 0, 0, 0.33)",
-                          fontWeight: 700,
-                        }
-                      : undefined
-                  }
+                  className={`nav-link${isActive ? " nav-link-active" : ""}${isBloodBank ? " nav-link-bloodbank" : ""}`}
                 >
                   {link.label}
                 </Link>
@@ -140,6 +150,7 @@ export function Navbar() {
               type="button"
               className={`nav-toggle ${menuOpen ? "open" : ""}`}
               aria-label={menuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={menuOpen}
               onClick={() => setMenuOpen((p) => !p)}
             >
               <div className="bar1" />
@@ -205,13 +216,23 @@ export function Navbar() {
                   {STORIES_OF_HOPE.map((s) => (
                     <Link href={s.href} key={s.name} className="mega-story-card">
                       <div className="mega-story-img-wrap">
-                        <Image
-                          src={s.image}
-                          alt={s.name}
-                          width={56}
-                          height={56}
-                          className="mega-story-img"
-                        />
+                        {s.image ? (
+                          <Image
+                            src={s.image.src}
+                            alt={s.image.alt}
+                            width={56}
+                            height={56}
+                            className="mega-story-img"
+                          />
+                        ) : (
+                          <div className="mega-story-fallback" aria-hidden="true">
+                            {s.name
+                              .split(" ")
+                              .map((part) => part[0])
+                              .join("")
+                              .slice(0, 2)}
+                          </div>
+                        )}
                       </div>
                       <div className="mega-story-info">
                         <strong>{s.name}</strong>
@@ -230,16 +251,49 @@ export function Navbar() {
       </header>
 
       {/* Mobile menu */}
-      <div className={`mobile-menu ${menuOpen ? "open" : ""}`}>
-        {navLinks.map((link) => (
-          <Link
-            key={link.label}
-            href={link.href}
-            onClick={() => setMenuOpen(false)}
-          >
-            {link.label}
-          </Link>
-        ))}
+      <div className={`mobile-menu ${menuOpen ? "open" : ""}`} aria-hidden={!menuOpen}>
+        <div className="mobile-menu__panel">
+          <div className="mobile-menu__intro">
+            <span className="mobile-menu__eyebrow">PakSarZameen</span>
+            <p className="mobile-menu__title">
+              Community-led work across education, health, blood support, the
+              environment, and welfare.
+            </p>
+          </div>
+
+          <div className="mobile-menu__links">
+            {navLinks
+              .filter((link) => link.label !== "Paksarzameen Store")
+              .map((link) => (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  className={link.label === "Blood Bank" ? "mobile-menu__link mobile-menu__link--accent" : "mobile-menu__link"}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {link.label}
+                </Link>
+              ))}
+          </div>
+
+          <div className="mobile-menu__actions">
+            <a
+              href={siteConfig.commonwealthUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mobile-menu__store"
+            >
+              Visit Paksarzameen Store
+            </a>
+            <Link
+              href="/get-involved"
+              className="mobile-menu__cta"
+              onClick={() => setMenuOpen(false)}
+            >
+              Get Involved
+            </Link>
+          </div>
+        </div>
       </div>
 
       

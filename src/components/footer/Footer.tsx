@@ -6,12 +6,14 @@ export function Footer() {
     <footer className="psz-footer">
       <div className="footer-inner">
         <div className="footer-brand">
+          <p className="footer-kicker">Community Development NGO</p>
           <h3 style={{ color: "#ffffff" }}>
             Pak<span className="green">Sar</span>Zameen
           </h3>
           <p>
-            Building community wealth through education, compassion, and
-            grassroots progress across Pakistan.
+            Building community wealth through education, health support,
+            environmental action, animal welfare, and grassroots progress
+            across Pakistan.
           </p>
           <div className="footer-actions">
             <a href={`mailto:${siteConfig.contact.email}`} className="footer-action-link">
@@ -84,7 +86,7 @@ export function Footer() {
           &copy; {new Date().getFullYear()} <span style={{ color: "#ffffff", fontWeight: 600 }}>PakSarZameen</span>. All rights reserved.
         </p>
         <p>
-          Development by <span className="footer-dev">04</span>
+          Bahawalpur, Pakistan
         </p>
       </div>
     </footer>

@@ -351,6 +351,98 @@
   object-fit: cover;
 }
 
+.hopeGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.hopeCard {
+  display: grid;
+  gap: 0;
+  overflow: hidden;
+  border-radius: 24px;
+  border: 1px solid rgba(20, 49, 38, 0.08);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 251, 248, 0.96) 100%);
+  box-shadow: 0 18px 42px rgba(20, 49, 38, 0.08);
+}
+
+.hopeMedia {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: rgba(20, 49, 38, 0.06);
+}
+
+.hopeMedia img {
+  object-fit: cover;
+}
+
+.hopeFallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--accent-soft) 0%, rgba(20, 49, 38, 0.18) 100%);
+}
+
+.hopeFallback span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.86);
+  color: var(--accent);
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.hopeGalleryStrip {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  padding: 0.75rem 0.75rem 0;
+  background: rgba(20, 49, 38, 0.02);
+}
+
+.hopeGalleryThumb {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 14px;
+  background: rgba(20, 49, 38, 0.06);
+}
+
+.hopeGalleryThumb img {
+  object-fit: cover;
+}
+
+.hopeBody {
+  display: grid;
+  gap: 0.55rem;
+  padding: 1rem 1rem 1.1rem;
+}
+
+.hopeRole {
+  margin: -0.1rem 0 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.hopeActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-top: 0.45rem;
+}
+
 .outcomesGrid {
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) minmax(260px, 0.8fr);
@@ -589,6 +681,7 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .hopeGrid,
   .storyGrid {
     grid-template-columns: 1fr;
   }

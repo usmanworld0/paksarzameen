@@ -15,7 +15,12 @@ export {
   getCategoryCards,
 } from "./shared";
 
-export type { ImpactCategory, ImpactStoryLink, ImpactStoryPageData } from "./shared";
+export type {
+  ImpactCategory,
+  ImpactHopeStory,
+  ImpactStoryLink,
+  ImpactStoryPageData,
+} from "./shared";
 
 export const impactStories = {
   ...overviewStories,

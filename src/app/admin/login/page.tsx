@@ -5,7 +5,7 @@ import { getAdminSession } from "@/lib/main-admin-auth";
 
 export const metadata: Metadata = {
   title: "Admin Login",
-  description: "Main website admin login for Blood Bank backend.",
+  description: "Secure admin access for PakSarZameen blood bank operations.",
 };
 
 export default async function AdminLoginPage() {

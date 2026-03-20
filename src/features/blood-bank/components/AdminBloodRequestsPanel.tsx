@@ -117,10 +117,10 @@ export function AdminBloodRequestsPanel() {
       <div style={headerRowStyle}>
         <div>
           <h1 style={{ margin: 0, fontSize: "2.5rem", color: "#111827" }}>
-            Blood Bank Requests Admin
+            Blood Bank Dashboard
           </h1>
           <p style={{ marginTop: "0.5rem", color: "#4b5563", fontSize: "1.35rem" }}>
-            Manage emergency blood requests and update statuses.
+            Review emergency blood requests, track status changes, and keep response details organized.
           </p>
         </div>
 
@@ -170,8 +170,8 @@ export function AdminBloodRequestsPanel() {
               </tr>
             </thead>
             <tbody>
-              {filteredRows.map((row) => (
-                <tr key={row.id}>
+              {filteredRows.map((row, index) => (
+                <tr key={row.id} style={index % 2 === 0 ? rowEvenStyle : rowOddStyle}>
                   <td style={tdStyle}>{row.name}</td>
                   <td style={tdStyle}>{new Date(row.neededAt).toLocaleString()}</td>
                   <td style={tdStyle}>{row.cnic}</td>
@@ -209,10 +209,10 @@ const containerStyle: CSSProperties = {
   width: "min(1240px, 94vw)",
   margin: "10rem auto 4rem",
   padding: "2rem",
-  borderRadius: "1.2rem",
-  background: "#ffffff",
-  boxShadow: "0 20px 55px rgba(17, 24, 39, 0.1)",
-  border: "1px solid #e5e7eb",
+  borderRadius: "1.8rem",
+  background: "linear-gradient(180deg, rgba(255,255,255,0.99) 0%, rgba(247,250,248,0.99) 100%)",
+  boxShadow: "0 24px 60px rgba(17, 24, 39, 0.1)",
+  border: "1px solid rgba(15, 122, 71, 0.12)",
 };
 
 const headerRowStyle: CSSProperties = {
@@ -241,6 +241,7 @@ const thStyle: CSSProperties = {
   padding: "0.9rem 0.65rem",
   fontSize: "1.15rem",
   color: "#111827",
+  background: "rgba(247, 250, 248, 0.98)",
 };
 
 const tdStyle: CSSProperties = {
@@ -251,21 +252,29 @@ const tdStyle: CSSProperties = {
   verticalAlign: "top",
 };
 
+const rowEvenStyle: CSSProperties = {
+  background: "rgba(255, 255, 255, 0.72)",
+};
+
+const rowOddStyle: CSSProperties = {
+  background: "rgba(247, 250, 248, 0.78)",
+};
+
 const secondaryButtonStyle: CSSProperties = {
   border: "1px solid #cbd5e1",
   background: "#f8fafc",
-  padding: "0.55rem 0.9rem",
-  borderRadius: "0.6rem",
+  padding: "0.65rem 0.95rem",
+  borderRadius: "0.8rem",
   cursor: "pointer",
   color: "#111827",
   fontWeight: 600,
 };
 
 const selectStyle: CSSProperties = {
-  borderRadius: "0.55rem",
+  borderRadius: "0.8rem",
   border: "1px solid #d1d5db",
   background: "#fff",
   color: "#111827",
-  padding: "0.5rem 0.65rem",
+  padding: "0.62rem 0.8rem",
   fontSize: "1.1rem",
 };

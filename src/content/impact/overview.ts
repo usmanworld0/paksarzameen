@@ -1,5 +1,5 @@
 import type { ImpactStoryPageData } from "./shared";
-import { sectionCards } from "./shared";
+import { impactHopeStories, sectionCards } from "./shared";
 
 export const overviewStories = {
   impactHome: {
@@ -62,6 +62,10 @@ export const overviewStories = {
       body:
         "These pages are now organized around challenge, response, and outcome so visitors can understand not only what happened, but why the work matters and how they can help sustain it.",
     },
+    hopeStoriesHeading: "Stories of hope behind the impact",
+    hopeStoriesIntro:
+      "These journeys make the impact more personal. They connect the broader education work to real people whose confidence, visibility, and public voice now reach far beyond one event.",
+    hopeStories: impactHopeStories,
     relatedHeading: "Explore the impact areas in depth",
     relatedIntro:
       "Each section below opens a fuller story world with field examples, real initiatives, and the communities each response is designed to serve.",

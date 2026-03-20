@@ -919,7 +919,7 @@ export function HomeClient() {
               PSZ works hand-in-hand with local leaders to design programs that
               are practical, scalable, and culturally rooted.
             </p>
-            <div style={{ marginTop: "2rem", display: "flex", gap: "2rem" }}>
+            <div style={{ marginTop: "2rem", display: "flex", flexWrap: "wrap", columnGap: "2rem", rowGap: "0.9rem" }}>
               <Link href="/programs">
                 <span>Explore Our Programs</span> →
               </Link>
@@ -1476,7 +1476,7 @@ export function HomeClient() {
             and <span>private sector leaders</span>. With <span>500+ active volunteers</span>
             across Pakistan, we are a movement united by purpose.
           </p>
-          <div style={{ display: "flex", gap: "2rem", justifyContent: "center", marginTop: "3rem" }}>
+          <div style={{ display: "flex", flexWrap: "wrap", columnGap: "2rem", rowGap: "0.9rem", justifyContent: "center", marginTop: "3rem" }}>
             <Link href="/get-involved" style={{ color: "var(--psz-green)", fontSize: "var(--fs-vs)", fontWeight: 500 }}>
               Become a Volunteer →
             </Link>

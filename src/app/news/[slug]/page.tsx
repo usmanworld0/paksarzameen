@@ -82,7 +82,7 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
   const encodedTitle = encodeURIComponent(article.title);
 
   return (
-    <article className="mx-auto w-full max-w-screen-xl px-[5%] py-32">
+    <article className="mx-auto w-full max-w-screen-xl px-[5%] py-24 sm:py-28 lg:py-32">
       <Link
         href="/news"
         className="text-xs font-semibold uppercase tracking-[0.18em] text-psz-green hover:text-psz-green-light transition-colors"
@@ -90,11 +90,11 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
         &larr; Back To News Hub
       </Link>
 
-      <header className="mt-6 rounded-2xl border border-neutral-200 bg-white p-8 sm:p-10 shadow-sm">
+      <header className="mt-6 rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm sm:p-8 lg:p-10">
         <p className="text-xs font-semibold uppercase tracking-[0.3em] text-psz-green">
           {article.category}
         </p>
-        <h1 className="mt-3 max-w-4xl font-heading text-5xl font-bold leading-tight tracking-tight text-neutral-900 sm:text-6xl">
+        <h1 className="mt-3 max-w-4xl font-heading text-4xl font-bold leading-tight tracking-tight text-neutral-900 sm:text-5xl lg:text-6xl">
           {article.title}
         </h1>
         <p className="mt-4 text-sm uppercase tracking-[0.18em] text-neutral-400">
@@ -104,19 +104,19 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
             year: "numeric",
           })}
         </p>
-        <p className="mt-5 max-w-3xl text-base leading-relaxed text-neutral-500 sm:text-lg">
+        <p className="mt-5 max-w-2xl text-sm leading-relaxed text-neutral-500 sm:text-base lg:max-w-3xl lg:text-lg">
           {article.excerpt}
         </p>
       </header>
 
-      <section className="mt-10 rounded-2xl border border-neutral-200 bg-white p-7 shadow-sm">
+      <section className="mt-10 rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm sm:p-7">
         <h2 className="font-heading text-3xl font-semibold text-neutral-900">Full Article</h2>
         <p className="mt-4 text-sm leading-relaxed text-neutral-500 sm:text-base">
           {article.fullContent}
         </p>
       </section>
 
-      <section className="mt-10 rounded-2xl border border-neutral-200 bg-white p-7 shadow-sm">
+      <section className="mt-10 rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm sm:p-7">
         <h2 className="font-heading text-3xl font-semibold text-neutral-900">Share This Story</h2>
         <div className="mt-4 flex flex-wrap gap-3 text-sm font-semibold">
           <a

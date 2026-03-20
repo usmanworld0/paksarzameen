@@ -44,25 +44,90 @@ function CardLink({
   card: ImpactStoryLink;
   type: "related" | "resource";
 }) {
-  const className = type === "related" ? styles.relatedCard : styles.resourceCard;
+  const isFeaturedRelated =
+    type === "related" &&
+    Boolean(
+      card.instagramPermalink ||
+        card.image ||
+        card.eyebrow ||
+        card.meta ||
+        (card.bullets && card.bullets.length > 0)
+    );
+  const className =
+    type === "related"
+      ? `${styles.relatedCard}${isFeaturedRelated ? ` ${styles.relatedCardFeatured}` : ""}`
+      : styles.resourceCard;
   const linkClassName = type === "related" ? styles.relatedLink : styles.resourceLink;
   const label = card.ctaLabel ?? (type === "related" ? "Read story" : "Open resource");
+
+  if (isFeaturedRelated) {
+    return (
+      <article className={className}>
+        {card.instagramPermalink ? (
+          <div className={styles.relatedEmbed}>
+            <InstagramEmbed permalink={card.instagramPermalink} />
+          </div>
+        ) : card.image ? (
+          <div className={styles.relatedMedia}>
+            <Image
+              src={card.image.src}
+              alt={card.image.alt}
+              fill
+              sizes="(max-width: 720px) 100vw, (max-width: 1120px) 50vw, 33vw"
+            />
+          </div>
+        ) : null}
+        <div className={styles.relatedBody}>
+          {type === "related" && (card.eyebrow || card.meta) ? (
+            <div className={styles.relatedTopline}>
+              {card.eyebrow ? <span className={styles.relatedEyebrow}>{card.eyebrow}</span> : null}
+              {card.meta ? <span className={styles.relatedMeta}>{card.meta}</span> : null}
+            </div>
+          ) : null}
+          <h3>{card.title}</h3>
+          <p>{card.description}</p>
+          {type === "related" && card.bullets && card.bullets.length > 0 ? (
+            <ul className={styles.relatedBulletList}>
+              {card.bullets.map((bullet) => (
+                <li key={bullet}>{bullet}</li>
+              ))}
+            </ul>
+          ) : null}
+          {isExternalHref(card.href) ? (
+            <a href={card.href} target="_blank" rel="noopener noreferrer" className={linkClassName}>
+              {label}
+            </a>
+          ) : (
+            <Link href={card.href} className={linkClassName}>
+              {label}
+            </Link>
+          )}
+        </div>
+      </article>
+    );
+  }
+
+  const content = (
+    <>
+      <div>
+        <h3>{card.title}</h3>
+        <p>{card.description}</p>
+        <span className={linkClassName}>{label}</span>
+      </div>
+    </>
+  );
 
   if (isExternalHref(card.href)) {
     return (
       <a href={card.href} target="_blank" rel="noopener noreferrer" className={className}>
-        <h3>{card.title}</h3>
-        <p>{card.description}</p>
-        <span className={linkClassName}>{label}</span>
+        {content}
       </a>
     );
   }
 
   return (
     <Link href={card.href} className={className}>
-      <h3>{card.title}</h3>
-      <p>{card.description}</p>
-      <span className={linkClassName}>{label}</span>
+      {content}
     </Link>
   );
 }
@@ -72,6 +137,16 @@ export function ImpactStoryPage({ story }: { story: ImpactStoryPageData }) {
     "--accent": story.accent,
     "--accent-soft": story.accentSoft,
   } as CSSProperties;
+  const hasFeaturedRelatedStories = Boolean(
+    story.relatedStories?.some(
+      (item) =>
+        item.instagramPermalink ||
+        item.image ||
+        item.eyebrow ||
+        item.meta ||
+        (item.bullets && item.bullets.length > 0)
+    )
+  );
 
   return (
     <main className={styles.page} style={themeStyle}>
@@ -245,9 +320,12 @@ export function ImpactStoryPage({ story }: { story: ImpactStoryPageData }) {
             <div className={styles.sectionHeader}>
               <p className={styles.sectionEyebrow}>Explore next</p>
               <h2>{story.relatedHeading ?? "More impact stories"}</h2>
+              {story.relatedIntro ? <p className={styles.sectionIntro}>{story.relatedIntro}</p> : null}
             </div>
 
-            <div className={styles.relatedGrid}>
+            <div
+              className={`${styles.relatedGrid}${hasFeaturedRelatedStories ? ` ${styles.relatedGridFeatured}` : ""}`}
+            >
               {story.relatedStories.map((related) => (
                 <CardLink key={related.href} card={related} type="related" />
               ))}

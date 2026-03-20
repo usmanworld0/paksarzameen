@@ -42,14 +42,14 @@ export default async function NewsPage() {
     <>
       <div className="news-hero-section">
         <div className="news-hero-overlay" />
-        <header className="mx-auto w-full max-w-screen-xl px-[5%] pt-32 relative z-10">
+        <header className="relative z-10 mx-auto w-full max-w-screen-xl px-[5%] pb-8 pt-28 sm:pb-10 sm:pt-32 lg:pt-36">
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-psz-green">
             News Hub
           </p>
-          <h1 className="mt-4 max-w-3xl font-heading text-5xl font-bold leading-tight tracking-tight text-white sm:text-6xl">
+          <h1 className="mt-4 max-w-3xl font-heading text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl">
             PakSarZameen News And Resources
           </h1>
-          <p className="mt-5 max-w-3xl text-base leading-relaxed text-neutral-100 sm:text-lg">
+          <p className="mt-5 max-w-2xl text-sm leading-relaxed text-neutral-100 sm:text-base lg:max-w-3xl lg:text-lg">
             Filter by category, search across updates, and follow the latest PSZ
             work through detailed reports and announcements.
           </p>

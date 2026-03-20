@@ -87,6 +87,45 @@ video {
   padding-inline: 5%;
 }
 
+/* Keep full-bleed sections flush with the page without scrollbar overflow. */
+.hero-section,
+.pinned-video-section,
+.split-section,
+.video-overlay-section,
+.showcase-section,
+.approach-section,
+.highlight-section,
+.heart-section,
+.impact-header-section,
+.impact-image-section,
+.impact-text-section,
+.impact-video-section,
+.canvas-section,
+.scroll-text-block,
+.testimonials-section,
+.testimonials-marquee,
+.programs-stack-section,
+.chapters-section,
+.overlay-reveal-section,
+.final-cta-section,
+.about-hero,
+.ochi-marquee-section,
+.psz-header {
+  width: 100%;
+  max-width: 100%;
+}
+
+.hero-section .hero-title,
+.split-section .split-left h2,
+.about-hero-title,
+.impact-header-section h2,
+.programs-stack-title,
+.programs-hero-section h1,
+.news-hero-section h1,
+.get-involved-hero-section h1 {
+  text-wrap: balance;
+}
+
 /* ─── Scrollbar ─── */
 ::-webkit-scrollbar {
   width: 6px;
@@ -1658,7 +1697,8 @@ html.app-ready .app-boot-loader {
 .psz-header,
 .psz-header.always-white-bg {
   position: fixed;
-  width: 100vw;
+  width: 100%;
+  max-width: 100%;
   z-index: 999;
   top: 0;
   left: 0;
@@ -1709,6 +1749,7 @@ html.app-ready .app-boot-loader {
   font-size: clamp(1.9rem, 1.2vw, 2.3rem);
   font-weight: 700;
   color: #1d1d1f !important;
+  min-width: 0;
   white-space: nowrap;
   cursor: pointer;
   letter-spacing: 0.04em;
@@ -1772,6 +1813,7 @@ html.app-ready .app-boot-loader {
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
+  max-width: 100%;
   padding: 0.72rem 1.2rem;
   background: linear-gradient(135deg, var(--psz-green) 0%, #0a8f48 100%);
   color: #fff;
@@ -2012,6 +2054,7 @@ html.app-ready .app-boot-loader {
   display: flex;
   flex-direction: column;
   gap: 0.9rem;
+  width: 100%;
   max-width: 420px; /* constrain form width so it appears noticeably smaller */
 }
 @media (max-width: 900px) {
@@ -2020,6 +2063,10 @@ html.app-ready .app-boot-loader {
   }
   .blood-bank-hero {
     margin-bottom: 1.2rem;
+  }
+
+  .blood-bank-form {
+    max-width: none;
   }
 }
 
@@ -2194,19 +2241,18 @@ html.app-ready .app-boot-loader {
 /* ─── Mobile Nav ─── */
 .mobile-menu {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  inset: 0;
+  width: auto;
+  min-height: 100dvh;
   background-color: rgba(0, 0, 0, 0.95);
   backdrop-filter: blur(30px);
   z-index: 998;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   justify-content: flex-start;
   gap: 1.8rem;
-  padding: 10rem 6vw 4rem;
+  padding: clamp(8.5rem, 16vw, 10rem) min(6vw, 2rem) 3rem;
   overflow-y: auto;
   opacity: 0;
   pointer-events: none;
@@ -2219,9 +2265,17 @@ html.app-ready .app-boot-loader {
 }
 
 .mobile-menu a {
+  width: min(100%, 32rem);
+  margin: 0 auto;
+  padding: 1rem 1.25rem;
   font-size: clamp(1.8rem, 4vw, 2.4rem);
   color: var(--white);
   font-weight: 600;
+  text-align: center;
+  border-radius: 1.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  overflow-wrap: anywhere;
 }
 
 .mobile-menu a:hover {
@@ -2238,6 +2292,30 @@ html.app-ready .app-boot-loader {
 
   .psz-header nav {
     padding: 2.4rem 5% 1.6rem;
+  }
+}
+
+@media (max-width: 540px) {
+  .psz-header nav {
+    padding: 1.1rem 5%;
+  }
+
+  .psz-header .nav-logo {
+    font-size: clamp(1.55rem, 5vw, 1.95rem);
+    letter-spacing: 0.02em;
+  }
+
+  .psz-header .nav-logo-img {
+    width: 34px;
+    height: 34px;
+  }
+
+  .mobile-menu {
+    padding-top: 7.8rem;
+  }
+
+  .mobile-menu a {
+    font-size: clamp(1.5rem, 6vw, 1.95rem);
   }
 }
 
@@ -2368,6 +2446,7 @@ html.app-ready .app-boot-loader {
   color: rgba(255, 255, 255, 0.68);
   transition: color 0.2s ease;
   line-height: 1.6;
+  overflow-wrap: anywhere;
 }
 
 .psz-footer .footer-col a:hover {
@@ -4771,6 +4850,15 @@ html {
 
 /* Responsive */
 @media (max-width: 1024px) {
+  .about-hero {
+    background-attachment: scroll;
+    min-height: 60vh;
+  }
+
+  .about-hero-content {
+    padding: 4rem 5% 3.5rem;
+  }
+
   .about-content-grid {
     grid-template-columns: 1fr;
     gap: 2rem;
@@ -5154,4 +5242,31 @@ html {
   .skeleton-line-lg {
     width: 18rem;
   }
+}
+
+/* Final full-bleed override so older 100vw declarations do not reintroduce overflow. */
+.hero-section,
+.pinned-video-section,
+.split-section,
+.video-overlay-section,
+.showcase-section,
+.approach-section,
+.highlight-section,
+.heart-section,
+.impact-header-section,
+.impact-image-section,
+.impact-text-section,
+.impact-video-section,
+.canvas-section,
+.scroll-text-block,
+.testimonials-section,
+.testimonials-marquee,
+.programs-stack-section,
+.chapters-section,
+.overlay-reveal-section,
+.final-cta-section,
+.about-hero,
+.ochi-marquee-section {
+  width: 100%;
+  max-width: 100%;
 }

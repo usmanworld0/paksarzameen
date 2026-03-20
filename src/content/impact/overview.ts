@@ -62,7 +62,9 @@ export const overviewStories = {
       body:
         "These pages are now organized around challenge, response, and outcome so visitors can understand not only what happened, but why the work matters and how they can help sustain it.",
     },
-    relatedHeading: "Explore the impact areas",
+    relatedHeading: "Explore the impact areas in depth",
+    relatedIntro:
+      "Each section below opens a fuller story world with field examples, real initiatives, and the communities each response is designed to serve.",
     relatedStories: sectionCards,
     closing: {
       title: "If a story resonates with you, there is a place for you in it.",

@@ -186,9 +186,10 @@ export function BloodBankRequestForm() {
 }
 
 const formStyle: CSSProperties = {
-  width: "min(920px, 92vw)",
+  width: "100%",
+  maxWidth: 920,
   margin: "0 auto",
-  padding: "2.6rem",
+  padding: "clamp(1.35rem, 4vw, 2.6rem)",
   borderRadius: "1.8rem",
   background: "rgba(10, 18, 14, 0.8)",
   border: "1px solid rgba(15, 122, 71, 0.45)",
@@ -206,12 +207,13 @@ const descriptionStyle: CSSProperties = {
   marginTop: "1rem",
   marginBottom: "2rem",
   color: "rgba(255,255,255,0.78)",
-  fontSize: "1.45rem",
+  fontSize: "clamp(1.05rem, 2.8vw, 1.45rem)",
+  lineHeight: 1.6,
 };
 
 const gridStyle: CSSProperties = {
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+  gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 220px), 1fr))",
   gap: "1.2rem",
 };
 
@@ -219,6 +221,7 @@ const labelStyle: CSSProperties = {
   display: "flex",
   flexDirection: "column",
   gap: "0.55rem",
+  minWidth: 0,
   fontSize: "1.25rem",
   color: "rgba(255,255,255,0.9)",
 };
@@ -228,12 +231,14 @@ const inputStyle: CSSProperties = {
   border: "1px solid rgba(255,255,255,0.18)",
   background: "rgba(255,255,255,0.06)",
   color: "#fff",
+  width: "100%",
   padding: "0.95rem 1rem",
-  fontSize: "1.35rem",
+  fontSize: "clamp(1rem, 2.4vw, 1.35rem)",
 };
 
 const buttonStyle: CSSProperties = {
   marginTop: "1.8rem",
+  width: "100%",
   borderRadius: "0.9rem",
   border: "none",
   padding: "1rem 1.4rem",
@@ -247,11 +252,11 @@ const buttonStyle: CSSProperties = {
 const successStyle: CSSProperties = {
   marginTop: "1.1rem",
   color: "#8fffb8",
-  fontSize: "1.25rem",
+  fontSize: "clamp(1rem, 2.2vw, 1.25rem)",
 };
 
 const errorStyle: CSSProperties = {
   marginTop: "1.1rem",
   color: "#ffb8b8",
-  fontSize: "1.25rem",
+  fontSize: "clamp(1rem, 2.2vw, 1.25rem)",
 };

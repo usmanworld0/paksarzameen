@@ -3,6 +3,14 @@ export type ImpactStoryLink = {
   description: string;
   href: string;
   ctaLabel?: string;
+  eyebrow?: string;
+  meta?: string;
+  bullets?: string[];
+  instagramPermalink?: string;
+  image?: {
+    src: string;
+    alt: string;
+  };
 };
 
 export type ImpactStoryPageData = {
@@ -60,6 +68,7 @@ export type ImpactStoryPageData = {
     permalink: string;
   }>;
   relatedHeading?: string;
+  relatedIntro?: string;
   relatedStories?: ImpactStoryLink[];
   closing: {
     title: string;
@@ -246,8 +255,48 @@ export function getCategoryCards(
 }
 
 export const sectionCards: ImpactStoryLink[] = impactCategories.map((category) => ({
-  title: category.title,
-  description: category.summary,
-  href: category.href,
-  ctaLabel: "Open section",
-}));
+  environmental: {
+    title: category.title,
+    description:
+      "Follow how tree planting, climate dialogue, research, and youth leadership come together as long-term environmental care.",
+    href: category.href,
+    ctaLabel: "Explore environmental stories",
+    eyebrow: "Climate and green action",
+    meta: "6 stories and initiatives",
+    bullets: ["Public tree-planting and restoration", "Youth climate voice and local research"],
+    instagramPermalink: "https://www.instagram.com/reel/DB4Y2KzNv6Z/",
+  },
+  education: {
+    title: category.title,
+    description:
+      "See how inclusive education support helps excluded students move toward visibility, confidence, and opportunity.",
+    href: category.href,
+    ctaLabel: "Explore education stories",
+    eyebrow: "Learning with dignity",
+    meta: "4 stories and pathways",
+    bullets: ["Transgender and blind student inclusion", "Career guidance and data-backed support"],
+    instagramPermalink: "https://www.instagram.com/p/DC_LgCcub1D/",
+  },
+  animal: {
+    title: category.title,
+    description:
+      "Explore humane animal welfare stories shaped by feeding routines, safer visibility, and practical neighborhood care.",
+    href: category.href,
+    ctaLabel: "Explore animal welfare stories",
+    eyebrow: "Humane neighborhood care",
+    meta: "3 practical response stories",
+    bullets: ["Feeding points and safer identification", "Field learning that improves follow-up"],
+    instagramPermalink: "https://www.instagram.com/reel/CoAUaTloqXC/",
+  },
+  health: {
+    title: category.title,
+    description:
+      "Move through emergency blood support, recurring medical outreach, and the systems that help communities respond faster.",
+    href: category.href,
+    ctaLabel: "Explore health stories",
+    eyebrow: "Urgent care and outreach",
+    meta: "3 health response stories",
+    bullets: ["Blood availability and emergency coordination", "Medical camps and community follow-up"],
+    instagramPermalink: "https://www.instagram.com/p/DKFn43YyK0g/",
+  },
+}[category.slug]));

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, CheckCircle2 } from "lucide-react";
 
 type FormValues = {
   fullName: string;
@@ -80,7 +80,8 @@ export function GetInvolvedForm() {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    // Simulate async submission — swap for real API call / server action later
+
+    // Simulate async submission for now. Replace with a real API call later.
     setTimeout(() => {
       setLoading(false);
       setSubmitted(true);
@@ -89,15 +90,15 @@ export function GetInvolvedForm() {
 
   if (submitted) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-2xl border border-psz-green/20 bg-psz-green/5 p-12 text-center lg:col-span-2">
-        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-psz-green text-2xl text-white">
-          ✓
+      <div className="flex flex-col items-center justify-center rounded-2xl border border-psz-green/20 bg-psz-green/5 p-8 text-center sm:p-12 lg:col-span-2">
+        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-psz-green text-white">
+          <CheckCircle2 className="h-7 w-7" />
         </span>
         <h2 className="mt-6 font-heading text-3xl font-bold text-neutral-900">
           Thank You!
         </h2>
         <p className="mt-3 max-w-md text-base leading-relaxed text-neutral-500">
-          We have received your request and will be in touch within 3–5 working
+          We have received your request and will be in touch within 3-5 working
           days. Welcome to the PakSarZameen community.
         </p>
         <button
@@ -114,14 +115,14 @@ export function GetInvolvedForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-2xl border border-neutral-200 bg-white p-7 shadow-sm lg:col-span-2"
+      className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm sm:p-7 lg:col-span-2"
       noValidate
     >
       <p className="text-xs font-semibold uppercase tracking-[0.3em] text-psz-green">
         Your Details
       </p>
 
-      {/* Row 1 — Name + Email */}
+      {/* Row 1 - Name + Email */}
       <div className="mt-5 grid gap-4 sm:grid-cols-2">
         <div>
           <label
@@ -138,7 +139,7 @@ export function GetInvolvedForm() {
             value={values.fullName}
             onChange={handleChange}
             placeholder="e.g. Abdullah Tanseer"
-            className="mt-2 w-full rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-900 outline-none placeholder:text-neutral-400 focus:border-psz-green/60 transition-colors"
+            className="mt-2 w-full rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-900 outline-none transition-colors placeholder:text-neutral-400 focus:border-psz-green/60"
           />
         </div>
         <div>
@@ -156,12 +157,12 @@ export function GetInvolvedForm() {
             value={values.email}
             onChange={handleChange}
             placeholder="you@example.com"
-            className="mt-2 w-full rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-900 outline-none placeholder:text-neutral-400 focus:border-psz-green/60 transition-colors"
+            className="mt-2 w-full rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-900 outline-none transition-colors placeholder:text-neutral-400 focus:border-psz-green/60"
           />
         </div>
       </div>
 
-      {/* Row 2 — Phone + City */}
+      {/* Row 2 - Phone + City */}
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
         <div>
           <label
@@ -177,7 +178,7 @@ export function GetInvolvedForm() {
             value={values.phone}
             onChange={handleChange}
             placeholder="+92 303 5763435"
-            className="mt-2 w-full rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-900 outline-none placeholder:text-neutral-400 focus:border-psz-green/60 transition-colors"
+            className="mt-2 w-full rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-900 outline-none transition-colors placeholder:text-neutral-400 focus:border-psz-green/60"
           />
         </div>
         <div>
@@ -194,12 +195,12 @@ export function GetInvolvedForm() {
             value={values.city}
             onChange={handleChange}
             placeholder="e.g. Bahawalpur"
-            className="mt-2 w-full rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-900 outline-none placeholder:text-neutral-400 focus:border-psz-green/60 transition-colors"
+            className="mt-2 w-full rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-900 outline-none transition-colors placeholder:text-neutral-400 focus:border-psz-green/60"
           />
         </div>
       </div>
 
-      {/* Row 3 — Role */}
+      {/* Row 3 - Role */}
       <div className="mt-4">
         <label
           htmlFor="role"
@@ -213,7 +214,7 @@ export function GetInvolvedForm() {
           required
           value={values.role}
           onChange={handleChange}
-          className="mt-2 w-full rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-900 outline-none focus:border-psz-green/60 transition-colors"
+          className="mt-2 w-full rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-900 outline-none transition-colors focus:border-psz-green/60"
         >
           <option value="" disabled>
             Select your role
@@ -226,7 +227,7 @@ export function GetInvolvedForm() {
         </select>
       </div>
 
-      {/* Row 4 — Program interest (multi-select chips) */}
+      {/* Row 4 - Program interest (multi-select chips) */}
       <div className="mt-6">
         <p className="text-xs font-semibold uppercase tracking-[0.15em] text-neutral-500">
           Programs of Interest
@@ -239,9 +240,9 @@ export function GetInvolvedForm() {
                 key={program}
                 type="button"
                 onClick={() => handleProgramToggle(program)}
-                className={`rounded-full px-4 py-2 text-xs font-semibold transition-all border ${
+                className={`rounded-full border px-4 py-2 text-xs font-semibold transition-all ${
                   active
-                    ? "bg-psz-green text-white border-psz-green"
+                    ? "border-psz-green bg-psz-green text-white"
                     : "border-neutral-300 bg-white text-neutral-600 hover:border-neutral-400 hover:bg-neutral-50"
                 }`}
               >
@@ -252,7 +253,7 @@ export function GetInvolvedForm() {
         </div>
       </div>
 
-      {/* Row 5 — How did you hear */}
+      {/* Row 5 - How did you hear */}
       <div className="mt-6">
         <label
           htmlFor="howHeard"
@@ -265,7 +266,7 @@ export function GetInvolvedForm() {
           name="howHeard"
           value={values.howHeard}
           onChange={handleChange}
-          className="mt-2 w-full rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-900 outline-none focus:border-psz-green/60 transition-colors"
+          className="mt-2 w-full rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-900 outline-none transition-colors focus:border-psz-green/60"
         >
           <option value="" disabled>
             Select an option
@@ -278,7 +279,7 @@ export function GetInvolvedForm() {
         </select>
       </div>
 
-      {/* Row 6 — Message */}
+      {/* Row 6 - Message */}
       <div className="mt-6">
         <label
           htmlFor="message"
@@ -293,21 +294,21 @@ export function GetInvolvedForm() {
           value={values.message}
           onChange={handleChange}
           placeholder="Tell us a bit about yourself, your skills, or what you hope to contribute..."
-          className="mt-2 w-full resize-none rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-900 outline-none placeholder:text-neutral-400 focus:border-psz-green/60 transition-colors"
+          className="mt-2 min-h-32 w-full resize-y rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-900 outline-none transition-colors placeholder:text-neutral-400 focus:border-psz-green/60"
         />
       </div>
 
       {/* Submit */}
-      <div className="mt-8 flex items-center justify-between gap-4">
+      <div className="mt-8 flex flex-col items-stretch gap-4 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-xs text-neutral-400">
           <span className="text-psz-green">*</span> Required fields
         </p>
         <button
           type="submit"
           disabled={loading}
-          className="inline-flex items-center gap-2 rounded-full bg-psz-green px-7 py-3 text-sm font-semibold text-white transition-all hover:bg-psz-green-light disabled:opacity-60"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-psz-green px-7 py-3 text-sm font-semibold text-white transition-all hover:bg-psz-green-light disabled:opacity-60 sm:w-auto"
         >
-          {loading ? "Submitting…" : "Submit Application"}
+          {loading ? "Submitting..." : "Submit Application"}
           {!loading && <ArrowRight className="h-4 w-4" />}
         </button>
       </div>

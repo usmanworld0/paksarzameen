@@ -407,6 +407,11 @@
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 }
 
+.relatedGridFeatured {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
 .resourceCard,
 .relatedCard {
   display: flex;
@@ -414,6 +419,102 @@
   border-radius: 22px;
   padding: 1rem;
   color: inherit;
+}
+
+.relatedCardFeatured {
+  overflow: hidden;
+  padding: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 251, 248, 0.96) 100%),
+    var(--accent-soft);
+  box-shadow: 0 22px 46px rgba(20, 49, 38, 0.1);
+}
+
+.relatedEmbed {
+  padding: 0.85rem 0.85rem 0;
+  border-bottom: 1px solid rgba(20, 49, 38, 0.08);
+  background: rgba(20, 49, 38, 0.04);
+  overflow: hidden;
+}
+
+.relatedEmbed :global(.instagram-media) {
+  border-radius: 18px !important;
+  overflow: hidden !important;
+}
+
+.relatedMedia {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(20, 49, 38, 0.08);
+  background: rgba(20, 49, 38, 0.08);
+}
+
+.relatedMedia img {
+  object-fit: cover;
+}
+
+.relatedBody {
+  display: grid;
+  gap: 0.65rem;
+  padding: 1.1rem;
+}
+
+.relatedTopline {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.relatedEyebrow,
+.relatedMeta {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.8rem;
+  border-radius: 999px;
+  padding: 0.25rem 0.65rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.relatedEyebrow {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.relatedMeta {
+  color: #4d685d;
+  background: rgba(20, 49, 38, 0.06);
+}
+
+.relatedBulletList {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0.2rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.relatedBulletList li {
+  position: relative;
+  padding-left: 1rem;
+  line-height: 1.55;
+  color: #36574b;
+}
+
+.relatedBulletList li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.6rem;
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 999px;
+  background: var(--accent);
 }
 
 .resourceLink,

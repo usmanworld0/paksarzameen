@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { FormEvent, useState } from "react";
 
 export function ContactForm() {
   const [name, setName] = useState("");
@@ -26,7 +26,7 @@ export function ContactForm() {
         throw new Error(payload?.error || "Submission failed");
       }
 
-      setStatus("Message sent — thank you!");
+      setStatus("Message sent. Thank you!");
       setName("");
       setEmail("");
       setMessage("");
@@ -45,7 +45,7 @@ export function ContactForm() {
           required
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="mt-2 w-full rounded-md border border-neutral-200 p-2"
+          className="mt-2 w-full rounded-md border border-neutral-200 p-2.5"
         />
       </label>
 
@@ -56,7 +56,7 @@ export function ContactForm() {
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="mt-2 w-full rounded-md border border-neutral-200 p-2"
+          className="mt-2 w-full rounded-md border border-neutral-200 p-2.5"
         />
       </label>
 
@@ -67,11 +67,11 @@ export function ContactForm() {
           rows={5}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          className="mt-2 w-full rounded-md border border-neutral-200 p-2"
+          className="mt-2 w-full rounded-md border border-neutral-200 p-2.5"
         />
       </label>
 
-      <div className="flex items-center gap-3">
+      <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
         <button
           type="submit"
           disabled={submitting}
@@ -79,7 +79,11 @@ export function ContactForm() {
         >
           {submitting ? "Sending..." : "Send Message"}
         </button>
-        {status ? <span className="text-sm text-neutral-600">{status}</span> : null}
+        {status ? (
+          <span className="max-w-full break-words text-sm text-neutral-600">
+            {status}
+          </span>
+        ) : null}
       </div>
     </form>
   );

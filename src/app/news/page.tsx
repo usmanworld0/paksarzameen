@@ -7,10 +7,10 @@ import { getArticles } from "@/lib/services/getArticles";
 export const metadata: Metadata = {
   title: "News, Resources And Impact Stories",
   description:
-    "Read PakSarZameen impact stories, NGO updates, field reports, program announcements, and community development resources from Pakistan.",
+    "Read PakSarZameen impact stories, updates, field reports, program announcements, and community development resources from Pakistan.",
   keywords: [
     ...siteConfig.seo.keywords,
-    "ngo news pakistan",
+    "news pakistan",
     "impact stories pakistan",
     "community development updates pakistan",
   ],

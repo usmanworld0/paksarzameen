@@ -6,7 +6,7 @@ export function Footer() {
     <footer className="psz-footer">
       <div className="footer-inner">
         <div className="footer-brand">
-          <p className="footer-kicker">Community Development NGO</p>
+          <p className="footer-kicker">Community Development</p>
           <h3 style={{ color: "#ffffff" }}>
             Pak<span className="green">Sar</span>Zameen
           </h3>

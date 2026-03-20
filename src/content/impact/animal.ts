@@ -15,7 +15,7 @@ export const animalStories = {
     intro:
       "Animal welfare often starts with basic questions: where will food come from, who will follow up, and how do we make care safer and more humane over time?",
     summary:
-      "PakSarZameen's animal welfare section now tells a more grounded NGO story. It focuses on practical care, neighborhood participation, and the systems needed to protect vulnerable animals with consistency rather than one-time sympathy.",
+      "PakSarZameen's animal welfare section now tells a more grounded story. It focuses on practical care, neighborhood participation, and the systems needed to protect vulnerable animals with consistency rather than one-time sympathy.",
     cta: {
       label: "Volunteer with us",
       href: "/get-involved",
@@ -60,7 +60,7 @@ export const animalStories = {
       "The section now tells a clearer story of sustained care instead of isolated acts of kindness.",
     ],
     note: {
-      title: "An NGO tone grounded in care",
+      title: "A tone grounded in care",
       body:
         "The content now reads less like isolated announcements and more like a compassionate narrative about responsibility, follow-through, and humane action.",
     },
@@ -148,7 +148,7 @@ export const animalStories = {
       "The initiative created a simple model for compassionate neighborhood action.",
     ],
     note: {
-      title: "Small stories matter on NGO sites",
+      title: "Small stories matter on our site",
       body:
         "Not every impact story needs to be large to be meaningful. This page now gives a modest intervention the dignity of context, purpose, and follow-through.",
     },
@@ -238,7 +238,7 @@ export const animalStories = {
     note: {
       title: "A practical story of humane care",
       body:
-        "This page now frames the project as a response to both compassion and public reality, which is important for an NGO audience that wants to understand the method as well as the motive.",
+        "This page now frames the project as a response to both compassion and public reality, which is important for an audience that wants to understand the method as well as the motive.",
     },
     relatedHeading: "Continue with related animal welfare stories",
     relatedStories: getCategoryCards("animal", ["/impact/animal/stray-dog-collar-project"]),
@@ -299,7 +299,7 @@ export const animalStories = {
       {
         title: "Strengthen trust in the work",
         body:
-          "Visitors to an NGO site want to know that care is sustained and thoughtful. Research helps show that animal welfare is being treated with seriousness and discipline.",
+          "Visitors to the site want to know that care is sustained and thoughtful. Research helps show that animal welfare is being treated with seriousness and discipline.",
       },
     ],
     outcomesHeading: "What this work helps improve",

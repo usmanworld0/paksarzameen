@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     "Explore PakSarZameen programs across education, health, environmental action, animal welfare, women empowerment, and community support in Pakistan.",
   keywords: [
     ...siteConfig.seo.keywords,
-    "ngo programs pakistan",
+    "programs pakistan",
     "community development programs pakistan",
     "education health environment welfare",
   ],

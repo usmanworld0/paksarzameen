@@ -83,7 +83,7 @@ export function getImpactMetadata(key: ImpactStoryKey): Metadata {
         ...siteConfig.seo.keywords,
         story.title,
         story.eyebrow,
-        "ngo impact stories pakistan",
+        "impact stories pakistan",
         "community development pakistan",
       ])
     ),

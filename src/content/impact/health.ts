@@ -60,7 +60,7 @@ export const healthStories = {
       "The story now shows health work as a sequence of preparation, response, and learning.",
     ],
     note: {
-      title: "An NGO story grounded in urgency",
+      title: "A story grounded in urgency",
       body:
         "Health pages now move more clearly through need, response, and outcome, which helps visitors understand not just what happened but why the timing mattered.",
     },
@@ -138,7 +138,7 @@ export const healthStories = {
       {
         title: "Keep the support human",
         body:
-          "Readiness should not feel mechanical. For an NGO, blood support is also a form of solidarity with families navigating one of the most vulnerable moments they may face.",
+          "Readiness should not feel mechanical. For this work, blood support is also a form of solidarity with families navigating one of the most vulnerable moments they may face.",
       },
     ],
     outcomesHeading: "What stronger blood support can change",

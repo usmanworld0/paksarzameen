@@ -10,9 +10,9 @@ export const metadata: Metadata = {
     "Volunteer, partner, donate, or support PakSarZameen's education, health, blood bank, environmental, and welfare work across Pakistan.",
   keywords: [
     ...siteConfig.seo.keywords,
-    "volunteer with ngo pakistan",
-    "donate to ngo pakistan",
-    "ngo partnerships bahawalpur",
+    "volunteer in pakistan",
+    "donate in pakistan",
+    "partnerships bahawalpur",
   ],
   alternates: {
     canonical: "/get-involved",

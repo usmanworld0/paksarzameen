@@ -34,7 +34,7 @@ export async function generateMetadata({
       ...siteConfig.seo.keywords,
       article.category.toLowerCase(),
       article.title,
-      "ngo updates pakistan",
+      "news pakistan",
     ],
     alternates: {
       canonical: `/news/${article.slug}`,

@@ -12,7 +12,7 @@ export const overviewStories = {
     intro:
       "Every impact page on this site starts from the same place: a real need voiced by a real community.",
     summary:
-      "PakSarZameen works as an NGO partner, not a distant narrator. We listen, mobilize local people and institutions, and keep learning until a response becomes steadier, safer, and more dignified for the people or places involved.",
+      "PakSarZameen works as a partner, not a distant narrator. We listen, mobilize local people and institutions, and keep learning until a response becomes steadier, safer, and more dignified for the people or places involved.",
     cta: {
       label: "Get involved",
       href: "/get-involved",
@@ -47,7 +47,7 @@ export const overviewStories = {
       {
         title: "Stay long enough to learn",
         body:
-          "For an NGO, one event is never the whole story. We return to outcomes, ask what still feels incomplete, and use that learning to refine the next step.",
+          "For this work, one event is never the whole story. We return to outcomes, ask what still feels incomplete, and use that learning to refine the next step.",
       },
     ],
     outcomesHeading: "What these stories point toward",
@@ -58,7 +58,7 @@ export const overviewStories = {
       "Animal welfare becomes more humane when care is practical, visible, and sustained by neighbors.",
     ],
     note: {
-      title: "A storytelling approach for an NGO site",
+      title: "A storytelling approach for this site",
       body:
         "These pages are now organized around challenge, response, and outcome so visitors can understand not only what happened, but why the work matters and how they can help sustain it.",
     },

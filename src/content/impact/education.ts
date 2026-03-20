@@ -103,7 +103,7 @@ export const educationStories = {
     intro:
       "For many transgender students, educational exclusion is not abstract. It is personal, repeated, and often reinforced by the spaces that should be protecting their futures.",
     summary:
-      "PakSarZameen's support around this school reflects an NGO approach rooted in representation and public confidence. Coaching students into major academic forums helps challenge exclusion with visible achievement.",
+      "PakSarZameen's support around this school reflects an approach rooted in representation and public confidence. Coaching students into major academic forums helps challenge exclusion with visible achievement.",
     cta: {
       label: "Explore education impact",
       href: "/impact/education",
@@ -232,7 +232,7 @@ export const educationStories = {
     note: {
       title: "Voice is not a symbolic outcome",
       body:
-        "On an NGO site, it matters to show that participation in debate is not decorative. It is part of how students build agency, credibility, and public belonging.",
+        "On our site, it matters to show that participation in debate is not decorative. It is part of how students build agency, credibility, and public belonging.",
     },
     mediaHeading: "Snapshots from inclusive advocacy",
     media: [
@@ -308,7 +308,7 @@ export const educationStories = {
       {
         title: "Strengthen the support around the student",
         body:
-          "When institutions and NGOs work together, students benefit from a wider network of information, encouragement, and opportunity. Partnerships can make pathways more visible and more real.",
+          "When institutions and partners work together, students benefit from a wider network of information, encouragement, and opportunity. Partnerships can make pathways more visible and more real.",
       },
     ],
     outcomesHeading: "What this support can create",
@@ -320,7 +320,7 @@ export const educationStories = {
     note: {
       title: "Access is not only about admission",
       body:
-        "On an NGO site, it helps to show that educational inclusion also depends on navigation. Guidance can be the bridge between talent and opportunity.",
+        "On our site, it helps to show that educational inclusion also depends on navigation. Guidance can be the bridge between talent and opportunity.",
     },
     relatedHeading: "Continue with related education stories",
     relatedStories: getCategoryCards("education", ["/impact/education/career-counselling-university-applications"]),
@@ -381,7 +381,7 @@ export const educationStories = {
       {
         title: "Keep accountability close to the mission",
         body:
-          "For an NGO, data is not a detached exercise. It helps ensure that educational inclusion is pursued in a way that stays honest, responsive, and grounded.",
+          "In this work, data is not a detached exercise. It helps ensure that educational inclusion is pursued in a way that stays honest, responsive, and grounded.",
       },
     ],
     outcomesHeading: "What this assessment work enables",

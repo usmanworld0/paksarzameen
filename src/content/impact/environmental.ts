@@ -62,7 +62,7 @@ export const environmentalStories = {
     note: {
       title: "Why storytelling matters here",
       body:
-        "For an NGO, environmental work is easier to trust when visitors can see the sequence from need, to mobilization, to stewardship. That sequence is now much clearer across the section.",
+        "Environmental work is easier to trust when visitors can see the sequence from need, to mobilization, to stewardship. That sequence is now much clearer across the section.",
     },
     mediaHeading: "Snapshots from community climate action",
     mediaIntro:
@@ -285,7 +285,7 @@ export const environmentalStories = {
     note: {
       title: "A quiet story with long-term impact",
       body:
-        "This kind of initiative may not always look dramatic at first, but it reflects an NGO value that matters deeply: patient care for places that others may overlook.",
+        "This kind of initiative may not always look dramatic at first, but it reflects a value that matters deeply: patient care for places that others may overlook.",
     },
     relatedHeading: "Related environmental stories",
     relatedStories: [
@@ -354,7 +354,7 @@ export const environmentalStories = {
       {
         title: "Support the next conversation",
         body:
-          "A strong NGO intervention does not end with one learner. It equips people to keep the conversation going in schools, homes, and community spaces.",
+          "A strong intervention does not end with one learner. It equips people to keep the conversation going in schools, homes, and community spaces.",
       },
     ],
     outcomesHeading: "What this initiative can strengthen",
@@ -366,7 +366,7 @@ export const environmentalStories = {
     note: {
       title: "Knowledge is part of impact too",
       body:
-        "For NGO work, not every milestone is a visible event. Sometimes impact begins when people understand an issue well enough to care about it differently.",
+        "In this work, not every milestone is a visible event. Sometimes impact begins when people understand an issue well enough to care about it differently.",
     },
     relatedHeading: "More environmental stories",
     relatedStories: getCategoryCards("environmental", ["/impact/environmental/south-punjab-green-book-initiative"]),
@@ -437,7 +437,7 @@ export const environmentalStories = {
       "The event contributed to a broader sense that local climate dialogue in South Punjab belongs in national and global conversations.",
     ],
     note: {
-      title: "An NGO role worth naming",
+      title: "A role worth naming",
       body:
         "Sometimes impact means convening: creating the conditions for others to speak, learn, and organize with more confidence than before.",
     },
@@ -531,7 +531,7 @@ export const environmentalStories = {
     note: {
       title: "A public story can unlock private courage",
       body:
-        "When one team is seen stepping forward successfully, many others begin to believe they can do the same. That is part of the value of storytelling on an NGO site.",
+        "When one team is seen stepping forward successfully, many others begin to believe they can do the same. That is part of the value of storytelling on our site.",
     },
     mediaHeading: "Community snapshots",
     media: [
@@ -607,7 +607,7 @@ export const environmentalStories = {
       {
         title: "Build credibility through learning",
         body:
-          "NGO storytelling is stronger when it includes reflection. Research helps ensure the story is not only hopeful, but responsible.",
+          "Storytelling is stronger when it includes reflection. Research helps ensure the story is not only hopeful, but responsible.",
       },
     ],
     outcomesHeading: "What this work supports",

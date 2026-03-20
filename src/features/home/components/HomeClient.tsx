@@ -780,7 +780,7 @@ export function HomeClient() {
         <video ref={heroVideoRef} src={VIDEOS.hero} muted loop playsInline preload="none" controls={false} autoPlay={true} poster={VIDEO_POSTERS.hero} />
         <div className="blur-overlay" aria-hidden="true" />
         <div className="hero-content">
-          <p className="hero-label">Community Development NGO In Pakistan</p>
+          <p className="hero-label">Community Development in Pakistan</p>
           <h1 className="hero-title">
             Pak<span className="green">Sar</span>Zameen
           </h1>
@@ -858,7 +858,7 @@ export function HomeClient() {
           <div className="split-right">
             <p>
               PakSarZameen bridges the gap between intention and action. Our
-              NGO model turns local energy into practical support for education,
+              model turns local energy into practical support for education,
               healthcare, community welfare, and long-term empowerment in
               underserved areas.
             </p>

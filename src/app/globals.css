@@ -4,7 +4,7 @@
 
 /* Font is loaded via next/font/google in layout.tsx — no CSS @import needed */
 
-/* ─── Vision Pro Style — PSZ NGO ─── */
+/* ─── Vision Pro Style — PSZ ─── */
 
 :root {
   font-size: 62.5%; /* 1rem = 10px base for clamp calculations */

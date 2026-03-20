@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     "Contact PakSarZameen in Bahawalpur for volunteer opportunities, partnerships, blood bank support, media inquiries, and community initiatives across Pakistan.",
   keywords: [
     ...siteConfig.seo.keywords,
-    "contact ngo bahawalpur",
+    "contact bahawalpur",
     "paksarzameen contact",
     "blood bank contact bahawalpur",
   ],
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     canonical: "/contact",
   },
   openGraph: {
-    title: "Contact PakSarZameen | NGO In Bahawalpur, Pakistan",
+    title: "Contact PakSarZameen | Bahawalpur, Pakistan",
     description:
       "Reach PakSarZameen for volunteering, partnerships, blood support, and community development work in Bahawalpur and beyond.",
     url: `${siteConfig.siteUrl}/contact`,
@@ -28,13 +28,13 @@ export const metadata: Metadata = {
         url: "/images/hero-fallback.svg",
         width: 1600,
         height: 1000,
-        alt: "PakSarZameen NGO Bahawalpur",
+          alt: "PakSarZameen Bahawalpur",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Contact PakSarZameen | NGO In Bahawalpur, Pakistan",
+    title: "Contact PakSarZameen | Bahawalpur, Pakistan",
     description:
       "Reach PakSarZameen for volunteering, partnerships, blood support, and community development work in Bahawalpur and beyond.",
     images: ["/images/hero-fallback.svg"],

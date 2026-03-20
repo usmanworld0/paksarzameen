@@ -24,7 +24,7 @@ export const siteConfig = {
   name: "PakSarZameen",
   missionLine: "Building Community Wealth.",
   description:
-    "PakSarZameen is a community development NGO in Pakistan working from Bahawalpur through volunteer programs, blood bank support, education, health outreach, environmental action, and animal welfare initiatives.",
+    "PakSarZameen is a community development organization in Pakistan working from Bahawalpur through volunteer programs, blood bank support, education, health outreach, environmental action, and animal welfare initiatives.",
   siteUrl:
     process.env.NEXT_PUBLIC_SITE_URL ?? "https://paksarzameenwfo.com",
   commonwealthLabel: "Paksarzameen Store",
@@ -34,9 +34,9 @@ export const siteConfig = {
   contact: {
     phone: "+92 303 5763435",
     address:
-      "House no 1257, Street 47, Sector A, DHA Bahawalpur, Punjab, Pakistan",
+      "1257, Street 47, Sector A, DHA Bahawalpur, Punjab, Pakistan",
     addressLines: [
-      "House no 1257",
+      "1257",
       "Street 47",
       "Sector A",
       "DHA Bahawalpur",
@@ -59,24 +59,22 @@ export const siteConfig = {
     keywords: [
       "paksarzameen",
       "pak sarzameen",
-      "pak sarzameen ngo",
-      "ngo in pakistan",
-      "ngo in bahawalpur",
+      "pak sarzameen foundation",
+      "organization in pakistan",
+      "organization in bahawalpur",
       "community development organization pakistan",
       "social welfare organization pakistan",
       "humanitarian organization pakistan",
-      "volunteer ngo pakistan",
       "volunteer opportunities pakistan",
       "blood bank bahawalpur",
       "emergency blood support pakistan",
-      "education ngo pakistan",
+      "education programs pakistan",
       "community health camps pakistan",
-      "environmental ngo pakistan",
+      "environmental organization pakistan",
       "tree plantation pakistan",
       "animal welfare pakistan",
       "women empowerment pakistan",
       "bahawalpur community welfare",
-      "paksarzameen foundation",
     ],
   },
 };

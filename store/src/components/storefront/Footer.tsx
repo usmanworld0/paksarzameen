@@ -75,7 +75,7 @@ export function Footer() {
             <ul className="space-y-2.5 text-sm text-neutral-600">
               <li>storepaksarzameen@gmail.com</li>
               <li>+92 303 5763435</li>
-              <li>House no 1257, Street 47, Sector A, DHA Bahawalpur, Punjab, Pakistan</li>
+              <li>1257, Street 47, Sector A, DHA Bahawalpur, Punjab, Pakistan</li>
               <li>
                 <a
                   href="https://www.instagram.com/commonwealthlab.psz"

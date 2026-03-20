@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.siteUrl),
   applicationName: siteConfig.name,
   title: {
-    default: "PakSarZameen | NGO In Pakistan For Community Development",
+    default: "PakSarZameen | In Pakistan For Community Development",
     template: "%s | PakSarZameen",
   },
   description: siteConfig.description,
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   creator: "PakSarZameen",
   publisher: "PakSarZameen",
   openGraph: {
-    title: "PakSarZameen | NGO In Pakistan For Community Development",
+    title: "PakSarZameen | In Pakistan For Community Development",
     description: siteConfig.description,
     type: "website",
     url: siteConfig.siteUrl,
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "PakSarZameen | NGO In Pakistan For Community Development",
+    title: "PakSarZameen | In Pakistan For Community Development",
     description: siteConfig.description,
     images: ["/images/hero-fallback.svg"],
   },
@@ -83,7 +83,7 @@ export default function RootLayout({
     "@context": "https://schema.org",
     "@graph": [
       {
-        "@type": "NGO",
+        "@type": "Organization",
         "@id": organizationId,
         name: siteConfig.name,
         url: siteConfig.siteUrl,

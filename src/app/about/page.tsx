@@ -7,18 +7,18 @@ import { siteConfig } from "@/config/site";
 export const metadata: Metadata = {
   title: "About Us: Mission, Vision And Community Work In Pakistan",
   description:
-    "Learn about PakSarZameen, a community development NGO in Pakistan rooted in justice, compassion, education, health support, environmental action, and sustainable social impact.",
+    "Learn about PakSarZameen, a community development organization in Pakistan rooted in justice, compassion, education, health support, environmental action, and sustainable social impact.",
   keywords: [
     ...siteConfig.seo.keywords,
     "about paksarzameen",
-    "ngo mission pakistan",
+    "organization mission pakistan",
     "community development bahawalpur",
   ],
   alternates: {
     canonical: "/about",
   },
   openGraph: {
-    title: "About PakSarZameen NGO | Mission, Vision And Community Work",
+    title: "About PakSarZameen | Mission, Vision And Community Work",
     description:
       "Meet the story, mission, and values behind PakSarZameen's education, health, environmental, and welfare work in Pakistan.",
     url: `${siteConfig.siteUrl}/about`,
@@ -28,13 +28,13 @@ export const metadata: Metadata = {
         url: "/images/hero-fallback.svg",
         width: 1600,
         height: 1000,
-        alt: "PakSarZameen NGO Bahawalpur",
+          alt: "PakSarZameen Bahawalpur",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "About PakSarZameen NGO | Mission, Vision And Community Work",
+    title: "About PakSarZameen | Mission, Vision And Community Work",
     description:
       "Meet the story, mission, and values behind PakSarZameen's education, health, environmental, and welfare work in Pakistan.",
     images: ["/images/hero-fallback.svg"],
@@ -47,8 +47,8 @@ export default function AboutPage() {
       <section className="about-hero" data-scroll-section="about-hero">
         <div className="about-hero-content">
           <h1 className="about-hero-title">About PakSarZameen</h1>
-          <p className="about-hero-subtitle">
-            A community development NGO in Pakistan rooted in justice, compassion, and sustainable community care
+            <p className="about-hero-subtitle">
+            A community development organization in Pakistan rooted in justice, compassion, and sustainable community care
           </p>
         </div>
       </section>
@@ -57,8 +57,8 @@ export default function AboutPage() {
         <div className="about-detailed-container">
           <div className="about-detailed-header">
             <h2>Who We Are</h2>
-            <p className="about-intro">
-              PakSarZameen is a Bahawalpur-based NGO founded in 2021 through a
+              <p className="about-intro">
+              PakSarZameen is a Bahawalpur-based organization founded in 2021 through a
               symbolic act of environmental and social care, and it has grown
               into a platform for education, health, welfare, and volunteer-led
               community development across Pakistan.

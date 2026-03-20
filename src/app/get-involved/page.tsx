@@ -5,16 +5,22 @@ import { siteConfig } from "@/config/site";
 import { GetInvolvedForm } from "@/features/get-involved/components/GetInvolvedForm";
 
 export const metadata: Metadata = {
-  title: "Volunteer with PakSarzameen",
+  title: "Get Involved: Volunteer, Partner Or Support",
   description:
-    "Volunteer with PakSarzameen and support social development, community welfare, and humanitarian initiatives across Pakistan.",
+    "Volunteer, partner, donate, or support PakSarZameen's education, health, blood bank, environmental, and welfare work across Pakistan.",
+  keywords: [
+    ...siteConfig.seo.keywords,
+    "volunteer with ngo pakistan",
+    "donate to ngo pakistan",
+    "ngo partnerships bahawalpur",
+  ],
   alternates: {
     canonical: "/get-involved",
   },
   openGraph: {
-    title: "Volunteer with PakSarzameen",
+    title: "Get Involved | Support PakSarZameen's Work In Pakistan",
     description:
-      "Volunteer, partner, or support PakSarzameen's mission across education, health, environment, and community welfare.",
+      "Volunteer, partner, donate, or spread awareness for PakSarZameen's education, health, environmental, and welfare programs.",
     url: `${siteConfig.siteUrl}/get-involved`,
     type: "website",
     images: [
@@ -28,9 +34,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Volunteer with PakSarzameen",
+    title: "Get Involved | Support PakSarZameen's Work In Pakistan",
     description:
-      "Volunteer, partner, or support PakSarzameen's mission across education, health, environment, and community welfare.",
+      "Volunteer, partner, donate, or spread awareness for PakSarZameen's education, health, environmental, and welfare programs.",
     images: ["/images/hero-fallback.svg"],
   },
 };
@@ -38,19 +44,19 @@ export const metadata: Metadata = {
 const waysToHelp = [
   {
     title: "Volunteer",
-    desc: "Contribute time and skills on ground-level initiatives across Bahawalpur and beyond.",
+    desc: "Contribute your time and skills to field activities, campaigns, and community support work in Bahawalpur and beyond.",
   },
   {
     title: "Partner",
-    desc: "Collaborate with us through schools, hospitals, businesses, and public institutions.",
+    desc: "Collaborate through schools, hospitals, businesses, universities, and public institutions.",
   },
   {
     title: "Donate",
-    desc: "Support a specific program or strengthen our general operations and growth.",
+    desc: "Support a specific program area or strengthen the operations that keep community work moving.",
   },
   {
     title: "Spread Awareness",
-    desc: "Share our work, amplify our stories, and help more communities find us.",
+    desc: "Share our work online and offline so more volunteers, donors, and communities can connect with PSZ.",
   },
 ];
 
@@ -64,13 +70,14 @@ export default function GetInvolvedPage() {
             Get Involved
           </p>
           <h1 className="mt-4 max-w-3xl font-heading text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl">
-            Volunteer with PakSarZameen
+            Volunteer, Partner, Or Support PakSarZameen
           </h1>
           <p className="mt-5 max-w-2xl text-sm leading-relaxed text-neutral-100 sm:text-base lg:max-w-3xl lg:text-lg">
-            Whether you want to volunteer on the ground, partner with us
-            institutionally, or support our programs, we would love to hear from
-            you. Fill in the form below and our team will be in touch within 3-5
-            working days.
+            Whether you want to volunteer on the ground, build an institutional
+            partnership, support our blood bank, or strengthen our education,
+            health, environmental, and welfare programs, we would love to hear
+            from you. Fill in the form below and our team will be in touch
+            within 3-5 working days.
           </p>
         </header>
       </div>
@@ -113,7 +120,7 @@ export default function GetInvolvedPage() {
                 >
                   {siteConfig.contact.email}
                 </a>{" "}
-                or call {siteConfig.contact.phone}. Visit us at{" "}
+                or call {siteConfig.contact.phone}. Visit us in Bahawalpur at{" "}
                 {siteConfig.contact.address}.
               </p>
               <p className="mt-2 text-xs leading-relaxed text-neutral-500">

@@ -838,7 +838,7 @@ export function HomeClient() {
               </span>
             ))}
             </h1>
-            <p className="intro-tagline">Nurturing character as the foundation of meaningful education — تربیت سے تعلیم</p>
+            <p className="intro-tagline">Community development rooted in character, care, and education.</p>
           </div>
         </div>
       </div>
@@ -850,7 +850,7 @@ export function HomeClient() {
         <video ref={heroVideoRef} src={VIDEOS.hero} muted loop playsInline preload="none" controls={false} autoPlay={true} poster={VIDEO_POSTERS.hero} />
         <div className="blur-overlay" aria-hidden="true" />
         <div className="hero-content">
-          <p className="hero-label">Introducing</p>
+          <p className="hero-label">Community Development NGO In Pakistan</p>
           <h1 className="hero-title">
             Pak<span className="green">Sar</span>Zameen
           </h1>
@@ -864,9 +864,11 @@ export function HomeClient() {
               lineHeight: 1.6,
             }}
           >
-            Nurturing character as the foundation of meaningful education.
+            PakSarZameen works from Bahawalpur through education, health,
+            blood support, environmental action, animal welfare, and
+            volunteer-led community programs.
             <br />
-            <em style={{ display: "block", marginTop: "0.6rem", fontSize: "0.95em" }}>تربیت سے تعلیم</em>
+            <em style={{ display: "block", marginTop: "0.6rem", fontSize: "0.95em" }}>Building dignity through practical community care.</em>
           </p>
         </div>
       </section>
@@ -880,9 +882,9 @@ export function HomeClient() {
         <div className="mission-bg-overlay" aria-hidden="true" />
         <div className="section-text">
           <p>
-            A seamless blend of social impact and community empowerment.
-            Transforming lives across Pakistan through education, compassion, and
-            grassroots progress.
+            We connect volunteers, partners, and communities through practical
+            programs in education, health, blood support, environmental action,
+            and welfare.
           </p>
         </div>
       </section>
@@ -910,21 +912,21 @@ export function HomeClient() {
           <div className="split-right">
             <p>
               PakSarZameen bridges the gap between intention and action. Our
-              mission-driven approach creates sustainable pathways for education,
-              healthcare, and economic empowerment in underserved communities
-              across Pakistan.
+              NGO model turns local energy into practical support for education,
+              healthcare, community welfare, and long-term empowerment in
+              underserved areas.
             </p>
             <p style={{ marginTop: "1.5rem" }}>
-              Founded on the belief that every community has the power to rise,
-              PSZ works hand-in-hand with local leaders to design programs that
-              are practical, scalable, and culturally rooted.
+              Founded in Bahawalpur, PSZ works hand-in-hand with local leaders,
+              volunteers, and institutions to design programs that are
+              practical, culturally rooted, and built to last.
             </p>
             <div style={{ marginTop: "2rem", display: "flex", flexWrap: "wrap", columnGap: "2rem", rowGap: "0.9rem" }}>
               <Link href="/programs">
-                <span>Explore Our Programs</span> →
+                <span>Explore Our Programs</span> &rarr;
               </Link>
               <Link href="/about">
-                <span>Our Story</span> →
+                <span>Our Story</span> &rarr;
               </Link>
             </div>
           </div>
@@ -1050,7 +1052,7 @@ export function HomeClient() {
               lineHeight: 1.6,
             }}
           >
-            Serving humanity through actionable compassion
+            Education, health, environment, and welfare led by community action
           </p>
         </div>
 
@@ -1075,8 +1077,8 @@ export function HomeClient() {
         </div>
 
         <div className="cta-links" style={{ marginTop: "3rem" }}>
-          <Link href="/about"><span>Watch our story</span> →</Link>
-          <Link href="/programs"><span>Explore programs</span> →</Link>
+          <Link href="/about"><span>Watch our story</span> &rarr;</Link>
+          <Link href="/programs"><span>Explore programs</span> &rarr;</Link>
         </div>
 
         <div className="showcase-image">
@@ -1084,7 +1086,7 @@ export function HomeClient() {
         </div>
 
         <Link href="/get-involved">
-          <button className="cta-button" type="button">Get Involved ↗</button>
+          <button className="cta-button" type="button">Get Involved &rarr;</button>
         </Link>
       </section>
 
@@ -1121,12 +1123,11 @@ export function HomeClient() {
       {/* ════════════════════════════════════════════════ */}
       <section className="highlight-section ochi-section-reveal" data-scroll-section="highlight">
         <p>
-          Since our inception, PakSarZameen has{" "}
-          <span>reached over 50,000 individuals</span> across Pakistan. From
-          solar-powered schools in Sindh to mobile health clinics in KPK, our
-          programs <span>deliver measurable results</span> in education,
-          healthcare, and <span>sustainable livelihoods</span> — driven entirely
-          by the communities we serve.
+          PakSarZameen pairs <span>community trust</span> with practical
+          delivery. From education and health support to blood response,
+          environmental action, and local welfare initiatives, our programs
+          focus on <span>measurable follow-through</span> and
+          <span> long-term community resilience</span>.
         </p>
       </section>
 
@@ -1140,9 +1141,9 @@ export function HomeClient() {
         <div className="voices-dot-grid" aria-hidden="true" />
 
         <div className="voices-header">
-          <span className="voices-label scroll-reveal">What People Say</span>
-          <h2 className="voices-title scroll-reveal" data-delay="0.1">Community Voices</h2>
-          <p className="voices-subtitle scroll-reveal" data-delay="0.2">Real stories from real people whose lives have been touched by PSZ.</p>
+          <span className="voices-label scroll-reveal">Why People Stay Involved</span>
+          <h2 className="voices-title scroll-reveal" data-delay="0.1">Voices Around The Work</h2>
+          <p className="voices-subtitle scroll-reveal" data-delay="0.2">Reflections from volunteers, partners, and supporters who value practical community action.</p>
         </div>
 
         {/* big decorative open-quote */}
@@ -1257,7 +1258,7 @@ export function HomeClient() {
         <div className="programs-stack-header">
           <span className="programs-stack-label scroll-reveal">Our Departments</span>
           <h2 className="programs-stack-title scroll-reveal" data-delay="0.1">What We Do</h2>
-          <p className="programs-stack-subtitle scroll-reveal" data-delay="0.2">Six specialized departments working in harmony to uplift communities across Pakistan.</p>
+          <p className="programs-stack-subtitle scroll-reveal" data-delay="0.2">Six departments working across education, health, environment, women empowerment, social care, and animal welfare.</p>
         </div>
 
         <div className="programs-stack-viewport">
@@ -1310,7 +1311,7 @@ export function HomeClient() {
         </div>
 
         <div className="programs-stack-cta">
-          <Link href="/programs" className="view-all-link">Explore All Programs →</Link>
+          <Link href="/programs" className="view-all-link">Explore All Programs &rarr;</Link>
         </div>
       </section>
 
@@ -1339,8 +1340,8 @@ export function HomeClient() {
             <p className="chapters-label scroll-reveal">Where We Operate</p>
             <h2 className="chapters-title scroll-reveal" data-delay="0.1">Our Chapters</h2>
             <p className="chapters-subtitle scroll-reveal" data-delay="0.2">
-              PakSarZameen is on the ground across Pakistan — each chapter tailored to
-              regional challenges and opportunities.
+              PakSarZameen is active across Pakistan, with each chapter shaped
+              around local needs, partnerships, and opportunities for service.
             </p>
           </div>
 

@@ -3,17 +3,22 @@ import { siteConfig } from "@/config/site";
 import { HomeClient } from "@/features/home/components/HomeClient";
 
 export const metadata: Metadata = {
-  title: "PakSarzameen - Community Development Organization in Pakistan",
+  title: "NGO In Pakistan For Education, Health And Community Welfare",
   description:
-    "PakSarzameen is a community-driven organization working for social development, volunteer programs, and humanitarian initiatives across Pakistan.",
-  keywords: siteConfig.seo.keywords,
+    "PakSarZameen is a community development NGO in Pakistan working from Bahawalpur through volunteer programs, education support, health outreach, blood bank response, environmental action, and animal welfare.",
+  keywords: [
+    ...siteConfig.seo.keywords,
+    "community development ngo pakistan",
+    "bahawalpur ngo",
+    "education health welfare pakistan",
+  ],
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "PakSarzameen - Official Website",
+    title: "PakSarZameen | NGO In Pakistan For Community Development",
     description:
-      "PakSarzameen is a community-driven organization working for social development, volunteer programs, and humanitarian initiatives across Pakistan.",
+      "Explore PakSarZameen's work in education, health, blood support, environmental action, animal welfare, and volunteer-led community development across Pakistan.",
     url: siteConfig.siteUrl,
     type: "website",
     images: [
@@ -27,9 +32,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "PakSarzameen - Official Website",
+    title: "PakSarZameen | NGO In Pakistan For Community Development",
     description:
-      "PakSarzameen is a community-driven organization working for social development, volunteer programs, and humanitarian initiatives across Pakistan.",
+      "Explore PakSarZameen's work in education, health, blood support, environmental action, animal welfare, and volunteer-led community development across Pakistan.",
     images: ["/images/hero-fallback.svg"],
   },
 };

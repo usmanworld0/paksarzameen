@@ -66,8 +66,14 @@ export async function generateMetadata({
   }
 
   return {
-    title: program.title,
+    title: `${program.title} Program`,
     description: program.description,
+    keywords: [
+      ...siteConfig.seo.keywords,
+      program.title,
+      `${program.category.toLowerCase()} program pakistan`,
+      "community development program pakistan",
+    ],
     alternates: {
       canonical: `/programs/${program.slug}`,
     },

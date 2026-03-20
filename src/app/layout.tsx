@@ -18,11 +18,10 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.siteUrl),
   applicationName: siteConfig.name,
   title: {
-    default: "PakSarzameen - Official Website",
-    template: "%s | PakSarzameen",
+    default: "PakSarZameen | NGO In Pakistan For Community Development",
+    template: "%s | PakSarZameen",
   },
-  description:
-    "PakSarzameen is a community-driven organization working for social development, volunteer programs, and humanitarian initiatives across Pakistan.",
+  description: siteConfig.description,
   keywords: siteConfig.seo.keywords,
   icons: {
     icon: [
@@ -38,9 +37,8 @@ export const metadata: Metadata = {
   creator: "PakSarZameen",
   publisher: "PakSarZameen",
   openGraph: {
-    title: "PakSarzameen - Official Website",
-    description:
-      "PakSarzameen is a community-driven organization working for social development, volunteer programs, and humanitarian initiatives across Pakistan.",
+    title: "PakSarZameen | NGO In Pakistan For Community Development",
+    description: siteConfig.description,
     type: "website",
     url: siteConfig.siteUrl,
     siteName: siteConfig.name,
@@ -56,9 +54,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "PakSarzameen - Official Website",
-    description:
-      "PakSarzameen is a community-driven organization working for social development, volunteer programs, and humanitarian initiatives across Pakistan.",
+    title: "PakSarZameen | NGO In Pakistan For Community Development",
+    description: siteConfig.description,
     images: ["/images/hero-fallback.svg"],
   },
   robots: {
@@ -79,29 +76,62 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const organizationSchema = {
+  const organizationId = `${siteConfig.siteUrl}/#organization`;
+  const websiteId = `${siteConfig.siteUrl}/#website`;
+
+  const siteSchema = {
     "@context": "https://schema.org",
-    "@type": "Organization",
-    name: "PakSarZameen",
-    url: siteConfig.siteUrl,
-    telephone: siteConfig.contact.phone,
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: `${siteConfig.contact.addressLines[0]}, ${siteConfig.contact.addressLines[1]}, ${siteConfig.contact.addressLines[2]}`,
-      addressLocality: siteConfig.contact.addressLines[3],
-      addressRegion: siteConfig.contact.addressLines[4],
-      addressCountry: siteConfig.contact.addressLines[5],
-    },
-    sameAs: [siteConfig.social.instagram, siteConfig.social.facebook],
+    "@graph": [
+      {
+        "@type": "NGO",
+        "@id": organizationId,
+        name: siteConfig.name,
+        url: siteConfig.siteUrl,
+        logo: `${siteConfig.siteUrl}/paksarzameen_logo.png`,
+        image: `${siteConfig.siteUrl}/images/hero-fallback.svg`,
+        description: siteConfig.description,
+        email: siteConfig.contact.email,
+        telephone: siteConfig.contact.phone,
+        foundingDate: "2021",
+        areaServed: "Pakistan",
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: `${siteConfig.contact.addressLines[0]}, ${siteConfig.contact.addressLines[1]}, ${siteConfig.contact.addressLines[2]}`,
+          addressLocality: siteConfig.contact.addressLines[3],
+          addressRegion: siteConfig.contact.addressLines[4],
+          addressCountry: siteConfig.contact.addressLines[5],
+        },
+        sameAs: [
+          siteConfig.social.instagram,
+          siteConfig.social.facebook,
+          siteConfig.social.linkedin,
+        ],
+      },
+      {
+        "@type": "WebSite",
+        "@id": websiteId,
+        url: siteConfig.siteUrl,
+        name: siteConfig.name,
+        description: siteConfig.description,
+        inLanguage: "en-PK",
+        publisher: {
+          "@id": organizationId,
+        },
+      },
+    ],
   };
 
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
         {/* Preconnect to external media domains for faster loading */}
+        <link rel="dns-prefetch" href="https://www.instagram.com" />
+        <link rel="dns-prefetch" href="https://platform.instagram.com" />
         <link rel="dns-prefetch" href="https://images.pexels.com" />
         <link rel="dns-prefetch" href="https://videos.pexels.com" />
         <link rel="dns-prefetch" href="https://images.unsplash.com" />
+        <link rel="preconnect" href="https://www.instagram.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://platform.instagram.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://images.pexels.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://videos.pexels.com" crossOrigin="anonymous" />
         {/* Force light theme to avoid any theme toggling */}
@@ -112,7 +142,7 @@ export default function RootLayout({
         />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(siteSchema) }}
         />
       </head>
       <body className={`${inter.variable} antialiased`}>

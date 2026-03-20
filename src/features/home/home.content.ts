@@ -29,21 +29,20 @@ export type ProgramCard = {
 export type Chapter = {
   city: string;
   tagline: string;
-  icon: string;          // inline SVG path data for the city landmark
-  accent: string;        // accent colour for the card
+  icon: string;
+  accent: string;
 };
 
-/* ─── PSZ Chapters across Pakistan ─── */
 export const PSZ_CHAPTERS: readonly Chapter[] = [
   {
     city: "Islamabad",
-    tagline: "Policy & Strategy Hub",
+    tagline: "Policy and Strategy Hub",
     icon: "faisal-mosque",
     accent: "#0f7a47",
   },
   {
     city: "Bahawalpur",
-    tagline: "Heritage & Education Centre",
+    tagline: "Heritage and Education Centre",
     icon: "noor-mahal",
     accent: "#c4a265",
   },
@@ -71,7 +70,7 @@ export const heroContent = {
   title: "PakSarZameen",
   subtitle: "Building Community Wealth.",
   supportingLine:
-    "A mission platform for education, compassion, and sustainable grassroots progress across Pakistan.",
+    "A community development platform for education, compassion, and grassroots progress across Pakistan.",
   exploreCta: "Explore Programs",
   joinCta: "Join the Mission",
   videoSrc:
@@ -84,32 +83,32 @@ export const missionCards: MissionCard[] = [
     title: "Community Empowerment",
     description:
       "Enable neighborhoods to lead positive change through participation and shared responsibility.",
-    icon: "🌍",
+    icon: "globe",
   },
   {
     title: "Ethical Enterprise",
     description:
       "Promote dignified livelihoods that align economic growth with social wellbeing.",
-    icon: "⚡",
+    icon: "spark",
   },
   {
     title: "Cultural Heritage",
     description:
       "Protect local identity and traditions while building relevant, future-ready opportunities.",
-    icon: "🏛️",
+    icon: "heritage",
   },
   {
     title: "Grassroots Development",
     description:
       "Invest in practical, high-impact local solutions shaped by community realities.",
-    icon: "🌱",
+    icon: "leaf",
   },
 ];
 
 export const joinContent = {
   heading: "Join the Mission",
   text:
-    "Partner with PakSarZameen to expand opportunity, strengthen communities, and deliver measurable social impact across Pakistan.",
+    "Partner with PakSarZameen to expand opportunity, strengthen communities, and deliver meaningful social impact across Pakistan.",
   volunteerCta: "Volunteer With PSZ",
   partnerCta: "Become a Partner",
 } as const;
@@ -118,33 +117,32 @@ export const storiesContent = [
   {
     id: 1,
     quote:
-      "PakSarZameen transformed our village. My children now have access to quality education and my husband started a sustainable business through their enterprise program.",
-    author: "Fatima Bibi",
-    role: "Community Member, Multan",
+      "PSZ feels close to the ground. The team listens first, then builds support that people can actually use.",
+    author: "Volunteer Reflection",
+    role: "Community outreach",
   },
   {
     id: 2,
     quote:
-      "The Room Zia initiative brought light — literally and figuratively — to our community. Solar panels power our school and clinic now.",
-    author: "Ahmed Khan",
-    role: "Village Elder, Swat",
+      "What stands out is the mix of compassion and follow-through. Partnerships move faster when the mission is clear.",
+    author: "Partner Perspective",
+    role: "Institutional collaboration",
   },
   {
     id: 3,
     quote:
-      "As a partner organization, we've seen PSZ deliver real, measurable impact. Their approach to grassroots development is unmatched.",
-    author: "Dr. Sara Malik",
-    role: "Director, Rural Health Initiative",
+      "From blood support to education and environmental action, the work feels practical, local, and deeply human.",
+    author: "Supporter Reflection",
+    role: "Community advocate",
   },
-];
+] as const;
 
-/* ─── Heart of Paksarzameen — Team Members ─── */
 export const HEART_MEMBERS: readonly TeamMember[] = [
   {
     name: "Malik Abdullah Amir",
     designation: "Chief Executive Officer",
     quote: "Real change happens when logistics meet compassion on the ground.",
-  image: "/images/optimized/members/4.webp",
+    image: "/images/optimized/members/4.webp",
   },
   {
     name: "Ahmad Malik",
@@ -155,16 +153,14 @@ export const HEART_MEMBERS: readonly TeamMember[] = [
   {
     name: "M. Abdullah Jamal",
     designation: "Executive Managing Director",
-    quote: "Healthcare is not a privilege — it is the right of every citizen.",
-  image: "/images/optimized/members/6.webp",
-    
+    quote: "Healthcare is not a privilege - it is the right of every citizen.",
+    image: "/images/optimized/members/6.webp",
   },
   {
     name: "Hussain Khan Langah",
     designation: "Executive Managing Director",
-    quote: "Paksarzameen is more than a project — it is a mission for the future.",
+    quote: "PakSarZameen is more than a project - it is a mission for the future.",
     image: "/images/optimized/members/1.webp",
-    
   },
   {
     name: "Laiba Shafiq",
@@ -186,41 +182,39 @@ export const HEART_MEMBERS: readonly TeamMember[] = [
   },
 ];
 
-/* ─── Scroll-text blocks alongside the canvas ─── */
 export const SCROLL_TEXT_BLOCKS: readonly ScrollTextBlock[] = [
   {
     title: "Room Zia",
     description:
-      "Solar-powered learning spaces that bring electricity and education to remote villages. Over 120 schools illuminated.",
+      "Learning support and community care for underserved groups who need safer pathways into education and opportunity.",
   },
   {
-    title: "Mobile Health Clinics",
+    title: "Health Outreach",
     description:
-      "Bringing essential healthcare to doorsteps. 15,000+ consultations in areas with no hospital access.",
+      "Practical medical support, preventive awareness, and referral guidance delivered closer to the people who need it.",
   },
   {
     title: "Skills for Tomorrow",
     description:
-      "Vocational training programs equipping youth with digital literacy, tailoring, and agricultural skills.",
+      "Training programs that help young people build confidence, practical skills, and stronger economic futures.",
   },
   {
-    title: "Clean Water Initiative",
+    title: "Cleaner Communities",
     description:
-      "Installing water filtration plants across Punjab and Sindh. Safe drinking water for 30,000+ people.",
+      "Environmental action shaped by local stewardship, from plantation campaigns to small-scale sustainability efforts.",
   },
   {
-    title: "Women Enterprise Hub",
+    title: "Women Enterprise",
     description:
-      "Micro-financing and mentorship for women entrepreneurs. 3,000 families lifted through sustainable business.",
+      "Support for women seeking leadership, skills, and more stable pathways into dignified livelihoods.",
   },
   {
-    title: "Community Kitchens",
+    title: "Community Care",
     description:
-      "Daily nutritious meals for 5,000+ individuals in urban slums and disaster-affected regions.",
+      "Programs designed around practical needs, consistent follow-up, and long-term community trust.",
   },
 ];
 
-/* ─── Program department cards ─── */
 const PSZ_GREEN_GRADIENT =
   "linear-gradient(135deg, #0f7a47 0%, #1a9d5f 60%, #081c10 100%)";
 
@@ -228,65 +222,57 @@ export const PROGRAM_CARDS: readonly ProgramCard[] = [
   {
     name: "Mahkma Shajarkari",
     subtitle: "Plantation Unit",
-    desc: "Promoting environmental responsibility through plantation drives and sustainability initiatives across Pakistan.",
+    desc: "Leading tree plantation, urban greening, and climate-awareness efforts that help communities care for their environment.",
     tag: "Environment",
-    icon: "🌿",
+    icon: "leaf",
     bg: PSZ_GREEN_GRADIENT,
     tagColor: "var(--psz-green)",
   },
   {
     name: "Ehsas ul Haiwanat",
     subtitle: "Animal Welfare Section",
-    desc: "Advocating compassion toward animals and supporting their welfare, protection, and ethical treatment.",
+    desc: "Supporting animal welfare through feeding, protection, humane treatment, and neighborhood-level awareness.",
     tag: "Welfare",
-    icon: "🐾",
+    icon: "paw",
     bg: PSZ_GREEN_GRADIENT,
     tagColor: "var(--psz-green)",
   },
   {
     name: "Room Zia",
     subtitle: "Bureau for Empowering Marginalized Communities",
-    desc: "Providing care, support, and opportunities for orphaned, transgender, and specially-abled individuals.",
+    desc: "Creating support pathways for orphaned, transgender, and specially abled individuals through care, dignity, and opportunity.",
     tag: "Social Care",
-    icon: "💡",
+    icon: "support",
     bg: PSZ_GREEN_GRADIENT,
     tagColor: "var(--psz-green)",
   },
   {
     name: "Dar ul Aloom",
     subtitle: "Agency of Educational Development",
-    desc: "Advancing access to knowledge and learning through educational programs and community awareness.",
+    desc: "Expanding access to education, mentoring, and learning opportunities through practical community-based programs.",
     tag: "Education",
-    icon: "📚",
+    icon: "book",
     bg: PSZ_GREEN_GRADIENT,
     tagColor: "var(--psz-green)",
   },
   {
     name: "Tibi Imdad",
     subtitle: "Bureau for Improving Health Standards",
-    desc: "Working to improve community health through medical support, awareness campaigns, and welfare services.",
+    desc: "Improving community health through medical support, preventive awareness, outreach camps, and welfare services.",
     tag: "Healthcare",
-    icon: "🏥",
+    icon: "health",
     bg: PSZ_GREEN_GRADIENT,
     tagColor: "var(--psz-green)",
   },
   {
     name: "Wajood-e-Zan",
     subtitle: "Women Empowerment Department",
-    desc: "Promoting the dignity, education, and empowerment of women so they can actively participate in shaping society.",
+    desc: "Promoting women's dignity, education, leadership, and economic participation so they can shape stronger communities.",
     tag: "Empowerment",
-    icon: "✊",
+    icon: "empower",
     bg: PSZ_GREEN_GRADIENT,
     tagColor: "var(--psz-green)",
   },
 ];
 
-/* ─── Testimonial avatar URLs ─── */
-export const TESTIMONIAL_AVATARS: Readonly<Record<string, string>> = {
-  "Fatima Bibi":
-    "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=80&h=80&fit=crop&crop=face",
-  "Ahmed Khan":
-    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&crop=face",
-  "Dr. Sara Malik":
-    "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=80&h=80&fit=crop&crop=face",
-};
+export const TESTIMONIAL_AVATARS: Readonly<Record<string, string>> = {};

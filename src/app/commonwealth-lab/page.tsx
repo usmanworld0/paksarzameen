@@ -38,16 +38,22 @@ const CATEGORY_IMAGES: Record<string, string> = {
 };
 
 export const metadata: Metadata = {
-  title: "Paksarzameen Store by PakSarzameen",
+  title: "Paksarzameen Store: Ethical Artisan Marketplace",
   description:
-    "Discover Paksarzameen Store by PakSarzameen, a premium artisan marketplace where every purchase supports local communities.",
+    "Discover the Paksarzameen Store, an ethical artisan marketplace where every purchase supports local communities and PakSarZameen social programs.",
+  keywords: [
+    ...siteConfig.seo.keywords,
+    "ethical artisan marketplace pakistan",
+    "social impact shopping pakistan",
+    "paksarzameen store",
+  ],
   alternates: {
     canonical: "/commonwealth-lab",
   },
   openGraph: {
-    title: "Paksarzameen Store by PakSarzameen",
+    title: "Paksarzameen Store | Ethical Artisan Marketplace",
     description:
-      "Discover Paksarzameen Store by PakSarzameen, a premium artisan marketplace where every purchase supports local communities.",
+      "Shop artisan products that support local makers and PakSarZameen community development work.",
     url: `${siteConfig.siteUrl}/commonwealth-lab`,
     type: "website",
     images: [
@@ -61,9 +67,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Paksarzameen Store by PakSarzameen",
+    title: "Paksarzameen Store | Ethical Artisan Marketplace",
     description:
-      "Discover Paksarzameen Store by PakSarzameen, a premium artisan marketplace where every purchase supports local communities.",
+      "Shop artisan products that support local makers and PakSarZameen community development work.",
     images: ["/images/hero-fallback.svg"],
   },
 };

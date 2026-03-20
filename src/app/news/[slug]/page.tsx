@@ -30,6 +30,12 @@ export async function generateMetadata({
   return {
     title: article.title,
     description: article.excerpt,
+    keywords: [
+      ...siteConfig.seo.keywords,
+      article.category.toLowerCase(),
+      article.title,
+      "ngo updates pakistan",
+    ],
     alternates: {
       canonical: `/news/${article.slug}`,
     },

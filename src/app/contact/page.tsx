@@ -5,16 +5,22 @@ import { siteConfig } from "@/config/site";
 import { ContactForm } from "@/features/contact/components/ContactForm";
 
 export const metadata: Metadata = {
-  title: "Contact PakSarzameen - Bahawalpur",
+  title: "Contact Us In Bahawalpur, Pakistan",
   description:
-    "Contact PakSarzameen in Bahawalpur for volunteer opportunities, partnerships, and humanitarian initiatives across Pakistan.",
+    "Contact PakSarZameen in Bahawalpur for volunteer opportunities, partnerships, blood bank support, media inquiries, and community initiatives across Pakistan.",
+  keywords: [
+    ...siteConfig.seo.keywords,
+    "contact ngo bahawalpur",
+    "paksarzameen contact",
+    "blood bank contact bahawalpur",
+  ],
   alternates: {
     canonical: "/contact",
   },
   openGraph: {
-    title: "Contact PakSarzameen - Bahawalpur",
+    title: "Contact PakSarZameen | NGO In Bahawalpur, Pakistan",
     description:
-      "Contact PakSarzameen in Bahawalpur for volunteer opportunities, partnerships, and humanitarian initiatives across Pakistan.",
+      "Reach PakSarZameen for volunteering, partnerships, blood support, and community development work in Bahawalpur and beyond.",
     url: `${siteConfig.siteUrl}/contact`,
     type: "website",
     images: [
@@ -28,9 +34,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Contact PakSarzameen - Bahawalpur",
+    title: "Contact PakSarZameen | NGO In Bahawalpur, Pakistan",
     description:
-      "Contact PakSarzameen in Bahawalpur for volunteer opportunities, partnerships, and humanitarian initiatives across Pakistan.",
+      "Reach PakSarZameen for volunteering, partnerships, blood support, and community development work in Bahawalpur and beyond.",
     images: ["/images/hero-fallback.svg"],
   },
 };
@@ -46,8 +52,9 @@ export default function ContactPage() {
           Contact PakSarZameen
         </h1>
         <p className="mt-4 max-w-3xl text-base leading-relaxed text-neutral-500">
-          Connect with our team for volunteering, partnerships, and community
-          development initiatives.
+          Connect with our team in Bahawalpur for volunteering, partnerships,
+          blood bank coordination, media inquiries, and community development
+          initiatives across Pakistan.
         </p>
       </header>
 
@@ -174,7 +181,8 @@ export default function ContactPage() {
             Send a Message
           </h2>
           <p className="mt-3 text-sm text-neutral-600">
-            Use the form to send us a message and we&apos;ll get back to you.
+            Use the form to send us a message about volunteering, partnerships,
+            campaigns, or general inquiries and we&apos;ll get back to you.
           </p>
           <div className="mt-4">
             <ContactForm />

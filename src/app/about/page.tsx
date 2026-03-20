@@ -5,16 +5,22 @@ import { siteConfig } from "@/config/site";
 /* eslint-disable react/no-unescaped-entities */
 
 export const metadata: Metadata = {
-  title: "About PakSarzameen | Our Mission and Vision",
+  title: "About Us: Mission, Vision And Community Work In Pakistan",
   description:
-    "Learn about PakSarzameen, our mission, vision, and community development initiatives rooted in justice, compassion, and sustainable social impact.",
+    "Learn about PakSarZameen, a community development NGO in Pakistan rooted in justice, compassion, education, health support, environmental action, and sustainable social impact.",
+  keywords: [
+    ...siteConfig.seo.keywords,
+    "about paksarzameen",
+    "ngo mission pakistan",
+    "community development bahawalpur",
+  ],
   alternates: {
     canonical: "/about",
   },
   openGraph: {
-    title: "About PakSarzameen | Our Mission and Vision",
+    title: "About PakSarZameen NGO | Mission, Vision And Community Work",
     description:
-      "Learn about PakSarzameen, our mission, vision, and community development initiatives rooted in justice, compassion, and sustainable social impact.",
+      "Meet the story, mission, and values behind PakSarZameen's education, health, environmental, and welfare work in Pakistan.",
     url: `${siteConfig.siteUrl}/about`,
     type: "website",
     images: [
@@ -28,9 +34,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "About PakSarzameen | Our Mission and Vision",
+    title: "About PakSarZameen NGO | Mission, Vision And Community Work",
     description:
-      "Learn about PakSarzameen, our mission, vision, and community development initiatives rooted in justice, compassion, and sustainable social impact.",
+      "Meet the story, mission, and values behind PakSarZameen's education, health, environmental, and welfare work in Pakistan.",
     images: ["/images/hero-fallback.svg"],
   },
 };
@@ -42,7 +48,7 @@ export default function AboutPage() {
         <div className="about-hero-content">
           <h1 className="about-hero-title">About PakSarZameen</h1>
           <p className="about-hero-subtitle">
-            Rooted in justice, compassion, and sustainable community care
+            A community development NGO in Pakistan rooted in justice, compassion, and sustainable community care
           </p>
         </div>
       </section>
@@ -52,8 +58,10 @@ export default function AboutPage() {
           <div className="about-detailed-header">
             <h2>Who We Are</h2>
             <p className="about-intro">
-              PakSarZameen is a Guinness World Record-holding institute founded
-              in 2021 through a symbolic act of environmental and social care.
+              PakSarZameen is a Bahawalpur-based NGO founded in 2021 through a
+              symbolic act of environmental and social care, and it has grown
+              into a platform for education, health, welfare, and volunteer-led
+              community development across Pakistan.
             </p>
           </div>
 
@@ -87,9 +95,10 @@ export default function AboutPage() {
               <h3>How We Work</h3>
               <p>
                 Guided by compassion and dignity, we build programs that respond
-                to real local needs. Our work is rooted in empowerment, open to
-                all communities, and designed to create long-term pathways for
-                education, wellbeing, livelihoods, and shared civic care.
+                to real local needs. Our work is rooted in empowerment,
+                volunteer collaboration, and practical service, with long-term
+                pathways for education, wellbeing, livelihoods, and shared civic
+                care.
               </p>
             </div>
           </div>

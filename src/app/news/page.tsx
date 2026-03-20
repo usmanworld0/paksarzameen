@@ -5,16 +5,22 @@ import { NewsHubClient } from "@/features/news/components/NewsHubClient";
 import { getArticles } from "@/lib/services/getArticles";
 
 export const metadata: Metadata = {
-  title: "PakSarzameen News and Resources",
+  title: "News, Resources And Impact Stories",
   description:
-    "Read the latest PakSarZameen impact stories, program announcements, and field updates.",
+    "Read PakSarZameen impact stories, NGO updates, field reports, program announcements, and community development resources from Pakistan.",
+  keywords: [
+    ...siteConfig.seo.keywords,
+    "ngo news pakistan",
+    "impact stories pakistan",
+    "community development updates pakistan",
+  ],
   alternates: {
     canonical: "/news",
   },
   openGraph: {
-    title: "PakSarzameen News and Resources",
+    title: "News, Resources And Impact Stories | PakSarZameen",
     description:
-      "Explore categorized updates, search by topic, and discover related stories.",
+      "Explore field updates, program announcements, and impact stories from PakSarZameen's work across Pakistan.",
     url: `${siteConfig.siteUrl}/news`,
     type: "website",
     images: [
@@ -28,9 +34,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "PakSarzameen News and Resources",
+    title: "News, Resources And Impact Stories | PakSarZameen",
     description:
-      "Explore categorized updates, search by topic, and discover related stories.",
+      "Explore field updates, program announcements, and impact stories from PakSarZameen's work across Pakistan.",
     images: ["/images/placeholders/news-cover.svg"],
   },
 };
@@ -50,8 +56,9 @@ export default async function NewsPage() {
             PakSarZameen News And Resources
           </h1>
           <p className="mt-5 max-w-2xl text-sm leading-relaxed text-neutral-100 sm:text-base lg:max-w-3xl lg:text-lg">
-            Filter by category, search across updates, and follow the latest PSZ
-            work through detailed reports and announcements.
+            Follow the latest PSZ field updates, impact stories, announcements,
+            and resource-led reporting from our work in education, health,
+            environment, welfare, and community outreach.
           </p>
         </header>
       </div>

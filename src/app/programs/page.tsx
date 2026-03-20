@@ -5,16 +5,22 @@ import { ProgramsHubClient } from "@/features/programs/components/ProgramsHubCli
 import { getPrograms } from "@/lib/services/getPrograms";
 
 export const metadata: Metadata = {
-  title: "Projects by PakSarzameen",
+  title: "Programs: Education, Health, Environment And Welfare",
   description:
-    "Explore PakSarzameen projects and programs across environmental care, education, health, welfare, and empowerment.",
+    "Explore PakSarZameen programs across education, health, environmental action, animal welfare, women empowerment, and community support in Pakistan.",
+  keywords: [
+    ...siteConfig.seo.keywords,
+    "ngo programs pakistan",
+    "community development programs pakistan",
+    "education health environment welfare",
+  ],
   alternates: {
     canonical: "/programs",
   },
   openGraph: {
-    title: "Projects by PakSarzameen",
+    title: "Programs | PakSarZameen Community Development Work",
     description:
-      "Discover all PakSarzameen departments and initiatives with category filters and searchable previews.",
+      "Browse PakSarZameen's education, health, environment, women empowerment, and welfare programs with searchable previews.",
     url: `${siteConfig.siteUrl}/programs`,
     type: "website",
     images: [
@@ -28,9 +34,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Projects by PakSarzameen",
+    title: "Programs | PakSarZameen Community Development Work",
     description:
-      "Discover all PakSarzameen departments and initiatives with category filters and searchable previews.",
+      "Browse PakSarZameen's education, health, environment, women empowerment, and welfare programs with searchable previews.",
     images: ["/images/placeholders/10.png"],
   },
 };
@@ -50,8 +56,10 @@ export default async function ProgramsPage() {
             PakSarZameen Projects And Programs
           </h1>
           <p className="mt-5 max-w-2xl text-sm leading-relaxed text-neutral-100 sm:text-base lg:max-w-3xl lg:text-lg">
-            Browse all core PSZ initiatives, filter by category, and search for
-            specific focus areas to understand where change is happening.
+            Explore our community development programs in education, health,
+            environmental action, animal welfare, women empowerment, and social
+            care. Filter by category and follow the areas where PSZ is working
+            on the ground.
           </p>
         </header>
       </div>

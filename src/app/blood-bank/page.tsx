@@ -1,14 +1,44 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import type { CSSProperties } from "react";
+
+import { siteConfig } from "@/config/site";
 import { BloodBankRequestForm } from "@/features/blood-bank/components/BloodBankRequestForm";
 
 export const metadata: Metadata = {
-  title: "Blood Bank Emergency Requests",
+  title: "Emergency Blood Bank In Bahawalpur",
   description:
-    "Submit emergency blood requests with status tracking by PakSarZameen Blood Bank team.",
+    "Contact the PakSarZameen blood bank in Bahawalpur for urgent blood availability support and submit a request form for faster coordination.",
+  keywords: [
+    ...siteConfig.seo.keywords,
+    "blood bank bahawalpur",
+    "emergency blood request bahawalpur",
+    "blood availability pakistan",
+  ],
   alternates: {
     canonical: "/blood-bank",
+  },
+  openGraph: {
+    title: "Emergency Blood Bank In Bahawalpur | PakSarZameen",
+    description:
+      "Call PakSarZameen's blood bank emergency coordinators in Bahawalpur and submit a request form for urgent blood support.",
+    url: `${siteConfig.siteUrl}/blood-bank`,
+    type: "website",
+    images: [
+      {
+        url: "/images/hero-fallback.svg",
+        width: 1600,
+        height: 1000,
+        alt: "PakSarZameen blood bank support",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Emergency Blood Bank In Bahawalpur | PakSarZameen",
+    description:
+      "Call PakSarZameen's blood bank emergency coordinators in Bahawalpur and submit a request form for urgent blood support.",
+    images: ["/images/hero-fallback.svg"],
   },
 };
 
@@ -18,9 +48,10 @@ export default function BloodBankPage() {
       <div style={pageShellStyle} className="blood-bank-shell">
         <div style={heroStyle} className="blood-bank-hero">
           <p style={eyebrowStyle}>Emergency Response Desk - 24/7</p>
-          <h1 style={titleStyle}>Need Blood Immediately? Call Now.</h1>
+          <h1 style={titleStyle}>Emergency Blood Support In Bahawalpur</h1>
           <p style={subtitleStyle}>
-            Do not wait for form processing. Our phone lines are the fastest way to dispatch support.
+            If blood is needed urgently, call first. Our coordinators can guide
+            donor matching and next steps faster than form processing alone.
           </p>
 
           <div style={numbersGridStyle}>
@@ -49,7 +80,9 @@ export default function BloodBankPage() {
 
         <div style={formWrapStyle} className="blood-bank-form">
           <p style={formIntroStyle}>
-            After calling, submit this form so our team can track hospital, blood group, and status updates.
+            After calling, submit this form so our team can track the hospital,
+            blood group, patient status, and follow-up updates without losing
+            time.
           </p>
           <BloodBankRequestForm />
         </div>

@@ -803,9 +803,6 @@ export function HomeClient() {
 
     return () => {
       document.documentElement.classList.remove("motion-lite");
-      if (mobileFallbackCleanup) {
-        mobileFallbackCleanup();
-      }
       if (idleHandle !== null && "cancelIdleCallback" in window) {
         window.cancelIdleCallback(idleHandle);
       }

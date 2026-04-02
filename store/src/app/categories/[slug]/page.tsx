@@ -37,15 +37,13 @@ export default async function CategoryPage({
   const hasCustomizationFlow =
     category.customizable && category.customizationOptions.length > 0;
 
-  const region = hasCustomizationFlow ? null : await getRequestRegion();
+  const region = await getRequestRegion();
 
-  const { products, total, pages } = hasCustomizationFlow
-    ? { products: [], total: 0, pages: 0 }
-    : await getProducts({
-        categorySlug: params.slug,
-        sort: searchParams.sort,
-        page: searchParams.page ? parseInt(searchParams.page) : 1,
-      });
+  const { products, total, pages } = await getProducts({
+    categorySlug: params.slug,
+    sort: searchParams.sort,
+    page: searchParams.page ? parseInt(searchParams.page) : 1,
+  });
 
   const currentPage = searchParams.page ? parseInt(searchParams.page) : 1;
 
@@ -67,55 +65,61 @@ export default async function CategoryPage({
                   {category.description}
                 </p>
               )}
-              {!hasCustomizationFlow && (
-                <p className="text-xs text-neutral-400 mt-3">
-                  {total} {total === 1 ? "product" : "products"}
-                </p>
-              )}
+              <p className="text-xs text-neutral-400 mt-3">
+                {total} {total === 1 ? "product" : "products"}
+              </p>
             </div>
 
-            {hasCustomizationFlow && (
-              <CategoryCustomizationPanel
-                categoryName={category.name}
-                categorySlug={category.slug}
-                options={category.customizationOptions}
-              />
-            )}
-
-            {!hasCustomizationFlow &&
-              (products.length === 0 ? (
-                <div className="store-card rounded-[22px] py-20 text-center">
-                  <p className="text-neutral-400 text-sm">
-                    No products in this category yet.
-                  </p>
+            {products.length === 0 ? (
+              <div className="store-card rounded-[22px] py-20 text-center">
+                <p className="text-neutral-400 text-sm">
+                  No products in this category yet.
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-2 gap-x-3 gap-y-6 sm:gap-y-10 lg:grid-cols-3 xl:grid-cols-4">
+                  {products.map((product) => (
+                    <ProductCard key={product.id} product={product} region={region} />
+                  ))}
                 </div>
-              ) : (
-                <>
-                  <div className="grid grid-cols-2 gap-x-3 gap-y-6 sm:gap-y-10 lg:grid-cols-3 xl:grid-cols-4">
-                    {products.map((product) => (
-                      <ProductCard key={product.id} product={product} region={region!} />
+
+                {pages > 1 && (
+                  <div className="flex justify-center gap-2 mt-16">
+                    {Array.from({ length: pages }, (_, i) => i + 1).map((p) => (
+                      <a
+                        key={p}
+                        href={`/categories/${params.slug}?page=${p}`}
+                        className={`rounded-full h-9 w-9 flex items-center justify-center text-xs font-semibold transition-all ${
+                          p === currentPage
+                            ? "bg-[#2c3d31] text-white"
+                            : "border border-neutral-300 text-neutral-500 hover:border-[#2c3d31] hover:text-[#2c3d31]"
+                        }`}
+                      >
+                        {p}
+                      </a>
                     ))}
                   </div>
+                )}
+              </>
+            )}
 
-                  {pages > 1 && (
-                    <div className="flex justify-center gap-2 mt-16">
-                      {Array.from({ length: pages }, (_, i) => i + 1).map((p) => (
-                        <a
-                          key={p}
-                          href={`/categories/${params.slug}?page=${p}`}
-                          className={`rounded-full h-9 w-9 flex items-center justify-center text-xs font-semibold transition-all ${
-                            p === currentPage
-                              ? "bg-[#2c3d31] text-white"
-                              : "border border-neutral-300 text-neutral-500 hover:border-[#2c3d31] hover:text-[#2c3d31]"
-                          }`}
-                        >
-                          {p}
-                        </a>
-                      ))}
-                    </div>
-                  )}
-                </>
-              ))}
+            {hasCustomizationFlow && (
+              <section className="mt-16 border-t border-[#e6d9cf] pt-10 sm:mt-20 sm:pt-12">
+                <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-[#2c3d31]/70">
+                  Optional
+                </p>
+                <h2 className="store-heading mb-2">Customize This Category</h2>
+                <p className="store-subheading max-w-2xl mb-8">
+                  Choose from available customization options if you want a tailored order.
+                </p>
+                <CategoryCustomizationPanel
+                  categoryName={category.name}
+                  categorySlug={category.slug}
+                  options={category.customizationOptions}
+                />
+              </section>
+            )}
           </div>
         </section>
       </main>

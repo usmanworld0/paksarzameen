@@ -10,6 +10,7 @@
   font-size: 62.5%; /* 1rem = 10px base for clamp calculations */
   /* Primary site font (minimalist, professional) */
   --font-body: 'Inter', 'Helvetica Neue', 'Segoe UI', Roboto, Arial, sans-serif;
+  --font-display: 'Sora', 'Inter', 'Helvetica Neue', 'Segoe UI', Roboto, Arial, sans-serif;
   --font-heading: 'Inter', 'Helvetica Neue', 'Segoe UI', Roboto, Arial, sans-serif;
   --psz-green: #0f7a47;
   --psz-green-dark: #081c10;
@@ -305,10 +306,21 @@ video {
 
 .hero-section .hero-label {
   font-size: var(--fs-m);
-  font-weight: 600;
+  font-weight: 700;
   color: var(--white);
   margin-bottom: 1.5rem;
   opacity: 0;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.hero-section .hero-label-en {
+  font-size: clamp(1.1rem, 1.1vw, 1.45rem);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .hero-section .hero-title {
@@ -1215,44 +1227,63 @@ html.app-ready .app-boot-loader {
   .heart-section {
     height: auto;
     min-height: 100vh;
-    padding: 4rem 5%;
+    padding: 4rem 3.5%;
   }
 
   .heart-showcase {
     flex-direction: column;
+    align-items: stretch;
     gap: 2.5rem;
   }
 
   .heart-image-col {
     flex: 0 0 auto;
     width: 100%;
-    max-width: 30rem;
-    margin: 0 auto;
+    max-width: none;
+    margin: 0;
   }
 
   .heart-image-frame {
-    height: clamp(22rem, 45vh, 38rem);
+    height: clamp(29rem, 72vh, 52rem);
+  }
+
+  .heart-member-img {
+    object-fit: contain;
+    object-position: center bottom;
   }
 
   .heart-info-col {
     position: relative;
-    min-height: 12rem;
-    height: clamp(12rem, 28vh, 20rem);
-    text-align: center;
+    width: 100%;
+    min-height: 17rem;
+    height: auto;
+    text-align: left;
   }
 
   .heart-member-info {
     position: absolute;
     inset: 0;
-    align-items: center;
+    align-items: flex-start;
+    justify-content: flex-start;
+    border-radius: 1.1rem;
+    padding: 1.4rem 1.2rem;
+    gap: 0.9rem;
+  }
+
+  .heart-info-name {
+    width: 100%;
+    line-height: 1.08;
+    font-size: clamp(2.15rem, 10vw, 3.25rem);
   }
 
   .heart-info-quote {
     border-left: none;
     border-top: 3px solid var(--psz-green);
     padding-left: 0;
-    padding-top: 1.4rem;
-    text-align: center;
+    padding-top: 1rem;
+    text-align: left;
+    max-width: none;
+    width: 100%;
   }
 
   .heart-bottom-bar {
@@ -1718,11 +1749,11 @@ html.app-ready .app-boot-loader {
 .psz-header nav {
   max-width: 1380px;
   margin: 0 auto;
-  padding: 1.8rem 4.5%;
+  padding: 1.4rem 4.2%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 1.4rem;
+  gap: 1rem;
 }
 
 .psz-header .blur-bg {
@@ -1746,13 +1777,14 @@ html.app-ready .app-boot-loader {
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  font-size: clamp(1.9rem, 1.2vw, 2.3rem);
+  font-size: clamp(1.65rem, 1.06vw, 2.05rem);
   font-weight: 700;
+  font-family: var(--font-display), var(--font-body), sans-serif;
   color: #1d1d1f !important;
   min-width: 0;
   white-space: nowrap;
   cursor: pointer;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.012em;
 }
 
 .psz-header .nav-logo-img {
@@ -1770,18 +1802,21 @@ html.app-ready .app-boot-loader {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1.3rem;
+  gap: 1rem;
   flex: 1;
   min-width: 0;
 }
 
 .psz-header .nav-links a {
-  font-size: clamp(1rem, 0.68vw, 1.2rem);
+  font-size: clamp(1.02rem, 0.64vw, 1.18rem);
+  font-family: var(--font-display), var(--font-body), sans-serif;
+  font-weight: 600;
   color: #1d1d1f !important;
   cursor: pointer;
   transition: opacity 0.2s, border-bottom 0.2s ease;
   white-space: nowrap;
   letter-spacing: 0.03em;
+  text-transform: uppercase;
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -1818,7 +1853,7 @@ html.app-ready .app-boot-loader {
   background: linear-gradient(135deg, var(--psz-green) 0%, #0a8f48 100%);
   color: #fff;
   border-radius: 0.8rem;
-  font-size: clamp(1.1rem, 0.8vw, 1.3rem);
+  font-size: clamp(1rem, 0.68vw, 1.16rem);
   font-weight: 700;
   letter-spacing: 0.02em;
   transition: all 0.24s cubic-bezier(0.22, 1, 0.36, 1);
@@ -2314,7 +2349,7 @@ html.app-ready .app-boot-loader {
   }
 
   .psz-header .nav-logo {
-    font-size: clamp(1.55rem, 5vw, 1.95rem);
+    font-size: clamp(1.4rem, 5vw, 1.82rem);
     letter-spacing: 0.02em;
   }
 
@@ -4431,6 +4466,10 @@ html {
     height: clamp(18rem, 38vh, 28rem);
   }
 
+  .heart-member-img {
+    object-fit: contain;
+  }
+
   .programs-stack-viewport {
     min-height: 30rem;
   }
@@ -4550,6 +4589,73 @@ html {
   color: rgba(255, 255, 255, 0.8);
   line-height: 1.7;
   letter-spacing: 0.01em;
+}
+
+.about-hero-subtitle-line {
+  display: block;
+  margin-top: 0.55rem;
+  font-family: var(--font-display), var(--font-body), sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.94);
+}
+
+.about-minimal-intro {
+  background:
+    radial-gradient(circle at 15% 20%, rgba(15, 122, 71, 0.08), transparent 44%),
+    radial-gradient(circle at 88% 78%, rgba(15, 122, 71, 0.06), transparent 42%),
+    #f7f8f6;
+  padding: 7rem 5%;
+}
+
+.about-minimal-intro__inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.about-minimal-intro__lead {
+  max-width: 760px;
+  margin: 0 auto;
+  text-align: center;
+  font-size: clamp(1.8rem, 2vw, 2.45rem);
+  line-height: 1.5;
+  color: #121714;
+  letter-spacing: -0.015em;
+}
+
+.about-minimal-grid {
+  margin-top: 3.2rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.6rem;
+}
+
+.about-minimal-card {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(15, 122, 71, 0.16);
+  border-radius: 1.2rem;
+  padding: 2rem 1.8rem;
+  transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+}
+
+.about-minimal-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(15, 122, 71, 0.35);
+  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.08);
+}
+
+.about-minimal-card h3 {
+  font-family: var(--font-display), var(--font-body), sans-serif;
+  font-size: clamp(1.8rem, 1.8vw, 2.25rem);
+  letter-spacing: -0.02em;
+  color: #0f7a47;
+  margin-bottom: 0.7rem;
+}
+
+.about-minimal-card p {
+  color: #4a4f4d;
+  font-size: clamp(1.3rem, 1.05vw, 1.55rem);
+  line-height: 1.6;
 }
 
 /* Detailed About Section */
@@ -4763,7 +4869,8 @@ html {
 
 /* CTA Section */
 .about-cta {
-  background-color: var(--dark-black);
+  background:
+    linear-gradient(180deg, #0f1412 0%, #0d120f 100%);
   padding: 6rem 5%;
   text-align: center;
 }
@@ -4877,6 +4984,10 @@ html {
     gap: 2rem;
   }
 
+  .about-minimal-grid {
+    grid-template-columns: 1fr;
+  }
+
   .pillars-container {
     grid-template-columns: 1fr;
   }
@@ -4902,6 +5013,14 @@ html {
 
   .about-hero-subtitle {
     font-size: var(--fs-m);
+  }
+
+  .about-minimal-intro {
+    padding: 4.2rem 4%;
+  }
+
+  .about-minimal-intro__lead {
+    font-size: clamp(1.65rem, 2.8vw, 2.05rem);
   }
 
   .about-detailed {
@@ -4983,6 +5102,11 @@ html {
 
   .about-content-grid {
     grid-template-columns: 1fr;
+  }
+
+  .about-minimal-card {
+    border-radius: 1rem;
+    padding: 1.6rem 1.4rem;
   }
 
   .pillars-container {
@@ -5594,4 +5718,17 @@ body.menu-open {
 .motion-lite .marquee-track,
 .motion-lite .chapters-diag-col {
   animation-duration: 36s !important;
+}
+
+.motion-lite .scroll-reveal,
+.motion-lite .heart-member-img,
+.motion-lite .heart-member-info {
+  transition: opacity 0.35s ease, transform 0.35s ease, filter 0.35s ease;
+}
+
+.motion-lite .scroll-reveal {
+  opacity: 1 !important;
+  transform: none !important;
+  clip-path: inset(0 0 0 0) !important;
+  filter: none !important;
 }

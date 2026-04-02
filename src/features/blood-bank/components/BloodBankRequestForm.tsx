@@ -1,6 +1,8 @@
 "use client";
 
-import { type CSSProperties, FormEvent, useMemo, useState } from "react";
+import { FormEvent, useMemo, useState } from "react";
+
+import styles from "./BloodBankRequestForm.module.css";
 
 type FormState = {
   name: string;
@@ -57,7 +59,7 @@ export function BloodBankRequestForm() {
         throw new Error(payload.error ?? "Submission failed.");
       }
 
-      setMessage("Request submitted. Our Blood Bank team will contact you shortly.");
+      setMessage("Registration submitted. Our blood bank team will contact you shortly. رجسٹریشن کامیاب۔");
       setForm(INITIAL_STATE);
     } catch (submitError) {
       setError(
@@ -71,69 +73,69 @@ export function BloodBankRequestForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} style={formStyle}>
-      <h2 style={titleStyle}>Emergency Case Tracking Form</h2>
-      <p style={descriptionStyle}>
-        This form is for tracking after your emergency call. Submit details so the admin team can update status in real time.
+    <form onSubmit={handleSubmit} className={styles.form}>
+      <h2 className={styles.title}>Blood Donation Form | خون عطیہ فارم</h2>
+      <p className={styles.description}>
+        Register to donate blood. خون عطیہ کرنے کے لئے رجسٹر کریں۔
       </p>
 
-      <div style={gridStyle}>
-        <label style={labelStyle}>
-          Full Name
+      <div className={styles.grid}>
+        <label className={styles.label}>
+          Full Name | پورا نام
           <input
             required
             value={form.name}
             onChange={(event) => setForm((prev) => ({ ...prev, name: event.target.value }))}
-            style={inputStyle}
+            className={styles.input}
           />
         </label>
 
-        <label style={labelStyle}>
-          Needed Time
+        <label className={styles.label}>
+          Available Time | دستیاب وقت
           <input
             type="datetime-local"
             required
             min={minDateTime}
             value={form.neededAt}
             onChange={(event) => setForm((prev) => ({ ...prev, neededAt: event.target.value }))}
-            style={inputStyle}
+            className={styles.input}
           />
         </label>
 
-        <label style={labelStyle}>
-          CNIC
+        <label className={styles.label}>
+          CNIC | شناختی کارڈ
           <input
             required
             placeholder="xxxxx-xxxxxxx-x"
             value={form.cnic}
             onChange={(event) => setForm((prev) => ({ ...prev, cnic: event.target.value }))}
-            style={inputStyle}
+            className={styles.input}
           />
         </label>
 
-        <label style={labelStyle}>
-          Contact Number
+        <label className={styles.label}>
+          Contact Number | رابطہ نمبر
           <input
             required
             placeholder="03xxxxxxxxx"
             value={form.contactNumber}
             onChange={(event) => setForm((prev) => ({ ...prev, contactNumber: event.target.value }))}
-            style={inputStyle}
+            className={styles.input}
           />
         </label>
 
-        <label style={labelStyle}>
-          Location / Hospital
+        <label className={styles.label}>
+          City / Hospital | شہر / اسپتال
           <input
             required
             value={form.location}
             onChange={(event) => setForm((prev) => ({ ...prev, location: event.target.value }))}
-            style={inputStyle}
+            className={styles.input}
           />
         </label>
 
-        <label style={labelStyle}>
-          Volume of Blood (ml)
+        <label className={styles.label}>
+          Donation Volume (ml) | خون کی مقدار (ملی لیٹر)
           <input
             type="number"
             required
@@ -141,16 +143,16 @@ export function BloodBankRequestForm() {
             step={50}
             value={form.volumeMl}
             onChange={(event) => setForm((prev) => ({ ...prev, volumeMl: event.target.value }))}
-            style={inputStyle}
+            className={styles.input}
           />
         </label>
 
-        <label style={labelStyle}>
-          Blood Group (optional)
+        <label className={styles.label}>
+          Blood Group (optional) | بلڈ گروپ (اختیاری)
           <select
             value={form.bloodGroup}
             onChange={(event) => setForm((prev) => ({ ...prev, bloodGroup: event.target.value }))}
-            style={{ ...inputStyle, color: "#000", background: "#ffffff" }}
+            className={styles.input}
           >
             <option value="">Select</option>
             <option value="A+">A+</option>
@@ -164,99 +166,23 @@ export function BloodBankRequestForm() {
           </select>
         </label>
 
-        <label style={{ ...labelStyle, gridColumn: "1 / -1" }}>
-          Additional Notes (optional)
+        <label className={`${styles.label} ${styles.fullWidth}`}>
+          Notes (optional) | اضافی نوٹس (اختیاری)
           <textarea
             rows={4}
             value={form.notes}
             onChange={(event) => setForm((prev) => ({ ...prev, notes: event.target.value }))}
-            style={{ ...inputStyle, resize: "vertical" }}
+            className={`${styles.input} ${styles.textarea}`}
           />
         </label>
       </div>
 
-      <button type="submit" disabled={isSubmitting} style={buttonStyle}>
-        {isSubmitting ? "Submitting..." : "Submit Case Details"}
+      <button type="submit" disabled={isSubmitting} className={styles.submitButton}>
+        {isSubmitting ? "Submitting..." : "Register As Donor | بطور ڈونر رجسٹر کریں"}
       </button>
 
-      {message ? <p style={successStyle}>{message}</p> : null}
-      {error ? <p style={errorStyle}>{error}</p> : null}
+      {message ? <p className={styles.success}>{message}</p> : null}
+      {error ? <p className={styles.error}>{error}</p> : null}
     </form>
   );
 }
-
-const formStyle: CSSProperties = {
-  width: "100%",
-  maxWidth: 920,
-  margin: "0 auto",
-  padding: "clamp(1.35rem, 4vw, 2.6rem)",
-  borderRadius: "1.8rem",
-  background: "rgba(10, 18, 14, 0.8)",
-  border: "1px solid rgba(15, 122, 71, 0.45)",
-  boxShadow: "0 24px 70px rgba(0, 0, 0, 0.35)",
-  backdropFilter: "blur(8px)",
-};
-
-const titleStyle: CSSProperties = {
-  margin: 0,
-  fontSize: "clamp(2rem, 3vw, 3.2rem)",
-  lineHeight: 1.1,
-};
-
-const descriptionStyle: CSSProperties = {
-  marginTop: "1rem",
-  marginBottom: "2rem",
-  color: "rgba(255,255,255,0.78)",
-  fontSize: "clamp(1.05rem, 2.8vw, 1.45rem)",
-  lineHeight: 1.6,
-};
-
-const gridStyle: CSSProperties = {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 220px), 1fr))",
-  gap: "1.2rem",
-};
-
-const labelStyle: CSSProperties = {
-  display: "flex",
-  flexDirection: "column",
-  gap: "0.55rem",
-  minWidth: 0,
-  fontSize: "1.25rem",
-  color: "rgba(255,255,255,0.9)",
-};
-
-const inputStyle: CSSProperties = {
-  borderRadius: "0.8rem",
-  border: "1px solid rgba(255,255,255,0.18)",
-  background: "rgba(255,255,255,0.06)",
-  color: "#fff",
-  width: "100%",
-  padding: "0.95rem 1rem",
-  fontSize: "clamp(1rem, 2.4vw, 1.35rem)",
-};
-
-const buttonStyle: CSSProperties = {
-  marginTop: "1.8rem",
-  width: "100%",
-  borderRadius: "0.9rem",
-  border: "none",
-  padding: "1rem 1.4rem",
-  cursor: "pointer",
-  background: "linear-gradient(135deg, #cf2c2c 0%, #9f1717 100%)",
-  color: "#fff",
-  fontWeight: 700,
-  fontSize: "1.35rem",
-};
-
-const successStyle: CSSProperties = {
-  marginTop: "1.1rem",
-  color: "#8fffb8",
-  fontSize: "clamp(1rem, 2.2vw, 1.25rem)",
-};
-
-const errorStyle: CSSProperties = {
-  marginTop: "1.1rem",
-  color: "#ffb8b8",
-  fontSize: "clamp(1rem, 2.2vw, 1.25rem)",
-};

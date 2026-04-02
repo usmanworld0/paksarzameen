@@ -1,18 +1,39 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { CSSProperties } from "react";
+import type { ReactNode } from "react";
 
 import InstagramEmbed from "@/components/InstagramEmbed";
-import type {
-  ImpactHopeStory,
-  ImpactStoryLink,
-  ImpactStoryPageData,
-} from "@/content/impact";
+import type { ImpactStoryPageData } from "@/content/impact";
 
 import styles from "./ImpactStoryPage.module.css";
 
+function toCompactText(text: string, maxWords = 22) {
+  const firstSentence = text.split(/[.!?]/)[0]?.trim() ?? "";
+  const source = firstSentence.length > 0 ? firstSentence : text.trim();
+  const words = source.split(/\s+/).filter(Boolean);
+  if (words.length <= maxWords) return source;
+  return `${words.slice(0, maxWords).join(" ")}...`;
+}
+
 function isExternalHref(href: string) {
   return /^https?:\/\//.test(href);
+}
+
+function StoryLink({ href, className, children }: { href: string; className: string; children: ReactNode }) {
+  if (isExternalHref(href)) {
+    return (
+      <a href={href} target="_blank" rel="noopener noreferrer" className={className}>
+        {children}
+      </a>
+    );
+  }
+
+  return (
+    <Link href={href} className={className}>
+      {children}
+    </Link>
+  );
 }
 
 function ActionLink({
@@ -41,176 +62,22 @@ function ActionLink({
   );
 }
 
-function CardLink({
-  card,
-  type,
-}: {
-  card: ImpactStoryLink;
-  type: "related" | "resource";
-}) {
-  const isFeaturedRelated =
-    type === "related" &&
-    Boolean(
-      card.instagramPermalink ||
-        card.image ||
-        card.eyebrow ||
-        card.meta ||
-        (card.bullets && card.bullets.length > 0)
-    );
-  const className =
-    type === "related"
-      ? `${styles.relatedCard}${isFeaturedRelated ? ` ${styles.relatedCardFeatured}` : ""}`
-      : styles.resourceCard;
-  const linkClassName = type === "related" ? styles.relatedLink : styles.resourceLink;
-  const label = card.ctaLabel ?? (type === "related" ? "Read story" : "Open resource");
-
-  if (isFeaturedRelated) {
-    return (
-      <article className={className}>
-        {card.instagramPermalink ? (
-          <div className={styles.relatedEmbed}>
-            <InstagramEmbed permalink={card.instagramPermalink} />
-          </div>
-        ) : card.image ? (
-          <div className={styles.relatedMedia}>
-            <Image
-              src={card.image.src}
-              alt={card.image.alt}
-              fill
-              sizes="(max-width: 720px) 100vw, (max-width: 1120px) 50vw, 33vw"
-            />
-          </div>
-        ) : null}
-        <div className={styles.relatedBody}>
-          {type === "related" && (card.eyebrow || card.meta) ? (
-            <div className={styles.relatedTopline}>
-              {card.eyebrow ? <span className={styles.relatedEyebrow}>{card.eyebrow}</span> : null}
-              {card.meta ? <span className={styles.relatedMeta}>{card.meta}</span> : null}
-            </div>
-          ) : null}
-          <h3>{card.title}</h3>
-          <p>{card.description}</p>
-          {type === "related" && card.bullets && card.bullets.length > 0 ? (
-            <ul className={styles.relatedBulletList}>
-              {card.bullets.map((bullet) => (
-                <li key={bullet}>{bullet}</li>
-              ))}
-            </ul>
-          ) : null}
-          {isExternalHref(card.href) ? (
-            <a href={card.href} target="_blank" rel="noopener noreferrer" className={linkClassName}>
-              {label}
-            </a>
-          ) : (
-            <Link href={card.href} className={linkClassName}>
-              {label}
-            </Link>
-          )}
-        </div>
-      </article>
-    );
-  }
-
-  const content = (
-    <>
-      <div>
-        <h3>{card.title}</h3>
-        <p>{card.description}</p>
-        <span className={linkClassName}>{label}</span>
-      </div>
-    </>
-  );
-
-  if (isExternalHref(card.href)) {
-    return (
-      <a href={card.href} target="_blank" rel="noopener noreferrer" className={className}>
-        {content}
-      </a>
-    );
-  }
-
-  return (
-    <Link href={card.href} className={className}>
-      {content}
-    </Link>
-  );
-}
-
-function HopeStoryCard({ story }: { story: ImpactHopeStory }) {
-  return (
-    <article className={styles.hopeCard}>
-      <div className={styles.hopeMedia}>
-        {story.image ? (
-          <Image
-            src={story.image.src}
-            alt={story.image.alt}
-            fill
-            sizes="(max-width: 720px) 100vw, (max-width: 1120px) 50vw, 33vw"
-          />
-        ) : (
-          <div className={styles.hopeFallback} aria-hidden="true">
-            <span>
-              {story.name
-                .split(" ")
-                .map((part) => part[0])
-                .join("")
-                .slice(0, 2)}
-            </span>
-          </div>
-        )}
-      </div>
-
-      {story.gallery && story.gallery.length > 1 ? (
-        <div className={styles.hopeGalleryStrip}>
-          {story.gallery.map((image) => (
-            <div key={image.src} className={styles.hopeGalleryThumb}>
-              <Image
-                src={image.src}
-                alt={image.alt}
-                fill
-                sizes="(max-width: 720px) 33vw, 120px"
-              />
-            </div>
-          ))}
-        </div>
-      ) : null}
-
-      <div className={styles.hopeBody}>
-        <p className={styles.sectionEyebrow}>Story of hope</p>
-        <h3>{story.name}</h3>
-        <p className={styles.hopeRole}>{story.role}</p>
-        <p>{story.summary}</p>
-
-        <div className={styles.hopeActions}>
-          <ActionLink href={story.href} label="View impact page" variant="secondary" />
-          {story.storyHref ? (
-            <ActionLink
-              href={story.storyHref}
-              label={story.storyLabel ?? "Open story"}
-              variant="primary"
-            />
-          ) : null}
-        </div>
-      </div>
-    </article>
-  );
-}
-
 export function ImpactStoryPage({ story }: { story: ImpactStoryPageData }) {
   const themeStyle = {
     "--accent": story.accent,
     "--accent-soft": story.accentSoft,
   } as CSSProperties;
-  const hasFeaturedRelatedStories = Boolean(
-    story.relatedStories?.some(
-      (item) =>
-        item.instagramPermalink ||
-        item.image ||
-        item.eyebrow ||
-        item.meta ||
-        (item.bullets && item.bullets.length > 0)
-    )
-  );
+
+  const compactIntro = toCompactText(story.intro, 26);
+  const compactSummary = toCompactText(story.summary, 34);
+  const compactQuickFacts = story.quickFacts.slice(0, 3);
+  const compactChapters = story.storyChapters.slice(0, 3).map((chapter) => ({
+    ...chapter,
+    body: toCompactText(chapter.body, 26),
+  }));
+  const compactOutcomes = story.outcomes.slice(0, 3).map((item) => toCompactText(item, 24));
+  const compactRelatedStories = story.relatedStories?.slice(0, 5) ?? [];
+  const compactMedia = story.media?.slice(0, 3) ?? [];
 
   return (
     <main className={styles.page} style={themeStyle}>
@@ -228,211 +95,129 @@ export function ImpactStoryPage({ story }: { story: ImpactStoryPageData }) {
           </nav>
         ) : null}
 
-        <section className={styles.hero}>
-          <div className={styles.heroCard}>
-            <p className={styles.eyebrow}>{story.eyebrow}</p>
-            <h1 className={styles.title}>{story.title}</h1>
-            <p className={styles.lead}>{story.intro}</p>
-            <p className={styles.summary}>{story.summary}</p>
+        <div className={styles.contentGrid}>
+          <section className={styles.mainRail}>
+            <header className={styles.hero}>
+              <p className={styles.eyebrow}>{story.eyebrow}</p>
+              <h1 className={styles.title}>{story.title}</h1>
+              <p className={styles.lead}>{compactIntro}</p>
+              <p className={styles.summary}>{compactSummary}</p>
 
-            <div className={styles.heroActions}>
-              <ActionLink href={story.cta.href} label={story.cta.label} variant="primary" />
-              {story.secondaryCta ? (
-                <ActionLink
-                  href={story.secondaryCta.href}
-                  label={story.secondaryCta.label}
-                  variant="secondary"
-                />
-              ) : null}
-            </div>
-          </div>
-
-          <aside className={styles.sideCard}>
-            <div className={styles.sideHeader}>
-              <span className={styles.sideAccent} aria-hidden="true" />
-              <h2>At a glance</h2>
-            </div>
-
-            <dl className={styles.factList}>
-              {story.quickFacts.map((fact) => (
-                <div key={fact.label} className={styles.factItem}>
-                  <dt>{fact.label}</dt>
-                  <dd>{fact.value}</dd>
-                </div>
-              ))}
-            </dl>
-          </aside>
-        </section>
-
-        {story.highlights.length > 0 ? (
-          <section className={styles.highlights} aria-label="Key highlights">
-            {story.highlights.map((highlight) => (
-              <article key={`${highlight.value}-${highlight.label}`} className={styles.highlightCard}>
-                <span className={styles.highlightValue}>{highlight.value}</span>
-                <span className={styles.highlightLabel}>{highlight.label}</span>
-              </article>
-            ))}
-          </section>
-        ) : null}
-
-        <section className={styles.sectionPanel}>
-          <div className={styles.sectionHeader}>
-            <p className={styles.sectionEyebrow}>Story arc</p>
-            <h2>{story.storyHeading}</h2>
-          </div>
-
-          <div className={styles.storyGrid}>
-            {story.storyChapters.map((chapter, index) => (
-              <article key={chapter.title} className={styles.storyCard}>
-                <span className={styles.storyIndex}>{String(index + 1).padStart(2, "0")}</span>
-                <h3>{chapter.title}</h3>
-                <p>{chapter.body}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        {story.gallery && story.gallery.length > 0 ? (
-          <section className={styles.sectionPanel}>
-            <div className={styles.sectionHeader}>
-              <p className={styles.sectionEyebrow}>Field moments</p>
-              <h2>{story.galleryTitle ?? "In the field"}</h2>
-              {story.galleryIntro ? <p className={styles.sectionIntro}>{story.galleryIntro}</p> : null}
-            </div>
-
-            <div className={styles.galleryGrid}>
-              {story.gallery.map((image) => (
-                <div key={image.src} className={styles.galleryCard}>
-                  <Image
-                    src={image.src}
-                    alt={image.alt}
-                    fill
-                    sizes="(max-width: 720px) 100vw, (max-width: 1120px) 50vw, 33vw"
+              <div className={styles.heroActions}>
+                <ActionLink href={story.cta.href} label={story.cta.label} variant="primary" />
+                {story.secondaryCta ? (
+                  <ActionLink
+                    href={story.secondaryCta.href}
+                    label={story.secondaryCta.label}
+                    variant="secondary"
                   />
+                ) : null}
+              </div>
+            </header>
+
+            <section className={styles.block}>
+              <h2 className={styles.blockTitle}>{story.storyHeading}</h2>
+              <ol className={styles.chapterList}>
+                {compactChapters.map((chapter) => (
+                  <li key={chapter.title} className={styles.chapterItem}>
+                    <h3>{chapter.title}</h3>
+                    <p>{chapter.body}</p>
+                  </li>
+                ))}
+              </ol>
+            </section>
+
+            {story.gallery && story.gallery.length > 0 ? (
+              <section className={styles.block}>
+                <h2 className={styles.blockTitle}>{story.galleryTitle ?? "In the field"}</h2>
+                <div className={styles.galleryGrid}>
+                  {story.gallery.slice(0, 4).map((image) => (
+                    <div key={image.src} className={styles.galleryItem}>
+                      <Image
+                        src={image.src}
+                        alt={image.alt}
+                        fill
+                        sizes="(max-width: 1100px) 100vw, 60vw"
+                      />
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </section>
-        ) : null}
-
-        <section className={styles.sectionPanel}>
-          <div className={styles.sectionHeader}>
-            <p className={styles.sectionEyebrow}>What changed</p>
-            <h2>{story.outcomesHeading}</h2>
-          </div>
-
-          <div className={styles.outcomesGrid}>
-            <ul className={styles.outcomeList}>
-              {story.outcomes.map((outcome) => (
-                <li key={outcome} className={styles.outcomeItem}>
-                  <span className={styles.outcomeMarker} aria-hidden="true" />
-                  <p className={styles.outcomeText}>{outcome}</p>
-                </li>
-              ))}
-            </ul>
-
-            {story.note ? (
-              <aside className={styles.noteCard}>
-                <p className={styles.sectionEyebrow}>Why this matters</p>
-                <h3>{story.note.title}</h3>
-                <p>{story.note.body}</p>
-              </aside>
+              </section>
             ) : null}
-          </div>
-        </section>
 
-        {story.hopeStories && story.hopeStories.length > 0 ? (
-          <section className={styles.sectionPanel}>
-            <div className={styles.sectionHeader}>
-              <p className={styles.sectionEyebrow}>Stories of hope</p>
-              <h2>{story.hopeStoriesHeading ?? "People behind the impact"}</h2>
-              {story.hopeStoriesIntro ? (
-                <p className={styles.sectionIntro}>{story.hopeStoriesIntro}</p>
-              ) : null}
-            </div>
-
-            <div className={styles.hopeGrid}>
-              {story.hopeStories.map((hopeStory) => (
-                <HopeStoryCard key={hopeStory.name} story={hopeStory} />
-              ))}
-            </div>
-          </section>
-        ) : null}
-
-        {story.resources && story.resources.length > 0 ? (
-          <section className={styles.sectionPanel}>
-            <div className={styles.sectionHeader}>
-              <p className={styles.sectionEyebrow}>Supporting context</p>
-              <h2>{story.resourcesHeading ?? "Learn more"}</h2>
-              {story.resourcesIntro ? <p className={styles.sectionIntro}>{story.resourcesIntro}</p> : null}
-            </div>
-
-            <div className={styles.resourcesGrid}>
-              {story.resources.map((resource) => (
-                <CardLink key={resource.href} card={resource} type="resource" />
-              ))}
-            </div>
-          </section>
-        ) : null}
-
-        {story.media && story.media.length > 0 ? (
-          <section className={styles.sectionPanel}>
-            <div className={styles.sectionHeader}>
-              <p className={styles.sectionEyebrow}>Community snapshots</p>
-              <h2>{story.mediaHeading ?? "Voices from the field"}</h2>
-              {story.mediaIntro ? <p className={styles.sectionIntro}>{story.mediaIntro}</p> : null}
-            </div>
-
-            <div className={styles.mediaGrid}>
-              {story.media.map((item) => (
-                <article key={item.permalink} className={styles.mediaCard}>
-                  <h3>{item.title}</h3>
-                  <p>{item.description}</p>
-                  <div className={styles.embedWrap}>
-                    <InstagramEmbed permalink={item.permalink} />
-                  </div>
-                </article>
-              ))}
-            </div>
-          </section>
-        ) : null}
-
-        {story.relatedStories && story.relatedStories.length > 0 ? (
-          <section className={styles.sectionPanel}>
-            <div className={styles.sectionHeader}>
-              <p className={styles.sectionEyebrow}>Explore next</p>
-              <h2>{story.relatedHeading ?? "More impact stories"}</h2>
-              {story.relatedIntro ? <p className={styles.sectionIntro}>{story.relatedIntro}</p> : null}
-            </div>
-
-            <div
-              className={`${styles.relatedGrid}${hasFeaturedRelatedStories ? ` ${styles.relatedGridFeatured}` : ""}`}
-            >
-              {story.relatedStories.map((related) => (
-                <CardLink key={related.href} card={related} type="related" />
-              ))}
-            </div>
-          </section>
-        ) : null}
-
-        <section className={styles.ctaPanel}>
-          <div>
-            <p className={styles.ctaEyebrow}>Continue the story</p>
-            <h2>{story.closing.title}</h2>
-            <p>{story.closing.body}</p>
-          </div>
-
-          <div className={styles.ctaActions}>
-            <ActionLink href={story.cta.href} label={story.cta.label} variant="primary" />
-            {story.secondaryCta ? (
-              <ActionLink
-                href={story.secondaryCta.href}
-                label={story.secondaryCta.label}
-                variant="secondary"
-              />
+            {compactMedia.length > 0 ? (
+              <section className={styles.block}>
+                <h2 className={styles.blockTitle}>{story.mediaHeading ?? "Community snapshots"}</h2>
+                {story.mediaIntro ? <p className={styles.sectionIntro}>{toCompactText(story.mediaIntro, 28)}</p> : null}
+                <div className={styles.mediaGrid}>
+                  {compactMedia.map((item) => (
+                    <article key={item.permalink} className={styles.mediaItem}>
+                      <h3>{item.title}</h3>
+                      <p>{toCompactText(item.description, 20)}</p>
+                      <div className={styles.embedWrap}>
+                        <InstagramEmbed permalink={item.permalink} />
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </section>
             ) : null}
-          </div>
-        </section>
+          </section>
+
+          <aside className={styles.sideRail}>
+            {compactQuickFacts.length > 0 ? (
+              <section className={styles.sideBlock}>
+                <p className={styles.sideLabel}>At a glance</p>
+                <ul className={styles.factList}>
+                  {compactQuickFacts.map((fact) => (
+                    <li key={fact.label} className={styles.factItem}>
+                      <span className={styles.factLabel}>{fact.label}</span>
+                      <span className={styles.factValue}>{fact.value}</span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ) : null}
+
+            <section className={styles.sideBlock}>
+              <p className={styles.sideLabel}>{story.outcomesHeading}</p>
+              <ul className={styles.outcomeList}>
+                {compactOutcomes.map((outcome) => (
+                  <li key={outcome}>{outcome}</li>
+                ))}
+              </ul>
+            </section>
+
+            {compactRelatedStories.length > 0 ? (
+              <section className={styles.sideBlock}>
+                <p className={styles.sideLabel}>{story.relatedHeading ?? "Explore next"}</p>
+                <div className={styles.relatedList}>
+                  {compactRelatedStories.map((related) => (
+                    <StoryLink key={related.href} href={related.href} className={styles.relatedLink}>
+                      <span>{related.title}</span>
+                      <span>View</span>
+                    </StoryLink>
+                  ))}
+                </div>
+              </section>
+            ) : null}
+
+            <section className={styles.cta}>
+              <h2>{story.closing.title}</h2>
+              <p>{toCompactText(story.closing.body, 24)}</p>
+              <div className={styles.ctaActions}>
+                <ActionLink href={story.cta.href} label={story.cta.label} variant="primary" />
+                {story.secondaryCta ? (
+                  <ActionLink
+                    href={story.secondaryCta.href}
+                    label={story.secondaryCta.label}
+                    variant="secondary"
+                  />
+                ) : null}
+              </div>
+            </section>
+          </aside>
+        </div>
       </div>
     </main>
   );

@@ -4,7 +4,6 @@ import { useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { TextReveal } from "@/components/ui/motion-primitives";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
@@ -37,6 +36,12 @@ export function HomeClient() {
   const introRef = useRef<HTMLDivElement>(null);
   const heroVideoRef = useRef<HTMLVideoElement | null>(null);
 
+  const revealHeroText = useCallback(() => {
+    gsap.set(".hero-label", { opacity: 1, y: 0 });
+    gsap.set(".hero-title", { opacity: 1, y: 0 });
+    gsap.set(".hero-desc", { opacity: 1, y: 0 });
+  }, []);
+
   const revealHeroImmediately = useCallback(() => {
     const intro = introRef.current;
     if (intro) {
@@ -55,9 +60,74 @@ export function HomeClient() {
       gsap.set(heroVideo, { autoAlpha: 1 });
     }
 
-    gsap.set(".hero-label", { opacity: 1, y: 0 });
-    gsap.set(".hero-title", { opacity: 1, y: 0 });
-    gsap.set(".hero-desc", { opacity: 1, y: 0 });
+    revealHeroText();
+  }, [revealHeroText]);
+
+  const startMobileLiteFallbackAnimations = useCallback(() => {
+    const container = containerRef.current;
+    if (!container) {
+      return () => {};
+    }
+
+    // Ensure scroll-reveal elements are visible when ScrollTrigger is skipped.
+    const revealEls = Array.from(container.querySelectorAll(".scroll-reveal")) as HTMLElement[];
+    revealEls.forEach((el) => {
+      el.style.opacity = "1";
+      el.style.transform = "none";
+      el.style.clipPath = "inset(0 0 0 0)";
+      el.style.filter = "none";
+    });
+
+    const section = container.querySelector(".heart-section") as HTMLElement | null;
+    if (!section) {
+      return () => {};
+    }
+
+    const images = Array.from(section.querySelectorAll(".heart-member-img")) as HTMLElement[];
+    const infos = Array.from(section.querySelectorAll(".heart-member-info")) as HTMLElement[];
+    const counter = section.querySelector(".heart-counter-current") as HTMLElement | null;
+    const progressBar = section.querySelector(".heart-progress-bar") as HTMLElement | null;
+
+    if (!images.length) {
+      return () => {};
+    }
+
+    const total = images.length;
+    let activeIndex = 0;
+
+    const applyState = (index: number) => {
+      images.forEach((img, i) => {
+        img.style.opacity = i === index ? "1" : "0";
+        img.style.filter = i === index ? "blur(0px)" : "blur(6px)";
+        img.style.transform = i === index ? "scale(1)" : "scale(1.02)";
+      });
+
+      infos.forEach((info, i) => {
+        info.style.opacity = i === index ? "1" : "0";
+        info.style.filter = i === index ? "blur(0px)" : "blur(4px)";
+        info.style.transform = i === index ? "translateY(0px)" : "translateY(10px)";
+      });
+
+      if (counter) {
+        counter.textContent = String(index + 1).padStart(2, "0");
+      }
+
+      if (progressBar) {
+        const progress = total <= 1 ? 1 : index / (total - 1);
+        progressBar.style.transform = `scaleX(${progress})`;
+      }
+    };
+
+    applyState(activeIndex);
+
+    const intervalId = window.setInterval(() => {
+      activeIndex = (activeIndex + 1) % total;
+      applyState(activeIndex);
+    }, 2600);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
   }, []);
 
   /* ─── Cinematic intro timeline ─── */
@@ -70,10 +140,8 @@ export function HomeClient() {
       if (sessionStorage.getItem("psz-intro-seen")) {
         intro.style.display = "none";
         document.body.style.overflow = "";
-        // Reveal hero text immediately
-        gsap.set(".hero-label", { opacity: 1, y: 0 });
-        gsap.set(".hero-title", { opacity: 1, y: 0 });
-        gsap.set(".hero-desc", { opacity: 1, y: 0 });
+        // Keep hero text visible when intro is skipped.
+        revealHeroText();
         return;
       }
       sessionStorage.setItem("psz-intro-seen", "1");
@@ -184,7 +252,7 @@ export function HomeClient() {
       { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" },
       "-=0.45"
     );
-  }, []);
+  }, [revealHeroText]);
 
   const setupGSAPAnimations = useCallback(() => {
     if (!containerRef.current) return;
@@ -219,10 +287,20 @@ export function HomeClient() {
       ScrollTrigger.addEventListener("refresh", () => {
         ScrollTrigger.getAll().forEach(propagateZIndex);
       });
-      /* ─── Pre-hide hero text so it reveals after intro ─── */
-      gsap.set(".hero-label", { opacity: 0, y: 30 });
-      gsap.set(".hero-title",  { opacity: 0, y: 50 });
-      gsap.set(".hero-desc",   { opacity: 0, y: 30 });
+      /* Hide hero text only when intro overlay is actually active. */
+      const intro = introRef.current;
+      const introActive =
+        !!intro &&
+        intro.style.display !== "none" &&
+        intro.getAttribute("aria-hidden") !== "true";
+
+      if (introActive) {
+        gsap.set(".hero-label", { opacity: 0, y: 30 });
+        gsap.set(".hero-title", { opacity: 0, y: 50 });
+        gsap.set(".hero-desc", { opacity: 0, y: 30 });
+      } else {
+        revealHeroText();
+      }
 
       /* ─── Hero: autoplay video ─── */
       const heroVideo = (containerRef.current?.querySelector(
@@ -448,7 +526,7 @@ export function HomeClient() {
 
     return () => ctx.revert();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [revealHeroText]);
 
   function createProgramsTimeline() {
     const container = containerRef.current;
@@ -650,6 +728,8 @@ export function HomeClient() {
     let lenis: any;
     let idleHandle: number | null = null;
     let timeoutHandle: ReturnType<typeof setTimeout> | null = null;
+    let heroSafetyTimeout: ReturnType<typeof setTimeout> | null = null;
+    let mobileFallbackCleanup: (() => void) | null = null;
 
     const isMobileLite =
       window.matchMedia("(max-width: 1024px)").matches ||
@@ -659,8 +739,12 @@ export function HomeClient() {
     if (isMobileLite) {
       document.documentElement.classList.add("motion-lite");
       revealHeroImmediately();
+      mobileFallbackCleanup = startMobileLiteFallbackAnimations();
       return () => {
         document.documentElement.classList.remove("motion-lite");
+        if (mobileFallbackCleanup) {
+          mobileFallbackCleanup();
+        }
         if (idleHandle !== null && "cancelIdleCallback" in window) {
           window.cancelIdleCallback(idleHandle);
         }
@@ -695,6 +779,17 @@ export function HomeClient() {
         timeoutHandle = setTimeout(() => {
           setupGSAPAnimations();
         }, 100);
+        heroSafetyTimeout = setTimeout(() => {
+          const isHidden = [".hero-label", ".hero-title", ".hero-desc"].some((selector) => {
+            const el = document.querySelector(selector) as HTMLElement | null;
+            if (!el) return false;
+            return Number.parseFloat(window.getComputedStyle(el).opacity) < 0.05;
+          });
+
+          if (isHidden) {
+            revealHeroImmediately();
+          }
+        }, 2200);
       });
     };
 
@@ -708,16 +803,22 @@ export function HomeClient() {
 
     return () => {
       document.documentElement.classList.remove("motion-lite");
+      if (mobileFallbackCleanup) {
+        mobileFallbackCleanup();
+      }
       if (idleHandle !== null && "cancelIdleCallback" in window) {
         window.cancelIdleCallback(idleHandle);
       }
       if (timeoutHandle) {
         clearTimeout(timeoutHandle);
       }
+      if (heroSafetyTimeout) {
+        clearTimeout(heroSafetyTimeout);
+      }
       ScrollTrigger.getAll().forEach((t) => t.kill());
       if (lenis) lenis.destroy();
     };
-  }, [setupGSAPAnimations, playIntro, revealHeroImmediately]);
+  }, [setupGSAPAnimations, playIntro, revealHeroImmediately, startMobileLiteFallbackAnimations]);
 
   return (
     <div ref={containerRef}>
@@ -780,7 +881,10 @@ export function HomeClient() {
         <video ref={heroVideoRef} src={VIDEOS.hero} muted loop playsInline preload="none" controls={false} autoPlay={true} poster={VIDEO_POSTERS.hero} />
         <div className="blur-overlay" aria-hidden="true" />
         <div className="hero-content">
-          <p className="hero-label">Community Development in Pakistan</p>
+          <p className="hero-label">
+            تربیت سے تعلیم
+            <span className="hero-label-en">Nurturing Character Through Education</span>
+          </p>
           <h1 className="hero-title">
             Pak<span className="green">Sar</span>Zameen
           </h1>
@@ -797,24 +901,6 @@ export function HomeClient() {
             PakSarZameen works from Bahawalpur through education, health,
             blood support, environmental action, animal welfare, and
             volunteer-led community programs.
-            <br />
-            <em style={{ display: "block", marginTop: "0.6rem", fontSize: "0.95em" }}>
-              Building dignity through practical community care.
-            </em>
-            <span
-              lang="ur"
-              dir="rtl"
-              style={{
-                display: "block",
-                marginTop: "0.7rem",
-                fontSize: "1.02em",
-                fontWeight: 600,
-                letterSpacing: 0,
-                color: "rgba(255,255,255,0.94)",
-              }}
-            >
-              تربیت سے تعلیم
-            </span>
           </p>
         </div>
       </section>
@@ -853,7 +939,7 @@ export function HomeClient() {
       <section className="split-section ochi-section-reveal" data-scroll-section="story">
         <div className="split-inner">
           <div className="split-left">
-            <TextReveal text="Building Community Wealth." as="h2" staggerDelay={0.035} className="split-left-heading" />
+            <h2 className="split-left-heading">Building Community Wealth.</h2>
           </div>
           <div className="split-right">
             <p>

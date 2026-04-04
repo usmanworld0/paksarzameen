@@ -115,7 +115,7 @@ export const impactCategories: ImpactCategory[] = [
       "Community climate action, urban greening, and youth leadership rooted in local realities.",
     items: [
       {
-        title: "GWR",
+        title: "Guinness World Record",
         description:
           "A public tree-planting effort that turned environmental action into a visible symbol of collective capacity.",
         href: "/impact/environmental/gwr",

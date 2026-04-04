@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 
 import { siteConfig } from "@/config/site";
 import { ProgramsHubClient } from "@/features/programs/components/ProgramsHubClient";
 import { getPrograms } from "@/lib/services/getPrograms";
+import { PROGRAM_CARDS } from "@/features/home/home.content";
+
+import styles from "./ProgramsPage.module.css";
 
 export const metadata: Metadata = {
   title: "Programs: Education, Health, Environment And Welfare",
@@ -43,27 +47,56 @@ export const metadata: Metadata = {
 
 export default async function ProgramsPage() {
   const programs = await getPrograms();
+  const heroPrograms = programs.slice(0, 5);
+
+  function getProgramLogoIndex(programTitle: string): number {
+    const programCard = PROGRAM_CARDS.find(
+      (card) => card.name.toLowerCase() === programTitle.toLowerCase(),
+    );
+    return programCard ? PROGRAM_CARDS.indexOf(programCard) : 0;
+  }
 
   return (
-    <>
-      <div className="programs-hero-section">
-        <div className="programs-hero-overlay" />
-        <header className="relative z-10 mx-auto w-full max-w-screen-xl px-[5%] pb-8 pt-28 sm:pb-10 sm:pt-32 lg:pt-36">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-psz-green">
-            Programs Hub
-          </p>
-          <h1 className="mt-4 max-w-3xl font-heading text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl">
+    <section className={styles.page}>
+      <div className={styles.heroWrap}>
+        <header className={styles.heroContent}>
+          <p className={styles.eyebrow}>Programs Hub</p>
+          <h1 className={styles.title}>
             PakSarZameen Projects And Programs
           </h1>
-          <p className="mt-5 max-w-2xl text-sm leading-relaxed text-neutral-100 sm:text-base lg:max-w-3xl lg:text-lg">
+          <p className={styles.description}>
             Explore our community development programs in education, health,
             environmental action, animal welfare, women empowerment, and social
             care. Filter by category and follow the areas where PSZ is working
             on the ground.
           </p>
         </header>
+
+        <div className={styles.heroCards} aria-hidden="true">
+          {heroPrograms.map((program, index) => (
+            <article
+              key={program.id}
+              className={`${styles.heroCard} ${styles[`tone${(index % 5) + 1}` as const]}`}
+            >
+              <div className={styles.heroCardImageWrap}>
+                <Image
+                  src={`/images/placeholders/${10 + getProgramLogoIndex(program.title)}.png`}
+                  alt=""
+                  fill
+                  sizes="220px"
+                  className={styles.heroCardImage}
+                />
+              </div>
+              <div className={styles.heroCardText}>
+                <p>{program.title}</p>
+                <span>{program.category}</span>
+              </div>
+            </article>
+          ))}
+        </div>
       </div>
+
       <ProgramsHubClient programs={programs} />
-    </>
+    </section>
   );
 }

@@ -98,7 +98,7 @@ export const environmentalStories = {
     breadcrumbs: [
       { label: "Impact", href: "/impact" },
       { label: "Environmental Impact", href: "/impact/environmental" },
-      { label: "GWR" },
+      { label: "Guinness World Record" },
     ],
     eyebrow: "Environmental story",
     title: "Largest Sapling Word: when public action became a shared symbol",

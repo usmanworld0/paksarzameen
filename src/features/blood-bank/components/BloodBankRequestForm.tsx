@@ -74,16 +74,15 @@ export function BloodBankRequestForm() {
 
   return (
     <form onSubmit={handleSubmit} className={styles.form}>
-      <h2 className={styles.title}>Blood Donation Form | خون عطیہ فارم</h2>
-      <p className={styles.description}>
-        Register to donate blood. خون عطیہ کرنے کے لئے رجسٹر کریں۔
-      </p>
+      <h3 className={styles.title}>Blood Donation Registration</h3>
+      <p className={styles.description}>Enter your basic details.</p>
 
       <div className={styles.grid}>
         <label className={styles.label}>
           Full Name | پورا نام
           <input
             required
+            placeholder="Full name"
             value={form.name}
             onChange={(event) => setForm((prev) => ({ ...prev, name: event.target.value }))}
             className={styles.input}
@@ -91,13 +90,23 @@ export function BloodBankRequestForm() {
         </label>
 
         <label className={styles.label}>
-          Available Time | دستیاب وقت
+          Contact Number | رابطہ نمبر
           <input
-            type="datetime-local"
             required
-            min={minDateTime}
-            value={form.neededAt}
-            onChange={(event) => setForm((prev) => ({ ...prev, neededAt: event.target.value }))}
+            placeholder="+92 (3xx) xxx xxxx"
+            value={form.contactNumber}
+            onChange={(event) => setForm((prev) => ({ ...prev, contactNumber: event.target.value }))}
+            className={styles.input}
+          />
+        </label>
+
+        <label className={styles.label}>
+          City / Hospital | شہر / اسپتال
+          <input
+            required
+            placeholder="Bahawalpur"
+            value={form.location}
+            onChange={(event) => setForm((prev) => ({ ...prev, location: event.target.value }))}
             className={styles.input}
           />
         </label>
@@ -113,42 +122,20 @@ export function BloodBankRequestForm() {
           />
         </label>
 
-        <label className={styles.label}>
-          Contact Number | رابطہ نمبر
+        <label className={`${styles.label} ${styles.fullWidth}`}>
+          Available Time | دستیاب وقت
           <input
+            type="datetime-local"
             required
-            placeholder="03xxxxxxxxx"
-            value={form.contactNumber}
-            onChange={(event) => setForm((prev) => ({ ...prev, contactNumber: event.target.value }))}
+            min={minDateTime}
+            value={form.neededAt}
+            onChange={(event) => setForm((prev) => ({ ...prev, neededAt: event.target.value }))}
             className={styles.input}
           />
         </label>
 
         <label className={styles.label}>
-          City / Hospital | شہر / اسپتال
-          <input
-            required
-            value={form.location}
-            onChange={(event) => setForm((prev) => ({ ...prev, location: event.target.value }))}
-            className={styles.input}
-          />
-        </label>
-
-        <label className={styles.label}>
-          Donation Volume (ml) | خون کی مقدار (ملی لیٹر)
-          <input
-            type="number"
-            required
-            min={100}
-            step={50}
-            value={form.volumeMl}
-            onChange={(event) => setForm((prev) => ({ ...prev, volumeMl: event.target.value }))}
-            className={styles.input}
-          />
-        </label>
-
-        <label className={styles.label}>
-          Blood Group (optional) | بلڈ گروپ (اختیاری)
+          Blood Group (optional)
           <select
             value={form.bloodGroup}
             onChange={(event) => setForm((prev) => ({ ...prev, bloodGroup: event.target.value }))}
@@ -166,19 +153,10 @@ export function BloodBankRequestForm() {
           </select>
         </label>
 
-        <label className={`${styles.label} ${styles.fullWidth}`}>
-          Notes (optional) | اضافی نوٹس (اختیاری)
-          <textarea
-            rows={4}
-            value={form.notes}
-            onChange={(event) => setForm((prev) => ({ ...prev, notes: event.target.value }))}
-            className={`${styles.input} ${styles.textarea}`}
-          />
-        </label>
       </div>
 
       <button type="submit" disabled={isSubmitting} className={styles.submitButton}>
-        {isSubmitting ? "Submitting..." : "Register As Donor | بطور ڈونر رجسٹر کریں"}
+        {isSubmitting ? "Submitting..." : "Register"}
       </button>
 
       {message ? <p className={styles.success}>{message}</p> : null}

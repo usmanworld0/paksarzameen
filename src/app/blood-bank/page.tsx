@@ -47,44 +47,58 @@ export default function BloodBankPage() {
   return (
     <section className={styles.page}>
       <div className={styles.container}>
-        <header className={styles.hero}>
-          <p className={styles.eyebrow}>PSZ Blood Bank | بلڈ بینک</p>
-          <h1 className={styles.title}>Emergency Blood Support | فوری خون کی مدد</h1>
-          <p className={styles.lead}>
-            Fast emergency response for blood needs in Bahawalpur.
-            <br />
-            بہاولپور میں فوری خون کی ضرورت کے لئے فوری رابطہ کریں۔
-          </p>
+        <aside className={styles.leftPanel}>
+          <div className={styles.topRow}>
+            <p className={styles.brand}>Paksarzameen Blood Bank</p>
 
-          <div className={styles.callGrid}>
-            <a href="tel:03098237670" className={styles.callCard}>
-              <span className={styles.callLabel}>Emergency Coordinator</span>
-              <span className={styles.callName}>Umar Hafeez</span>
-              <span className={styles.callButton}>Call Now | ابھی کال کریں</span>
-            </a>
+            <div className={styles.callGrid}>
+              <a href="tel:03098237670" className={styles.callCard}>
+                <span className={styles.callName}>Umar Hafeez</span>
+                <span className={styles.callButton}>Emergency Call</span>
+              </a>
 
-            <a href="tel:03233609157" className={styles.callCard}>
-              <span className={styles.callLabel}>Emergency Coordinator</span>
-              <span className={styles.callName}>Ahmed Amir</span>
-              <span className={styles.callButton}>Call Now | ابھی کال کریں</span>
-            </a>
+              <a href="tel:03233609157" className={styles.callCard}>
+                <span className={styles.callName}>Ahmed Amir</span>
+                <span className={styles.callButton}>Emergency Call</span>
+              </a>
+            </div>
           </div>
 
-          <div className={styles.inlineActions}>
-            <p className={styles.notice}>Call first, form second. پہلے کال کریں، پھر فارم جمع کریں۔</p>
-            <Link href="/contact" className={styles.contactLink}>
-              Contact | رابطہ
+          <h1 className={styles.title}>
+            Become part of the blood donor movement.
+            <br />
+            Start saving lives with us.
+          </h1>
+          <p className={styles.lead}>
+            Register as a donor for urgent blood coordination in Bahawalpur.
+          </p>
+
+          <div className={styles.videoFrame}>
+            <video
+              className={styles.video}
+              src="/videos/blood_donation.mp4"
+              autoPlay
+              loop
+              muted
+              playsInline
+              poster="/videos/posters/banner-poster.webp"
+            />
+          </div>
+        </aside>
+
+        <section className={styles.rightPanel}>
+          <div className={styles.topMeta}>
+            <span className={styles.metaText}>Already registered?</span>
+            <Link href="/contact" className={styles.metaLink}>
+              Contact Team
             </Link>
           </div>
-        </header>
 
-        <section className={styles.formSection}>
-          <p className={styles.formIntro}>
-            Register as a donor and share your details for rapid coordination.
-            <br />
-            ڈونر کے طور پر رجسٹر کریں اور فوری رابطے کے لئے اپنی معلومات دیں۔
-          </p>
-          <BloodBankRequestForm />
+          <div className={styles.formShell}>
+            <p className={styles.formEyebrow}>Registration</p>
+            <h2 className={styles.formTitle}>Personal Donor Cabinet</h2>
+            <BloodBankRequestForm />
+          </div>
         </section>
       </div>
     </section>

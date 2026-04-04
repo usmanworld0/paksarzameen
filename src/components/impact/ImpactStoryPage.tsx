@@ -116,11 +116,36 @@ export function ImpactStoryPage({ story }: { story: ImpactStoryPageData }) {
         ) : null}
 
         <header className={styles.hero}>
+          <div className={styles.heroAmbient} aria-hidden="true">
+            <span className={styles.orbOne} />
+            <span className={styles.orbTwo} />
+            <span className={styles.orbThree} />
+            <span className={styles.heroBeam} />
+            <span className={styles.heroNoise} />
+            <span className={styles.heroGridGlow} />
+          </div>
+
           <div className={styles.heroMain}>
+            <p className={styles.heroKicker}>
+              <span className={styles.heroKickerDot} aria-hidden="true" />
+              Impact in motion
+            </p>
             <p className={styles.eyebrow}>{story.eyebrow}</p>
             <h1 className={styles.title}>{story.title}</h1>
             <p className={styles.lead}>{compactIntro}</p>
             <p className={styles.summary}>{compactSummary}</p>
+
+            {compactHighlights.length > 0 ? (
+              <div className={styles.heroTicker}>
+                {compactHighlights.slice(0, 3).map((item) => (
+                  <span key={item.label} className={styles.heroTickerItem}>
+                    <strong>{item.value}</strong>
+                    <em>{item.label}</em>
+                  </span>
+                ))}
+              </div>
+            ) : null}
+
             <div className={styles.heroActions}>
               <ActionLink href={story.cta.href} label={story.cta.label} variant="primary" />
               {story.secondaryCta ? (

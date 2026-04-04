@@ -88,7 +88,7 @@ export default async function CustomizationsPage() {
                         </div>
 
                         <Link
-                          href={`/categories/${category.slug}`}
+                          href={`/customizations/${category.slug}`}
                           className="store-button-secondary whitespace-nowrap"
                         >
                           View Customizations
@@ -99,7 +99,7 @@ export default async function CustomizationsPage() {
                         {uniqueOptionNames.map((name) => (
                           <span
                             key={`${category.id}-${name}`}
-                            className="rounded-full border border-[#e2d5cc] bg-[#f8efe8] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-neutral-700"
+                            className="rounded-full border border-[#ece2d9] bg-[#fcf8f4] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-neutral-700"
                           >
                             {name}
                           </span>

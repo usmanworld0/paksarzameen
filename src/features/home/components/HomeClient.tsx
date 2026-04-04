@@ -966,29 +966,18 @@ export function HomeClient() {
       {/* OUR APPROACH                                    */}
       {/* ════════════════════════════════════════════════ */}
       <section className="approach-section ochi-section-reveal" data-scroll-section="approach">
-        {/* Background image grid — optimized with next/image */}
-        <div className="approach-bg-grid" aria-hidden="true">
-          <div className="approach-bg-item">
-            <Image src={getOptimizedImagePath("/images/WhatsApp Image 2026-03-06 at 5.01.33 AM.jpeg", "md")} alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} placeholder="blur" blurDataURL={getBlurDataURL("/images/WhatsApp Image 2026-03-06 at 5.01.33 AM.jpeg")} />
-          </div>
-          <div className="approach-bg-item">
-            <Image src={getOptimizedImagePath("/images/WhatsApp Image 2026-03-06 at 5.07.22 AM.jpeg", "md")} alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} placeholder="blur" blurDataURL={getBlurDataURL("/images/WhatsApp Image 2026-03-06 at 5.07.22 AM.jpeg")} />
-          </div>
-          <div className="approach-bg-item">
-            <Image src={getOptimizedImagePath("/images/full_team.jpeg", "md")} alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} placeholder="blur" blurDataURL={getBlurDataURL("/images/full_team.jpeg")} />
-          </div>
-          <div className="approach-bg-item">
-            <Image src={getOptimizedImagePath("/images/WhatsApp Image 2026-03-06 at 4.20.53 PM.jpeg", "md")} alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} placeholder="blur" blurDataURL={getBlurDataURL("/images/WhatsApp Image 2026-03-06 at 4.20.53 PM.jpeg")} />
-          </div>
-          <div className="approach-bg-item">
-            <Image src={getOptimizedImagePath("/images/WhatsApp Image 2026-03-06 at 5.00.43 AM.jpeg", "md")} alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} placeholder="blur" blurDataURL={getBlurDataURL("/images/WhatsApp Image 2026-03-06 at 5.00.43 AM.jpeg")} />
-          </div>
-          <div className="approach-bg-item">
-            <Image src={getOptimizedImagePath("/images/WhatsApp Image 2026-03-06 at 4.03.34 PM.jpeg", "md")} alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} placeholder="blur" blurDataURL={getBlurDataURL("/images/WhatsApp Image 2026-03-06 at 4.03.34 PM.jpeg")} />
-          </div>
-          <div className="approach-bg-item">
-            <Image src={getOptimizedImagePath("/images/WhatsApp Image 2026-03-06 at 4.04.00 PM.jpeg", "md")} alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" quality={60} placeholder="blur" blurDataURL={getBlurDataURL("/images/WhatsApp Image 2026-03-06 at 4.04.00 PM.jpeg")} />
-          </div>
+        {/* Single full-team background image — optimized with next/image */}
+        <div className="approach-bg-full" aria-hidden="true">
+          <Image
+            src={getOptimizedImagePath("/images/full_team.jpeg", "lg")}
+            alt=""
+            fill
+            sizes="100vw"
+            loading="lazy"
+            quality={70}
+            placeholder="blur"
+            blurDataURL={getBlurDataURL("/images/full_team.jpeg")}
+          />
         </div>
         <div className="approach-bg-overlay" aria-hidden="true" />
         <h5 className="scroll-reveal" data-delay="0">Our Approach</h5>

@@ -22,18 +22,16 @@ export function CategoryCard({ category }: CategoryCardProps) {
           quality={75}
         />
       )}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/92 via-black/55 to-black/20" />
+      <div className="absolute inset-x-0 bottom-0 h-[52%] bg-gradient-to-t from-black/78 via-black/38 to-transparent" />
       <div className="relative z-10 w-full p-5 sm:p-6">
-        <div className="inline-block rounded-xl bg-black/45 px-4 py-3 backdrop-blur-[1px]">
-        <h3 className="text-2xl leading-tight text-white [text-shadow:0_2px_10px_rgba(0,0,0,0.55)] sm:text-[1.8rem]">
+        <h3 className="text-2xl leading-tight text-white [text-shadow:0_3px_18px_rgba(0,0,0,0.6)] sm:text-[1.8rem]">
           {category.name}
         </h3>
-        <p className="mt-2 text-[10px] font-semibold uppercase tracking-[0.25em] text-white [text-shadow:0_2px_8px_rgba(0,0,0,0.5)] transition-colors duration-300 group-hover:text-white">
+        <p className="mt-2 text-[10px] font-semibold uppercase tracking-[0.25em] text-white/95 [text-shadow:0_2px_10px_rgba(0,0,0,0.55)] transition-colors duration-300 group-hover:text-white">
           {category._count.products} Product{category._count.products !== 1 ? "s" : ""} →
         </p>
-        </div>
       </div>
-      <div className="absolute bottom-0 left-0 h-0.5 w-0 bg-[#d19392] transition-all duration-500 group-hover:w-full" />
+      <div className="absolute bottom-0 left-0 h-0.5 w-0 bg-[#ead9cf] transition-all duration-500 group-hover:w-full" />
     </Link>
   );
 }

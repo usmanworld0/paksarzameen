@@ -8,7 +8,7 @@ import type { ImpactStoryPageData } from "@/content/impact";
 
 import styles from "./ImpactStoryPage.module.css";
 
-function toCompactText(text: string, maxWords = 22) {
+function toCompactText(text: string, maxWords = 28) {
   const firstSentence = text.split(/[.!?]/)[0]?.trim() ?? "";
   const source = firstSentence.length > 0 ? firstSentence : text.trim();
   const words = source.split(/\s+/).filter(Boolean);
@@ -16,8 +16,20 @@ function toCompactText(text: string, maxWords = 22) {
   return `${words.slice(0, maxWords).join(" ")}...`;
 }
 
+function slugify(value: string) {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 function isExternalHref(href: string) {
   return /^https?:\/\//.test(href);
+}
+
+function isDataResearchItem(value: string) {
+  return /(data-assessment|research)/i.test(value);
 }
 
 function StoryLink({ href, className, children }: { href: string; className: string; children: ReactNode }) {
@@ -68,16 +80,24 @@ export function ImpactStoryPage({ story }: { story: ImpactStoryPageData }) {
     "--accent-soft": story.accentSoft,
   } as CSSProperties;
 
-  const compactIntro = toCompactText(story.intro, 26);
-  const compactSummary = toCompactText(story.summary, 34);
-  const compactQuickFacts = story.quickFacts.slice(0, 3);
-  const compactChapters = story.storyChapters.slice(0, 3).map((chapter) => ({
+  const compactIntro = toCompactText(story.intro, 34);
+  const compactSummary = toCompactText(story.summary, 46);
+  const compactQuickFacts = story.quickFacts.slice(0, 4);
+  const compactHighlights = story.highlights.slice(0, 4);
+  const compactChapters = story.storyChapters.slice(0, 4).map((chapter) => ({
     ...chapter,
-    body: toCompactText(chapter.body, 26),
+    body: toCompactText(chapter.body, 44),
   }));
-  const compactOutcomes = story.outcomes.slice(0, 3).map((item) => toCompactText(item, 24));
-  const compactRelatedStories = story.relatedStories?.slice(0, 5) ?? [];
-  const compactMedia = story.media?.slice(0, 3) ?? [];
+  const compactOutcomes = story.outcomes.slice(0, 6).map((item) => toCompactText(item, 26));
+  const compactRelatedStories =
+    story.relatedStories
+      ?.filter((item) => !isDataResearchItem(item.title) && !isDataResearchItem(item.href))
+      .slice(0, 6) ?? [];
+  const compactResources =
+    story.resources
+      ?.filter((item) => !isDataResearchItem(item.title) && !isDataResearchItem(item.href))
+      .slice(0, 4) ?? [];
+  const compactMedia = story.media?.slice(0, 4) ?? [];
 
   return (
     <main className={styles.page} style={themeStyle}>
@@ -95,65 +115,106 @@ export function ImpactStoryPage({ story }: { story: ImpactStoryPageData }) {
           </nav>
         ) : null}
 
-        <div className={styles.contentGrid}>
-          <section className={styles.mainRail}>
-            <header className={styles.hero}>
-              <p className={styles.eyebrow}>{story.eyebrow}</p>
-              <h1 className={styles.title}>{story.title}</h1>
-              <p className={styles.lead}>{compactIntro}</p>
-              <p className={styles.summary}>{compactSummary}</p>
+        <header className={styles.hero}>
+          <div className={styles.heroMain}>
+            <p className={styles.eyebrow}>{story.eyebrow}</p>
+            <h1 className={styles.title}>{story.title}</h1>
+            <p className={styles.lead}>{compactIntro}</p>
+            <p className={styles.summary}>{compactSummary}</p>
+            <div className={styles.heroActions}>
+              <ActionLink href={story.cta.href} label={story.cta.label} variant="primary" />
+              {story.secondaryCta ? (
+                <ActionLink
+                  href={story.secondaryCta.href}
+                  label={story.secondaryCta.label}
+                  variant="secondary"
+                />
+              ) : null}
+            </div>
+          </div>
 
-              <div className={styles.heroActions}>
-                <ActionLink href={story.cta.href} label={story.cta.label} variant="primary" />
-                {story.secondaryCta ? (
-                  <ActionLink
-                    href={story.secondaryCta.href}
-                    label={story.secondaryCta.label}
-                    variant="secondary"
-                  />
-                ) : null}
-              </div>
-            </header>
-
-            <section className={styles.block}>
-              <h2 className={styles.blockTitle}>{story.storyHeading}</h2>
-              <ol className={styles.chapterList}>
-                {compactChapters.map((chapter) => (
-                  <li key={chapter.title} className={styles.chapterItem}>
-                    <h3>{chapter.title}</h3>
-                    <p>{chapter.body}</p>
+          {compactQuickFacts.length > 0 ? (
+            <div className={styles.heroPanel}>
+              <p className={styles.sideLabel}>At a glance</p>
+              <ul className={styles.factList}>
+                {compactQuickFacts.map((fact) => (
+                  <li key={fact.label} className={styles.factItem}>
+                    <span className={styles.factLabel}>{fact.label}</span>
+                    <span className={styles.factValue}>{fact.value}</span>
                   </li>
                 ))}
-              </ol>
+              </ul>
+            </div>
+          ) : null}
+        </header>
+
+        {compactHighlights.length > 0 ? (
+          <section className={styles.highlightRail}>
+            {compactHighlights.map((item) => (
+              <article key={item.label} className={styles.highlightCard}>
+                <p className={styles.highlightValue}>{item.value}</p>
+                <p className={styles.highlightLabel}>{item.label}</p>
+              </article>
+            ))}
+          </section>
+        ) : null}
+
+        <div className={styles.contentGrid}>
+          <section className={styles.mainRail}>
+            <section className={styles.block} id={slugify(story.storyHeading)}>
+              <h2 className={styles.blockTitle}>{story.storyHeading}</h2>
+              <div className={styles.chapterList}>
+                {compactChapters.map((chapter, index) => (
+                  <details
+                    key={chapter.title}
+                    className={styles.chapterCard}
+                    open={index === 0}
+                  >
+                    <summary>
+                      <span className={styles.chapterIndex}>{String(index + 1).padStart(2, "0")}</span>
+                      <span className={styles.chapterTitle}>{chapter.title}</span>
+                    </summary>
+                    <p>{chapter.body}</p>
+                  </details>
+                ))}
+              </div>
             </section>
 
             {story.gallery && story.gallery.length > 0 ? (
-              <section className={styles.block}>
+              <section className={styles.block} id={slugify(story.galleryTitle ?? "In the field") }>
                 <h2 className={styles.blockTitle}>{story.galleryTitle ?? "In the field"}</h2>
+                {story.galleryIntro ? (
+                  <p className={styles.sectionIntro}>{toCompactText(story.galleryIntro, 42)}</p>
+                ) : null}
                 <div className={styles.galleryGrid}>
-                  {story.gallery.slice(0, 4).map((image) => (
-                    <div key={image.src} className={styles.galleryItem}>
+                  {story.gallery.slice(0, 6).map((image, index) => (
+                    <figure
+                      key={`${image.src}-${index}`}
+                      className={`${styles.galleryItem} ${index % 3 === 0 ? styles.galleryWide : ""}`}
+                    >
                       <Image
                         src={image.src}
                         alt={image.alt}
                         fill
                         sizes="(max-width: 1100px) 100vw, 60vw"
                       />
-                    </div>
+                    </figure>
                   ))}
                 </div>
               </section>
             ) : null}
 
             {compactMedia.length > 0 ? (
-              <section className={styles.block}>
+              <section className={styles.block} id={slugify(story.mediaHeading ?? "Community snapshots") }>
                 <h2 className={styles.blockTitle}>{story.mediaHeading ?? "Community snapshots"}</h2>
-                {story.mediaIntro ? <p className={styles.sectionIntro}>{toCompactText(story.mediaIntro, 28)}</p> : null}
+                {story.mediaIntro ? <p className={styles.sectionIntro}>{toCompactText(story.mediaIntro, 40)}</p> : null}
                 <div className={styles.mediaGrid}>
                   {compactMedia.map((item) => (
                     <article key={item.permalink} className={styles.mediaItem}>
-                      <h3>{item.title}</h3>
-                      <p>{toCompactText(item.description, 20)}</p>
+                      <div className={styles.mediaMeta}>
+                        <h3>{item.title}</h3>
+                        <p>{toCompactText(item.description, 26)}</p>
+                      </div>
                       <div className={styles.embedWrap}>
                         <InstagramEmbed permalink={item.permalink} />
                       </div>
@@ -165,20 +226,6 @@ export function ImpactStoryPage({ story }: { story: ImpactStoryPageData }) {
           </section>
 
           <aside className={styles.sideRail}>
-            {compactQuickFacts.length > 0 ? (
-              <section className={styles.sideBlock}>
-                <p className={styles.sideLabel}>At a glance</p>
-                <ul className={styles.factList}>
-                  {compactQuickFacts.map((fact) => (
-                    <li key={fact.label} className={styles.factItem}>
-                      <span className={styles.factLabel}>{fact.label}</span>
-                      <span className={styles.factValue}>{fact.value}</span>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            ) : null}
-
             <section className={styles.sideBlock}>
               <p className={styles.sideLabel}>{story.outcomesHeading}</p>
               <ul className={styles.outcomeList}>
@@ -187,6 +234,20 @@ export function ImpactStoryPage({ story }: { story: ImpactStoryPageData }) {
                 ))}
               </ul>
             </section>
+
+            {compactResources.length > 0 ? (
+              <section className={styles.sideBlock}>
+                <p className={styles.sideLabel}>{story.resourcesHeading ?? "References"}</p>
+                <div className={styles.relatedList}>
+                  {compactResources.map((resource) => (
+                    <StoryLink key={resource.href} href={resource.href} className={styles.relatedLink}>
+                      <span>{resource.title}</span>
+                      <span>Open</span>
+                    </StoryLink>
+                  ))}
+                </div>
+              </section>
+            ) : null}
 
             {compactRelatedStories.length > 0 ? (
               <section className={styles.sideBlock}>
@@ -204,7 +265,7 @@ export function ImpactStoryPage({ story }: { story: ImpactStoryPageData }) {
 
             <section className={styles.cta}>
               <h2>{story.closing.title}</h2>
-              <p>{toCompactText(story.closing.body, 24)}</p>
+              <p>{toCompactText(story.closing.body, 28)}</p>
               <div className={styles.ctaActions}>
                 <ActionLink href={story.cta.href} label={story.cta.label} variant="primary" />
                 {story.secondaryCta ? (

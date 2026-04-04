@@ -8,7 +8,7 @@ export const SITE_URL =
 
 export const COMMONWEALTH_LOGO_URL =
   process.env.NEXT_PUBLIC_COMMONWEALTH_LOGO_URL ||
-  `${MAIN_SITE_URL}/images/commonwealth_logo.PNG`;
+  "/paksarzameen_logo.png";
 
 export const NAV_LINKS = [
   { label: "Home", href: "/" },

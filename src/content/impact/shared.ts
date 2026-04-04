@@ -145,12 +145,6 @@ export const impactCategories: ImpactCategory[] = [
           "A platform where young advocates translated concern about climate change into public leadership.",
         href: "/impact/environmental/cop-in-my-city",
       },
-      {
-        title: "Data Assessment and Research",
-        description:
-          "Field learning that helps environmental programs improve, adapt, and stay accountable.",
-        href: "/impact/environmental/data-assessment-research",
-      },
     ],
   },
   {
@@ -178,12 +172,6 @@ export const impactCategories: ImpactCategory[] = [
           "Practical guidance that helps students turn ambition into a real higher-education pathway.",
         href: "/impact/education/career-counselling-university-applications",
       },
-      {
-        title: "Enrollment Rate and Data Assessment",
-        description:
-          "Evidence-based learning support that helps teams see who is still missing and why.",
-        href: "/impact/education/enrollment-rate-data-assessment",
-      },
     ],
   },
   {
@@ -205,12 +193,6 @@ export const impactCategories: ImpactCategory[] = [
           "A humane identification approach that improves safety, visibility, and care for stray dogs.",
         href: "/impact/animal/stray-dog-collar-project",
       },
-      {
-        title: "Data Assessment and Research",
-        description:
-          "Tracking needs on the ground so animal welfare responses go where they matter most.",
-        href: "/impact/animal/data-assessment-research",
-      },
     ],
   },
   {
@@ -231,12 +213,6 @@ export const impactCategories: ImpactCategory[] = [
         description:
           "Routine outreach that brings primary care, screening, and blood support closer to underserved communities.",
         href: "/impact/health/free-medical-blood-camps",
-      },
-      {
-        title: "Data Assessment and Research",
-        description:
-          "Monitoring patterns in demand, outreach, and follow-up so health support improves over time.",
-        href: "/impact/health/data-assessment-research",
       },
     ],
   },
@@ -298,12 +274,12 @@ export const sectionCards: ImpactStoryLink[] = impactCategories.map((category) =
   environmental: {
     title: category.title,
     description:
-      "Follow how tree planting, climate dialogue, research, and youth leadership come together as long-term environmental care.",
+      "Follow how tree planting, climate dialogue, and youth leadership come together as long-term environmental care.",
     href: category.href,
     ctaLabel: "Explore environmental stories",
     eyebrow: "Climate and green action",
-    meta: "6 stories and initiatives",
-    bullets: ["Public tree-planting and restoration", "Youth climate voice and local research"],
+    meta: "5 stories and initiatives",
+    bullets: ["Public tree-planting and restoration", "Youth climate voice and local action"],
     instagramPermalink: "https://www.instagram.com/reel/DB4Y2KzNv6Z/",
   },
   education: {
@@ -313,8 +289,8 @@ export const sectionCards: ImpactStoryLink[] = impactCategories.map((category) =
     href: category.href,
     ctaLabel: "Explore education stories",
     eyebrow: "Learning with dignity",
-    meta: "4 stories and pathways",
-    bullets: ["Transgender and blind student inclusion", "Career guidance and data-backed support"],
+    meta: "3 stories and pathways",
+    bullets: ["Transgender and blind student inclusion", "Career guidance and opportunity pathways"],
     instagramPermalink: "https://www.instagram.com/p/DC_LgCcub1D/",
   },
   animal: {
@@ -324,8 +300,8 @@ export const sectionCards: ImpactStoryLink[] = impactCategories.map((category) =
     href: category.href,
     ctaLabel: "Explore animal welfare stories",
     eyebrow: "Humane neighborhood care",
-    meta: "3 practical response stories",
-    bullets: ["Feeding points and safer identification", "Field learning that improves follow-up"],
+    meta: "2 practical response stories",
+    bullets: ["Feeding points and safer identification", "Field coordination for humane follow-up"],
     instagramPermalink: "https://www.instagram.com/reel/CoAUaTloqXC/",
   },
   health: {
@@ -335,7 +311,7 @@ export const sectionCards: ImpactStoryLink[] = impactCategories.map((category) =
     href: category.href,
     ctaLabel: "Explore health stories",
     eyebrow: "Urgent care and outreach",
-    meta: "3 health response stories",
+    meta: "2 health response stories",
     bullets: ["Blood availability and emergency coordination", "Medical camps and community follow-up"],
     instagramPermalink: "https://www.instagram.com/p/DKFn43YyK0g/",
   },

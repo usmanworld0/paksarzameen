@@ -8,7 +8,7 @@
   :root {
     --brand-green: 40 56 45;
     --brand-green-dark: 22 33 28;
-    --brand-rose: 209 147 146;
+    --brand-rose: 233 211 204;
     --brand-cream: 250 245 240;
     --brand-charcoal: 24 24 24;
     --background: 255 252 248;
@@ -72,7 +72,7 @@
 
   .store-section-soft {
     @apply store-section;
-    background: linear-gradient(135deg, #fdf7f0 0%, #f8efe8 100%);
+    background: linear-gradient(135deg, #fefbf8 0%, #fbf6f2 100%);
   }
 
   .store-heading {
@@ -113,10 +113,10 @@
 
   .store-mesh-bg {
     background:
-      radial-gradient(circle at 14% 18%, rgba(209, 147, 146, 0.22) 0%, transparent 32%),
-      radial-gradient(circle at 80% 20%, rgba(40, 56, 45, 0.13) 0%, transparent 36%),
-      radial-gradient(circle at 65% 78%, rgba(233, 203, 178, 0.24) 0%, transparent 40%),
-      linear-gradient(130deg, #fffaf5 0%, #fff3e9 52%, #fff8f1 100%);
+      radial-gradient(circle at 14% 18%, rgba(233, 211, 204, 0.16) 0%, transparent 32%),
+      radial-gradient(circle at 80% 20%, rgba(40, 56, 45, 0.1) 0%, transparent 36%),
+      radial-gradient(circle at 65% 78%, rgba(241, 228, 214, 0.16) 0%, transparent 40%),
+      linear-gradient(130deg, #fffcf9 0%, #fdf8f3 52%, #fffdfa 100%);
   }
 
   .container-wide {

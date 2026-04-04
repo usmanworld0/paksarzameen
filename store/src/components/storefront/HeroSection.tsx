@@ -14,8 +14,6 @@ export function HeroSection() {
         priority
       />
 
-      <div className="absolute inset-0 bg-[linear-gradient(115deg,rgba(255,251,247,0.50)_10%,rgba(255,251,247,0.30)_46%,rgba(255,251,247,0.10)_100%)]" />
-      <div className="absolute -left-24 top-20 h-72 w-72 rounded-full bg-[#f4ebe4]/10 blur-3xl" />
       <div className="absolute bottom-6 right-0 h-72 w-72 rounded-full bg-[#2c3d31]/14 blur-3xl" />
 
       <div className="store-container relative z-10 grid grid-cols-1 items-center gap-10 py-14 lg:grid-cols-[1.1fr_0.9fr] lg:py-20">

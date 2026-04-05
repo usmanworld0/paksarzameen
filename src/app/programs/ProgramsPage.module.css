@@ -12,14 +12,17 @@
   width: min(1280px, 94vw);
   margin: 0 auto;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(360px, 540px);
-  gap: clamp(1.1rem, 3vw, 2.4rem);
-  align-items: center;
+  grid-template-columns: minmax(0, 1fr) minmax(420px, 48vw);
+  gap: clamp(1.2rem, 2.8vw, 2.6rem);
+  align-items: stretch;
+  min-height: clamp(48rem, 78vh, 66rem);
 }
 
 .heroContent {
   display: grid;
   gap: 0.9rem;
+  align-content: center;
+  max-width: 42rem;
 }
 
 .eyebrow {
@@ -48,86 +51,105 @@
   font-size: clamp(0.96rem, 1.6vw, 1.08rem);
 }
 
-.heroCards {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.85rem;
-}
-
-.heroCard {
+.heroOrbit {
   position: relative;
+  min-height: 100%;
+  isolation: isolate;
   overflow: hidden;
-  border-radius: 22px 22px 44px 44px;
-  min-height: 210px;
-  padding: 0.8rem;
-  display: grid;
-  grid-template-rows: 1fr auto;
-  box-shadow: 0 18px 34px rgba(32, 39, 64, 0.16);
-  animation: liftIn 680ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  transition: transform 360ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 360ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.heroCard:nth-child(2) {
-  transform: translateY(-20px);
-  animation-delay: 90ms;
-}
-
-.heroCard:nth-child(3) {
-  animation-delay: 140ms;
-}
-
-.heroCard:nth-child(4) {
-  transform: translateY(12px);
-  animation-delay: 180ms;
-}
-
-.heroCard:nth-child(5) {
-  transform: translateY(-14px);
-  animation-delay: 220ms;
-}
-
-.heroCard:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 26px 42px rgba(32, 39, 64, 0.2);
-}
-
-.heroCardImageWrap {
+.heroOrbitGlow {
   position: relative;
-  width: 84px;
-  height: 84px;
+  inset: 0;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.3);
+  background:
+    radial-gradient(circle at 48% 50%, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.18) 42%, transparent 70%),
+    radial-gradient(circle at 70% 18%, rgba(119, 131, 255, 0.16), transparent 34%),
+    radial-gradient(circle at 78% 78%, rgba(36, 185, 154, 0.12), transparent 28%);
+  filter: blur(2px);
+  z-index: 0;
+}
+
+.heroOrbitRing {
+  position: absolute;
+  inset: 4% 5% 4% 12%;
+  border-right: 2px solid rgba(92, 104, 160, 0.16);
+  border-top: 2px solid transparent;
+  border-bottom: 2px solid transparent;
+  border-left: 2px solid rgba(92, 104, 160, 0.06);
+  border-radius: 999px;
+  opacity: 0.7;
+  z-index: 0;
+  mask-image: linear-gradient(180deg, transparent 0%, #000 14%, #000 86%, transparent 100%);
+}
+
+.heroOrbitItem {
+  position: absolute;
+  width: clamp(13.2rem, 19vw, 17rem);
+  min-height: 9.4rem;
+  padding: 0.85rem 0.9rem;
+  border-radius: 26px 26px 34px 34px;
+  display: grid;
+  grid-template-columns: 5.8rem 1fr;
+  gap: 0.9rem;
+  align-items: center;
+  box-shadow: 0 18px 34px rgba(32, 39, 64, 0.14);
+  animation: orbitFloat 6.5s ease-in-out infinite;
+  animation-delay: var(--orbit-delay);
+  transform:
+    translateX(calc(var(--orbit-shift) * -1))
+    rotate(var(--orbit-rotate));
+  transform-origin: center;
+  z-index: 1;
+}
+
+.heroOrbitItem:hover {
+  transform:
+    translateX(calc(var(--orbit-shift) * -1))
+    rotate(var(--orbit-rotate))
+    scale(1.03);
+}
+
+.heroOrbitItem:nth-child(2n) {
+  animation-duration: 7.4s;
+}
+
+.heroOrbitBadge {
+  position: relative;
+  width: 5.8rem;
+  height: 5.8rem;
+  border-radius: 999px;
   overflow: hidden;
+  background: rgba(255, 255, 255, 0.22);
+  border: 2px solid rgba(255, 255, 255, 0.52);
   justify-self: center;
-  align-self: end;
-  border: 2px solid rgba(255, 255, 255, 0.45);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.24);
 }
 
-.heroCardImage {
+.heroOrbitImage {
   object-fit: cover;
-  padding: 0.2rem;
+  padding: 0.15rem;
 }
 
-.heroCardText {
-  text-align: center;
+.heroOrbitText {
   color: #ffffff;
-  margin-top: 0.8rem;
+  text-align: left;
 }
 
-.heroCardText p {
+.heroOrbitText p {
   margin: 0;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   font-weight: 700;
   line-height: 1.28;
 }
 
-.heroCardText span {
+.heroOrbitText span {
   display: block;
   margin-top: 0.25rem;
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   letter-spacing: 0.07em;
   text-transform: uppercase;
-  opacity: 0.92;
+  opacity: 0.9;
 }
 
 .tone1 {
@@ -161,13 +183,30 @@
   }
 }
 
+@keyframes orbitFloat {
+  0%,
+  100% {
+    transform:
+      translateX(calc(var(--orbit-shift) * -1))
+      rotate(var(--orbit-rotate))
+      translateY(0);
+  }
+  50% {
+    transform:
+      translateX(calc(var(--orbit-shift) * -1))
+      rotate(var(--orbit-rotate))
+      translateY(-10px);
+  }
+}
+
 @media (max-width: 1040px) {
   .heroWrap {
     grid-template-columns: 1fr;
+    min-height: auto;
   }
 
-  .heroCards {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+  .heroOrbit {
+    min-height: 42rem;
   }
 }
 
@@ -176,17 +215,32 @@
     padding-top: clamp(7.2rem, 14vw, 8.4rem);
   }
 
-  .heroCards {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .heroContent {
+    max-width: none;
   }
 
-  .heroCard {
-    min-height: 180px;
+  .heroOrbit {
+    min-height: 36rem;
+    overflow: visible;
   }
 
-  .heroCard:nth-child(2),
-  .heroCard:nth-child(4),
-  .heroCard:nth-child(5) {
-    transform: none;
+  .heroOrbitRing {
+    inset: 8% 0 8% 18%;
+  }
+
+  .heroOrbitItem {
+    width: min(18rem, 68vw);
+    grid-template-columns: 4.7rem 1fr;
+  }
+
+  .heroOrbitBadge {
+    width: 4.7rem;
+    height: 4.7rem;
+  }
+
+  .heroOrbitItem:nth-child(2),
+  .heroOrbitItem:nth-child(4),
+  .heroOrbitItem:nth-child(5) {
+    transform: translateX(0) rotate(0deg);
   }
 }

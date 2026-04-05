@@ -1,6 +1,9 @@
 .page {
   --accent: #2d6a4f;
   --accent-soft: rgba(45, 106, 79, 0.16);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   background:
     radial-gradient(circle at 8% 8%, var(--accent-soft) 0%, transparent 36%),
     radial-gradient(circle at 92% 10%, rgba(20, 44, 35, 0.08) 0%, transparent 36%),
@@ -10,7 +13,27 @@
   padding: clamp(1rem, 2vw, 1.6rem) 0 4rem;
 }
 
+.page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    url("/images/vectors/19198457.jpg"),
+    url("/images/vectors/6432897.jpg"),
+    url("/images/vectors/6660.jpg");
+  background-repeat: no-repeat;
+  background-size: 340px auto, 300px auto, 360px auto;
+  background-position: -44px 10%, calc(100% + 50px) 16%, 52% 108%;
+  opacity: 0.12;
+  mix-blend-mode: multiply;
+  filter: saturate(0.84) contrast(0.94);
+  pointer-events: none;
+  z-index: 0;
+}
+
 .container {
+  position: relative;
+  z-index: 1;
   width: min(1380px, 95vw);
   margin: 0 auto;
   display: grid;

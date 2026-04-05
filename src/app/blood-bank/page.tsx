@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 
 import { siteConfig } from "@/config/site";
@@ -44,6 +45,21 @@ export const metadata: Metadata = {
 };
 
 export default function BloodBankPage() {
+  const bloodBankVectors = [
+    {
+      src: "/images/vectors/blood bank/2707649.jpg",
+      alt: "Blood donation support illustration",
+    },
+    {
+      src: "/images/vectors/blood bank/blood_donation_02.jpg",
+      alt: "Blood bank team illustration",
+    },
+    {
+      src: "/images/vectors/blood bank/pq6o_qij1_220606.jpg",
+      alt: "Blood donation care illustration",
+    },
+  ];
+
   return (
     <section className={styles.page}>
       <div className={styles.container}>
@@ -64,14 +80,11 @@ export default function BloodBankPage() {
             </div>
           </div>
 
-          <h1 className={styles.title}>
-            Become part of the blood donor movement.
-            <br />
-            Start saving lives with us.
-          </h1>
-          <p className={styles.lead}>
-            Register as a donor for urgent blood coordination in Bahawalpur.
-          </p>
+          <div className={styles.leftIntro}>
+            <h1 className={styles.title}>
+              <span className={styles.titleLine}>24/7 Emergency Blood Support</span>
+            </h1>
+          </div>
 
           <div className={styles.videoFrame}>
             <video
@@ -87,17 +100,33 @@ export default function BloodBankPage() {
         </aside>
 
         <section className={styles.rightPanel}>
-          <div className={styles.topMeta}>
-            <span className={styles.metaText}>Already registered?</span>
-            <Link href="/contact" className={styles.metaLink}>
-              Contact Team
-            </Link>
-          </div>
-
           <div className={styles.formShell}>
+            <div className={styles.topMeta}>
+              <span className={styles.metaText}>Already registered?</span>
+              <Link href="/contact" className={styles.metaLink}>
+                Contact Team
+              </Link>
+            </div>
             <p className={styles.formEyebrow}>Registration</p>
             <h2 className={styles.formTitle}>Personal Donor Cabinet</h2>
             <BloodBankRequestForm />
+
+            <div className={styles.vectorRail} aria-label="Blood bank illustrations">
+              {bloodBankVectors.map((item, index) => (
+                <figure
+                  key={item.src}
+                  className={`${styles.vectorCard} ${index === 0 ? styles.vectorCardWide : index === 1 ? styles.vectorCardTall : styles.vectorCardSmall}`}
+                >
+                  <Image
+                    src={item.src}
+                    alt={item.alt}
+                    fill
+                    sizes="(max-width: 980px) 100vw, 42vw"
+                    className={styles.vectorImage}
+                  />
+                </figure>
+              ))}
+            </div>
           </div>
         </section>
       </div>

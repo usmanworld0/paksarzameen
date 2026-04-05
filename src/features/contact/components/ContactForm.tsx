@@ -40,34 +40,40 @@ export function ContactForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <label className="block">
-        <span className="text-sm font-medium text-neutral-700">Name</span>
+        <span className="text-sm font-semibold uppercase tracking-[0.12em] text-[#4d665a]">
+          Name
+        </span>
         <input
           required
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="mt-2 w-full rounded-md border border-neutral-200 p-2.5"
+          className="mt-2 w-full rounded-xl border border-[#d0e1d8] bg-white px-4 py-3.5 text-base text-[#1f3a2d] outline-none transition-all duration-200 focus:border-[#1f8f63]/65 focus:shadow-[0_0_0_3px_rgba(31,143,99,0.13)]"
         />
       </label>
 
       <label className="block">
-        <span className="text-sm font-medium text-neutral-700">Email</span>
+        <span className="text-sm font-semibold uppercase tracking-[0.12em] text-[#4d665a]">
+          Email
+        </span>
         <input
           required
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="mt-2 w-full rounded-md border border-neutral-200 p-2.5"
+          className="mt-2 w-full rounded-xl border border-[#d0e1d8] bg-white px-4 py-3.5 text-base text-[#1f3a2d] outline-none transition-all duration-200 focus:border-[#1f8f63]/65 focus:shadow-[0_0_0_3px_rgba(31,143,99,0.13)]"
         />
       </label>
 
       <label className="block">
-        <span className="text-sm font-medium text-neutral-700">Message</span>
+        <span className="text-sm font-semibold uppercase tracking-[0.12em] text-[#4d665a]">
+          Message
+        </span>
         <textarea
           required
           rows={5}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          className="mt-2 w-full rounded-md border border-neutral-200 p-2.5"
+          className="mt-2 w-full rounded-xl border border-[#d0e1d8] bg-white px-4 py-3.5 text-base text-[#1f3a2d] outline-none transition-all duration-200 focus:border-[#1f8f63]/65 focus:shadow-[0_0_0_3px_rgba(31,143,99,0.13)]"
         />
       </label>
 
@@ -75,12 +81,12 @@ export function ContactForm() {
         <button
           type="submit"
           disabled={submitting}
-          className="inline-flex items-center rounded-md bg-psz-green px-4 py-2 text-white"
+          className="inline-flex items-center rounded-full bg-[linear-gradient(120deg,#1f8f63_0%,#2ea874_56%,#58b88a_100%)] px-6 py-3 text-base font-semibold text-white shadow-[0_10px_20px_rgba(31,116,78,0.28)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_14px_24px_rgba(31,116,78,0.32)] disabled:opacity-60"
         >
           {submitting ? "Sending..." : "Send Message"}
         </button>
         {status ? (
-          <span className="max-w-full break-words text-sm text-neutral-600">
+          <span className="max-w-full break-words rounded-md bg-[#edf8f1] px-3.5 py-2 text-base text-[#486257]">
             {status}
           </span>
         ) : null}

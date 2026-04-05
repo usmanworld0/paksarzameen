@@ -18,6 +18,49 @@ const STORIES_OF_HOPE = impactHopeStories;
 type Panel = "impact" | null;
 const DROPDOWN_LABELS: Record<string, Panel> = { "Impact": "impact" };
 
+type ImpactCategorySlug = (typeof IMPACT_CATS)[number]["slug"];
+
+function ImpactGlyph({ slug }: { slug: ImpactCategorySlug }) {
+  if (slug === "environmental") {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M5 14c5.5-8 10-8 14-9-1 4-1 8-9 14-1.6 1.2-3.9.8-5-.9-1.3-1.8-1.4-3.6 0-4.1Z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M7.5 16.5c1.2-2.2 3.1-3.8 5.5-4.7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      </svg>
+    );
+  }
+
+  if (slug === "education") {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M4 7l8-3 8 3-8 3-8-3Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+        <path d="M7 9v4c0 1.8 2.2 3.5 5 3.5s5-1.7 5-3.5V9" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M12 13v4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      </svg>
+    );
+  }
+
+  if (slug === "animal") {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="6.2" cy="8" r="1.6" fill="currentColor" />
+        <circle cx="10.1" cy="5.8" r="1.6" fill="currentColor" />
+        <circle cx="13.9" cy="5.8" r="1.6" fill="currentColor" />
+        <circle cx="17.8" cy="8" r="1.6" fill="currentColor" />
+        <path d="M8 14.2c0-2.1 1.9-3.7 4-3.7s4 1.6 4 3.7c0 2.1-1.8 3.9-4 3.9s-4-1.8-4-3.9Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M12 4c3 3.2 4.8 6.2 4.8 8.4 0 2.7-2.1 4.9-4.8 4.9s-4.8-2.2-4.8-4.9C7.2 10.2 9 7.2 12 4Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      <path d="M10.2 13.7c.9.8 2.6.8 3.6 0" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      <path d="M12 18.2v2.3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 export function Navbar() {
   const pathname = usePathname();
   const [hidden, setHidden]           = useState(false);
@@ -185,10 +228,12 @@ export function Navbar() {
 
               {/* 4 category columns */}
               <div className="mega-cats-grid">
-                {IMPACT_CATS.map((cat) => (
-                  <div key={cat.slug} className="mega-cat">
+                {IMPACT_CATS.map((cat, index) => (
+                  <div key={cat.slug} className={`mega-cat mega-cat--tone-${(index % 5) + 1}`}>
                     <div className="mega-cat-header">
-                      <span className="mega-cat-icon" aria-hidden="true"></span>
+                      <span className="mega-cat-icon" aria-hidden="true">
+                        <ImpactGlyph slug={cat.slug} />
+                      </span>
                       <h4 className="mega-cat-title">{cat.title}</h4>
                     </div>
                     <ul className="mega-cat-list">
@@ -209,12 +254,17 @@ export function Navbar() {
               {/* Stories of Hope */}
               <div className="mega-stories-row">
                 <div className="mega-stories-header">
-                  <span className="mega-cat-icon" aria-hidden="true"></span>
+                  <span className="mega-cat-icon mega-cat-icon--story" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <path d="M6 8.5A3.5 3.5 0 0 1 9.5 5h5A3.5 3.5 0 0 1 18 8.5v7A3.5 3.5 0 0 1 14.5 19h-5A3.5 3.5 0 0 1 6 15.5v-7Z" stroke="currentColor" strokeWidth="1.6" />
+                      <path d="M9 10h6M9 13h4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                    </svg>
+                  </span>
                   <h4 className="mega-cat-title">Stories of Hope</h4>
                 </div>
                 <div className="mega-story-cards">
-                  {STORIES_OF_HOPE.map((s) => (
-                    <Link href={s.href} key={s.name} className="mega-story-card">
+                  {STORIES_OF_HOPE.map((s, index) => (
+                    <Link href={s.href} key={s.name} className={`mega-story-card mega-story-card--tone-${(index % 5) + 1}`}>
                       <div className="mega-story-img-wrap">
                         {s.image ? (
                           <Image

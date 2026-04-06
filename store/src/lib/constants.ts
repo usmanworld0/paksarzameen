@@ -2,7 +2,10 @@ export const SITE_NAME = "Paksarzameen Store";
 export const SITE_DESCRIPTION =
   "Premium artisan marketplace by PakSarZameen — connecting Pakistan's finest craftspeople with the world.";
 export const MAIN_SITE_URL =
-  process.env.NEXT_PUBLIC_MAIN_SITE_URL || "https://paksarzameenwfo.com";
+  process.env.NEXT_PUBLIC_MAIN_SITE_URL ||
+  (process.env.NODE_ENV === "production"
+    ? "https://paksarzameenwfo.com"
+    : "http://localhost:3000");
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || "https://store.paksarzameenwfo.com";
 

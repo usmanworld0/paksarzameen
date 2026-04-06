@@ -3,6 +3,7 @@ import { Inter, Sora } from "next/font/google";
 
 import { Navbar } from "@/components/header/Navbar";
 import { Footer } from "@/components/footer/Footer";
+import { Providers } from "@/components/providers";
 // ThemeProvider removed: app is light-only now
 import { siteConfig } from "@/config/site";
 
@@ -152,14 +153,16 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.variable} ${sora.variable} antialiased`}>
-        <div className="app-boot-loader" aria-hidden="true">
-          <div className="app-boot-loader__spinner" />
-        </div>
-        <Navbar />
-        <main id="main-content">
-          {children}
-        </main>
-        <Footer />
+        <Providers>
+          <div className="app-boot-loader" aria-hidden="true">
+            <div className="app-boot-loader__spinner" />
+          </div>
+          <Navbar />
+          <main id="main-content">
+            {children}
+          </main>
+          <Footer />
+        </Providers>
       </body>
     </html>
   );

@@ -4,31 +4,33 @@ import GoogleProvider from "next-auth/providers/google";
 
 import { prisma } from "@/lib/prisma";
 
-function getRequiredEnv(name: string) {
-  const value = process.env[name];
+import {
+  getAuthSecret,
+  getGoogleClientId,
+  getGoogleClientSecret,
+  hasGoogleConfig,
+} from "@/lib/auth-env";
 
-  if (!value) {
-    throw new Error(`${name} is required for Google authentication.`);
-  }
-
-  return value;
-}
+const googleClientId = getGoogleClientId();
+const googleClientSecret = getGoogleClientSecret();
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
-  secret: getRequiredEnv("NEXTAUTH_SECRET"),
+  secret: getAuthSecret(),
   session: {
     strategy: "database",
   },
   pages: {
     signIn: "/login",
   },
-  providers: [
-    GoogleProvider({
-      clientId: getRequiredEnv("GOOGLE_CLIENT_ID"),
-      clientSecret: getRequiredEnv("GOOGLE_CLIENT_SECRET"),
-    }),
-  ],
+  providers: hasGoogleConfig()
+    ? [
+        GoogleProvider({
+          clientId: googleClientId,
+          clientSecret: googleClientSecret,
+        }),
+      ]
+    : [],
   callbacks: {
     async session({ session, user }) {
       if (session.user) {

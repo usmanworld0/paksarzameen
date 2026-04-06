@@ -1,16 +1,25 @@
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 import { compare } from "bcryptjs";
 import { prisma } from "./prisma";
-import { getAuthSecret, getAuthUrl, getHardcodedAdminCredentials } from "./auth-env";
+import {
+  getAuthSecret,
+  getAuthUrl,
+  getGoogleAuthClientId,
+  getGoogleAuthClientSecret,
+  getHardcodedAdminCredentials,
+} from "./auth-env";
 
 export const authOptions: NextAuthOptions = {
+  adapter: PrismaAdapter(prisma),
   secret: getAuthSecret(),
   debug: process.env.NODE_ENV !== "production",
   session: { strategy: "jwt" },
   pages: {
-    signIn: "/admin/login",
-    error: "/admin/login",
+    signIn: "/login",
+    error: "/login",
   },
   cookies: {
     sessionToken: {
@@ -26,6 +35,10 @@ export const authOptions: NextAuthOptions = {
     },
   },
   providers: [
+    GoogleProvider({
+      clientId: getGoogleAuthClientId(),
+      clientSecret: getGoogleAuthClientSecret(),
+    }),
     CredentialsProvider({
       name: "Admin Login",
       credentials: {

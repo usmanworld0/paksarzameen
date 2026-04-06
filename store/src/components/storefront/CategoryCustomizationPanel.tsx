@@ -271,13 +271,6 @@ export function CategoryCustomizationPanel({
             })}
           </div>
 
-          <SummaryCard
-            missingRequiredCount={missingRequiredCount}
-            optionsTotal={optionsTotal}
-            region={region}
-            submitting={submitting}
-            onProceed={proceedToBilling}
-          />
         </div>
       ) : (
         <div className="mt-8 space-y-6">
@@ -631,6 +624,16 @@ export function CategoryCustomizationPanel({
             className="min-h-[120px] w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 text-base text-neutral-900 outline-none transition-colors focus:border-neutral-900"
           />
         </div>
+      </div>
+
+      <div className="mt-6">
+        <SummaryCard
+          missingRequiredCount={missingRequiredCount}
+          optionsTotal={optionsTotal}
+          region={region}
+          submitting={submitting}
+          onProceed={proceedToBilling}
+        />
       </div>
     </section>
   );

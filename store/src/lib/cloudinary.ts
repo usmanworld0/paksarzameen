@@ -27,6 +27,41 @@ cloudinary.config({
 
 export { cloudinary };
 
+export type CloudinaryUploadResult = {
+  url: string;
+  publicId: string;
+  width: number | null;
+  height: number | null;
+  bytes: number | null;
+  mimeType: string | null;
+};
+
+export async function uploadImageFile(
+  file: File,
+  folder: string = "customer-art-gallery"
+): Promise<CloudinaryUploadResult> {
+  const buffer = Buffer.from(await file.arrayBuffer());
+  const dataUri = `data:${file.type};base64,${buffer.toString("base64")}`;
+
+  const result = await cloudinary.uploader.upload(dataUri, {
+    folder,
+    resource_type: "image",
+    transformation: [
+      { quality: "auto", fetch_format: "auto" },
+      { width: 1600, crop: "limit" },
+    ],
+  });
+
+  return {
+    url: result.secure_url,
+    publicId: result.public_id,
+    width: result.width ?? null,
+    height: result.height ?? null,
+    bytes: result.bytes ?? null,
+    mimeType: result.format ? `image/${result.format}` : file.type || null,
+  };
+}
+
 export async function uploadImage(
   file: string,
   folder: string = "commonwealth-lab"
@@ -49,4 +84,8 @@ export async function uploadImage(
 
 export async function deleteImage(publicId: string): Promise<void> {
   await cloudinary.uploader.destroy(publicId);
+}
+
+export async function deleteCloudinaryImage(publicId: string): Promise<void> {
+  await deleteImage(publicId);
 }

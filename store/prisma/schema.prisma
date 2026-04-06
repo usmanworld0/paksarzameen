@@ -180,6 +180,93 @@ model Admin {
   createdAt DateTime @default(now())
 }
 
+// ─── Store Auth + Gallery ─────────────────────────────────
+
+model User {
+  id            String    @id @default(uuid()) @db.Uuid
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime? @map("email_verified")
+  image         String?
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  accounts Account[]
+  sessions Session[]
+  images   Image[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String   @id @default(uuid()) @db.Uuid
+  userId            String   @map("user_id") @db.Uuid
+  type              String
+  provider          String
+  providerAccountId String   @map("provider_account_id")
+  refreshToken      String?  @map("refresh_token")
+  accessToken       String?  @map("access_token")
+  expiresAt         Int?     @map("expires_at")
+  tokenType         String?  @map("token_type")
+  scope             String?
+  idToken           String?  @map("id_token")
+  sessionState      String?  @map("session_state")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(uuid()) @db.Uuid
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id") @db.Uuid
+  expires      DateTime
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model Image {
+  id               String   @id @default(uuid()) @db.Uuid
+  userId           String   @map("user_id") @db.Uuid
+  publicId         String   @unique @map("public_id")
+  imageUrl         String   @map("image_url")
+  thumbnailUrl     String?  @map("thumbnail_url")
+  originalFilename String?  @map("original_filename")
+  mimeType         String?  @map("mime_type")
+  fileSize         Int?     @map("file_size")
+  width            Int?
+  height           Int?
+  caption          String?
+  approved         Boolean  @default(false)
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, approved])
+  @@index([approved, createdAt])
+  @@map("images")
+}
+
 // ─── Future-Ready Models ───────────────────────────────────
 
 model Customer {

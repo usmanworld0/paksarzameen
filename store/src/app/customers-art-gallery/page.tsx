@@ -2,48 +2,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { Navbar } from "@/components/storefront/Navbar";
 import { Footer } from "@/components/storefront/Footer";
-import { MAIN_SITE_URL } from "@/lib/constants";
+import { getApprovedGalleryImages } from "@/lib/gallery";
 
 export const dynamic = "force-dynamic";
 
-type PublicGalleryItem = {
-  id: string;
-  imageUrl: string;
-  thumbnailUrl: string | null;
-  caption: string | null;
-  createdAt: string;
-  user: {
-    id: string;
-    name: string | null;
-    image: string | null;
-  };
-};
-
-async function getApprovedGallery(): Promise<PublicGalleryItem[]> {
-  try {
-    const response = await fetch(`${MAIN_SITE_URL}/api/gallery`, {
-      cache: "no-store",
-      headers: {
-        Accept: "application/json",
-      },
-    });
-
-    if (!response.ok) {
-      return [];
-    }
-
-    const data = (await response.json().catch(() => null)) as
-      | { images?: PublicGalleryItem[] }
-      | null;
-
-    return data?.images ?? [];
-  } catch {
-    return [];
-  }
-}
-
 export default async function CustomersArtGalleryPage() {
-  const images = await getApprovedGallery();
+  const images = await getApprovedGalleryImages();
 
   return (
     <>
@@ -64,9 +28,7 @@ export default async function CustomersArtGalleryPage() {
               </p>
               <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
                 <Link
-                  href={`${MAIN_SITE_URL}/login?callbackUrl=/upload-art`}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="/upload-art"
                   className="inline-flex items-center justify-center rounded-full bg-[#2c3d31] px-6 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-white transition-colors hover:bg-[#1f2d24]"
                 >
                   Upload Your Art

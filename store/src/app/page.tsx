@@ -145,9 +145,9 @@ export default async function HomePage() {
               </Link>
               <Link
                 href={process.env.NEXT_PUBLIC_MAIN_SITE_URL || "https://paksarzameenwfo.com"}
-                className="store-button-secondary"
                 target="_blank"
                 rel="noopener noreferrer"
+                className="store-button-secondary"
               >
                 Learn About PSZ →
               </Link>

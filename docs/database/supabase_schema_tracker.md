@@ -148,3 +148,6 @@ ON images (user_id, approved);
 
 CREATE INDEX IF NOT EXISTS images_approved_created_at_idx
 ON images (approved, created_at DESC);
+
+-- Paksarzameen Store (Google Auth + Gallery parity)
+-- The store app now uses the same auth and gallery table set as the main app.

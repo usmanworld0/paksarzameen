@@ -28,10 +28,10 @@ export function ProductCard({ product, discountPercent, region = "PAK" }: Produc
     : regionalPricing.price;
 
   return (
-    <article className="group store-card overflow-hidden rounded-[22px] transition-transform duration-300 hover:-translate-y-1">
+    <article className="group store-card overflow-hidden rounded-[28px]">
       <Link
         href={`/products/${product.slug}`}
-        className="relative block h-[220px] w-full overflow-hidden bg-[#f7eee8] sm:h-[260px] lg:h-[300px]"
+        className="relative block h-[220px] w-full overflow-hidden bg-white sm:h-[260px] lg:h-[300px]"
         style={{
           backgroundImage: "url('/images/commonwealth_header.jpeg')",
           backgroundSize: "cover",
@@ -47,7 +47,7 @@ export function ProductCard({ product, discountPercent, region = "PAK" }: Produc
           quality={80}
           unoptimized
         />
-        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/36 to-transparent" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_64%,rgba(15,122,71,0.12)_100%)]" />
         {/* Badges */}
         {!isAvailable && (
           <div className="absolute left-3 top-3">
@@ -58,7 +58,7 @@ export function ProductCard({ product, discountPercent, region = "PAK" }: Produc
         )}
         {hasDiscount && (
           <div className="absolute right-3 top-3">
-            <span className="rounded-full bg-[#2c3d31] px-2.5 py-1 text-[9px] uppercase tracking-[0.15em] text-white">
+            <span className="rounded-full bg-[#1f1f1f] px-2.5 py-1 text-[9px] uppercase tracking-[0.15em] text-white">
               -{discountPercent}%
             </span>
           </div>
@@ -66,10 +66,10 @@ export function ProductCard({ product, discountPercent, region = "PAK" }: Produc
       </Link>
 
       <div className="flex flex-col items-center px-3 pb-6 pt-4 text-center sm:px-4">
-        <p className="text-[9px] font-semibold uppercase tracking-[0.24em] text-[#2c3d31]">
+        <p className="text-[9px] font-semibold uppercase tracking-[0.24em] text-[#0f7a47]">
           {product.category.name}
         </p>
-        <h3 className="mt-1 line-clamp-2 text-base leading-tight text-black sm:text-lg">
+        <h3 className="mt-1 line-clamp-2 text-base leading-tight text-neutral-900 sm:text-lg">
           {product.name}
         </h3>
         {product.artist && (
@@ -78,11 +78,11 @@ export function ProductCard({ product, discountPercent, region = "PAK" }: Produc
           </p>
         )}
         <div className="mt-3 flex items-center gap-2">
-          <span className="text-sm font-semibold tracking-tight text-neutral-900 sm:text-base">
+          <span className="text-sm font-semibold tracking-tight text-[#1f1f1f] sm:text-base">
             {formatRegionalPrice(finalPrice, region)}
           </span>
           {hasDiscount && (
-            <span className="text-xs text-neutral-400 line-through">
+            <span className="text-xs text-neutral-500 line-through">
               {formatRegionalPrice(regionalPricing.price, region)}
             </span>
           )}

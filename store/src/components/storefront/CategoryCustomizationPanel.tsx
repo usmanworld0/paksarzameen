@@ -41,7 +41,12 @@ export function CategoryCustomizationPanel({
   >({});
   const [submitting, setSubmitting] = useState(false);
   const [uploadingByGroup, setUploadingByGroup] = useState<Record<string, boolean>>({});
+  const [referenceImageUrl, setReferenceImageUrl] = useState("");
+  const [referenceImageName, setReferenceImageName] = useState("");
+  const [referenceNotes, setReferenceNotes] = useState("");
+  const [uploadingReferenceImage, setUploadingReferenceImage] = useState(false);
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+  const referenceInputRef = useRef<HTMLInputElement | null>(null);
 
   const parsedOptions = useMemo(() => parseCustomizationOptions(options), [options]);
 
@@ -123,6 +128,24 @@ export function CategoryCustomizationPanel({
     }
   }
 
+  async function uploadReferenceImage(file: File) {
+    setUploadingReferenceImage(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json().catch(() => null);
+      const url = typeof data?.url === "string" ? data.url : "";
+
+      if (res.ok && url) {
+        setReferenceImageUrl(url);
+        setReferenceImageName(file.name || "Reference image");
+      }
+    } finally {
+      setUploadingReferenceImage(false);
+    }
+  }
+
   async function proceedToBilling() {
     if (missingRequiredCount > 0) return;
 
@@ -138,6 +161,28 @@ export function CategoryCustomizationPanel({
         valueLabel: selection.valueLabel,
         priceAdjustment: selection.priceAdjustment,
       }));
+
+    if (referenceImageUrl) {
+      customizations.push({
+        key: "__optional_reference_image",
+        optionName: "Customization Notes",
+        groupLabel: "Reference Image",
+        value: referenceImageUrl,
+        valueLabel: referenceImageName || "Reference image",
+        priceAdjustment: 0,
+      });
+    }
+
+    if (referenceNotes.trim()) {
+      customizations.push({
+        key: "__optional_notes",
+        optionName: "Customization Notes",
+        groupLabel: "Description / Notes",
+        value: referenceNotes.trim(),
+        valueLabel: referenceNotes.trim(),
+        priceAdjustment: 0,
+      });
+    }
 
     addItem({
       productId: `custom-order-${categorySlug}`,
@@ -526,6 +571,67 @@ export function CategoryCustomizationPanel({
           />
         </div>
       )}
+
+      <div className="mt-6 rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm">
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
+          Optional Reference
+        </p>
+
+        <div className="mt-3 space-y-3">
+          {referenceImageUrl ? (
+            <div className="relative h-40 w-full overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100">
+              <Image src={referenceImageUrl} alt="Reference image" fill className="object-cover" />
+              <button
+                type="button"
+                onClick={() => {
+                  setReferenceImageUrl("");
+                  setReferenceImageName("");
+                }}
+                className="absolute right-2 top-2 rounded-full bg-black/65 p-1 text-white hover:bg-black"
+                aria-label="Remove reference image"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => referenceInputRef.current?.click()}
+              className="flex h-24 w-full items-center justify-center rounded-xl border border-dashed border-neutral-300 bg-white text-sm text-neutral-600 transition-colors hover:border-neutral-900 hover:text-neutral-900"
+            >
+              {uploadingReferenceImage ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                <span className="inline-flex items-center gap-2">
+                  <Upload className="h-4 w-4" />
+                  Upload reference image (optional)
+                </span>
+              )}
+            </button>
+          )}
+
+          <input
+            ref={referenceInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              if (file) {
+                uploadReferenceImage(file);
+              }
+              event.target.value = "";
+            }}
+          />
+
+          <textarea
+            value={referenceNotes}
+            onChange={(event) => setReferenceNotes(event.target.value)}
+            placeholder="Optional description/notes for this custom order"
+            className="min-h-[120px] w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 text-base text-neutral-900 outline-none transition-colors focus:border-neutral-900"
+          />
+        </div>
+      </div>
     </section>
   );
 }

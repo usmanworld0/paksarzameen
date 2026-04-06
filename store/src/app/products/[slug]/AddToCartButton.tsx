@@ -43,7 +43,12 @@ export function AddToCartButton({
   >({});
   const [added, setAdded] = useState(false);
   const [uploadingByGroup, setUploadingByGroup] = useState<Record<string, boolean>>({});
+  const [referenceImageUrl, setReferenceImageUrl] = useState("");
+  const [referenceImageName, setReferenceImageName] = useState("");
+  const [referenceNotes, setReferenceNotes] = useState("");
+  const [uploadingReferenceImage, setUploadingReferenceImage] = useState(false);
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+  const referenceInputRef = useRef<HTMLInputElement | null>(null);
   const parsedOptions = useMemo(
     () => parseCustomizationOptions(customizationOptions),
     [customizationOptions]
@@ -105,6 +110,24 @@ export function AddToCartButton({
     }
   }
 
+  async function uploadReferenceImage(file: File) {
+    setUploadingReferenceImage(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json().catch(() => null);
+      const url = typeof data?.url === "string" ? data.url : "";
+
+      if (res.ok && url) {
+        setReferenceImageUrl(url);
+        setReferenceImageName(file.name || "Reference image");
+      }
+    } finally {
+      setUploadingReferenceImage(false);
+    }
+  }
+
   function handleAdd() {
     const customizations = Object.entries(selectedByGroup)
       .sort(([a], [b]) => a.localeCompare(b))
@@ -116,6 +139,28 @@ export function AddToCartButton({
         valueLabel: selection.valueLabel,
         priceAdjustment: selection.priceAdjustment,
       }));
+
+    if (referenceImageUrl) {
+      customizations.push({
+        key: "__optional_reference_image",
+        optionName: "Customization Notes",
+        groupLabel: "Reference Image",
+        value: referenceImageUrl,
+        valueLabel: referenceImageName || "Reference image",
+        priceAdjustment: 0,
+      });
+    }
+
+    if (referenceNotes.trim()) {
+      customizations.push({
+        key: "__optional_notes",
+        optionName: "Customization Notes",
+        groupLabel: "Description / Notes",
+        value: referenceNotes.trim(),
+        valueLabel: referenceNotes.trim(),
+        priceAdjustment: 0,
+      });
+    }
 
     addItem({
       productId: product.id,
@@ -409,6 +454,62 @@ export function AddToCartButton({
           <span>Unit Total</span>
           <span>{formatRegionalPrice(unitPrice, product.region)}</span>
         </div>
+      </div>
+
+      <div className="space-y-3 rounded-xl border border-neutral-200 bg-neutral-50 p-4">
+        <Label>Optional Reference</Label>
+
+        {referenceImageUrl ? (
+          <div className="relative h-32 w-full overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100">
+            <Image src={referenceImageUrl} alt="Reference image" fill className="object-cover" />
+            <button
+              type="button"
+              onClick={() => {
+                setReferenceImageUrl("");
+                setReferenceImageName("");
+              }}
+              className="absolute right-2 top-2 rounded-full bg-black/65 p-1 text-white hover:bg-black"
+              aria-label="Remove reference image"
+            >
+              <X className="h-3 w-3" />
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => referenceInputRef.current?.click()}
+            className="flex h-24 w-full items-center justify-center rounded-lg border border-dashed border-neutral-300 bg-white text-xs text-neutral-600 transition-colors hover:border-neutral-900 hover:text-neutral-900"
+          >
+            {uploadingReferenceImage ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <span className="inline-flex items-center gap-1.5">
+                <Upload className="h-3.5 w-3.5" />
+                Upload reference image (optional)
+              </span>
+            )}
+          </button>
+        )}
+        <input
+          ref={referenceInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={(event) => {
+            const file = event.target.files?.[0];
+            if (file) {
+              uploadReferenceImage(file);
+            }
+            event.target.value = "";
+          }}
+        />
+
+        <textarea
+          value={referenceNotes}
+          onChange={(event) => setReferenceNotes(event.target.value)}
+          placeholder="Optional description/notes for your customization request"
+          className="min-h-[88px] w-full rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-900 outline-none transition-colors focus:border-neutral-900"
+        />
       </div>
 
       {/* Quantity + Add to Cart */}

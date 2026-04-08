@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth/next";
 import { CalendarDays, ImageIcon, ShieldCheck } from "lucide-react";
@@ -92,9 +93,12 @@ export default async function UploadArtPage() {
                     className="flex items-center gap-4 rounded-2xl border border-neutral-200 bg-white px-4 py-3"
                   >
                     <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-xl bg-neutral-100">
-                      <img
+                      <Image
                         src={image.thumbnailUrl ?? image.imageUrl}
                         alt={image.caption ?? "Uploaded artwork preview"}
+                        width={64}
+                        height={64}
+                        unoptimized
                         className="h-full w-full object-cover"
                       />
                     </div>

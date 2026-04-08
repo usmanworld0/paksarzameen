@@ -1143,7 +1143,7 @@ export function HomeClient() {
                 try {
                   coverVideoRef.current.pause();
                   coverVideoRef.current.currentTime = 0;
-                } catch (e) {}
+                } catch {}
               }
             }}
             onFocus={() => setIsCoverHovered(true)}

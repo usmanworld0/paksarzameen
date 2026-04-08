@@ -14,6 +14,15 @@ type ProgramsHubClientProps = {
   programs: Program[];
 };
 
+const ORBIT_POINTS = [
+  { top: "1%", right: "18%", shift: "0rem", delay: "0ms", rotate: "-10deg" },
+  { top: "17%", right: "10%", shift: "5.1rem", delay: "120ms", rotate: "6deg" },
+  { top: "34%", right: "2%", shift: "9.2rem", delay: "220ms", rotate: "12deg" },
+  { top: "53%", right: "2%", shift: "9.2rem", delay: "320ms", rotate: "-10deg" },
+  { top: "71%", right: "10%", shift: "5.1rem", delay: "420ms", rotate: "5deg" },
+  { top: "88%", right: "18%", shift: "0rem", delay: "520ms", rotate: "10deg" },
+] as const;
+
 // Helper function to get program icon/logo index based on title
 function getProgramLogoIndex(programTitle: string): number {
   const programCard = PROGRAM_CARDS.find(
@@ -25,15 +34,6 @@ function getProgramLogoIndex(programTitle: string): number {
 export function ProgramsHubClient({ programs }: ProgramsHubClientProps) {
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
-
-  const orbitPoints = [
-    { top: "1%", right: "18%", shift: "0rem", delay: "0ms", rotate: "-10deg" },
-    { top: "17%", right: "10%", shift: "5.1rem", delay: "120ms", rotate: "6deg" },
-    { top: "34%", right: "2%", shift: "9.2rem", delay: "220ms", rotate: "12deg" },
-    { top: "53%", right: "2%", shift: "9.2rem", delay: "320ms", rotate: "-10deg" },
-    { top: "71%", right: "10%", shift: "5.1rem", delay: "420ms", rotate: "5deg" },
-    { top: "88%", right: "18%", shift: "0rem", delay: "520ms", rotate: "10deg" },
-  ] as const;
 
   const categories = useMemo(
     () => ["All", ...new Set(programs.map((program) => program.category))],
@@ -57,7 +57,7 @@ export function ProgramsHubClient({ programs }: ProgramsHubClientProps) {
     if (filteredPrograms.length === 0) {
       return [] as Program[];
     }
-    return filteredPrograms.slice(0, orbitPoints.length);
+    return filteredPrograms.slice(0, ORBIT_POINTS.length);
   }, [filteredPrograms]);
 
   return (
@@ -121,11 +121,11 @@ export function ProgramsHubClient({ programs }: ProgramsHubClientProps) {
                 className={`${styles.heroOrbitItem} ${styles[`tone${(index % 5) + 1}` as const]}`}
                 style={
                   {
-                    top: orbitPoints[index].top,
-                    right: orbitPoints[index].right,
-                    ["--orbit-shift" as string]: orbitPoints[index].shift,
-                    ["--orbit-delay" as string]: orbitPoints[index].delay,
-                    ["--orbit-rotate" as string]: orbitPoints[index].rotate,
+                        top: ORBIT_POINTS[index].top,
+                        right: ORBIT_POINTS[index].right,
+                        ["--orbit-shift" as string]: ORBIT_POINTS[index].shift,
+                        ["--orbit-delay" as string]: ORBIT_POINTS[index].delay,
+                        ["--orbit-rotate" as string]: ORBIT_POINTS[index].rotate,
                   } as CSSProperties
                 }
               >

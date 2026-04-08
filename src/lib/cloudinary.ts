@@ -10,13 +10,23 @@ function getRequiredEnv(name: string) {
   return value;
 }
 
-cloudinary.config({
-  secure: true,
-  cloud_name: getRequiredEnv("CLOUDINARY_CLOUD_NAME"),
-  api_key: getRequiredEnv("CLOUDINARY_API_KEY"),
-  api_secret: getRequiredEnv("CLOUDINARY_API_SECRET"),
-  url: process.env.CLOUDINARY_URL,
-});
+let isCloudinaryConfigured = false;
+
+function ensureCloudinaryConfigured() {
+  if (isCloudinaryConfigured) {
+    return;
+  }
+
+  cloudinary.config({
+    secure: true,
+    cloud_name: getRequiredEnv("CLOUDINARY_CLOUD_NAME"),
+    api_key: getRequiredEnv("CLOUDINARY_API_KEY"),
+    api_secret: getRequiredEnv("CLOUDINARY_API_SECRET"),
+    url: process.env.CLOUDINARY_URL,
+  });
+
+  isCloudinaryConfigured = true;
+}
 
 export type CloudinaryUploadResult = {
   url: string;
@@ -31,6 +41,8 @@ export async function uploadImageFile(
   file: File,
   folder = "customer-art-gallery"
 ): Promise<CloudinaryUploadResult> {
+  ensureCloudinaryConfigured();
+
   const buffer = Buffer.from(await file.arrayBuffer());
   const dataUri = `data:${file.type};base64,${buffer.toString("base64")}`;
 
@@ -55,5 +67,6 @@ export async function uploadImageFile(
 }
 
 export async function deleteCloudinaryImage(publicId: string) {
+  ensureCloudinaryConfigured();
   await cloudinary.uploader.destroy(publicId, { resource_type: "image" });
 }

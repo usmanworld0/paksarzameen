@@ -28,6 +28,11 @@ Google sign-in is wired into the main Next.js app with NextAuth.js and a Prisma 
 
 ## Edge Cases
 - Missing auth or Cloudinary env values fail fast at runtime.
+- Cloudinary env validation is intentionally lazy (request-time) in `src/lib/cloudinary.ts` to avoid build-time crashes when Next.js collects route data for `/api/gallery/upload` during deployment.
 - Non-image files are rejected before upload.
 - If database persistence fails after a Cloudinary upload, the uploaded assets are cleaned up.
 - Unauthenticated requests to protected routes return `401` or redirect to `/login`.
+
+## Deployment Note (April 2026)
+- Production build failure `CLOUDINARY_CLOUD_NAME is required for Cloudinary uploads` was resolved by moving Cloudinary configuration from module top-level execution to an `ensureCloudinaryConfigured()` guard invoked inside upload/delete functions.
+- This preserves strict runtime validation while keeping `next build` stable in environments where secret values are injected only at runtime.

@@ -80,27 +80,31 @@ export function ImpactStoryPage({ story }: { story: ImpactStoryPageData }) {
     "--accent-soft": story.accentSoft,
   } as CSSProperties;
 
-  const compactIntro = toCompactText(story.intro, 34);
-  const compactSummary = toCompactText(story.summary, 46);
-  const compactQuickFacts = story.quickFacts.slice(0, 4);
+  const compactIntro = toCompactText(story.intro, 32);
+  const compactSummary = toCompactText(story.summary, 38);
+  const compactQuickFacts = story.quickFacts.slice(0, 3);
   const compactHighlights = story.highlights.slice(0, 4);
   const compactChapters = story.storyChapters.slice(0, 4).map((chapter) => ({
     ...chapter,
-    body: toCompactText(chapter.body, 44),
+    body: toCompactText(chapter.body, 36),
   }));
-  const compactOutcomes = story.outcomes.slice(0, 6).map((item) => toCompactText(item, 26));
+  const compactOutcomes = story.outcomes.slice(0, 6).map((item) => toCompactText(item, 24));
   const compactRelatedStories =
     story.relatedStories
       ?.filter((item) => !isDataResearchItem(item.title) && !isDataResearchItem(item.href))
-      .slice(0, 6) ?? [];
+      .slice(0, 4) ?? [];
   const compactResources =
     story.resources
       ?.filter((item) => !isDataResearchItem(item.title) && !isDataResearchItem(item.href))
       .slice(0, 4) ?? [];
-  const compactMedia = story.media?.slice(0, 4) ?? [];
+  const compactMedia = story.media?.slice(0, 2) ?? [];
+  const compactHopeStories = story.hopeStories?.slice(0, 2) ?? [];
+  const heroImage = story.gallery?.[0] ?? compactHopeStories[0]?.image;
 
   return (
     <main className={styles.page} style={themeStyle}>
+      <div className={styles.backdrop} aria-hidden="true" />
+
       <div className={styles.container}>
         {story.breadcrumbs.length > 0 ? (
           <nav className={styles.breadcrumb} aria-label="Breadcrumb">
@@ -116,29 +120,17 @@ export function ImpactStoryPage({ story }: { story: ImpactStoryPageData }) {
         ) : null}
 
         <header className={styles.hero}>
-          <div className={styles.heroAmbient} aria-hidden="true">
-            <span className={styles.orbOne} />
-            <span className={styles.orbTwo} />
-            <span className={styles.orbThree} />
-            <span className={styles.heroBeam} />
-            <span className={styles.heroNoise} />
-            <span className={styles.heroGridGlow} />
-          </div>
-
-          <div className={styles.heroMain}>
-            <p className={styles.heroKicker}>
-              <span className={styles.heroKickerDot} aria-hidden="true" />
-              Impact in motion
-            </p>
+          <div className={styles.heroCopy}>
+            <p className={styles.kicker}>Impact in motion</p>
             <p className={styles.eyebrow}>{story.eyebrow}</p>
             <h1 className={styles.title}>{story.title}</h1>
             <p className={styles.lead}>{compactIntro}</p>
             <p className={styles.summary}>{compactSummary}</p>
 
             {compactHighlights.length > 0 ? (
-              <div className={styles.heroTicker}>
-                {compactHighlights.slice(0, 3).map((item) => (
-                  <span key={item.label} className={styles.heroTickerItem}>
+              <div className={styles.pillRow}>
+                {compactHighlights.map((item) => (
+                  <span key={item.label} className={styles.pill}>
                     <strong>{item.value}</strong>
                     <em>{item.label}</em>
                   </span>
@@ -146,7 +138,7 @@ export function ImpactStoryPage({ story }: { story: ImpactStoryPageData }) {
               </div>
             ) : null}
 
-            <div className={styles.heroActions}>
+            <div className={styles.actionRow}>
               <ActionLink href={story.cta.href} label={story.cta.label} variant="primary" />
               {story.secondaryCta ? (
                 <ActionLink
@@ -158,152 +150,181 @@ export function ImpactStoryPage({ story }: { story: ImpactStoryPageData }) {
             </div>
           </div>
 
-          {compactQuickFacts.length > 0 ? (
-            <div className={styles.heroPanel}>
-              <p className={styles.sideLabel}>At a glance</p>
-              <ul className={styles.factList}>
+          <div className={styles.heroMedia}>
+            <figure className={styles.heroImageFrame}>
+              {heroImage ? (
+                <Image
+                  src={heroImage.src}
+                  alt={heroImage.alt}
+                  fill
+                  priority
+                  sizes="(max-width: 960px) 100vw, 50vw"
+                />
+              ) : (
+                <div className={styles.heroFallback}>
+                  <span>Field story highlights</span>
+                </div>
+              )}
+            </figure>
+
+            {compactQuickFacts.length > 0 ? (
+              <div className={styles.factGrid}>
                 {compactQuickFacts.map((fact) => (
-                  <li key={fact.label} className={styles.factItem}>
-                    <span className={styles.factLabel}>{fact.label}</span>
-                    <span className={styles.factValue}>{fact.value}</span>
-                  </li>
+                  <article key={fact.label} className={styles.factCard}>
+                    <span>{fact.label}</span>
+                    <strong>{fact.value}</strong>
+                  </article>
                 ))}
-              </ul>
-            </div>
-          ) : null}
+              </div>
+            ) : null}
+          </div>
         </header>
 
-        {compactHighlights.length > 0 ? (
-          <section className={styles.highlightRail}>
-            {compactHighlights.map((item) => (
-              <article key={item.label} className={styles.highlightCard}>
-                <p className={styles.highlightValue}>{item.value}</p>
-                <p className={styles.highlightLabel}>{item.label}</p>
+        <section className={styles.storySection} id={slugify(story.storyHeading)}>
+          <div className={styles.sectionHeading}>
+            <p className={styles.sectionEyebrow}>Story arc</p>
+            <h2>{story.storyHeading}</h2>
+          </div>
+
+          <div className={styles.chapterGrid}>
+            {compactChapters.map((chapter, index) => (
+              <article key={chapter.title} className={styles.chapterCard}>
+                <span className={styles.chapterIndex}>{String(index + 1).padStart(2, "0")}</span>
+                <h3>{chapter.title}</h3>
+                <p>{chapter.body}</p>
               </article>
             ))}
+          </div>
+        </section>
+
+        <section className={styles.outcomeSection}>
+          <div className={styles.sectionHeadingCompact}>
+            <p className={styles.sectionEyebrow}>Outcomes</p>
+            <h2>{story.outcomesHeading}</h2>
+          </div>
+          <ul className={styles.outcomeList}>
+            {compactOutcomes.map((outcome) => (
+              <li key={outcome}>{outcome}</li>
+            ))}
+          </ul>
+        </section>
+
+        {story.gallery && story.gallery.length > 0 ? (
+          <section className={styles.gallerySection} id={slugify(story.galleryTitle ?? "In the field")}>
+            <div className={styles.sectionHeadingCompact}>
+              <p className={styles.sectionEyebrow}>Field frames</p>
+              <h2>{story.galleryTitle ?? "In the field"}</h2>
+              {story.galleryIntro ? <p>{toCompactText(story.galleryIntro, 32)}</p> : null}
+            </div>
+
+            <div className={styles.galleryGrid}>
+              {story.gallery.slice(0, 4).map((image, index) => (
+                <figure key={`${image.src}-${index}`} className={styles.galleryItem}>
+                  <Image
+                    src={image.src}
+                    alt={image.alt}
+                    fill
+                    sizes="(max-width: 980px) 100vw, 33vw"
+                  />
+                </figure>
+              ))}
+            </div>
           </section>
         ) : null}
 
-        <div className={styles.contentGrid}>
-          <section className={styles.mainRail}>
-            <section className={styles.block} id={slugify(story.storyHeading)}>
-              <h2 className={styles.blockTitle}>{story.storyHeading}</h2>
-              <div className={styles.chapterList}>
-                {compactChapters.map((chapter, index) => (
-                  <details
-                    key={chapter.title}
-                    className={styles.chapterCard}
-                    open={index === 0}
-                  >
-                    <summary>
-                      <span className={styles.chapterIndex}>{String(index + 1).padStart(2, "0")}</span>
-                      <span className={styles.chapterTitle}>{chapter.title}</span>
-                    </summary>
-                    <p>{chapter.body}</p>
-                  </details>
-                ))}
-              </div>
-            </section>
+        {compactMedia.length > 0 ? (
+          <section className={styles.mediaSection} id={slugify(story.mediaHeading ?? "Community snapshots")}>
+            <div className={styles.sectionHeadingCompact}>
+              <p className={styles.sectionEyebrow}>Instagram</p>
+              <h2>{story.mediaHeading ?? "Community snapshots"}</h2>
+              {story.mediaIntro ? <p>{toCompactText(story.mediaIntro, 30)}</p> : null}
+            </div>
 
-            {story.gallery && story.gallery.length > 0 ? (
-              <section className={styles.block} id={slugify(story.galleryTitle ?? "In the field") }>
-                <h2 className={styles.blockTitle}>{story.galleryTitle ?? "In the field"}</h2>
-                {story.galleryIntro ? (
-                  <p className={styles.sectionIntro}>{toCompactText(story.galleryIntro, 42)}</p>
-                ) : null}
-                <div className={styles.galleryGrid}>
-                  {story.gallery.slice(0, 6).map((image, index) => (
-                    <figure
-                      key={`${image.src}-${index}`}
-                      className={`${styles.galleryItem} ${index % 3 === 0 ? styles.galleryWide : ""}`}
-                    >
-                      <Image
-                        src={image.src}
-                        alt={image.alt}
-                        fill
-                        sizes="(max-width: 1100px) 100vw, 60vw"
-                      />
-                    </figure>
-                  ))}
-                </div>
-              </section>
-            ) : null}
-
-            {compactMedia.length > 0 ? (
-              <section className={styles.block} id={slugify(story.mediaHeading ?? "Community snapshots") }>
-                <h2 className={styles.blockTitle}>{story.mediaHeading ?? "Community snapshots"}</h2>
-                {story.mediaIntro ? <p className={styles.sectionIntro}>{toCompactText(story.mediaIntro, 40)}</p> : null}
-                <div className={styles.mediaGrid}>
-                  {compactMedia.map((item) => (
-                    <article key={item.permalink} className={styles.mediaItem}>
-                      <div className={styles.mediaMeta}>
-                        <h3>{item.title}</h3>
-                        <p>{toCompactText(item.description, 26)}</p>
-                      </div>
-                      <div className={styles.embedWrap}>
-                        <InstagramEmbed permalink={item.permalink} />
-                      </div>
-                    </article>
-                  ))}
-                </div>
-              </section>
-            ) : null}
+            <div className={styles.mediaGrid}>
+              {compactMedia.map((item) => (
+                <article key={item.permalink} className={styles.mediaItem}>
+                  <div className={styles.mediaMeta}>
+                    <p>{item.title}</p>
+                    <span>{toCompactText(item.description, 22)}</span>
+                  </div>
+                  <InstagramEmbed permalink={item.permalink} />
+                </article>
+              ))}
+            </div>
           </section>
+        ) : null}
 
-          <aside className={styles.sideRail}>
-            <section className={styles.sideBlock}>
-              <p className={styles.sideLabel}>{story.outcomesHeading}</p>
-              <ul className={styles.outcomeList}>
-                {compactOutcomes.map((outcome) => (
-                  <li key={outcome}>{outcome}</li>
-                ))}
-              </ul>
-            </section>
+        {compactHopeStories.length > 0 ? (
+          <section className={styles.hopeSection}>
+            <div className={styles.sectionHeadingCompact}>
+              <p className={styles.sectionEyebrow}>Stories of hope</p>
+              <h2>{story.hopeStoriesHeading ?? "Personal journeys"}</h2>
+              {story.hopeStoriesIntro ? <p>{toCompactText(story.hopeStoriesIntro, 32)}</p> : null}
+            </div>
+            <div className={styles.hopeGrid}>
+              {compactHopeStories.map((item) => (
+                <article key={item.name} className={styles.hopeCard}>
+                  <h3>{item.name}</h3>
+                  <p className={styles.hopeRole}>{item.role}</p>
+                  <p>{toCompactText(item.summary, 20)}</p>
+                  <StoryLink href={item.href} className={styles.inlineLink}>
+                    Read story
+                  </StoryLink>
+                </article>
+              ))}
+            </div>
+          </section>
+        ) : null}
 
+        {(compactResources.length > 0 || compactRelatedStories.length > 0) ? (
+          <section className={styles.linksSection}>
             {compactResources.length > 0 ? (
-              <section className={styles.sideBlock}>
-                <p className={styles.sideLabel}>{story.resourcesHeading ?? "References"}</p>
-                <div className={styles.relatedList}>
+              <div>
+                <p className={styles.linksLabel}>{story.resourcesHeading ?? "References"}</p>
+                <div className={styles.linkGrid}>
                   {compactResources.map((resource) => (
-                    <StoryLink key={resource.href} href={resource.href} className={styles.relatedLink}>
+                    <StoryLink key={resource.href} href={resource.href} className={styles.linkCard}>
                       <span>{resource.title}</span>
-                      <span>Open</span>
+                      <strong>Open</strong>
                     </StoryLink>
                   ))}
                 </div>
-              </section>
+              </div>
             ) : null}
 
             {compactRelatedStories.length > 0 ? (
-              <section className={styles.sideBlock}>
-                <p className={styles.sideLabel}>{story.relatedHeading ?? "Explore next"}</p>
-                <div className={styles.relatedList}>
+              <div>
+                <p className={styles.linksLabel}>{story.relatedHeading ?? "Explore next"}</p>
+                <div className={styles.linkGrid}>
                   {compactRelatedStories.map((related) => (
-                    <StoryLink key={related.href} href={related.href} className={styles.relatedLink}>
+                    <StoryLink key={related.href} href={related.href} className={styles.linkCard}>
                       <span>{related.title}</span>
-                      <span>View</span>
+                      <strong>View</strong>
                     </StoryLink>
                   ))}
                 </div>
-              </section>
-            ) : null}
-
-            <section className={styles.cta}>
-              <h2>{story.closing.title}</h2>
-              <p>{toCompactText(story.closing.body, 28)}</p>
-              <div className={styles.ctaActions}>
-                <ActionLink href={story.cta.href} label={story.cta.label} variant="primary" />
-                {story.secondaryCta ? (
-                  <ActionLink
-                    href={story.secondaryCta.href}
-                    label={story.secondaryCta.label}
-                    variant="secondary"
-                  />
-                ) : null}
               </div>
-            </section>
-          </aside>
-        </div>
+            ) : null}
+          </section>
+        ) : null}
+
+        <section className={styles.closure}>
+          <div>
+            <p className={styles.sectionEyebrow}>Why it matters</p>
+            <h2>{story.closing.title}</h2>
+          </div>
+          <p>{toCompactText(story.closing.body, 32)}</p>
+          <div className={styles.actionRow}>
+            <ActionLink href={story.cta.href} label={story.cta.label} variant="primary" />
+            {story.secondaryCta ? (
+              <ActionLink
+                href={story.secondaryCta.href}
+                label={story.secondaryCta.label}
+                variant="secondary"
+              />
+            ) : null}
+          </div>
+        </section>
       </div>
     </main>
   );

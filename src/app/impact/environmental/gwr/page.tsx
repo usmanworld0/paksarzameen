@@ -1,7 +1,8 @@
-import { makeImpactStoryRoute } from "../../_helpers";
+import { getImpactMetadata } from "@/content/impact";
+import ImpactGwrSection from "@/components/impact/ImpactGwrSection";
 
-const route = makeImpactStoryRoute("environmentalGwr");
+export const metadata = getImpactMetadata("environmentalGwr");
 
-export const metadata = route.metadata;
-
-export default route.Page;
+export default function Page() {
+	return <ImpactGwrSection />;
+}

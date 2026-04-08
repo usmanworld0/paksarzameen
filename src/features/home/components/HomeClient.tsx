@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
@@ -35,6 +35,27 @@ export function HomeClient() {
   const containerRef = useRef<HTMLDivElement>(null);
   const introRef = useRef<HTMLDivElement>(null);
   const heroVideoRef = useRef<HTMLVideoElement | null>(null);
+  const heartSectionRef = useRef<HTMLElement | null>(null);
+  const [activeHeartSlide, setActiveHeartSlide] = useState(0);
+  const [isHeartSectionInView, setIsHeartSectionInView] = useState(false);
+  const heartCarouselMembers = HEART_MEMBERS.filter((m) => !m.image.includes("cover.PNG"));
+  const totalHeartSlides = heartCarouselMembers.length;
+  const [isCoverHovered, setIsCoverHovered] = useState(false);
+  const coverVideoRef = useRef<HTMLVideoElement | null>(null);
+
+  const goToNextHeartSlide = useCallback(() => {
+    if (totalHeartSlides <= 1) {
+      return;
+    }
+    setActiveHeartSlide((prev) => (prev + 1) % totalHeartSlides);
+  }, [totalHeartSlides]);
+
+  const goToPrevHeartSlide = useCallback(() => {
+    if (totalHeartSlides <= 1) {
+      return;
+    }
+    setActiveHeartSlide((prev) => (prev - 1 + totalHeartSlides) % totalHeartSlides);
+  }, [totalHeartSlides]);
 
   const revealHeroText = useCallback(() => {
     gsap.set(".hero-label", { opacity: 1, y: 0 });
@@ -78,57 +99,47 @@ export function HomeClient() {
       el.style.filter = "none";
     });
 
-    const section = container.querySelector(".heart-section") as HTMLElement | null;
+    return () => {};
+  }, []);
+
+  useEffect(() => {
+    const section = heartSectionRef.current;
     if (!section) {
-      return () => {};
+      return;
     }
 
-    const images = Array.from(section.querySelectorAll(".heart-member-img")) as HTMLElement[];
-    const infos = Array.from(section.querySelectorAll(".heart-member-info")) as HTMLElement[];
-    const counter = section.querySelector(".heart-counter-current") as HTMLElement | null;
-    const progressBar = section.querySelector(".heart-progress-bar") as HTMLElement | null;
-
-    if (!images.length) {
-      return () => {};
-    }
-
-    const total = images.length;
-    let activeIndex = 0;
-
-    const applyState = (index: number) => {
-      images.forEach((img, i) => {
-        img.style.opacity = i === index ? "1" : "0";
-        img.style.filter = i === index ? "blur(0px)" : "blur(6px)";
-        img.style.transform = i === index ? "scale(1)" : "scale(1.02)";
-      });
-
-      infos.forEach((info, i) => {
-        info.style.opacity = i === index ? "1" : "0";
-        info.style.filter = i === index ? "blur(0px)" : "blur(4px)";
-        info.style.transform = i === index ? "translateY(0px)" : "translateY(10px)";
-      });
-
-      if (counter) {
-        counter.textContent = String(index + 1).padStart(2, "0");
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        setIsHeartSectionInView(Boolean(entry?.isIntersecting));
+      },
+      {
+        threshold: 0.6,
       }
+    );
 
-      if (progressBar) {
-        const progress = total <= 1 ? 1 : index / (total - 1);
-        progressBar.style.transform = `scaleX(${progress})`;
-      }
+    observer.observe(section);
+
+    return () => {
+      observer.disconnect();
     };
+  }, []);
 
-    applyState(activeIndex);
+  useEffect(() => {
+    if (totalHeartSlides <= 1 || !isHeartSectionInView) {
+      return;
+    }
 
     const intervalId = window.setInterval(() => {
-      activeIndex = (activeIndex + 1) % total;
-      applyState(activeIndex);
+      setActiveHeartSlide((prev) => (prev + 1) % totalHeartSlides);
     }, 2600);
 
     return () => {
       window.clearInterval(intervalId);
     };
-  }, []);
+  }, [isHeartSectionInView, totalHeartSlides]);
+
+  
 
   /* ─── Cinematic intro timeline ─── */
   const playIntro = useCallback(() => {
@@ -349,11 +360,6 @@ export function HomeClient() {
       /* ─── Pinned Video Sections ─── */
       createPinnedVideoTimeline(".section-mission");
       createPinnedVideoTimeline(".section-education");
-
-      /* ─── Heart members reveal timeline ─── */
-      /* NOTE: heart section is before programs in the DOM, so register it first
-         so ScrollTrigger calculates pin-spacer heights in document order */
-      createMembersTimeline();
 
       /* ─── Programs — sequential center-stage animation ─── */
       createProgramsTimeline();
@@ -609,79 +615,6 @@ export function HomeClient() {
     });
   }
 
-  function createMembersTimeline() {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const section = container.querySelector(".heart-section") as HTMLElement | null;
-    if (!section) return;
-
-    const images = Array.from(section.querySelectorAll(".heart-member-img")) as HTMLElement[];
-    const infos = Array.from(section.querySelectorAll(".heart-member-info")) as HTMLElement[];
-    const counter = section.querySelector(".heart-counter-current") as HTMLElement | null;
-    const progressBar = section.querySelector(".heart-progress-bar") as HTMLElement | null;
-    if (!images.length) return;
-
-    const total = images.length;
-
-    gsap.set(images, { opacity: 0, scale: 1.08, filter: "blur(12px)" });
-    gsap.set(infos, { opacity: 0, y: 40, filter: "blur(6px)" });
-    gsap.set(images[0], { opacity: 1, scale: 1, filter: "blur(0px)" });
-    gsap.set(infos[0], { opacity: 1, y: 0, filter: "blur(0px)" });
-
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: ".heart-section",
-        start: "top top",
-        end: `+=${total * 35}%`,
-        pin: true,
-        scrub: 0.35,
-        anticipatePin: 1,
-        invalidateOnRefresh: true,
-        pinSpacing: true,
-        onUpdate: (self) => {
-          const idx = Math.min(Math.floor(self.progress * total), total - 1);
-          if (counter) counter.textContent = String(idx + 1).padStart(2, "0");
-          if (progressBar) progressBar.style.transform = `scaleX(${self.progress})`;
-        },
-      },
-    });
-
-    for (let i = 0; i < total - 1; i++) {
-      const crossStart = i + 0.65;
-
-      tl.to(
-        images[i],
-        {
-          opacity: 0,
-          scale: 0.95,
-          filter: "blur(8px)",
-          duration: 0.35,
-          ease: "power2.in",
-        },
-        crossStart
-      );
-      tl.to(
-        infos[i],
-        { opacity: 0, y: -24, filter: "blur(6px)", duration: 0.35, ease: "power2.in" },
-        crossStart
-      );
-
-      tl.to(
-        images[i + 1],
-        { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.35, ease: "power2.out" },
-        crossStart + 0.15
-      );
-      tl.to(
-        infos[i + 1],
-        { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.35, ease: "power3.out" },
-        crossStart + 0.18
-      );
-    }
-
-    tl.to({}, { duration: 0.5 }, total - 0.5);
-  }
-
   function createPinnedVideoTimeline(selector: string) {
     const tl = gsap.timeline({
       scrollTrigger: {
@@ -901,8 +834,8 @@ export function HomeClient() {
           </p>
         </div>
       </section>
-      
-     
+
+
       {/* ════════════════════════════════════════════════ */}
       {/* PINNED VIDEO — Mission                          */}
       {/* ════════════════════════════════════════════════ */}
@@ -990,10 +923,6 @@ export function HomeClient() {
       </section>
 
 
-     
-      {/* ════════════════════════════════════════════════ */}
-      {/* PINNED VIDEO — Education                        */}
-      {/* ════════════════════════════════════════════════ */}
       <section className="pinned-video-section section-education" data-scroll-section="education">
         <Image src="/images/optimized/members/8.webp" alt="Abdullah Tanseer — Founder" className="edu-img no-filter" width={580} height={800} loading="lazy" quality={75} sizes="(max-width: 900px) 100vw, 38vw" />
         {/* Blurred logo backdrop */}
@@ -1194,62 +1123,89 @@ export function HomeClient() {
       </section>
 
       {/* ════════════════════════════════════════════════ */}
-      {/* HEART OF PAKSARZAMEEN — Scroll-driven team      */}
+      {/* HEART OF PAKSARZAMEEN — Cover with hover-to-play video */}
       {/* ════════════════════════════════════════════════ */}
-      <section className="heart-section" data-scroll-section="heart">
-        {/* Decorative bg elements */}
-        <div className="heart-bg-gradient" aria-hidden="true" />
-        <div className="heart-bg-grid" aria-hidden="true" />
+      <section className="heart-section heart-media-section" ref={heartSectionRef}>
+        <div className="heart-half heart-half-top">
+          <div
+            className="heart-cover-wrap"
+            onMouseEnter={() => {
+              setIsCoverHovered(true);
+              if (coverVideoRef.current) {
+                coverVideoRef.current.currentTime = 0;
+                coverVideoRef.current.muted = true;
+                void coverVideoRef.current.play().catch(() => {});
+              }
+            }}
+            onMouseLeave={() => {
+              setIsCoverHovered(false);
+              if (coverVideoRef.current) {
+                try {
+                  coverVideoRef.current.pause();
+                  coverVideoRef.current.currentTime = 0;
+                } catch (e) {}
+              }
+            }}
+            onFocus={() => setIsCoverHovered(true)}
+            onBlur={() => setIsCoverHovered(false)}
+          >
+            {/* Cover image (shows by default) */}
+            <Image
+              src={HEART_MEMBERS[0]?.image || "/images/members/cover.PNG"}
+              alt="PakSarZameen members — cover"
+              fill
+              style={{ objectFit: "cover", transition: "opacity 950ms cubic-bezier(0.22,0.9,0.28,1)", opacity: isCoverHovered ? 0 : 1 }}
+              sizes="100vw"
+              loading="eager"
+              priority
+            />
 
-        {/* Section header */}
-        <div className="heart-header">
-          <span className="heart-label scroll-reveal">Our People</span>
-          <h2 className="heart-title scroll-reveal" data-delay="0.1">Heart of PakSarZameen</h2>
+            {/* Video that plays on hover */}
+            <video
+              ref={coverVideoRef}
+              src={'/images/members/IMG_6394.MP4'}
+              playsInline
+              muted
+              loop
+              style={{
+                position: "absolute",
+                inset: 0,
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                transition: "opacity 950ms cubic-bezier(0.22,0.9,0.28,1)",
+                opacity: isCoverHovered ? 1 : 0,
+                pointerEvents: isCoverHovered ? "auto" : "none",
+              }}
+            />
+          </div>
         </div>
 
-        {/* Main showcase */}
-        <div className="heart-showcase">
-          {/* LEFT: Image stack */}
-          <div className="heart-image-col">
-            <div className="heart-image-frame">
-              {HEART_MEMBERS.map((m, i) => (
-                <Image
-                  key={i}
-                  src={m.image}
-                  alt={m.name || "Team member"}
-                  className="heart-member-img"
-                  width={600}
-                  height={750}
-                  loading={i === 0 ? "eager" : "lazy"}
-                  quality={70}
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  draggable={false}
-                />
+        <div className="heart-half heart-half-bottom">
+          <div className="heart-bottom-carousel-window" aria-live="polite">
+            <div
+              className="heart-bottom-carousel-track"
+              style={{ transform: `translate3d(-${activeHeartSlide * 100}%, 0, 0)` }}
+            >
+              {heartCarouselMembers.map((m, i) => (
+                <div key={i} className="heart-bottom-slide">
+                  <Image
+                    src={m.image}
+                    alt={`PakSarZameen member photo ${i + 1}`}
+                    fill
+                    sizes="100vw"
+                    style={{ objectFit: "cover" }}
+                    loading="lazy"
+                  />
+                </div>
               ))}
             </div>
           </div>
 
-          {/* RIGHT: Info stack */}
-          <div className="heart-info-col">
-            {HEART_MEMBERS.map((m, i) => (
-              <div key={i} className="heart-member-info">
-                <span className="heart-info-designation">{m.designation}</span>
-                <h3 className="heart-info-name">{m.name}</h3>
-                <blockquote className="heart-info-quote">&ldquo;{m.quote}&rdquo;</blockquote>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Bottom bar: counter + progress */}
-        <div className="heart-bottom-bar">
-          <div className="heart-counter">
-            <span className="heart-counter-current">01</span>
-            <span className="heart-counter-sep">/</span>
-            <span className="heart-counter-total">{String(HEART_MEMBERS.length).padStart(2, "0")}</span>
-          </div>
-          <div className="heart-progress">
-            <div className="heart-progress-bar" />
+          <div className="heart-bottom-controls">
+            <button className="heart-nav-btn" type="button" onClick={goToPrevHeartSlide} aria-label="Previous member photo">&#8592;</button>
+            <span className="heart-bottom-counter">{Math.min(activeHeartSlide + 1, totalHeartSlides)} / {totalHeartSlides}</span>
+            <button className="heart-nav-btn" type="button" onClick={goToNextHeartSlide} aria-label="Next member photo">&#8594;</button>
           </div>
         </div>
       </section>

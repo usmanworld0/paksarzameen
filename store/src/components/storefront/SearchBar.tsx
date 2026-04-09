@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
@@ -9,29 +9,34 @@ export function SearchBar() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [query, setQuery] = useState(searchParams.get("q") || "");
+  const searchValue = searchParams.get("search") || "";
+  const [query, setQuery] = useState(searchValue);
+
+  useEffect(() => {
+    setQuery(searchValue);
+  }, [searchValue]);
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
     const params = new URLSearchParams(searchParams.toString());
     if (query.trim()) {
-      params.set("q", query.trim());
+      params.set("search", query.trim());
     } else {
-      params.delete("q");
+      params.delete("search");
     }
     params.delete("page");
     router.push(`${pathname}?${params.toString()}`);
   }
 
   return (
-    <form onSubmit={handleSearch} className="relative max-w-md w-full">
-      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
+    <form onSubmit={handleSearch} className="relative w-full max-w-md">
+      <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
       <Input
         type="search"
-        placeholder="Search products..."
+        placeholder="Search the collection"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        className="pl-10 h-10"
+        className="h-12 rounded-xl border-black/10 bg-white pl-11 pr-4 text-sm text-neutral-900 shadow-none placeholder:text-neutral-400 focus-visible:border-black/30 focus-visible:ring-0"
       />
     </form>
   );

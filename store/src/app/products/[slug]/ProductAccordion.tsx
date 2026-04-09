@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ChevronDown } from "lucide-react";
 
 interface ProductAccordionProps {
   description?: string | null;
@@ -22,63 +23,76 @@ export function ProductAccordion({
   careInstructions,
   heritageStory,
 }: ProductAccordionProps) {
-  const [openSection, setOpenSection] = useState<string | null>("description");
+  const sections = SECTIONS.map((section) => ({
+    ...section,
+    content:
+      section.key === "description"
+        ? description
+        : section.key === "materials"
+          ? materials
+          : section.key === "care"
+            ? careInstructions
+            : heritageStory,
+  })).filter((section) => Boolean(section.content?.trim()));
+
+  const resolvedSections =
+    sections.length > 0
+      ? sections
+      : [
+          {
+            key: "details",
+            label: "Product Details",
+            content: "Additional product information is available on request.",
+          },
+        ];
+
+  const [openSection, setOpenSection] = useState<string | null>(resolvedSections[0]?.key ?? null);
 
   function toggle(key: string) {
     setOpenSection((prev) => (prev === key ? null : key));
   }
 
-  function getContent(key: string): string {
-    switch (key) {
-      case "description":
-        return description || "No description available.";
-      case "materials":
-        return materials || "No materials information available.";
-      case "care":
-        return careInstructions || "No care instructions available.";
-      case "heritage":
-        return heritageStory || "No heritage story available.";
-      default:
-        return "";
-    }
-  }
-
   return (
-    <section className="bg-neutral-50 py-12 lg:py-24">
-      <div className="mx-auto max-w-7xl px-6">
-        <h2 className="text-lg font-serif font-bold text-neutral-900 mb-8">
-          Product Information
-        </h2>
-        <div className="border border-neutral-300 bg-white divide-y divide-neutral-300 rounded-sm">
-          {SECTIONS.map((section) => (
-            <div key={section.key}>
+    <section className="store-section-soft">
+      <div className="store-container">
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,0.46fr)_minmax(0,0.54fr)] lg:gap-16">
+          <div className="max-w-md">
+            <p className="store-kicker">Product Information</p>
+            <h2 className="mt-4 text-[clamp(2.2rem,4vw,4rem)] leading-[0.9] tracking-[-0.07em] text-neutral-950">
+              Materials, care, and the story behind the piece.
+            </h2>
+            <p className="mt-5 text-sm leading-7 text-neutral-600">
+              The detail view is intentionally quiet and spacious, so the
+              craftsmanship remains the focus while essential information stays
+              easy to scan.
+            </p>
+          </div>
+
+          <div className="overflow-hidden rounded-[30px] border border-black/8 bg-white">
+            {resolvedSections.map((section) => (
+              <div key={section.key} className="border-b border-black/8 last:border-b-0">
               <button
-                onClick={() => toggle(section.key)}
-                className="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-neutral-50 transition-colors"
                 type="button"
+                onClick={() => toggle(section.key)}
+                className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left transition-colors duration-300 hover:bg-[#faf8f4] sm:px-7"
               >
-                <span className="text-sm font-medium text-neutral-900">
+                <span className="text-[15px] font-medium tracking-[-0.02em] text-neutral-950">
                   {section.label}
                 </span>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  className={`h-4 w-4 text-neutral-400 transition-transform duration-300 ${
+                <ChevronDown
+                  className={`h-4 w-4 shrink-0 text-neutral-400 transition-transform duration-300 ${
                     openSection === section.key ? "rotate-180" : ""
                   }`}
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
+                />
               </button>
               {openSection === section.key && (
-                <div className="px-6 pb-6 text-sm text-neutral-600 leading-relaxed">
-                  {getContent(section.key)}
+                <div className="px-6 pb-6 text-sm leading-7 text-neutral-600 sm:px-7">
+                  {section.content}
                 </div>
               )}
             </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </section>

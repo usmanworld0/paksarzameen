@@ -1,83 +1,97 @@
-"use client";
+﻿"use client";
 
-import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import { ShoppingBag, Menu, X, Search, ChevronDown } from "lucide-react";
-import { NAV_LINKS, MAIN_SITE_URL, COMMONWEALTH_LOGO_URL } from "@/lib/constants";
-import { useCartStore } from "@/store/cart";
+import {
+  Heart,
+  Menu,
+  Phone,
+  Search,
+  ShoppingBag,
+  User,
+  X,
+} from "lucide-react";
 
-type CustomizationCategory = {
-  id: string;
-  name: string;
-  slug: string;
-  customizable: boolean;
-  _count?: {
-    customizationOptions?: number;
-  };
+import { COMMONWEALTH_LOGO_URL } from "@/lib/constants";
+import { useCartStore } from "@/store/cart";
+import type { StorefrontActionItem, StorefrontNavigationData } from "@/types/storefront";
+import { SidebarMenu } from "@/components/storefront/SidebarMenu";
+
+type NavbarProps = {
+  data?: StorefrontNavigationData;
 };
 
-export function Navbar() {
+const FALLBACK_NAVIGATION: StorefrontNavigationData = {
+  menu: [],
+  actions: [],
+};
+
+function actionIcon(id: StorefrontActionItem["id"]) {
+  if (id === "call") return Phone;
+  if (id === "wishlist") return Heart;
+  if (id === "account") return User;
+  return ShoppingBag;
+}
+
+export function Navbar({ data }: NavbarProps) {
   const pathname = usePathname();
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [customizationsOpen, setCustomizationsOpen] = useState(false);
-  const [mobileCustomizationsOpen, setMobileCustomizationsOpen] = useState(false);
-  const [customizationCategories, setCustomizationCategories] = useState<
-    CustomizationCategory[]
-  >([]);
-  const customizationsRef = useRef<HTMLLIElement | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [navigation, setNavigation] = useState<StorefrontNavigationData>(data ?? FALLBACK_NAVIGATION);
+  const drawerRef = useRef<HTMLDivElement | null>(null);
   const itemCount = useCartStore((s) => s.itemCount());
 
+  const isHome = pathname === "/";
+  const darkChrome = isHome && !scrolled && !menuOpen;
+
   useEffect(() => {
+    if (data) {
+      setNavigation(data);
+      return;
+    }
+
     let cancelled = false;
 
-    async function loadCustomizationCategories() {
+    async function loadNavigation() {
       try {
-        const response = await fetch("/api/categories", { cache: "no-store" });
+        const response = await fetch("/api/navigation", { cache: "no-store" });
         if (!response.ok) return;
 
-        const data = (await response.json()) as CustomizationCategory[];
-        if (cancelled) return;
-
-        setCustomizationCategories(
-          data.filter(
-            (category) =>
-              category.customizable &&
-              (category._count?.customizationOptions ?? 0) > 0
-          )
-        );
+        const payload = (await response.json()) as StorefrontNavigationData;
+        if (!cancelled) {
+          setNavigation(payload);
+        }
       } catch {
-        if (!cancelled) setCustomizationCategories([]);
+        if (!cancelled) {
+          setNavigation(FALLBACK_NAVIGATION);
+        }
       }
     }
 
-    loadCustomizationCategories();
+    loadNavigation();
 
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [data]);
 
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        customizationsRef.current &&
-        !customizationsRef.current.contains(event.target as Node)
-      ) {
-        setCustomizationsOpen(false);
-      }
+    function onScroll() {
+      setScrolled(window.scrollY > 16);
     }
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   useEffect(() => {
     function onEscape(event: KeyboardEvent) {
       if (event.key === "Escape") {
-        setCustomizationsOpen(false);
-        setMobileOpen(false);
+        setMenuOpen(false);
       }
     }
 
@@ -85,251 +99,191 @@ export function Navbar() {
     return () => window.removeEventListener("keydown", onEscape);
   }, []);
 
+  useEffect(() => {
+    setMenuOpen(false);
+    setSearchQuery("");
+  }, [pathname]);
+
+  useEffect(() => {
+    function onPointerDown(event: MouseEvent) {
+      if (!menuOpen) return;
+      if (drawerRef.current && !drawerRef.current.contains(event.target as Node)) {
+        setMenuOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", onPointerDown);
+    return () => document.removeEventListener("mousedown", onPointerDown);
+  }, [menuOpen]);
+
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen]);
+
+  const chromeClassName = darkChrome
+    ? "border-transparent bg-transparent text-white"
+    : "border-black/8 bg-[#f3f1ed]/95 text-black backdrop-blur-md";
+
+  const actionClassName = darkChrome
+    ? "text-white/92 hover:text-white"
+    : "text-black/86 hover:text-black";
+
+  const menuData = navigation.menu;
+  const actions = useMemo(() => navigation.actions, [navigation.actions]);
+
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-[#e5d8cf] bg-white/92 backdrop-blur-xl">
-      <nav className="store-container flex h-[72px] items-center justify-between">
-        {/* Logo */}
-        <Link href="/" className="group flex items-center gap-3">
-          <span className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-[#d8cec6] bg-white shadow-[0_8px_18px_rgba(33,28,20,0.06)]">
-            <Image
-              src={COMMONWEALTH_LOGO_URL}
-              alt="Paksarzameen Store logo"
-              fill
-              sizes="40px"
-              className="object-contain p-1.5"
-              priority
-            />
-          </span>
-          <span className="leading-tight">
-            <span className="block text-[8px] font-semibold uppercase tracking-[0.36em] text-[#0f7a47]/65">
-              PakSarZameen
-            </span>
-            <span className="block text-[1.15rem] leading-none tracking-[0.01em] text-neutral-900 transition-colors group-hover:text-[#0f7a47]">
-              Paksarzameen Store
-            </span>
-          </span>
-        </Link>
+    <>
+      <header
+        className={`fixed inset-x-0 top-0 z-50 border-b transition-all duration-500 ${chromeClassName}`}
+      >
+        <nav className="store-container grid h-[76px] grid-cols-[1fr_auto_1fr] items-center gap-3">
+          <div className="flex min-w-0 items-center gap-4 sm:gap-6">
+            <button
+              type="button"
+              onClick={() => setMenuOpen(true)}
+              className={`inline-flex items-center gap-3 text-[12px] font-normal tracking-[0.01em] transition-colors ${actionClassName}`}
+              aria-label="Open menu"
+              aria-expanded={menuOpen}
+              aria-controls="store-drawer-menu"
+            >
+              <Menu className="h-[18px] w-[18px] stroke-[1.5]" />
+              <span>Menu</span>
+            </button>
 
-        {/* Desktop nav */}
-        <ul className="hidden items-center gap-6 lg:flex">
-          {NAV_LINKS.map((link) => {
-            if (link.label === "Customizations") {
-              const customizationsActive =
-                pathname.startsWith("/customizations") || pathname.startsWith("/categories/");
+            <button
+              type="button"
+              onClick={() => setMenuOpen(true)}
+              className={`hidden items-center gap-3 text-[12px] font-normal tracking-[0.01em] transition-colors sm:inline-flex ${actionClassName}`}
+              aria-label="Open search"
+            >
+              <Search className="h-[18px] w-[18px] stroke-[1.5]" />
+              <span>Search</span>
+            </button>
+          </div>
 
-              return (
-                <li
-                  key={link.href}
-                  className="relative"
-                  ref={customizationsRef}
-                >
-                  <button
-                    type="button"
-                    onClick={() => setCustomizationsOpen((prev) => !prev)}
-                    className={`inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.22em] transition-colors ${
-                      customizationsActive
-                        ? "text-[#0f7a47]"
-                        : "text-neutral-500 hover:text-[#0f7a47]"
-                    }`}
-                    aria-expanded={customizationsOpen}
-                    aria-haspopup="menu"
-                  >
-                    <span>Customizations</span>
-                    <ChevronDown
-                      className={`h-3.5 w-3.5 transition-transform ${
-                        customizationsOpen ? "rotate-180" : ""
-                      }`}
-                    />
-                  </button>
+          <div className="justify-self-center min-w-0">
+            <Link href="/" aria-label="Paksarzameen Store home" className="text-center">
+              <span
+                className={
+                  "block font-normal uppercase leading-none tracking-[0.12em] transition-colors duration-300 truncate " +
+                  (darkChrome ? "text-white" : "text-black")
+                }
+                style={{ fontSize: "clamp(0.95rem,1.6vw,1.2rem)" }}
+              >
+                PAKSARZAMEEN Store
+              </span>
+            </Link>
+          </div>
 
-                  {customizationsOpen && (
-                    <div className="absolute left-0 top-full z-50 mt-3 w-[300px] rounded-2xl border border-[#e5d8cf] bg-white p-3 shadow-[0_16px_36px_rgba(33,28,20,0.08)]">
-                      <p className="mb-2 px-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-neutral-500">
-                        Available Categories
-                      </p>
-                      <div className="max-h-64 space-y-1 overflow-auto pr-1">
-                        {customizationCategories.length === 0 ? (
-                          <p className="px-2 py-2 text-xs text-neutral-500">
-                            No customizable categories available.
-                          </p>
-                        ) : (
-                          customizationCategories.map((category) => (
-                            <Link
-                              key={category.id}
-                              href={`/customizations/${category.slug}`}
-                              className="block rounded-xl px-2.5 py-2 text-sm text-neutral-700 transition-colors hover:bg-[#faf6f1] hover:text-[#0f7a47]"
-                              onClick={() => setCustomizationsOpen(false)}
-                            >
-                              {category.name}
-                            </Link>
-                          ))
-                        )}
-                      </div>
-                      <div className="mt-2 border-t border-[#efe4dc] pt-2">
-                        <Link
-                          href="/customizations"
-                          className="block rounded-xl px-2.5 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-[#0f7a47] transition-colors hover:bg-[#faf6f1] hover:text-[#081c10]"
-                          onClick={() => setCustomizationsOpen(false)}
-                        >
-                          View All
-                        </Link>
-                      </div>
-                    </div>
-                  )}
-                </li>
-              );
-            }
-
-            const isActive =
-              link.href.startsWith("/") &&
-              (pathname === link.href ||
-                (link.href !== "/" && pathname.startsWith(link.href)));
-
-            return (
-              <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className={`text-[10px] font-semibold uppercase tracking-[0.24em] transition-colors ${
-                    isActive ? "text-[#0f7a47]" : "text-neutral-500 hover:text-[#0f7a47]"
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              </li>
-            );
-          })}
-          <li>
+          <div className="flex min-w-0 items-center justify-end gap-4 sm:gap-6">
             <Link
-              href={MAIN_SITE_URL}
-              className="rounded-full border border-[#d8cec6] bg-white px-4 py-1.5 text-[10px] font-semibold uppercase tracking-[0.22em] text-[#1f1f1f] transition-all hover:border-[#0f7a47] hover:bg-[#0f7a47] hover:text-white"
+              href={`${process.env.NEXT_PUBLIC_MAIN_SITE_URL || "/"}/contact`}
               target="_blank"
               rel="noopener noreferrer"
+              className={`hidden md:inline-flex text-[12px] font-normal tracking-[0.01em] transition-colors ${actionClassName}`}
             >
-              PakSarZameen
+              Call Us
             </Link>
-          </li>
-        </ul>
 
-        {/* Right actions */}
-        <div className="flex items-center gap-2 sm:gap-3">
-          <Link href="/products" className="hidden md:block">
-            <span className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-transparent text-neutral-500 transition-colors hover:border-[#e5d8cf] hover:text-[#0f7a47]">
-              <Search className="h-4.5 w-4.5" />
-            </span>
-          </Link>
-          <Link href="/cart" className="relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-transparent transition-colors hover:border-[#E0E0E0]">
-            <ShoppingBag className="h-4.5 w-4.5 text-neutral-500 transition-colors hover:text-[#0f7a47]" />
-            {itemCount > 0 && (
-              <span className="absolute -right-1 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[#0f7a47] px-1 text-[10px] font-bold text-white">
-                {itemCount}
-              </span>
-            )}
-          </Link>
+            <Link
+              href="/cart"
+              className={`relative inline-flex items-center gap-2 transition-colors ${actionClassName}`}
+              aria-label="View cart"
+            >
+              <ShoppingBag className="h-[18px] w-[18px] stroke-[1.5]" />
+              {itemCount > 0 && (
+                <span
+                  className={`absolute -right-2.5 -top-2.5 flex h-[16px] min-w-[16px] items-center justify-center rounded-full px-1 text-[9px] font-medium ${
+                    darkChrome ? "bg-white text-black" : "bg-black text-white"
+                  }`}
+                >
+                  {itemCount}
+                </span>
+              )}
+            </Link>
 
-          {/* Mobile toggle */}
-          <button
-            onClick={() => setMobileOpen(!mobileOpen)}
-            className="rounded-full border border-[#e5d8cf] p-1.5 lg:hidden"
-            aria-label="Toggle menu"
-            aria-expanded={mobileOpen}
-            aria-controls="mobile-menu"
-          >
-            {mobileOpen ? (
-              <X className="h-5 w-5 text-neutral-900" />
-            ) : (
-              <Menu className="h-5 w-5 text-neutral-900" />
-            )}
-          </button>
-        </div>
-      </nav>
+            <Link
+              href="/login"
+              className={`inline-flex items-center gap-2 transition-colors ${actionClassName}`}
+              aria-label="Login"
+            >
+              <User className="h-[18px] w-[18px] stroke-[1.5]" />
+            </Link>
+          </div>
+        </nav>
+      </header>
 
-      {/* Mobile menu */}
-      {mobileOpen && (
-        <div id="mobile-menu" className="border-t border-[#e5d8cf] bg-white lg:hidden">
-          <ul className="store-container flex flex-col gap-4 py-6">
-            {NAV_LINKS.map((link) => {
-              if (link.label === "Customizations") {
-                return (
-                  <li key={link.href}>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setMobileCustomizationsOpen((prev) => !prev)
-                      }
-                      className="flex w-full items-center justify-between text-xs font-semibold uppercase tracking-[0.24em] text-neutral-500"
-                      aria-expanded={mobileCustomizationsOpen}
-                      aria-controls="mobile-customizations-menu"
-                    >
-                      <span>Customizations</span>
-                      <ChevronDown
-                        className={`h-4 w-4 transition-transform ${
-                          mobileCustomizationsOpen ? "rotate-180" : ""
-                        }`}
-                      />
-                    </button>
+      <div
+        className={`fixed inset-0 z-[70] transition-all duration-500 ${
+          menuOpen
+            ? "pointer-events-auto bg-black/48 backdrop-blur-[1.5px]"
+            : "pointer-events-none bg-black/0"
+        }`}
+        aria-hidden={!menuOpen}
+      >
+        <aside
+          id="store-drawer-menu"
+          ref={drawerRef}
+          className={`h-full w-[min(92vw,620px)] overflow-y-auto bg-[#f8f7f3] px-7 pb-10 pt-7 text-black shadow-[30px_0_80px_rgba(0,0,0,0.24)] transition-transform duration-500 sm:px-9 ${
+            menuOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <button
+              type="button"
+              onClick={() => setMenuOpen(false)}
+              className="inline-flex items-center gap-4 text-[13px] font-normal tracking-[0.01em] text-black"
+            >
+              <X className="h-[18px] w-[18px] stroke-[1.5]" />
+              <span>Close</span>
+            </button>
+          </div>
 
-                    {mobileCustomizationsOpen && (
-                      <div id="mobile-customizations-menu" className="mt-3 space-y-2 border-l border-[#e5d8cf] pl-4">
-                        {customizationCategories.length === 0 ? (
-                          <p className="text-xs text-neutral-500">
-                            No customizable categories available.
-                          </p>
-                        ) : (
-                          customizationCategories.map((category) => (
-                            <Link
-                              key={category.id}
-                              href={`/customizations/${category.slug}`}
-                              className="block text-xs font-medium uppercase tracking-[0.16em] text-neutral-700 hover:text-[#0f7a47]"
-                              onClick={() => {
-                                setMobileCustomizationsOpen(false);
-                                setMobileOpen(false);
-                              }}
-                            >
-                              {category.name}
-                            </Link>
-                          ))
-                        )}
-                        <Link
-                          href="/customizations"
-                          className="block pt-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#0f7a47] hover:text-[#081c10]"
-                          onClick={() => {
-                            setMobileCustomizationsOpen(false);
-                            setMobileOpen(false);
-                          }}
-                        >
-                          View All
-                        </Link>
-                      </div>
-                    )}
-                  </li>
-                );
-              }
+          <div className="mt-8 rounded-2xl border border-black/10 bg-white/70 p-3">
+            <label htmlFor="store-menu-search" className="sr-only">
+              Search menu
+            </label>
+            <div className="flex items-center gap-2">
+              <Search className="h-4 w-4 text-black/45" />
+              <input
+                id="store-menu-search"
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+                placeholder="Search categories or links"
+                className="w-full bg-transparent text-sm text-black outline-none placeholder:text-black/42"
+              />
+            </div>
+          </div>
 
-              return (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-xs font-semibold uppercase tracking-[0.24em] text-neutral-700 transition-colors hover:text-[#0f7a47]"
-                    onClick={() => setMobileOpen(false)}
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              );
-            })}
-            <li>
-              <Link
-                href={MAIN_SITE_URL}
-                className="text-xs font-semibold uppercase tracking-[0.24em] text-[#0f7a47] hover:text-[#081c10]"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                PakSarZameen
-              </Link>
-            </li>
-          </ul>
-        </div>
-      )}
-    </header>
+          <nav className="mt-10">
+            <SidebarMenu
+              data={menuData}
+              searchQuery={searchQuery}
+              onNavigate={() => setMenuOpen(false)}
+            />
+          </nav>
+
+          <div className="mt-12 border-t border-black/10 pt-8">
+            <div className="flex flex-wrap gap-x-6 gap-y-3 text-[12px] text-black/72">
+              {actions.map((action) => (
+                <Link
+                  key={`${action.id}-footer`}
+                  href={action.href}
+                  target={action.external ? "_blank" : undefined}
+                  rel={action.external ? "noopener noreferrer" : undefined}
+                  className="transition-opacity hover:opacity-60"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {action.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </aside>
+      </div>
+    </>
   );
 }

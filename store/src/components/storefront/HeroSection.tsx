@@ -1,75 +1,86 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { StorefrontHeroData } from "@/types/storefront";
 
-export function HeroSection() {
+type HeroSectionProps = {
+  data: StorefrontHeroData;
+};
+
+export function Hero({ data }: HeroSectionProps) {
+  const {
+    eyebrow,
+    title,
+    subtitle,
+    ctaLabel,
+    ctaHref,
+    secondaryCtaLabel,
+    secondaryCtaHref,
+    media,
+  } = data;
+
   return (
-    <section className="store-mesh-bg relative isolate flex min-h-[92vh] w-full items-center overflow-hidden pt-[72px]">
-      <Image
-        src="/images/store_header.png"
-        alt="Paksarzameen Store banner"
-        fill
-        sizes="100vw"
-        className="object-cover opacity-25"
-        quality={85}
-        priority
-      />
+    <section className="relative isolate min-h-[90vh] overflow-hidden bg-black text-white">
+      {media.type === "video" ? (
+        <video
+          className="absolute inset-0 h-full w-full object-cover"
+          autoPlay
+          loop
+          muted
+          playsInline
+          poster={media.poster}
+        >
+          <source src={media.src} type="video/mp4" />
+        </video>
+      ) : (
+        <Image
+          src={media.src}
+          alt={media.alt}
+          fill
+          sizes="100vw"
+          className="object-cover"
+          quality={92}
+          priority
+          unoptimized={media.src.startsWith("http")}
+        />
+      )}
 
-      <div className="absolute bottom-6 right-0 h-72 w-72 rounded-full bg-[#2c3d31]/14 blur-3xl" />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.14)_0%,rgba(0,0,0,0.1)_32%,rgba(0,0,0,0.4)_72%,rgba(0,0,0,0.58)_100%)]" />
 
-      <div className="store-container relative z-10 grid grid-cols-1 items-center gap-10 py-14 lg:grid-cols-[1.1fr_0.9fr] lg:py-20">
-        <div>
-          <p className="store-pill-label mb-5">PakSarZameen Community Commerce</p>
-          <h1 className="max-w-2xl text-5xl leading-[0.88] text-[#1d1d1d] sm:text-6xl lg:text-7xl">
-            Conscious Beauty,
-            <span className="block text-[#2c3d31]">Heritage Craft</span>
+      <div className="relative z-10 flex min-h-[90vh] items-end justify-center px-6 pb-14 pt-24 text-center sm:pb-16 lg:pb-20">
+        <div className="max-w-[720px]">
+          {eyebrow ? (
+            <p className="text-[11px] font-normal text-white/90 tracking-normal">{eyebrow}</p>
+          ) : null}
+          <h1 className="mt-3 text-[clamp(1.15rem,2.4vw,1.9rem)] font-normal leading-[1.06] tracking-[-0.02em] text-white">
+            {title}
           </h1>
-          <p className="mt-5 max-w-xl text-sm leading-relaxed text-neutral-600 sm:text-base">
-            A luxury-inspired marketplace for handcrafted wellness and lifestyle products.
-            Every order supports local makers and strengthens community-owned growth.
-          </p>
-
-          <div className="mt-8 flex flex-wrap items-center gap-3 sm:gap-4">
-            <Link href="/products" className="store-button-primary">
-              Shop Collection
-            </Link>
-            <Link href="#featured" className="store-button-secondary">
-              Explore Featured
-            </Link>
+          {subtitle ? (
+            <p className="mx-auto mt-3 max-w-xl text-[13px] leading-7 text-white/78 sm:text-sm">
+              {subtitle}
+            </p>
+          ) : null}
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
+            {ctaLabel && ctaHref ? (
+              <Link
+                  href={ctaHref}
+                  className="inline-flex items-center justify-center border-b border-white/72 pb-1 text-[clamp(0.85rem,1vw,1rem)] font-normal leading-none tracking-[-0.01em] text-white transition-opacity hover:opacity-70"
+                >
+                  {ctaLabel}
+                </Link>
+            ) : null}
+            {secondaryCtaLabel && secondaryCtaHref ? (
+              <Link
+                href={secondaryCtaHref}
+                className="inline-flex items-center justify-center rounded-full border border-white/30 px-3.5 py-1.5 text-[0.75rem] uppercase tracking-[0.12em] text-white/88 transition hover:bg-white/10"
+              >
+                {secondaryCtaLabel}
+              </Link>
+            ) : null}
           </div>
-        </div>
-
-        <div className="store-card rounded-[28px] p-6 sm:p-8 lg:ml-auto lg:max-w-md">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#2c3d31]/70">
-            This Week
-          </p>
-          <h2 className="mt-2 text-3xl leading-tight text-neutral-900">Featured Ritual Sets</h2>
-          <p className="mt-3 text-sm leading-relaxed text-neutral-600">
-            Discover limited small-batch edits curated for mindful gifting and elevated daily rituals.
-          </p>
-
-          <div className="mt-6 grid grid-cols-2 gap-3 text-center">
-            <div className="rounded-2xl border border-[#e5d8cf] bg-white/85 px-3 py-4">
-              <p className="text-xl font-semibold text-[#2c3d31]">100%</p>
-              <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500">
-                Profit to Impact
-              </p>
-            </div>
-            <div className="rounded-2xl border border-[#e5d8cf] bg-white/85 px-3 py-4">
-              <p className="text-xl font-semibold text-[#2c3d31]">24/7</p>
-              <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500">
-                Online Access
-              </p>
-            </div>
-          </div>
-
-          <Link
-            href="/customizations"
-            className="mt-6 inline-flex text-xs font-semibold uppercase tracking-[0.22em] text-[#2c3d31] transition-colors hover:text-neutral-900"
-          >
-            Build Your Custom Order →
-          </Link>
         </div>
       </div>
     </section>
   );
 }
+
+export const HeroSection = Hero;

@@ -11,13 +11,33 @@ type LoginWithGoogleButtonProps = {
 };
 
 export function LoginWithGoogleButton({ callbackUrl, className }: LoginWithGoogleButtonProps) {
+  const resolveCallbackUrl = () => {
+    if (typeof window === "undefined") {
+      return callbackUrl;
+    }
+
+    if (callbackUrl.startsWith("/")) {
+      return `${window.location.origin}${callbackUrl}`;
+    }
+
+    try {
+      const resolved = new URL(callbackUrl);
+      if (resolved.origin !== window.location.origin) {
+        return `${window.location.origin}/upload-art`;
+      }
+      return resolved.toString();
+    } catch {
+      return `${window.location.origin}/upload-art`;
+    }
+  };
+
   return (
     <Button
       type="button"
       size="lg"
       className={className}
       onClick={() => {
-        void signIn("google", { callbackUrl });
+        void signIn("google", { callbackUrl: resolveCallbackUrl() });
       }}
     >
       <Chrome className="h-4 w-4" />

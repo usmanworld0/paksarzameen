@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { getDiscountedPrice } from "@/lib/utils";
+import { getDiscountedPrice, normalizeImageSrc } from "@/lib/utils";
 import {
   formatRegionalPrice,
   resolveProductRegionalPricing,
@@ -15,11 +15,8 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, discountPercent, region = "PAK" }: ProductCardProps) {
-  const rawImage = product.images[0]?.imageUrl || "/images/commonwealth_header.jpeg";
-  const mainImage = rawImage.startsWith("http://") || rawImage.startsWith("https://") || rawImage.startsWith("/")
-    ? rawImage
-    : `/${rawImage}`;
-  const isRemoteImage = mainImage.startsWith("http://") || mainImage.startsWith("https://");
+  const mainImage = normalizeImageSrc(product.images[0]?.imageUrl);
+  const hoverImage = normalizeImageSrc(product.images[1]?.imageUrl, mainImage);
   const hasDiscount = discountPercent && discountPercent > 0;
   const isAvailable = product.stock > 0;
   const regionalPricing = resolveProductRegionalPricing(product, region);
@@ -28,66 +25,68 @@ export function ProductCard({ product, discountPercent, region = "PAK" }: Produc
     : regionalPricing.price;
 
   return (
-    <article className="group store-card overflow-hidden rounded-[28px]">
+    <article className="group flex h-full flex-col">
       <Link
         href={`/products/${product.slug}`}
-        className="relative block h-[220px] w-full overflow-hidden bg-white sm:h-[260px] lg:h-[300px]"
-        style={{
-          backgroundImage: "url('/images/commonwealth_header.jpeg')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
+        className="relative block overflow-hidden"
       >
-        <Image
-          src={mainImage}
-          alt={product.name}
-          fill
-          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 22vw"
-          className="object-cover transition-transform duration-700 group-hover:scale-110"
-          quality={80}
-          unoptimized
-        />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_64%,rgba(15,122,71,0.12)_100%)]" />
-        {/* Badges */}
-        {!isAvailable && (
-          <div className="absolute left-3 top-3">
-            <span className="rounded-full bg-neutral-900 px-2.5 py-1 text-[9px] uppercase tracking-[0.15em] text-white">
-              Sold Out
-            </span>
+        <div className="relative aspect-[4/5] w-full overflow-hidden">
+          {mainImage ? (
+            <>
+              <Image
+                src={mainImage}
+                alt={product.name}
+                fill
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                quality={84}
+                unoptimized={mainImage.startsWith("http") || hoverImage.startsWith("http")}
+              />
+              {product.images[1] && (
+                <Image
+                  src={hoverImage}
+                  alt={product.images[1]?.altText || `${product.name} alternate view`}
+                  fill
+                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                  className="object-cover opacity-0 transition-opacity duration-700 group-hover:opacity-100"
+                  quality={84}
+                  unoptimized={hoverImage.startsWith("http")}
+                />
+              )}
+            </>
+          ) : (
+            <div className="flex h-full w-full items-center justify-center bg-neutral-100">
+              <span className="text-sm text-neutral-500">Image coming soon</span>
+            </div>
+          )}
+          <div className="absolute left-4 top-4 flex flex-wrap gap-2">
+            {!isAvailable && (
+              <span className="rounded-full border border-white/35 bg-white/86 px-2.5 py-1 text-[9px] font-normal uppercase tracking-[0.16em] text-neutral-950 backdrop-blur-md">
+                Sold Out
+              </span>
+            )}
+            {hasDiscount && (
+              <span className="rounded-full border border-white/35 bg-neutral-950 px-2.5 py-1 text-[9px] font-normal uppercase tracking-[0.16em] text-white">
+                -{discountPercent}%
+              </span>
+            )}
           </div>
-        )}
-        {hasDiscount && (
-          <div className="absolute right-3 top-3">
-            <span className="rounded-full bg-[#1f1f1f] px-2.5 py-1 text-[9px] uppercase tracking-[0.15em] text-white">
-              -{discountPercent}%
-            </span>
-          </div>
-        )}
+        </div>
       </Link>
 
-      <div className="flex flex-col items-center px-3 pb-6 pt-4 text-center sm:px-4">
-        <p className="text-[9px] font-semibold uppercase tracking-[0.24em] text-[#0f7a47]">
-          {product.category.name}
-        </p>
-        <h3 className="mt-1 line-clamp-2 text-base leading-tight text-neutral-900 sm:text-lg">
+      <Link href={`/products/${product.slug}`} className="mt-3 block text-center">
+        <h3 className="text-[1.02rem] font-normal leading-tight tracking-[-0.02em] text-neutral-900 sm:text-[1.05rem]">
           {product.name}
         </h3>
-        {product.artist && (
-          <p className="mt-1 text-xs text-neutral-500">
-            by {product.artist.name}
+        <p className="mt-1 text-[0.88rem] font-normal tracking-[-0.01em] text-neutral-700 sm:text-[0.92rem]">
+          {formatRegionalPrice(finalPrice, region)}
+        </p>
+        {hasDiscount && (
+          <p className="mt-1 text-[0.78rem] text-neutral-400 line-through">
+            {formatRegionalPrice(regionalPricing.price, region)}
           </p>
         )}
-        <div className="mt-3 flex items-center gap-2">
-          <span className="text-sm font-semibold tracking-tight text-[#1f1f1f] sm:text-base">
-            {formatRegionalPrice(finalPrice, region)}
-          </span>
-          {hasDiscount && (
-            <span className="text-xs text-neutral-500 line-through">
-              {formatRegionalPrice(regionalPricing.price, region)}
-            </span>
-          )}
-        </div>
-      </div>
+      </Link>
     </article>
   );
 }

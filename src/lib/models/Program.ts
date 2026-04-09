@@ -14,7 +14,7 @@ export const dummyPrograms: Program[] = [
     title: "Mahkma Shajarkari",
     description:
       "Community plantation drives and urban greening initiatives for long-term environmental resilience.",
-    image: "/images/programs/mahkma-shajarkari.jpg",
+    image: "/images/placeholders/program-photo.svg",
     category: "Environment",
     slug: "mahkma-shajarkari",
     fullContent:
@@ -25,7 +25,7 @@ export const dummyPrograms: Program[] = [
     title: "Ehsas ul Haiwanat",
     description:
       "Animal welfare outreach that promotes compassionate care, rescue support, and public awareness.",
-    image: "/images/programs/ehsas-ul-haiwanat.jpg",
+    image: "/images/placeholders/program-photo.svg",
     category: "Animal Welfare",
     slug: "ehsas-ul-haiwanat",
     fullContent:
@@ -36,7 +36,7 @@ export const dummyPrograms: Program[] = [
     title: "Room Zia",
     description:
       "Orphan support services focused on wellbeing, education access, and long-term opportunities.",
-    image: "/images/programs/room-zia.jpg",
+    image: "/images/placeholders/program-photo.svg",
     category: "Orphan Welfare",
     slug: "room-zia",
     fullContent:
@@ -47,7 +47,7 @@ export const dummyPrograms: Program[] = [
     title: "Dar ul Aloom",
     description:
       "Educational development efforts that expand access to learning and practical life skills.",
-    image: "/images/programs/dar-ul-aloom.jpg",
+    image: "/images/placeholders/program-photo.svg",
     category: "Education",
     slug: "dar-ul-aloom",
     fullContent:
@@ -58,7 +58,7 @@ export const dummyPrograms: Program[] = [
     title: "Tibi Imdad",
     description:
       "Health support programs delivering medical assistance, awareness campaigns, and preventive guidance.",
-    image: "/images/programs/tibi-imdad.jpg",
+    image: "/images/placeholders/program-photo.svg",
     category: "Health",
     slug: "tibi-imdad",
     fullContent:
@@ -69,7 +69,7 @@ export const dummyPrograms: Program[] = [
     title: "Wajood-e-Zan",
     description:
       "Women empowerment initiatives centered on dignity, leadership, education, and economic opportunity.",
-    image: "/images/programs/wajood-e-zan.jpg",
+    image: "/images/placeholders/program-photo.svg",
     category: "Women Empowerment",
     slug: "wajood-e-zan",
     fullContent:

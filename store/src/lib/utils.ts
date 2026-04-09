@@ -33,3 +33,14 @@ export function getDiscountedPrice(
 ): number {
   return Math.round(price * (1 - discountPercent / 100));
 }
+
+export function normalizeImageSrc(
+  src?: string | null,
+  fallback = ""
+): string {
+  if (!src) return fallback;
+  if (src.startsWith("http://") || src.startsWith("https://") || src.startsWith("/")) {
+    return src;
+  }
+  return `/${src}`;
+}

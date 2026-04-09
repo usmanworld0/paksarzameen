@@ -2,158 +2,141 @@ import { Navbar } from "@/components/storefront/Navbar";
 import { Footer } from "@/components/storefront/Footer";
 import { HeroSection } from "@/components/storefront/HeroSection";
 import { ProductCard } from "@/components/storefront/ProductCard";
-import { CategoryCard } from "@/components/storefront/CategoryCard";
+import { CategorySection } from "@/components/storefront/CategorySection";
 import { ArtistCard } from "@/components/storefront/ArtistCard";
+import Image from "next/image";
 import { getProducts } from "@/actions/products";
 import { getCategories } from "@/actions/categories";
 import { getArtists } from "@/actions/artists";
 import { getRequestRegion } from "@/lib/pricing-server";
+import { getStorefrontNavigation } from "@/lib/storefront-navigation";
+import { normalizeImageSrc, truncate } from "@/lib/utils";
 import Link from "next/link";
+import type { StorefrontHeroData } from "@/types/storefront";
 
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
   const region = await getRequestRegion();
-  const [{ products: featured }, categories, artists] = await Promise.all([
+  const [{ products: featured }, categories, artists, navigation] = await Promise.all([
     getProducts({ featured: true, limit: 8 }),
     getCategories(),
     getArtists(),
+    getStorefrontNavigation(),
   ]);
+
+  const firstFeatured = featured[0];
+  const firstCategory = categories[0];
+  // Use the commonwealth header image as the hero media by default
+  const heroImageCandidate = "/images/commonwealth_header.jpeg";
+  const heroMediaSrc = normalizeImageSrc(heroImageCandidate, "/images/store_header.png");
+  const heroMediaType = /\.(mp4|webm|ogg)$/i.test(heroMediaSrc) ? "video" : "image";
+
+  const heroData: StorefrontHeroData = {
+    eyebrow: "Bespoke",
+    title: "Your Vision, Crafted",
+    ctaLabel: "Explore Collection",
+    ctaHref: "/products",
+    secondaryCtaLabel: firstCategory ? "Design Your Own" : undefined,
+    secondaryCtaHref: firstCategory ? `/categories/${firstCategory.slug}` : undefined,
+    media: {
+      type: heroMediaType,
+      src: heroMediaSrc,
+      alt: firstFeatured?.name || firstCategory?.name || "Paksarzameen Store hero",
+    },
+  };
 
   return (
     <>
-      <Navbar />
-      <main>
-        {/* Hero */}
-        <HeroSection />
+      <Navbar data={navigation} />
+      <main className="store-shell">
+        <HeroSection data={heroData} />
 
-        {/* Category Grid */}
-        {categories.length > 0 && (
-          <section className="store-section bg-[#fffaf6]">
-            <div className="store-container">
-              <div className="mb-12 border-b border-[#e7ddd4] pb-8 sm:mb-16 sm:pb-10">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-[#2c3d31]">
-                  Browse By
-                </p>
-                <h2 className="store-heading mt-2">Shop Categories</h2>
-              </div>
+        <CategorySection categories={categories} />
 
-              <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-                {categories.slice(0, 8).map((cat) => (
-                  <CategoryCard key={cat.id} category={cat} />
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* Meet the Artisans */}
         {artists.length > 0 && (
-          <section className="store-section-soft">
-            <div className="store-container">
-              {/* Section header */}
-              <div className="mb-12 border-b border-[#e6d9cf] pb-8 sm:mb-16 sm:pb-10">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-[#2c3d31]">
-                  Stories & Heritage
-                </p>
-                <h2 className="store-heading mt-2">Meet the Artists</h2>
-                <p className="store-subheading mt-4 max-w-3xl">
-                  Discover the talented artisans behind Paksarzameen Store&apos;s finest collections.
-                  Each piece represents decades of heritage, skill, and dedication to traditional craftsmanship.
-                </p>
-              </div>
+          <>
+            <section className="relative h-[100svh] w-full overflow-hidden bg-neutral-100">
+              <Image
+                src="/images/store/artisans-cover.jpg"
+                alt="Artisans cover"
+                fill
+                sizes="100vw"
+                className="object-cover"
+                quality={90}
+                priority={false}
+              />
+            </section>
 
-              {/* Artist Cards Grid */}
-              <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-5">
-                {artists.slice(0, 5).map((artist) => (
-                  <ArtistCard key={artist.id} artist={artist} />
-                ))}
-              </div>
-
-              {artists.length > 5 && (
-                <div className="mt-12 text-center">
-                  <Link
-                    href="/artists"
-                    className="text-[10px] font-semibold uppercase tracking-[0.25em] text-neutral-500 transition-colors hover:text-[#2c3d31]"
-                  >
-                    View All Artisans →
-                  </Link>
+            <section className="store-section bg-white">
+              <div className="store-container">
+                <div className="mb-12 text-center">
+                  <p className="store-kicker">Artisans</p>
+                  <h2 className="store-heading mt-4">Meet the Makers</h2>
                 </div>
-              )}
-            </div>
-          </section>
+
+                <div className="grid grid-cols-2 gap-6 sm:grid-cols-2 md:grid-cols-4">
+                  {artists.slice(0, 5).map((artist) => (
+                    <ArtistCard key={artist.id} artist={artist} />
+                  ))}
+                </div>
+
+                {artists.length > 5 && (
+                  <div className="mt-10 text-center">
+                    <Link href="/artists" className="store-pill-outline">
+                      View all artisans
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </section>
+          </>
         )}
 
-        {/* Featured Products */}
         {featured.length > 0 && (
-          <section id="featured" className="store-section bg-[#fffefc]">
-            <div className="store-container">
-              {/* Section header */}
-              <div className="mb-12 flex flex-col items-start gap-4 border-b border-[#ebe1d8] pb-8 sm:mb-16 sm:flex-row sm:items-end sm:justify-between sm:pb-10">
-                <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-[#2c3d31]">
-                    Curated Selection
-                  </p>
-                  <h2 className="store-heading mt-2">Featured Products</h2>
-                </div>
-                <Link
-                  href="/products"
-                  className="shrink-0 text-[10px] font-semibold uppercase tracking-[0.25em] text-neutral-500 transition-colors hover:text-[#2c3d31]"
-                >
-                  View All →
-                </Link>
-              </div>
+          <>
+            <section className="relative h-[100svh] w-full overflow-hidden bg-neutral-100">
+              <Image
+                src="/images/store/products-cover.jpg"
+                alt="Products cover"
+                fill
+                sizes="100vw"
+                className="object-cover"
+                quality={90}
+              />
+            </section>
 
-              <div className="grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-4 sm:gap-y-10 lg:grid-cols-4">
-                {featured.map((product) => (
-                  <ProductCard key={product.id} product={product} region={region} />
-                ))}
+            <section id="featured" className="store-section bg-white">
+              <div className="store-container">
+                <div className="mb-12 text-center">
+                  <p className="store-kicker">Products</p>
+                  <h2 className="store-heading mt-4">Featured Pieces</h2>
+                </div>
+
+                <div className="grid grid-cols-2 gap-6 sm:grid-cols-2 md:grid-cols-4">
+                  {featured.map((product) => (
+                    <ProductCard key={product.id} product={product} region={region} />
+                  ))}
+                </div>
               </div>
-            </div>
-          </section>
+            </section>
+          </>
         )}
 
-        <div className="bg-[#2c3d31] py-8">
+        <div className="border-y border-black/6 bg-white">
           <div className="store-container">
-            <p className="text-center text-[10px] font-semibold uppercase tracking-[0.35em] text-white/80">
-              100% of profits support artisan communities &amp; PSZ social programmes
-            </p>
+            <div className="flex flex-col gap-4 py-8 lg:flex-row lg:items-center lg:justify-between">
+              <p className="store-kicker text-neutral-500">Purposeful Commerce</p>
+              <p className="max-w-4xl text-[1.05rem] leading-8 tracking-[-0.02em] text-neutral-900 sm:text-[1.2rem]">
+                Every purchase is designed to feel premium while staying rooted
+                in impact. 100% of profits support artisan communities and
+                PakSarZameen social programmes.
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* CTA */}
-        <section className="store-section border-t border-[#e6dbd2] bg-[#fff8f2]">
-          <div className="store-container max-w-3xl text-center">
-            <div className="mb-8 flex items-center justify-center gap-4">
-              <span className="h-px w-12 bg-[#d7c8bc]" />
-              <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-neutral-500">
-                Paksarzameen Store
-              </p>
-              <span className="h-px w-12 bg-[#d7c8bc]" />
-            </div>
-            <h2 className="store-heading">
-              Every Purchase Makes an Impact
-            </h2>
-            <div className="mx-auto my-8 h-px w-16 bg-[#d7c8bc]" />
-            <p className="store-subheading">
-              When you shop at Paksarzameen Store, 100&nbsp;% of profits go directly
-              to artisan communities and PakSarZameen social programmes.
-            </p>
-            <div className="mt-12 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
-              <Link href="/products" className="store-button-primary">
-                Explore Collection
-              </Link>
-              <Link
-                href={process.env.NEXT_PUBLIC_MAIN_SITE_URL || "https://paksarzameenwfo.com"}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="store-button-secondary"
-              >
-                Learn About PSZ →
-              </Link>
-            </div>
-          </div>
-        </section>
+        {/* Promotional card removed per request */}
       </main>
       <Footer />
     </>

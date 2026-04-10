@@ -3,14 +3,9 @@ const DEFAULT_AUTH_SECRET = "psz-store-auth-secret-2026-commonwealth-admin";
 const DEFAULT_ADMIN_EMAIL = "abdullahtanseer@gmail.com";
 const DEFAULT_ADMIN_PASSWORD = "CommonWe@lth!";
 
-function getRequiredEnv(name: string) {
+function getOptionalEnv(name: string) {
   const value = process.env[name];
-
-  if (!value) {
-    throw new Error(`${name} is required for store Google authentication.`);
-  }
-
-  return value;
+  return typeof value === "string" && value.trim().length > 0 ? value : null;
 }
 
 export function getAuthSecret() {
@@ -34,9 +29,13 @@ export function getHardcodedAdminCredentials() {
 }
 
 export function getGoogleAuthClientId() {
-  return getRequiredEnv("GOOGLE_CLIENT_ID");
+  return getOptionalEnv("GOOGLE_CLIENT_ID");
 }
 
 export function getGoogleAuthClientSecret() {
-  return getRequiredEnv("GOOGLE_CLIENT_SECRET");
+  return getOptionalEnv("GOOGLE_CLIENT_SECRET");
+}
+
+export function hasGoogleAuthConfig() {
+  return Boolean(getGoogleAuthClientId() && getGoogleAuthClientSecret());
 }

@@ -10,7 +10,66 @@ import {
   getGoogleAuthClientId,
   getGoogleAuthClientSecret,
   getHardcodedAdminCredentials,
+  hasGoogleAuthConfig,
 } from "./auth-env";
+
+const googleClientId = getGoogleAuthClientId();
+const googleClientSecret = getGoogleAuthClientSecret();
+
+const providers: NextAuthOptions["providers"] = [
+  ...(hasGoogleAuthConfig() && googleClientId && googleClientSecret
+    ? [
+        GoogleProvider({
+          clientId: googleClientId,
+          clientSecret: googleClientSecret,
+        }),
+      ]
+    : []),
+  CredentialsProvider({
+    name: "Admin Login",
+    credentials: {
+      email: { label: "Email", type: "email" },
+      password: { label: "Password", type: "password" },
+    },
+    async authorize(credentials) {
+      if (!credentials?.email || !credentials?.password) return null;
+
+      const normalizedEmail = credentials.email.trim().toLowerCase();
+      const hardcodedAdmin = getHardcodedAdminCredentials();
+
+      if (
+        normalizedEmail === hardcodedAdmin.email.toLowerCase() &&
+        credentials.password === hardcodedAdmin.password
+      ) {
+        return {
+          id: "hardcoded-admin",
+          email: hardcodedAdmin.email.toLowerCase(),
+          name: "Admin",
+          role: "admin",
+        };
+      }
+
+      try {
+        const admin = await prisma.admin.findUnique({
+          where: { email: normalizedEmail },
+        });
+        if (!admin) return null;
+
+        const isValid = await compare(credentials.password, admin.password);
+        if (!isValid) return null;
+
+        return {
+          id: admin.id,
+          email: admin.email,
+          name: admin.name,
+          role: admin.role,
+        };
+      } catch {
+        return null;
+      }
+    },
+  }),
+];
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -34,56 +93,7 @@ export const authOptions: NextAuthOptions = {
       },
     },
   },
-  providers: [
-    GoogleProvider({
-      clientId: getGoogleAuthClientId(),
-      clientSecret: getGoogleAuthClientSecret(),
-    }),
-    CredentialsProvider({
-      name: "Admin Login",
-      credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
-      },
-      async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null;
-
-        const normalizedEmail = credentials.email.trim().toLowerCase();
-        const hardcodedAdmin = getHardcodedAdminCredentials();
-
-        if (
-          normalizedEmail === hardcodedAdmin.email.toLowerCase() &&
-          credentials.password === hardcodedAdmin.password
-        ) {
-          return {
-            id: "hardcoded-admin",
-            email: hardcodedAdmin.email.toLowerCase(),
-            name: "Admin",
-            role: "admin",
-          };
-        }
-
-        try {
-          const admin = await prisma.admin.findUnique({
-            where: { email: normalizedEmail },
-          });
-          if (!admin) return null;
-
-          const isValid = await compare(credentials.password, admin.password);
-          if (!isValid) return null;
-
-          return {
-            id: admin.id,
-            email: admin.email,
-            name: admin.name,
-            role: admin.role,
-          };
-        } catch {
-          return null;
-        }
-      },
-    }),
-  ],
+  providers,
   callbacks: {
     async jwt({ token, user }) {
       if (user) {

@@ -28,6 +28,19 @@ const VIDEOS = {
   // Reduced from UHD → 720p variants for faster loading
 } as const;
 
+const MOBILE_HEART_COVER_IMAGE = "/images/members/mobileview/cover.mob.jpeg";
+const MOBILE_HEART_MEMBER_IMAGES = [
+  "/images/members/mobileview/1.mob.jpeg",
+  "/images/members/mobileview/2.mob.jpeg",
+  "/images/members/mobileview/3.mob.jpeg",
+  "/images/members/mobileview/4.mob.jpeg",
+  "/images/members/mobileview/5.mob.jpeg",
+  "/images/members/mobileview/7.mob.jpeg",
+  "/images/members/mobileview/8.mob.jpeg",
+  "/images/members/mobileview/10.mob.jpeg",
+  "/images/members/mobileview/11.mob.jpeg",
+] as const;
+
 
 
 /* ─── Canvas frame animation images (optimized WebP versions) ─── */
@@ -38,10 +51,46 @@ export function HomeClient() {
   const heartSectionRef = useRef<HTMLElement | null>(null);
   const [activeHeartSlide, setActiveHeartSlide] = useState(0);
   const [isHeartSectionInView, setIsHeartSectionInView] = useState(false);
-  const heartCarouselMembers = HEART_MEMBERS.filter((m) => !m.image.includes("cover.PNG"));
+  const [isMobileHeartView, setIsMobileHeartView] = useState(false);
+  const desktopHeartCoverImage =
+    HEART_MEMBERS.find((m) => m.image.toLowerCase().includes("cover"))?.image ||
+    "/images/members/cover.PNG";
+  const heartCarouselMembers = isMobileHeartView
+    ? MOBILE_HEART_MEMBER_IMAGES.map((image) => ({ image }))
+    : HEART_MEMBERS.filter((m) => !m.image.includes("cover.PNG"));
   const totalHeartSlides = heartCarouselMembers.length;
+  const heartCoverImage = isMobileHeartView
+    ? MOBILE_HEART_COVER_IMAGE
+    : desktopHeartCoverImage;
   const [isCoverHovered, setIsCoverHovered] = useState(false);
+  const [isCoverPlaying, setIsCoverPlaying] = useState(false);
   const coverVideoRef = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const mediaQuery = window.matchMedia("(max-width: 768px)");
+    const applyViewMode = (event: MediaQueryList | MediaQueryListEvent) => {
+      setIsMobileHeartView(event.matches);
+    };
+
+    applyViewMode(mediaQuery);
+
+    if (typeof mediaQuery.addEventListener === "function") {
+      mediaQuery.addEventListener("change", applyViewMode);
+      return () => mediaQuery.removeEventListener("change", applyViewMode);
+    }
+
+    mediaQuery.addListener(applyViewMode);
+    return () => mediaQuery.removeListener(applyViewMode);
+  }, []);
+
+  useEffect(() => {
+    setActiveHeartSlide(0);
+    setIsCoverHovered(false);
+  }, [isMobileHeartView]);
 
   const goToNextHeartSlide = useCallback(() => {
     if (totalHeartSlides <= 1) {
@@ -1128,7 +1177,26 @@ export function HomeClient() {
       <section className="heart-section heart-media-section" ref={heartSectionRef}>
         <div className="heart-half heart-half-top">
           <div
-            className="heart-cover-wrap"
+                    className="heart-cover-wrap"
+                    onClick={() => {
+                      if (!isMobileHeartView) return;
+                      const v = coverVideoRef.current;
+                      if (!v) return;
+                      if (v.paused) {
+                        v.currentTime = 0;
+                        v.muted = true;
+                        void v.play().catch(() => {});
+                        setIsCoverPlaying(true);
+                        setIsCoverHovered(true);
+                      } else {
+                        try {
+                          v.pause();
+                          v.currentTime = 0;
+                        } catch {}
+                        setIsCoverPlaying(false);
+                        setIsCoverHovered(false);
+                      }
+                    }}
             onMouseEnter={() => {
               setIsCoverHovered(true);
               if (coverVideoRef.current) {
@@ -1151,10 +1219,10 @@ export function HomeClient() {
           >
             {/* Cover image (shows by default) */}
             <Image
-              src={HEART_MEMBERS[0]?.image || "/images/members/cover.PNG"}
+              src={heartCoverImage}
               alt="PakSarZameen members — cover"
               fill
-              style={{ objectFit: "cover", transition: "opacity 950ms cubic-bezier(0.22,0.9,0.28,1)", opacity: isCoverHovered ? 0 : 1 }}
+              style={{ objectFit: "cover", transition: "opacity 950ms cubic-bezier(0.22,0.9,0.28,1)", opacity: (isCoverHovered || isCoverPlaying) ? 0 : 1 }}
               sizes="100vw"
               loading="eager"
               priority
@@ -1164,11 +1232,13 @@ export function HomeClient() {
             <video
               ref={coverVideoRef}
               src={'/images/members/IMG_6394.MP4'}
+              poster={heartCoverImage}
               playsInline
-              muted
+              <video
               loop
               style={{
-                position: "absolute",
+                playsInline
+                poster={heartCoverImage}
                 inset: 0,
                 width: "100%",
                 height: "100%",
@@ -1178,8 +1248,8 @@ export function HomeClient() {
                 pointerEvents: isCoverHovered ? "auto" : "none",
               }}
             />
-          </div>
-        </div>
+                  opacity: (isCoverHovered || isCoverPlaying) ? 1 : 0,
+                  pointerEvents: (isCoverHovered || isCoverPlaying) ? "auto" : "none",
 
         <div className="heart-half heart-half-bottom">
           <div className="heart-bottom-carousel-window" aria-live="polite">

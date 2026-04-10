@@ -74,7 +74,7 @@ export function ProductAccordion({
               <button
                 type="button"
                 onClick={() => toggle(section.key)}
-                className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left transition-colors duration-300 hover:bg-[#faf8f4] sm:px-7"
+                className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left transition-colors duration-300 hover:bg-white sm:px-7"
               >
                 <span className="text-[15px] font-medium tracking-[-0.02em] text-neutral-950">
                   {section.label}

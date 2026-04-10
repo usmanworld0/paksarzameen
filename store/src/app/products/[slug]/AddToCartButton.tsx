@@ -1,11 +1,16 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { Loader2, Minus, Plus, Upload, X } from "lucide-react";
 import type { CustomizationOption } from "@prisma/client";
 import { Label } from "@/components/ui/label";
-import { parseCustomizationOptions } from "@/lib/customizations";
+import {
+  buildLayeredSelectionsFromState,
+  parseCustomizationOptions,
+  resolveLayeredRendererConfig,
+  type LayeredSelection,
+} from "@/lib/customizations";
 import { formatRegionalPrice, type StoreRegion } from "@/lib/pricing";
 import { cn } from "@/lib/utils";
 import { useCartStore } from "@/store/cart";
@@ -22,6 +27,7 @@ interface AddToCartButtonProps {
     region: StoreRegion;
   };
   customizationOptions: CustomizationOption[];
+  onLayeredPreviewChange?: (state: LayeredPreviewState) => void;
 }
 
 type SelectionMap = Record<
@@ -32,16 +38,31 @@ type SelectionMap = Record<
     value: string;
     valueLabel: string;
     priceAdjustment: number;
+    layer?: {
+      part: string;
+      src?: string;
+      asset?: string;
+      order?: number;
+      view?: string;
+    } | null;
   }
 >;
 
-const optionPanelClassName = "rounded-[24px] border border-black/8 bg-[#faf8f4] p-4 sm:p-5";
+type LayeredPreviewState = {
+  layers: LayeredSelection[];
+  highlightPart?: string;
+  fallbackImage?: string;
+  defaultView: string;
+};
+
+const optionPanelClassName = "rounded-[24px] border border-black/8 bg-white p-4 sm:p-5";
 const uploadButtonClassName =
   "flex h-28 w-full items-center justify-center rounded-[20px] border border-dashed border-black/12 bg-white text-[11px] font-semibold uppercase tracking-[0.2em] text-neutral-500 transition-colors duration-300 hover:border-black/25 hover:text-neutral-950";
 
 export function AddToCartButton({
   product,
   customizationOptions,
+  onLayeredPreviewChange,
 }: AddToCartButtonProps) {
   const addItem = useCartStore((state) => state.addItem);
   const [quantity, setQuantity] = useState(1);
@@ -59,6 +80,11 @@ export function AddToCartButton({
     () => parseCustomizationOptions(customizationOptions),
     [customizationOptions]
   );
+  const rendererConfig = useMemo(
+    () => resolveLayeredRendererConfig(customizationOptions),
+    [customizationOptions]
+  );
+  const [highlightPart, setHighlightPart] = useState<string>();
 
   const requiredGroupKeys = useMemo(
     () =>
@@ -106,7 +132,8 @@ export function AddToCartButton({
     groupLabel: string,
     value: string,
     valueLabel = value,
-    priceAdjustment = 0
+    priceAdjustment = 0,
+    layer?: SelectionMap[string]["layer"]
   ) {
     setSelectedByGroup((previous) => ({
       ...previous,
@@ -116,6 +143,7 @@ export function AddToCartButton({
         value,
         valueLabel,
         priceAdjustment,
+        layer,
       },
     }));
   }
@@ -225,6 +253,31 @@ export function AddToCartButton({
     setTimeout(() => setAdded(false), 2000);
   }
 
+  useEffect(() => {
+    if (!onLayeredPreviewChange) return;
+
+    const layers = buildLayeredSelectionsFromState(
+      parsedOptions,
+      selectedByGroup,
+      product.id,
+      rendererConfig
+    );
+
+    onLayeredPreviewChange({
+      layers,
+      highlightPart,
+      fallbackImage: rendererConfig.fallbackImage,
+      defaultView: rendererConfig.defaultView,
+    });
+  }, [
+    highlightPart,
+    onLayeredPreviewChange,
+    parsedOptions,
+    product.id,
+    rendererConfig,
+    selectedByGroup,
+  ]);
+
   return (
     <div className="space-y-5">
       {parsedOptions.map((option) => (
@@ -258,16 +311,18 @@ export function AddToCartButton({
                               <button
                                 key={value.value}
                                 type="button"
-                                onClick={() =>
+                                onClick={() => {
                                   upsertSelection(
                                     groupKey,
                                     option.name,
                                     group.label,
                                     value.value,
                                     value.label,
-                                    value.priceAdjustment
-                                  )
-                                }
+                                    value.priceAdjustment,
+                                    value.layer
+                                  );
+                                  setHighlightPart(value.layer?.part);
+                                }}
                                 className={cn(
                                   "store-choice",
                                   isSelected && "store-choice-active"
@@ -439,7 +494,7 @@ export function AddToCartButton({
         </p>
       )}
 
-      <div className="rounded-[24px] border border-black/8 bg-[#faf8f4] p-5 text-sm">
+      <div className="rounded-[24px] border border-black/8 bg-white p-5 text-sm">
         <div className="flex items-center justify-between text-neutral-600">
           <span>Base Price</span>
           <span>{formatRegionalPrice(product.discountedPrice ?? product.price, product.region)}</span>
@@ -458,7 +513,7 @@ export function AddToCartButton({
         </div>
       </div>
 
-      <div className="space-y-3 rounded-[24px] border border-black/8 bg-[#faf8f4] p-5">
+      <div className="space-y-3 rounded-[24px] border border-black/8 bg-white p-5">
         <Label className="text-[11px] font-semibold uppercase tracking-[0.24em] text-neutral-500">
           Optional Reference
         </Label>

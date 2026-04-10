@@ -133,6 +133,35 @@
     box-shadow: 0 22px 42px rgba(17, 17, 17, 0.11);
   }
 
+  /* Interactive label + arrow for primary buttons */
+  .store-button-primary {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .store-button-primary .btn-label {
+    display: inline-block;
+    transition: transform 220ms cubic-bezier(.2,.9,.2,1);
+  }
+
+  .store-button-primary .btn-icon {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 0.5rem;
+    opacity: 0;
+    transform: translateX(6px);
+    transition: opacity 220ms cubic-bezier(.2,.9,.2,1), transform 220ms cubic-bezier(.2,.9,.2,1);
+  }
+
+  .store-button-primary:hover .btn-label {
+    transform: translateX(-6px);
+  }
+
+  .store-button-primary:hover .btn-icon {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
   .store-button-secondary {
     @apply store-button border text-neutral-800;
     border-color: rgba(17, 17, 17, 0.12);
@@ -185,7 +214,7 @@
   }
 
   .store-shell-soft {
-    background: #faf8f4;
+    background: #ffffff;
   }
 
   .store-kicker {

@@ -1,59 +1,55 @@
 import Link from "next/link";
-import { prisma } from "@/lib/prisma";
+import { getCustomizableCategoriesWithProductCovers } from "@/actions/categories";
+import type { CustomizableCategoryShowcase } from "@/actions/categories";
 import { Navbar } from "@/components/storefront/Navbar";
 import { Footer } from "@/components/storefront/Footer";
+import { CategoryProductCoverCarousel } from "@/components/storefront/CategoryProductCoverCarousel";
 
 export const dynamic = "force-dynamic";
 
-export default async function CustomizationsPage() {
-  let customizableCategories: Array<{
-    id: string;
-    name: string;
-    slug: string;
-    description: string | null;
-    customizationOptions: Array<{ id: string; name: string }>;
-  }> = [];
+interface CustomizationsPageProps {
+  searchParams?: Record<string, string | string[] | undefined>;
+}
+
+const CATEGORY_IMAGE_FALLBACK = "/images/store_header.png";
+
+export default async function CustomizationsPage({
+  searchParams,
+}: CustomizationsPageProps) {
+  let customizableCategories: CustomizableCategoryShowcase[] = [];
 
   try {
-    customizableCategories = await prisma.category.findMany({
-      where: {
-        customizable: true,
-        customizationOptions: {
-          some: {},
-        },
-      },
-      select: {
-        id: true,
-        name: true,
-        slug: true,
-        description: true,
-        customizationOptions: {
-          select: {
-            id: true,
-            name: true,
-          },
-          orderBy: [{ position: "asc" }, { name: "asc" }],
-        },
-      },
-      orderBy: { name: "asc" },
-    });
+    customizableCategories = await getCustomizableCategoriesWithProductCovers();
   } catch {
     customizableCategories = [];
   }
+
+  const categoryParam = searchParams?.category;
+  const requestedCategorySlug = (
+    Array.isArray(categoryParam) ? categoryParam[0] : categoryParam
+  )?.trim();
+  const selectedCategory =
+    customizableCategories.find((category) => category.slug === requestedCategorySlug) ??
+    customizableCategories[0] ??
+    null;
+
+  const selectedCategoryOptionNames: string[] = selectedCategory
+    ? Array.from(new Set(selectedCategory.customizationOptions.map((option) => option.name)))
+    : [];
 
   return (
     <>
       <Navbar />
       <main className="pt-[72px]">
-        <section className="store-section bg-[#fff8f2]">
+        <section className="store-section">
           <div className="store-container">
-            <div className="mb-10 border-b border-[#e6d9cf] pb-8">
+            <div className="mb-8 border-b border-[#e6d9cf] pb-6">
               <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[#2c3d31]/80">
                 Bespoke Orders
               </p>
               <h1 className="store-heading mt-2">Customizable Categories</h1>
               <p className="store-subheading mt-3 max-w-2xl">
-                Choose a category to configure your preferred options and proceed directly to billing.
+                Pick a category, review its details, and continue to the customization options in one smooth flow.
               </p>
             </div>
 
@@ -64,51 +60,108 @@ export default async function CustomizationsPage() {
                 </p>
               </div>
             ) : (
-              <ul className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
-                {customizableCategories.map((category) => {
-                  const uniqueOptionNames = Array.from(
-                    new Set(category.customizationOptions.map((option) => option.name))
-                  );
+              <>
+                <nav className="mb-8 overflow-x-auto border-b border-[#e8dbd0]">
+                  <div className="flex justify-center">
+                    <ul className="min-w-max flex items-center gap-8 px-4 whitespace-nowrap">
+                    {customizableCategories.map((category) => {
+                      const isActive = selectedCategory?.slug === category.slug;
 
-                  return (
-                    <li
-                      key={category.id}
-                      className="store-card rounded-[22px] p-5 sm:p-6"
-                    >
-                      <div className="flex items-start justify-between gap-4">
-                        <div>
-                          <h2 className="text-3xl leading-tight text-neutral-900">
+                      return (
+                        <li key={category.id}>
+                          <Link
+                            href={`/customizations?category=${category.slug}`}
+                            className={`relative inline-flex py-4 text-sm font-semibold uppercase tracking-[0.12em] transition-colors duration-200 ${
+                              isActive
+                                ? "text-neutral-900"
+                                : "text-neutral-500 hover:text-neutral-800"
+                            }`}
+                            aria-current={isActive ? "page" : undefined}
+                          >
                             {category.name}
-                          </h2>
-                          {category.description && (
-                            <p className="mt-2 text-sm text-neutral-600">
-                              {category.description}
-                            </p>
-                          )}
+                            <span
+                              className={`absolute bottom-0 left-0 h-[2px] w-full origin-left bg-neutral-900 transition-transform duration-250 ${
+                                isActive ? "scale-x-100" : "scale-x-0"
+                              }`}
+                            />
+                          </Link>
+                        </li>
+                      );
+                    })}
+                    </ul>
+                  </div>
+                </nav>
+
+                {selectedCategory ? (
+                  <div className="">
+                    <div className="p-6 sm:p-8 lg:p-10">
+                      {(() => {
+                        const optionSlides = (selectedCategory.customizationOptions || [])
+                          .map((option) => ({
+                            id: option.id,
+                            name: option.name,
+                            imageUrl: option.coverImage || null,
+                          }))
+                          .filter((option) => Boolean(option.imageUrl));
+
+                        return (
+                      <CategoryProductCoverCarousel
+                        categoryName={selectedCategory.name}
+                        categoryImage={selectedCategory.image}
+                        fallbackImage={CATEGORY_IMAGE_FALLBACK}
+                        products={
+                          optionSlides.map((option) => ({
+                            id: option.id,
+                            name: option.name,
+                            slug: option.id,
+                            images: [{ imageUrl: option.imageUrl as string }],
+                          }))
+                        }
+                      />
+                        );
+                      })()}
+
+                      <div className="mx-auto mt-8 flex w-[75%] flex-col items-center text-center">
+                        {selectedCategory.description ? (
+                          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-neutral-600 sm:text-base">
+                            {selectedCategory.description}
+                          </p>
+                        ) : (
+                          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-neutral-600 sm:text-base">
+                            Personalize this category with your preferred materials, finishes, and handcrafted details.
+                          </p>
+                        )}
+
+                        <div className="mt-6 flex flex-wrap gap-2 justify-center">
+                          {selectedCategoryOptionNames.map((name) => (
+                            <span
+                              key={`${selectedCategory.id}-${name}`}
+                              className="rounded-full border border-[#ece2d9] bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-neutral-700"
+                            >
+                              {name}
+                            </span>
+                          ))}
                         </div>
 
-                        <Link
-                          href={`/customizations/${category.slug}`}
-                          className="store-button-secondary whitespace-nowrap"
-                        >
-                          View Customizations
-                        </Link>
-                      </div>
-
-                      <div className="mt-4 flex flex-wrap gap-2">
-                        {uniqueOptionNames.map((name) => (
-                          <span
-                            key={`${category.id}-${name}`}
-                            className="rounded-full border border-[#ece2d9] bg-[#fcf8f4] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-neutral-700"
+                        <div className="mt-8 flex justify-center">
+                          <Link
+                            href={`/customizations/${selectedCategory.slug}`}
+                            className="store-button-primary inline-flex min-h-11 items-center justify-center px-7"
                           >
-                            {name}
-                          </span>
-                        ))}
+                            <span className="btn-label">Customize</span>
+                            <span className="btn-icon" aria-hidden>
+                              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                <path d="M5 12h14" />
+                                <path d="M13 6l6 6-6 6" />
+                              </svg>
+                            </span>
+                          </Link>
+                        </div>
                       </div>
-                    </li>
-                  );
-                })}
-              </ul>
+                    </div>
+                  </div>
+                ) : null}
+              </>
             )}
           </div>
         </section>

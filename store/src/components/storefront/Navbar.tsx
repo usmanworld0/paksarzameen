@@ -125,7 +125,7 @@ export function Navbar({ data }: NavbarProps) {
 
   const chromeClassName = darkChrome
     ? "border-transparent bg-transparent text-white"
-    : "border-black/8 bg-[#f3f1ed]/95 text-black backdrop-blur-md";
+    : "border-black/8 bg-white text-black backdrop-blur-md";
 
   const actionClassName = darkChrome
     ? "text-white/92 hover:text-white"
@@ -227,7 +227,7 @@ export function Navbar({ data }: NavbarProps) {
         <aside
           id="store-drawer-menu"
           ref={drawerRef}
-          className={`h-full w-[min(92vw,620px)] overflow-y-auto bg-[#f8f7f3] px-7 pb-10 pt-7 text-black shadow-[30px_0_80px_rgba(0,0,0,0.24)] transition-transform duration-500 sm:px-9 ${
+          className={`h-full w-[min(92vw,620px)] overflow-y-auto bg-white px-7 pb-10 pt-7 text-black shadow-[30px_0_80px_rgba(0,0,0,0.24)] transition-transform duration-500 sm:px-9 ${
             menuOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >

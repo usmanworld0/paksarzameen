@@ -129,7 +129,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                         <span className="text-lg text-neutral-400 line-through">
                           {formatRegionalPrice(regionalPricing.price, region)}
                         </span>
-                        <span className="rounded-full border border-black/8 bg-[#faf8f4] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-neutral-700">
+                        <span className="rounded-full border border-black/8 bg-white px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-neutral-700">
                           Save {discount}%
                         </span>
                       </>
@@ -144,7 +144,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 )}
 
                 <div className="mt-8 grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-[22px] border border-black/8 bg-[#faf8f4] p-4">
+                  <div className="rounded-[22px] border border-black/8 bg-white p-4">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-neutral-400">
                       Availability
                     </p>
@@ -152,7 +152,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                       {product.stock > 0 ? "Ready to order" : "Currently sold out"}
                     </p>
                   </div>
-                  <div className="rounded-[22px] border border-black/8 bg-[#faf8f4] p-4">
+                  <div className="rounded-[22px] border border-black/8 bg-white p-4">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-neutral-400">
                       Craft
                     </p>
@@ -160,7 +160,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                       Hand-finished by skilled artisans using heritage techniques.
                     </p>
                   </div>
-                  <div className="rounded-[22px] border border-black/8 bg-[#faf8f4] p-4">
+                  <div className="rounded-[22px] border border-black/8 bg-white p-4">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-neutral-400">
                       Checkout
                     </p>
@@ -168,7 +168,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                       Review in cart first, then complete payment securely with Stripe.
                     </p>
                   </div>
-                  <div className="rounded-[22px] border border-black/8 bg-[#faf8f4] p-4">
+                  <div className="rounded-[22px] border border-black/8 bg-white p-4">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-neutral-400">
                       Impact
                     </p>

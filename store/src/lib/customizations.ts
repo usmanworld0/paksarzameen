@@ -7,6 +7,15 @@ export type ParsedCustomizationValue = {
   label: string;
   image?: string | null;
   priceAdjustment: number;
+  layer?: ParsedCustomizationLayer | null;
+};
+
+export type ParsedCustomizationLayer = {
+  part: string;
+  src?: string;
+  asset?: string;
+  order?: number;
+  view?: string;
 };
 
 export type ParsedCustomizationGroup = {
@@ -28,6 +37,28 @@ export type ParsedCustomizationOption = {
   min?: number;
   max?: number;
   groups: ParsedCustomizationGroup[];
+  coverImage?: string | undefined;
+  baseImage?: string | undefined;
+};
+
+export type LayeredRendererConfig = {
+  enabled: boolean;
+  cloudinaryBasePath?: string;
+  cloudinaryCloudName?: string;
+  defaultView: string;
+  fallbackImage?: string;
+};
+
+export type LayeredSelection = {
+  part: string;
+  src: string;
+  order: number;
+  view: string;
+  key: string;
+};
+
+type SelectionRecord = {
+  value: string;
 };
 
 function toFieldType(value: unknown): CustomizationFieldType {
@@ -44,6 +75,137 @@ function toNumericPrice(value: unknown) {
     return Number.isFinite(parsed) ? parsed : 0;
   }
   return 0;
+}
+
+function parseLayer(value: unknown): ParsedCustomizationLayer | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return null;
+  }
+
+  const record = value as Record<string, unknown>;
+  const part =
+    typeof record.part === "string" && record.part.trim()
+      ? record.part.trim()
+      : typeof record.layerPart === "string" && record.layerPart.trim()
+      ? record.layerPart.trim()
+      : "";
+
+  if (!part) return null;
+
+  const src =
+    typeof record.src === "string" && record.src.trim()
+      ? record.src.trim()
+      : typeof record.layerSrc === "string" && record.layerSrc.trim()
+      ? record.layerSrc.trim()
+      : undefined;
+
+  const asset =
+    typeof record.asset === "string" && record.asset.trim()
+      ? record.asset.trim()
+      : typeof record.layerAsset === "string" && record.layerAsset.trim()
+      ? record.layerAsset.trim()
+      : undefined;
+
+  const orderRaw =
+    record.order ??
+    record.layerOrder;
+  const order =
+    orderRaw !== undefined && orderRaw !== null && Number.isFinite(Number(orderRaw))
+      ? Number(orderRaw)
+      : undefined;
+
+  const view =
+    typeof record.view === "string" && record.view.trim()
+      ? record.view.trim()
+      : typeof record.layerView === "string" && record.layerView.trim()
+      ? record.layerView.trim()
+      : undefined;
+
+  return { part, src, asset, order, view };
+}
+
+function extractRendererConfig(options: unknown): LayeredRendererConfig {
+  if (!options || typeof options !== "object" || Array.isArray(options)) {
+    return {
+      enabled: false,
+      defaultView: "front",
+    };
+  }
+
+  const config = options as Record<string, unknown>;
+  const renderer =
+    config.renderer && typeof config.renderer === "object" && !Array.isArray(config.renderer)
+      ? (config.renderer as Record<string, unknown>)
+      : null;
+
+  if (!renderer) {
+    return {
+      enabled: false,
+      defaultView: "front",
+    };
+  }
+
+  return {
+    enabled: Boolean(renderer.enabled),
+    cloudinaryBasePath:
+      typeof renderer.cloudinaryBasePath === "string" && renderer.cloudinaryBasePath.trim()
+        ? renderer.cloudinaryBasePath.trim()
+        : undefined,
+    cloudinaryCloudName:
+      typeof renderer.cloudinaryCloudName === "string" && renderer.cloudinaryCloudName.trim()
+        ? renderer.cloudinaryCloudName.trim()
+        : undefined,
+    defaultView:
+      typeof renderer.defaultView === "string" && renderer.defaultView.trim()
+        ? renderer.defaultView.trim()
+        : "front",
+    fallbackImage:
+      typeof renderer.fallbackImage === "string" && renderer.fallbackImage.trim()
+        ? renderer.fallbackImage.trim()
+        : undefined,
+  };
+}
+
+function normalizeCloudinaryBasePath(path: string, productId: string) {
+  return path
+    .replaceAll("{productId}", productId)
+    .replace(/^\/+/, "")
+    .replace(/\/+$/, "");
+}
+
+function resolveLayerSource(
+  layer: ParsedCustomizationLayer,
+  productId: string,
+  rendererConfig: LayeredRendererConfig
+) {
+  if (layer.src && (layer.src.startsWith("http") || layer.src.startsWith("/"))) {
+    return layer.src;
+  }
+
+  const cloudName = rendererConfig.cloudinaryCloudName;
+  const basePath = rendererConfig.cloudinaryBasePath;
+  if (!cloudName || !basePath || !layer.asset) {
+    return "";
+  }
+
+  const folder = normalizeCloudinaryBasePath(basePath, productId);
+  const assetPath = layer.asset.replace(/^\/+/, "");
+
+  return `https://res.cloudinary.com/${cloudName}/image/upload/f_auto,q_auto/${folder}/${assetPath}`;
+}
+
+export function resolveLayeredRendererConfig(
+  options: Array<{ options: unknown }>
+): LayeredRendererConfig {
+  for (const option of options) {
+    const config = extractRendererConfig(option.options);
+    if (config.enabled) return config;
+  }
+
+  return {
+    enabled: false,
+    defaultView: "front",
+  };
 }
 
 export function parseCustomizationOptions(
@@ -140,6 +302,7 @@ export function parseCustomizationOptions(
                       ? valueRecord.image
                       : null,
                   priceAdjustment: toNumericPrice(valueRecord.priceAdjustment),
+                  layer: parseLayer(valueRecord.layer ?? valueRecord),
                 };
               })
               .filter((value) => value.value && value.label),
@@ -158,6 +321,18 @@ export function parseCustomizationOptions(
         min,
         max,
         groups,
+        coverImage:
+          option.options && typeof option.options === "object" && !Array.isArray(option.options)
+            ? typeof (option.options as Record<string, unknown>).coverImage === "string"
+              ? (option.options as Record<string, unknown>).coverImage as string
+              : undefined
+            : undefined,
+        baseImage:
+          option.options && typeof option.options === "object" && !Array.isArray(option.options)
+            ? typeof (option.options as Record<string, unknown>).baseImage === "string"
+              ? (option.options as Record<string, unknown>).baseImage as string
+              : undefined
+            : undefined,
       };
     })
     .filter((option) =>
@@ -176,4 +351,37 @@ export function getCustomizationSummary(item: CartItem) {
   return (item.customizations ?? [])
     .map((customization) => `${customization.groupLabel}: ${customization.valueLabel}`)
     .join(" | ");
+}
+
+export function buildLayeredSelectionsFromState(
+  parsedOptions: ParsedCustomizationOption[],
+  selectedByGroup: Record<string, SelectionRecord>,
+  productId: string,
+  rendererConfig: LayeredRendererConfig
+): LayeredSelection[] {
+  return parsedOptions
+    .flatMap((option) =>
+      option.groups.flatMap((group) => {
+        const groupKey = `${option.id}::${group.label}`;
+        const selectedValue = (selectedByGroup[groupKey]?.value ?? "").trim();
+        if (!selectedValue) return [];
+
+        const parsedValue = group.values.find((value) => value.value === selectedValue);
+        if (!parsedValue?.layer) return [];
+
+        const src = resolveLayerSource(parsedValue.layer, productId, rendererConfig);
+        if (!src) return [];
+
+        return [
+          {
+            key: groupKey,
+            part: parsedValue.layer.part,
+            src,
+            order: parsedValue.layer.order ?? 10,
+            view: parsedValue.layer.view || rendererConfig.defaultView,
+          },
+        ];
+      })
+    )
+    .sort((a, b) => a.order - b.order);
 }

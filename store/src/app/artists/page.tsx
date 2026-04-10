@@ -23,7 +23,7 @@ export default async function ArtistsPage() {
     <>
       <Navbar />
       <main className="pt-[72px]">
-        <section className="store-section bg-[#fff8f2]">
+        <section className="store-section">
           <div className="store-container max-w-[1320px]">
             <div className="mb-12 border-b border-[#e6d9cf] pb-8 sm:mb-16 sm:pb-10">
               <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.35em] text-[#2c3d31]">

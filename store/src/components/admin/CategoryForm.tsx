@@ -26,6 +26,7 @@ type ValueOptionDraft = {
   value: string;
   label: string;
   image: string | null;
+  layerImage: string | null;
   priceAdjustment: number;
   uploading?: boolean;
 };
@@ -49,6 +50,8 @@ type OptionDraft = {
   min: string;
   max: string;
   subOptions: SubOptionDraft[];
+  coverImage?: string | null;
+  baseImage?: string | null;
 };
 
 function uid() {
@@ -72,11 +75,22 @@ function parseSubOptions(raw: unknown): SubOptionDraft[] {
         max: obj.max !== undefined && obj.max !== null ? String(obj.max) : "",
         valueOptions: values.map((v) => {
           const vo = v as Record<string, unknown>;
+          const layerRecord =
+            vo.layer && typeof vo.layer === "object" && !Array.isArray(vo.layer)
+              ? (vo.layer as Record<string, unknown>)
+              : null;
+
           return {
             id: uid(),
             value: String(vo.value ?? ""),
             label: String(vo.label ?? vo.value ?? ""),
             image: typeof vo.image === "string" ? vo.image : null,
+            layerImage:
+              typeof layerRecord?.src === "string"
+                ? layerRecord.src
+                : typeof vo.layerSrc === "string"
+                ? vo.layerSrc
+                : null,
             priceAdjustment:
               typeof vo.priceAdjustment === "number" && Number.isFinite(vo.priceAdjustment)
                 ? vo.priceAdjustment
@@ -85,6 +99,25 @@ function parseSubOptions(raw: unknown): SubOptionDraft[] {
         }),
       };
     });
+}
+
+function getRendererFallbackImage(options: CustomizationOption[] | undefined) {
+  if (!options) return "";
+
+  for (const option of options) {
+    const config = option.options;
+    if (!config || typeof config !== "object" || Array.isArray(config)) continue;
+
+    const renderer = (config as Record<string, unknown>).renderer;
+    if (!renderer || typeof renderer !== "object" || Array.isArray(renderer)) continue;
+
+    const fallback = (renderer as Record<string, unknown>).fallbackImage;
+    if (typeof fallback === "string" && fallback.trim()) {
+      return fallback.trim();
+    }
+  }
+
+  return "";
 }
 
 function asFieldType(value: unknown): CustomFieldType {
@@ -99,6 +132,8 @@ function toOptionDraft(option: CustomizationOption): OptionDraft {
   let min = "";
   let max = "";
   let subOptions: SubOptionDraft[] = [];
+  let coverImage: string | null | undefined = undefined;
+  let baseImage: string | null | undefined = undefined;
 
   if (Array.isArray(option.options)) {
     subOptions = parseSubOptions(option.options);
@@ -108,6 +143,8 @@ function toOptionDraft(option: CustomizationOption): OptionDraft {
     !Array.isArray(option.options)
   ) {
     const config = option.options as Record<string, unknown>;
+    coverImage = typeof config.coverImage === "string" ? config.coverImage : undefined;
+    baseImage = typeof config.baseImage === "string" ? config.baseImage : undefined;
     placeholder = typeof config.placeholder === "string" ? config.placeholder : "";
     min = config.min !== undefined && config.min !== null ? String(config.min) : "";
     max = config.max !== undefined && config.max !== null ? String(config.max) : "";
@@ -128,6 +165,8 @@ function toOptionDraft(option: CustomizationOption): OptionDraft {
     min,
     max,
     subOptions,
+    coverImage: coverImage ?? null,
+    baseImage: baseImage ?? null,
   };
 }
 
@@ -137,6 +176,7 @@ function newValueOption(): ValueOptionDraft {
     value: "",
     label: "",
     image: null,
+    layerImage: null,
     priceAdjustment: 0,
   };
 }
@@ -163,6 +203,8 @@ function newOption(): OptionDraft {
     min: "",
     max: "",
     subOptions: [newSubOption()],
+    coverImage: null,
+    baseImage: null,
   };
 }
 
@@ -171,6 +213,7 @@ export function CategoryForm({ category }: CategoryFormProps) {
   const [loading, setLoading] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [images, setImages] = useState<string[]>(category?.image ? [category.image] : []);
+  // Per-option fallback images will be derived from option value thumbnails
   const [options, setOptions] = useState<OptionDraft[]>(
     category?.customizationOptions?.map(toOptionDraft) || []
   );
@@ -305,6 +348,58 @@ export function CategoryForm({ category }: CategoryFormProps) {
     }
   }
 
+  async function uploadValueOptionLayerImage(
+    optId: string,
+    subId: string,
+    valId: string,
+    file: File
+  ) {
+    updateValueOption(optId, subId, valId, { uploading: true });
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json();
+      if (res.ok && data.url) {
+        updateValueOption(optId, subId, valId, { layerImage: data.url, uploading: false });
+      } else {
+        updateValueOption(optId, subId, valId, { uploading: false });
+      }
+    } catch {
+      updateValueOption(optId, subId, valId, { uploading: false });
+    }
+  }
+
+  async function uploadOptionCoverImage(optId: string, file: File) {
+    updateOption(optId, { coverImage: undefined });
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json();
+      if (res.ok && data.url) {
+        updateOption(optId, { coverImage: data.url });
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  async function uploadOptionBaseImage(optId: string, file: File) {
+    updateOption(optId, { baseImage: undefined });
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json();
+      if (res.ok && data.url) {
+        updateOption(optId, { baseImage: data.url });
+      }
+    } catch {
+      // ignore
+    }
+  }
+
   // ── Submit ───────────────────────────────────────────────────────
   async function onSubmit(data: CategoryFormData) {
     setLoading(true);
@@ -318,9 +413,21 @@ export function CategoryForm({ category }: CategoryFormProps) {
           position: index,
           options: {
             fieldType: "select",
+                // Persist a per-option renderer configuration. The `fallbackImage`
+                // is taken from the first value option thumbnail (if present).
+                renderer: {
+                  enabled: true,
+                  defaultView: "front",
+                  fallbackImage:
+                    (o.subOptions || [])
+                      .flatMap((s) => s.valueOptions || [])
+                      .find((v) => v.image && v.image.trim())?.image || undefined,
+                },
+            coverImage: o.coverImage || undefined,
+            baseImage: o.baseImage || undefined,
             groups: o.subOptions
               .filter((s) => s.label.trim())
-              .map((s) => ({
+              .map((s, subIdx) => ({
                 label: s.label.trim(),
                 required: s.required,
                 fieldType: s.fieldType,
@@ -335,6 +442,14 @@ export function CategoryForm({ category }: CategoryFormProps) {
                           value: slugify(v.label.trim()),
                           label: v.label.trim(),
                           image: v.image || null,
+                          layer: v.layerImage
+                            ? {
+                                part: s.label.trim() || "overlay",
+                                src: v.layerImage,
+                                order: 100 + subIdx,
+                                view: "front",
+                              }
+                            : null,
                           priceAdjustment: Number(v.priceAdjustment) || 0,
                         }))
                     : [],
@@ -417,7 +532,17 @@ export function CategoryForm({ category }: CategoryFormProps) {
       {/* ── Media ── */}
       <section className="space-y-4">
         <h3 className="text-sm font-semibold uppercase tracking-wider text-neutral-500">Media</h3>
-        <ImageUploader images={images} onChange={setImages} maxImages={1} />
+        <div>
+          <p className="mb-2 text-xs font-medium uppercase tracking-[0.14em] text-neutral-500">
+            Category Image
+          </p>
+          <p className="mb-3 text-xs text-neutral-500">
+            Used for category cards and default fallback visuals.
+          </p>
+          <ImageUploader images={images} onChange={setImages} maxImages={1} />
+        </div>
+
+        {/* Per-option base images are managed on each option via their value thumbnails. */}
       </section>
 
       <div className="h-px bg-neutral-100" />
@@ -444,12 +569,98 @@ export function CategoryForm({ category }: CategoryFormProps) {
                   </span>
 
                   <div className="flex-1 space-y-1">
-                    <Label className="text-xs">Option Name</Label>
+                    <Label className="text-xs">Product Name</Label>
                     <Input
                       value={opt.name}
                       onChange={(e) => updateOption(opt.id, { name: e.target.value })}
-                      placeholder="e.g. Color, Material, Size"
+                      placeholder="e.g. Shirt, Cushion, Necklace"
                     />
+                  </div>
+
+                  <div className="ml-3 flex items-center gap-3">
+                    <div className="flex flex-col items-center gap-1">
+                      <span className="text-[9px] font-semibold uppercase tracking-[0.12em] text-neutral-400">
+                        Cover
+                      </span>
+                      <div className="relative h-10 w-10 overflow-hidden rounded-md border border-neutral-200 bg-white">
+                      {opt.coverImage ? (
+                        <>
+                          <Image src={opt.coverImage} alt={`${opt.name} cover`} fill className="object-cover" sizes="40px" />
+                          <button
+                            type="button"
+                            onClick={() => updateOption(opt.id, { coverImage: null })}
+                            className="absolute right-0.5 top-0.5 rounded-full bg-black/60 p-0.5 text-white hover:bg-black"
+                          >
+                            <X className="h-2 w-2" />
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => fileInputRefs.current[`cover-${opt.id}`]?.click()}
+                            className="flex h-full w-full items-center justify-center text-neutral-400 hover:text-neutral-600"
+                            title="Upload cover photo for this product"
+                          >
+                            <ImageIcon className="h-3 w-3" />
+                          </button>
+                          <input
+                            ref={(el) => { fileInputRefs.current[`cover-${opt.id}`] = el; }}
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) uploadOptionCoverImage(opt.id, file);
+                              e.target.value = "";
+                            }}
+                          />
+                        </>
+                      )}
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col items-center gap-1">
+                      <span className="text-[9px] font-semibold uppercase tracking-[0.12em] text-neutral-400">
+                        Base
+                      </span>
+                      <div className="relative h-10 w-10 overflow-hidden rounded-md border border-neutral-200 bg-white">
+                        {opt.baseImage ? (
+                          <>
+                            <Image src={opt.baseImage} alt={`${opt.name} base`} fill className="object-cover" sizes="40px" />
+                            <button
+                              type="button"
+                              onClick={() => updateOption(opt.id, { baseImage: null })}
+                              className="absolute right-0.5 top-0.5 rounded-full bg-black/60 p-0.5 text-white hover:bg-black"
+                            >
+                              <X className="h-2 w-2" />
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => fileInputRefs.current[`base-${opt.id}`]?.click()}
+                              className="flex h-full w-full items-center justify-center text-neutral-400 hover:text-neutral-600"
+                              title="Upload base photo for this product"
+                            >
+                              <ImageIcon className="h-3 w-3" />
+                            </button>
+                            <input
+                              ref={(el) => { fileInputRefs.current[`base-${opt.id}`] = el; }}
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) uploadOptionBaseImage(opt.id, file);
+                                e.target.value = "";
+                              }}
+                            />
+                          </>
+                        )}
+                      </div>
+                    </div>
                   </div>
 
                   <label className="mt-7 inline-flex items-center gap-2 text-xs text-neutral-600">
@@ -540,46 +751,85 @@ export function CategoryForm({ category }: CategoryFormProps) {
                         {sub.fieldType === "select" ? (
                           <div className="space-y-1.5 pl-6">
                             <p className="text-[10px] font-semibold uppercase tracking-wide text-neutral-400">Values</p>
+                            <p className="text-[10px] text-neutral-400">Left image = option thumbnail, right image = optional layer overlay (PNG/WebP).</p>
                             {sub.valueOptions.map((val) => (
                               <div key={val.id} className="flex items-center gap-2 rounded-md border border-neutral-100 bg-neutral-50 p-1.5">
-                                {/* Image */}
-                                <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-md border border-neutral-200 bg-white">
-                                  {val.uploading ? (
-                                    <div className="flex h-full w-full items-center justify-center">
-                                      <Loader2 className="h-3 w-3 animate-spin text-neutral-400" />
-                                    </div>
-                                  ) : val.image ? (
-                                    <>
-                                      <Image src={val.image} alt={val.label} fill className="object-cover" sizes="40px" />
+                                <div className="flex shrink-0 gap-1.5">
+                                  {/* Thumbnail image */}
+                                  <div className="relative h-10 w-10 overflow-hidden rounded-md border border-neutral-200 bg-white">
+                                    {val.uploading ? (
+                                      <div className="flex h-full w-full items-center justify-center">
+                                        <Loader2 className="h-3 w-3 animate-spin text-neutral-400" />
+                                      </div>
+                                    ) : val.image ? (
+                                      <>
+                                        <Image src={val.image} alt={val.label} fill className="object-cover" sizes="40px" />
+                                        <button
+                                          type="button"
+                                          onClick={() => updateValueOption(opt.id, sub.id, val.id, { image: null })}
+                                          className="absolute right-0.5 top-0.5 rounded-full bg-black/60 p-0.5 text-white hover:bg-black"
+                                        >
+                                          <X className="h-2 w-2" />
+                                        </button>
+                                      </>
+                                    ) : (
                                       <button
                                         type="button"
-                                        onClick={() => updateValueOption(opt.id, sub.id, val.id, { image: null })}
-                                        className="absolute right-0.5 top-0.5 rounded-full bg-black/60 p-0.5 text-white hover:bg-black"
+                                        onClick={() => fileInputRefs.current[val.id]?.click()}
+                                        className="flex h-full w-full items-center justify-center text-neutral-400 hover:text-neutral-600"
+                                        title="Upload thumbnail"
                                       >
-                                        <X className="h-2 w-2" />
+                                        <ImageIcon className="h-3 w-3" />
                                       </button>
-                                    </>
-                                  ) : (
-                                    <button
-                                      type="button"
-                                      onClick={() => fileInputRefs.current[val.id]?.click()}
-                                      className="flex h-full w-full items-center justify-center text-neutral-400 hover:text-neutral-600"
-                                      title="Upload image"
-                                    >
-                                      <ImageIcon className="h-3 w-3" />
-                                    </button>
-                                  )}
-                                  <input
-                                    ref={(el) => { fileInputRefs.current[val.id] = el; }}
-                                    type="file"
-                                    accept="image/*"
-                                    className="hidden"
-                                    onChange={(e) => {
-                                      const file = e.target.files?.[0];
-                                      if (file) uploadValueOptionImage(opt.id, sub.id, val.id, file);
-                                      e.target.value = "";
-                                    }}
-                                  />
+                                    )}
+                                    <input
+                                      ref={(el) => { fileInputRefs.current[val.id] = el; }}
+                                      type="file"
+                                      accept="image/*"
+                                      className="hidden"
+                                      onChange={(e) => {
+                                        const file = e.target.files?.[0];
+                                        if (file) uploadValueOptionImage(opt.id, sub.id, val.id, file);
+                                        e.target.value = "";
+                                      }}
+                                    />
+                                  </div>
+
+                                  {/* Layer overlay image */}
+                                  <div className="relative h-10 w-10 overflow-hidden rounded-md border border-neutral-200 bg-white">
+                                    {val.layerImage ? (
+                                      <>
+                                        <Image src={val.layerImage} alt={`${val.label} layer`} fill className="object-cover" sizes="40px" />
+                                        <button
+                                          type="button"
+                                          onClick={() => updateValueOption(opt.id, sub.id, val.id, { layerImage: null })}
+                                          className="absolute right-0.5 top-0.5 rounded-full bg-black/60 p-0.5 text-white hover:bg-black"
+                                        >
+                                          <X className="h-2 w-2" />
+                                        </button>
+                                      </>
+                                    ) : (
+                                      <button
+                                        type="button"
+                                        onClick={() => fileInputRefs.current[`${val.id}-layer`]?.click()}
+                                        className="flex h-full w-full items-center justify-center text-neutral-400 hover:text-neutral-600"
+                                        title="Upload layer overlay"
+                                      >
+                                        <ImageIcon className="h-3 w-3" />
+                                      </button>
+                                    )}
+                                    <input
+                                      ref={(el) => { fileInputRefs.current[`${val.id}-layer`] = el; }}
+                                      type="file"
+                                      accept="image/*"
+                                      className="hidden"
+                                      onChange={(e) => {
+                                        const file = e.target.files?.[0];
+                                        if (file) uploadValueOptionLayerImage(opt.id, sub.id, val.id, file);
+                                        e.target.value = "";
+                                      }}
+                                    />
+                                  </div>
                                 </div>
 
                                 <Input

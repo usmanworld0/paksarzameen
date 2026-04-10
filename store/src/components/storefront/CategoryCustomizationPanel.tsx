@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, Loader2, Upload, X } from "lucide-react";
@@ -14,12 +14,24 @@ interface CategoryCustomizationPanelProps {
   categoryName: string;
   categorySlug: string;
   options: CustomizationOption[];
+  embedded?: boolean;
+  baseImageFallback?: string;
+  onBaseImageChange?: (src: string) => void;
+  onLayerImagesChange?: (layers: Array<{ id: string; src: string; alt: string; order: number }>) => void;
+  showBillingSummary?: boolean;
+  proceedLabel?: string;
 }
 
 export function CategoryCustomizationPanel({
   categoryName,
   categorySlug,
   options,
+  embedded = false,
+  baseImageFallback = "/images/commonwealth_header.jpeg",
+  onBaseImageChange,
+  onLayerImagesChange,
+  showBillingSummary = true,
+  proceedLabel = "Proceed to Billing",
 }: CategoryCustomizationPanelProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -55,6 +67,7 @@ export function CategoryCustomizationPanel({
     () => parsedOptions.find((option) => option.id === selectedOptionId) ?? null,
     [parsedOptions, selectedOptionId]
   );
+  const selectedOptionBaseImage = selectedOption?.baseImage ?? "";
 
   const requiredGroupKeys = useMemo(
     () =>
@@ -83,6 +96,71 @@ export function CategoryCustomizationPanel({
       ),
     [selections]
   );
+
+  useEffect(() => {
+    if (!onBaseImageChange) return;
+
+    const imageByGroupKey = new Map<string, string>();
+
+    for (const option of parsedOptions) {
+      for (const group of option.groups) {
+        if (group.fieldType !== "select") continue;
+
+        for (const value of group.values) {
+          if (value.image) {
+            imageByGroupKey.set(`${option.id}::${group.label}::${value.value}`, value.image);
+          }
+        }
+      }
+    }
+
+    let nextBaseImage = selectedOptionBaseImage || baseImageFallback;
+
+    for (const [groupKey, selection] of Object.entries(selections)) {
+      const directValue = selection.value;
+
+      if (directValue && /^(https?:\/\/|\/)/i.test(directValue)) {
+        nextBaseImage = directValue;
+        break;
+      }
+
+      const mappedImage = imageByGroupKey.get(`${groupKey}::${selection.value}`);
+      if (mappedImage) {
+        nextBaseImage = mappedImage;
+        break;
+      }
+    }
+
+    onBaseImageChange(nextBaseImage);
+  }, [baseImageFallback, onBaseImageChange, parsedOptions, selectedOptionBaseImage, selections]);
+
+  useEffect(() => {
+    if (!onLayerImagesChange) return;
+
+    const layers: Array<{ id: string; src: string; alt: string; order: number }> = [];
+
+    for (const option of parsedOptions) {
+      for (const group of option.groups) {
+        const groupKey = `${option.id}::${group.label}`;
+        const selectedValue = (selections[groupKey]?.value ?? "").trim();
+        if (!selectedValue) continue;
+
+        const parsedValue = group.values.find((value) => value.value === selectedValue);
+        const layer = parsedValue?.layer;
+        if (!layer?.src) continue;
+
+        layers.push({
+          id: `${groupKey}::${selectedValue}`,
+          src: layer.src,
+          alt: `${group.label} layer`,
+          order: Number.isFinite(layer.order) ? Number(layer.order) : 100,
+        });
+      }
+    }
+
+    layers.sort((a, b) => a.order - b.order);
+    onLayerImagesChange(layers);
+  }, [onLayerImagesChange, parsedOptions, selections]);
 
   function openOption(optionId: string) {
     const params = new URLSearchParams(searchParams.toString());
@@ -202,13 +280,13 @@ export function CategoryCustomizationPanel({
   if (parsedOptions.length === 0) return null;
 
   return (
-    <section className="mb-12 rounded-2xl border border-neutral-200 bg-neutral-50 p-7 sm:p-10">
+    <section className={embedded ? "space-y-6" : "mb-12 rounded-2xl border border-neutral-200 bg-neutral-50 p-7 sm:p-10"}>
       <div className="flex flex-col gap-3">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-400">
             Customization
           </p>
-          <h2 className="mt-2 text-2xl font-semibold text-neutral-900 sm:text-3xl">
+          <h2 className={embedded ? "mt-2 text-xl font-normal text-neutral-900 sm:text-2xl" : "mt-2 text-2xl font-semibold text-neutral-900 sm:text-3xl"}>
             Customize Your {categoryName}
           </h2>
           <p className="mt-1 text-sm text-neutral-500">
@@ -219,7 +297,7 @@ export function CategoryCustomizationPanel({
 
       {!selectedOption ? (
         <div className="mt-8 space-y-6">
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <div className={embedded ? "grid grid-cols-1 gap-4" : "grid grid-cols-1 gap-5 md:grid-cols-2"}>
             {parsedOptions.map((option) => {
               const optionKeyPrefix = `${option.id}::`;
               const isComplete =
@@ -289,27 +367,45 @@ export function CategoryCustomizationPanel({
           </div>
 
           <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">
-            <h3 className="text-xl font-semibold text-neutral-900 sm:text-2xl">{selectedOption.name}</h3>
-            <p className="mt-1 text-xs uppercase tracking-[0.16em] text-neutral-500">
+            <div className="flex items-end justify-between gap-4 border-b border-neutral-200 pb-4">
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.28em] text-neutral-400">
+                  {selectedOption.required ? "Required" : "Optional"}
+                </p>
+                <h3 className="mt-2 text-[1.35rem] font-normal tracking-[-0.03em] text-neutral-900 sm:text-[1.55rem]">
+                  {selectedOption.name}
+                </h3>
+              </div>
+              <p className="text-[10px] uppercase tracking-[0.22em] text-neutral-400">
+                {selectedOption.fieldType}
+              </p>
+            </div>
+            <p className="mt-3 text-xs uppercase tracking-[0.16em] text-neutral-500">
               {selectedOption.fieldType}
             </p>
 
             {selectedOption.fieldType === "select" ? (
-              <div className="mt-5 space-y-5">
+              <div className="mt-6 space-y-6">
                 {selectedOption.groups.map((group) => {
                   const groupKey = `${selectedOption.id}::${group.label}`;
                   const selected = selections[groupKey]?.value;
 
                   return (
-                    <div key={groupKey}>
-                      <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-neutral-500">
-                        {group.label}
-                        {(group.required || selectedOption.required) && (
-                          <span className="ml-1 text-red-500">*</span>
-                        )}
-                      </p>
+                    <section key={groupKey} className="overflow-hidden rounded-[22px] border border-neutral-200 bg-white shadow-[0_10px_28px_rgba(0,0,0,0.04)]">
+                      <div className="flex items-center justify-between border-b border-neutral-200 px-5 py-4">
+                        <div>
+                          <p className="text-[10px] uppercase tracking-[0.28em] text-neutral-400">
+                            {group.label}
+                          </p>
+                          <p className="mt-1 text-sm text-neutral-500">
+                            {(group.required || selectedOption.required) ? "Required" : "Optional"}
+                          </p>
+                        </div>
+                        <div className="h-3.5 w-3.5 rounded-full border border-neutral-300" />
+                      </div>
+
                       {group.fieldType === "select" ? (
-                        <div className="flex flex-wrap gap-3.5">
+                        <div className="space-y-3 p-5">
                           {group.values.map((value) => {
                             const isSelected = selected === value.value;
                             const hasImage = Boolean(value.image);
@@ -330,29 +426,51 @@ export function CategoryCustomizationPanel({
                                     },
                                   }))
                                 }
-                                className={`flex min-h-[56px] min-w-[200px] items-center gap-3 rounded-2xl border px-4 py-3 text-sm transition-colors ${
+                                className={`flex w-full items-stretch overflow-hidden rounded-[18px] border text-left transition-all duration-300 ${
                                   isSelected
-                                    ? "border-neutral-900 bg-neutral-900 text-white"
-                                    : "border-neutral-300 bg-white text-neutral-700 hover:border-neutral-900"
+                                    ? "border-neutral-900 bg-neutral-50 shadow-[0_10px_24px_rgba(0,0,0,0.05)]"
+                                    : "border-neutral-200 bg-white hover:border-neutral-900"
                                 }`}
                               >
-                                {hasImage && (
-                                  <span className="relative h-10 w-10 overflow-hidden rounded-full border border-black/10">
+                                <div className="relative h-[96px] w-[132px] shrink-0 bg-neutral-100">
+                                  {hasImage ? (
                                     <Image
                                       src={value.image!}
                                       alt={value.label}
                                       fill
-                                      sizes="40px"
+                                      sizes="132px"
                                       className="object-cover"
                                     />
-                                  </span>
-                                )}
-                                <span className="font-medium">{value.label}</span>
-                                <span className="ml-auto font-semibold">
-                                  {value.priceAdjustment === 0
-                                    ? formatRegionalPrice(0, region)
-                                    : `+${formatRegionalPrice(value.priceAdjustment, region)}`}
-                                </span>
+                                  ) : null}
+                                </div>
+
+                                <div className="flex min-w-0 flex-1 items-center justify-between gap-4 px-4 py-4">
+                                  <div className="min-w-0">
+                                    <p className="truncate text-[1rem] font-normal tracking-[-0.02em] text-neutral-900">
+                                      {value.label}
+                                    </p>
+                                    <p className="mt-1 text-[11px] uppercase tracking-[0.16em] text-neutral-500">
+                                      {isSelected ? "Selected" : "Choose option"}
+                                    </p>
+                                  </div>
+
+                                  <div className="flex flex-col items-end gap-1">
+                                    <span className="text-[0.78rem] uppercase tracking-[0.18em] text-neutral-500">
+                                      {value.priceAdjustment === 0
+                                        ? formatRegionalPrice(0, region)
+                                        : `+${formatRegionalPrice(value.priceAdjustment, region)}`}
+                                    </span>
+                                    <span
+                                      className={`rounded-full border px-3 py-1 text-[10px] uppercase tracking-[0.18em] ${
+                                        isSelected
+                                          ? "border-neutral-900 bg-neutral-900 text-white"
+                                          : "border-neutral-200 bg-white text-neutral-500"
+                                      }`}
+                                    >
+                                      {isSelected ? "Active" : "Select"}
+                                    </span>
+                                  </div>
+                                </div>
                               </button>
                             );
                           })}
@@ -478,7 +596,7 @@ export function CategoryCustomizationPanel({
                           className="h-12 w-full rounded-lg border border-neutral-200 bg-white px-4 text-base text-neutral-900 outline-none transition-colors focus:border-neutral-900"
                         />
                       )}
-                    </div>
+                    </section>
                   );
                 })}
               </div>
@@ -561,80 +679,72 @@ export function CategoryCustomizationPanel({
             region={region}
             submitting={submitting}
             onProceed={proceedToBilling}
+            showBillingSummary={showBillingSummary}
+            proceedLabel={proceedLabel}
           />
+
+          <div className="mt-6 rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
+              Optional Reference
+            </p>
+
+            <div className="mt-3 space-y-3">
+              {referenceImageUrl ? (
+                <div className="relative h-40 w-full overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100">
+                  <Image src={referenceImageUrl} alt="Reference image" fill className="object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setReferenceImageUrl("");
+                      setReferenceImageName("");
+                    }}
+                    className="absolute right-2 top-2 rounded-full bg-black/65 p-1 text-white hover:bg-black"
+                    aria-label="Remove reference image"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => referenceInputRef.current?.click()}
+                  className="flex h-24 w-full items-center justify-center rounded-xl border border-dashed border-neutral-300 bg-white text-sm text-neutral-600 transition-colors hover:border-neutral-900 hover:text-neutral-900"
+                >
+                  {uploadingReferenceImage ? (
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                  ) : (
+                    <span className="inline-flex items-center gap-2">
+                      <Upload className="h-4 w-4" />
+                      Upload reference image (optional)
+                    </span>
+                  )}
+                </button>
+              )}
+
+              <input
+                ref={referenceInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(event) => {
+                  const file = event.target.files?.[0];
+                  if (file) {
+                    uploadReferenceImage(file);
+                  }
+                  event.target.value = "";
+                }}
+              />
+
+              <textarea
+                value={referenceNotes}
+                onChange={(event) => setReferenceNotes(event.target.value)}
+                placeholder="Optional description/notes for this custom order"
+                className="min-h-[120px] w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 text-base text-neutral-900 outline-none transition-colors focus:border-neutral-900"
+              />
+            </div>
+          </div>
         </div>
       )}
-
-      <div className="mt-6 rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm">
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">
-          Optional Reference
-        </p>
-
-        <div className="mt-3 space-y-3">
-          {referenceImageUrl ? (
-            <div className="relative h-40 w-full overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100">
-              <Image src={referenceImageUrl} alt="Reference image" fill className="object-cover" />
-              <button
-                type="button"
-                onClick={() => {
-                  setReferenceImageUrl("");
-                  setReferenceImageName("");
-                }}
-                className="absolute right-2 top-2 rounded-full bg-black/65 p-1 text-white hover:bg-black"
-                aria-label="Remove reference image"
-              >
-                <X className="h-3.5 w-3.5" />
-              </button>
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={() => referenceInputRef.current?.click()}
-              className="flex h-24 w-full items-center justify-center rounded-xl border border-dashed border-neutral-300 bg-white text-sm text-neutral-600 transition-colors hover:border-neutral-900 hover:text-neutral-900"
-            >
-              {uploadingReferenceImage ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
-              ) : (
-                <span className="inline-flex items-center gap-2">
-                  <Upload className="h-4 w-4" />
-                  Upload reference image (optional)
-                </span>
-              )}
-            </button>
-          )}
-
-          <input
-            ref={referenceInputRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={(event) => {
-              const file = event.target.files?.[0];
-              if (file) {
-                uploadReferenceImage(file);
-              }
-              event.target.value = "";
-            }}
-          />
-
-          <textarea
-            value={referenceNotes}
-            onChange={(event) => setReferenceNotes(event.target.value)}
-            placeholder="Optional description/notes for this custom order"
-            className="min-h-[120px] w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 text-base text-neutral-900 outline-none transition-colors focus:border-neutral-900"
-          />
-        </div>
-      </div>
-
-      <div className="mt-6">
-        <SummaryCard
-          missingRequiredCount={missingRequiredCount}
-          optionsTotal={optionsTotal}
-          region={region}
-          submitting={submitting}
-          onProceed={proceedToBilling}
-        />
-      </div>
     </section>
   );
 }
@@ -645,21 +755,27 @@ function SummaryCard({
   region,
   submitting,
   onProceed,
+  showBillingSummary,
+  proceedLabel,
 }: {
   missingRequiredCount: number;
   optionsTotal: number;
   region: "PAK" | "US" | "UK";
   submitting: boolean;
   onProceed: () => void;
+  showBillingSummary: boolean;
+  proceedLabel: string;
 }) {
   return (
     <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm">
-      <div className="flex items-center justify-between text-sm">
-        <span className="text-neutral-600">Options Total</span>
-        <span className="text-base font-semibold text-neutral-900">
-          {formatRegionalPrice(optionsTotal, region)}
-        </span>
-      </div>
+      {showBillingSummary ? (
+        <div className="flex items-center justify-between text-sm">
+          <span className="text-neutral-600">Options Total</span>
+          <span className="text-base font-semibold text-neutral-900">
+            {formatRegionalPrice(optionsTotal, region)}
+          </span>
+        </div>
+      ) : null}
       <p className="mt-2 text-xs text-neutral-500">
         {missingRequiredCount > 0
           ? `${missingRequiredCount} required selection${
@@ -674,7 +790,7 @@ function SummaryCard({
         disabled={missingRequiredCount > 0 || submitting}
         className="mt-4 flex h-11 w-full items-center justify-center rounded-full bg-neutral-900 text-sm font-medium text-white transition-colors hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Proceed to Billing"}
+        {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : proceedLabel}
       </button>
     </div>
   );

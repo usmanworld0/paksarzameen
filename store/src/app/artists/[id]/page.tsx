@@ -35,7 +35,7 @@ export default async function ArtistPage({ params }: ArtistPageProps) {
       <Navbar />
       <main className="pt-[72px]">
         {/* Artist header */}
-        <div className="border-b border-[#e6d9cf] bg-[#fff8f2] px-6 py-16 sm:px-10 sm:py-20 lg:px-16">
+        <div className="border-b border-[#e6d9cf] bg-white px-6 py-16 sm:px-10 sm:py-20 lg:px-16">
           <div className="mx-auto max-w-[1320px]">
             <div className="mb-10 flex flex-wrap items-center gap-2 text-xs uppercase tracking-[0.16em] text-neutral-400">
               <a href="/artists" className="hover:text-neutral-700 transition-colors">Artisans</a>

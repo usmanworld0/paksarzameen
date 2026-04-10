@@ -32,6 +32,16 @@ export const valueOptionSchema = z.object({
   value: z.string().trim().min(1, "Value is required"),
   label: z.string().trim().min(1, "Label is required"),
   image: z.string().url().optional().nullable(),
+  layer: z
+    .object({
+      part: z.string().trim().min(1).optional(),
+      src: z.string().url().optional(),
+      asset: z.string().trim().optional(),
+      order: z.coerce.number().optional(),
+      view: z.string().trim().optional(),
+    })
+    .optional()
+    .nullable(),
   priceAdjustment: z.coerce.number().default(0),
 });
 
@@ -58,6 +68,17 @@ const customizationOptionConfigSchema = z.object({
   placeholder: optionalText,
   min: z.coerce.number().optional(),
   max: z.coerce.number().optional(),
+  renderer: z
+    .object({
+      enabled: z.boolean().default(false),
+      defaultView: z.string().trim().optional(),
+      fallbackImage: z.string().url().optional(),
+      cloudinaryBasePath: z.string().trim().optional(),
+      cloudinaryCloudName: z.string().trim().optional(),
+    })
+    .optional(),
+  coverImage: z.string().url().optional().nullable(),
+  baseImage: z.string().url().optional().nullable(),
   groups: z.array(subOptionSchema).default([]),
 });
 

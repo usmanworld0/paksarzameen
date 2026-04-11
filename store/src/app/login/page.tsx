@@ -4,11 +4,12 @@ import { getServerSession } from "next-auth/next";
 import { ArrowRight, ShieldCheck } from "lucide-react";
 
 import { authOptions } from "@/lib/auth";
-import { LoginWithGoogleButton } from "@/features/gallery/components/LoginWithGoogleButton";
+import { getManualGalleryUser } from "@/lib/manual-gallery-auth";
+import { ManualSignupForm } from "@/features/gallery/components/ManualSignupForm";
 
 export const metadata: Metadata = {
   title: "Login",
-  description: "Sign in with Google to upload artwork to the customer gallery.",
+  description: "Sign up with name and email to upload artwork to the customer gallery.",
 };
 
 type LoginPageProps = {
@@ -17,8 +18,9 @@ type LoginPageProps = {
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
   const session = await getServerSession(authOptions);
+  const manualUser = await getManualGalleryUser();
 
-  if (session?.user?.id) {
+  if (session?.user?.id || manualUser?.id) {
     redirect("/upload-art");
   }
 
@@ -37,10 +39,10 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             </div>
             <div className="space-y-3">
               <h1 className="text-4xl font-semibold tracking-tight sm:text-6xl">
-                Sign in to submit your artwork.
+                Sign up to submit your artwork.
               </h1>
               <p className="max-w-lg text-base leading-7 text-white/80 sm:text-lg">
-                Use your Google account to upload art, keep your submissions
+                Provide your name and email to upload art, keep submissions
                 linked to your profile, and track pending approvals from one
                 place.
               </p>
@@ -56,7 +58,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           <div className="w-full max-w-md space-y-8">
             <div className="space-y-3 text-center">
               <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[#0f7a47]">
-                Google Authentication
+                Sign up manually
               </p>
               <h2 className="text-3xl font-semibold tracking-tight text-neutral-900">
                 Welcome back
@@ -67,7 +69,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
               </p>
             </div>
 
-            <LoginWithGoogleButton callbackUrl={callbackUrl} className="w-full rounded-full bg-[#0f7a47] px-6 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(15,122,71,0.14)] transition hover:bg-[#081c10] hover:text-white" />
+            <ManualSignupForm callbackUrl={callbackUrl} className="w-full" />
 
             <div className="rounded-2xl border border-[#e5d8cf] bg-[#faf6f1] px-4 py-4 text-sm leading-6 text-neutral-600">
               After login, you will be redirected to the protected upload page

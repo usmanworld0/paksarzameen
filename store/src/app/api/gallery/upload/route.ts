@@ -3,14 +3,18 @@ import { getServerSession } from "next-auth/next";
 
 import { authOptions } from "@/lib/auth";
 import { uploadImageFile, deleteCloudinaryImage } from "@/lib/cloudinary";
+import { getManualGalleryUser } from "@/lib/manual-gallery-auth";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
+  const manualUser = await getManualGalleryUser();
 
-  if (!session?.user?.id) {
+  const userId = session?.user?.id ?? manualUser?.id;
+
+  if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -38,7 +42,7 @@ export async function POST(request: Request) {
 
       const record = await prisma.image.create({
         data: {
-          userId: session.user.id,
+          userId,
           publicId: uploaded.publicId,
           imageUrl: uploaded.url,
           thumbnailUrl: uploaded.url,

@@ -14,7 +14,13 @@ export function GalleryLogoutButton({ className }: GalleryLogoutButtonProps) {
       type="button"
       variant="outline"
       className={className}
-      onClick={() => {
+      onClick={async () => {
+        // Try clearing manual cookie first (if present), then call next-auth signOut
+        try {
+          await fetch("/api/gallery/user/manual-signout", { method: "POST" });
+        } catch (err) {
+          // ignore
+        }
         void signOut({ callbackUrl: "/customers-art-gallery" });
       }}
     >

@@ -16,6 +16,7 @@ import {
   BarChart3,
   ShieldCheck,
   Percent,
+  ImagePlus,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 
@@ -26,6 +27,7 @@ const ADMIN_NAV = [
   { label: "Artisans", href: "/admin/artists", icon: Users },
   { label: "Sales", href: "/admin/sales", icon: Tag },
   { label: "Coupons", href: "/admin/coupons", icon: Percent },
+  { label: "Gallery", href: "/admin/gallery", icon: ImagePlus },
   { label: "Analytics", href: "/admin/analytics", icon: BarChart3 },
   { label: "Settings", href: "/admin/settings", icon: Settings },
 ] as const;

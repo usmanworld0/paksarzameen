@@ -194,8 +194,39 @@ model User {
   accounts Account[]
   sessions Session[]
   images   Image[]
+  manualSignup GalleryManualSignup?
 
   @@map("users")
+}
+
+model GalleryManualSignup {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @unique @map("user_id") @db.Uuid
+  fullName  String   @map("full_name")
+  email     String   @unique
+  status    String   @default("active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user     User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessions GalleryManualSession[]
+
+  @@index([status])
+  @@map("gallery_manual_signups")
+}
+
+model GalleryManualSession {
+  id        String   @id @default(uuid()) @db.Uuid
+  signupId  String   @map("signup_id") @db.Uuid
+  token     String   @unique
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  signup GalleryManualSignup @relation(fields: [signupId], references: [id], onDelete: Cascade)
+
+  @@index([signupId])
+  @@index([expiresAt])
+  @@map("gallery_manual_sessions")
 }
 
 model Account {

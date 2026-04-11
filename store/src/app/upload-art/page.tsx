@@ -5,20 +5,26 @@ import { Navbar } from "@/components/storefront/Navbar";
 import { Footer } from "@/components/storefront/Footer";
 import { authOptions } from "@/lib/auth";
 import { getUserGalleryImages } from "@/lib/gallery";
+import { getManualGalleryUser } from "@/lib/manual-gallery-auth";
 import { GalleryUploadForm } from "@/features/gallery/components/GalleryUploadForm";
 import { GalleryLogoutButton } from "@/features/gallery/components/GalleryLogoutButton";
-import { LoginWithGoogleButton } from "@/features/gallery/components/LoginWithGoogleButton";
+import { ManualSignupForm } from "@/features/gallery/components/ManualSignupForm";
 
 export const metadata: Metadata = {
   title: "Upload Art",
-  description: "Continue to the protected Google sign-in flow for customer artwork uploads.",
+  description: "Sign up with name and email to upload artwork.",
 };
 
 export const dynamic = "force-dynamic";
 
 export default async function UploadArtPage() {
   const session = await getServerSession(authOptions);
-  const uploads = session?.user?.id ? await getUserGalleryImages(session.user.id) : [];
+  const manualUser = await getManualGalleryUser();
+
+  const userId = session?.user?.id ?? manualUser?.id;
+  const signedInEmail = session?.user?.email ?? manualUser?.email;
+
+  const uploads = userId ? await getUserGalleryImages(userId) : [];
 
   return (
     <>
@@ -34,17 +40,18 @@ export default async function UploadArtPage() {
                 Upload Your Art
               </h1>
               <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-neutral-600 sm:text-base">
-                Sign in with your Google account to continue to the protected
-                upload flow. Your submission will stay tied to your profile and
+                Provide your name and email to continue to the protected upload
+                flow. Your submission will stay tied to your profile and
                 appear in the gallery after approval.
               </p>
 
-              {!session?.user?.id ? (
+              {!userId ? (
                 <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-                  <LoginWithGoogleButton
-                    callbackUrl="/upload-art"
-                    className="w-full rounded-full bg-[#0f7a47] px-6 text-xs font-semibold uppercase tracking-[0.16em] text-white transition-colors hover:bg-[#081c10] hover:text-white sm:w-auto"
-                  />
+                    <ManualSignupForm
+                      callbackUrl="/upload-art"
+                      className="w-full max-w-md"
+                      submitButtonClassName="text-xs font-semibold uppercase tracking-[0.16em] sm:w-auto"
+                    />
                   <a
                     href="/customers-art-gallery"
                     className="inline-flex items-center justify-center rounded-full border border-[#e5d8cf] bg-white px-6 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-neutral-800 transition-colors hover:border-[#0f7a47] hover:bg-[#fffaf5]"
@@ -65,9 +72,9 @@ export default async function UploadArtPage() {
               )}
             </div>
 
-            {session?.user?.id ? (
+            {userId ? (
               <div id="upload-form" className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
-                <GalleryUploadForm signedInEmail={session.user.email} />
+                <GalleryUploadForm signedInEmail={signedInEmail ?? undefined} />
 
                 <aside className="space-y-6 rounded-[28px] border border-[#e5d8cf] bg-white p-6 shadow-[0_16px_40px_rgba(33,28,20,0.08)]">
                   <div className="space-y-2">
@@ -135,8 +142,8 @@ export default async function UploadArtPage() {
                 </aside>
               </div>
             ) : (
-              <div className="rounded-2xl border border-dashed border-[#e5d8cf] bg-[#faf6f1] p-8 text-center text-sm text-neutral-600">
-                Click the Google sign-in button above to unlock the protected upload form.
+                <div className="rounded-2xl border border-dashed border-[#e5d8cf] bg-[#faf6f1] p-8 text-center text-sm text-neutral-600">
+                Click the sign-up form above to unlock the protected upload form.
               </div>
             )}
           </div>

@@ -7,17 +7,19 @@ const requiredGroups = [
     vars: ["DATABASE_URL"],
     reason: "Prisma/server routes need database connectivity.",
   },
-  {
-    vars: ["NEXTAUTH_SECRET", "AUTH_SECRET"],
-    reason: "NextAuth requires a stable secret for session/JWT signing.",
-  },
-  {
-    vars: ["NEXTAUTH_URL", "AUTH_URL", "NEXT_PUBLIC_SITE_URL"],
-    reason: "Auth callbacks and canonical store origin require a valid URL.",
-  },
 ];
 
 const optionalGroups = [
+  {
+    vars: ["NEXTAUTH_SECRET", "AUTH_SECRET"],
+    reason:
+      "Recommended for stable NextAuth session/JWT signing (runtime fallback exists in code).",
+  },
+  {
+    vars: ["NEXTAUTH_URL", "AUTH_URL", "NEXT_PUBLIC_SITE_URL"],
+    reason:
+      "Recommended for explicit callback/canonical origin (runtime fallback exists in code).",
+  },
   {
     vars: ["GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET"],
     reason: "Required only when Google sign-in should be enabled.",

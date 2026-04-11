@@ -1234,22 +1234,19 @@ export function HomeClient() {
               src={'/images/members/IMG_6394.MP4'}
               poster={heartCoverImage}
               playsInline
-              <video
               loop
               style={{
-                playsInline
-                poster={heartCoverImage}
                 inset: 0,
                 width: "100%",
                 height: "100%",
                 objectFit: "cover",
                 transition: "opacity 950ms cubic-bezier(0.22,0.9,0.28,1)",
-                opacity: isCoverHovered ? 1 : 0,
-                pointerEvents: isCoverHovered ? "auto" : "none",
+                opacity: (isCoverHovered || isCoverPlaying) ? 1 : 0,
+                pointerEvents: (isCoverHovered || isCoverPlaying) ? "auto" : "none",
               }}
             />
-                  opacity: (isCoverHovered || isCoverPlaying) ? 1 : 0,
-                  pointerEvents: (isCoverHovered || isCoverPlaying) ? "auto" : "none",
+          </div>
+        </div>
 
         <div className="heart-half heart-half-bottom">
           <div className="heart-bottom-carousel-window" aria-live="polite">

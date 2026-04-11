@@ -4,6 +4,7 @@ import { Footer } from "@/components/storefront/Footer";
 import { ProductCard } from "@/components/storefront/ProductCard";
 import { CategoryFilter } from "@/components/storefront/CategoryFilter";
 import { SearchBar } from "@/components/storefront/SearchBar";
+import { DatabaseConfigNotice } from "@/components/storefront/DatabaseConfigNotice";
 import { getProducts } from "@/actions/products";
 import { getCategories } from "@/actions/categories";
 import { getRequestRegion } from "@/lib/pricing-server";
@@ -28,6 +29,7 @@ interface ProductsPageProps {
 export default async function ProductsPage({
   searchParams,
 }: ProductsPageProps) {
+  const dbConfigured = Boolean(process.env.DATABASE_URL?.trim());
   const region = await getRequestRegion();
   const [{ products, pages, total }, categories] = await Promise.all([
     getProducts({
@@ -73,7 +75,9 @@ export default async function ProductsPage({
               </div>
             </div>
 
-            {products.length === 0 ? (
+            {!dbConfigured ? (
+              <DatabaseConfigNotice />
+            ) : products.length === 0 ? (
               <div className="store-card flex min-h-[300px] items-center justify-center rounded-[28px]">
                 <p className="text-lg text-neutral-400">No products found.</p>
               </div>

@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { Navbar } from "@/components/storefront/Navbar";
 import { Footer } from "@/components/storefront/Footer";
 import { ProductCard } from "@/components/storefront/ProductCard";
+import { DatabaseConfigNotice } from "@/components/storefront/DatabaseConfigNotice";
 import { getCategoryBySlug } from "@/actions/categories";
 import { getProducts } from "@/actions/products";
 import { getRequestRegion } from "@/lib/pricing-server";
@@ -31,6 +32,23 @@ export default async function CategoryPage({
   params,
   searchParams,
 }: CategoryPageProps) {
+  const dbConfigured = Boolean(process.env.DATABASE_URL?.trim());
+  if (!dbConfigured) {
+    return (
+      <>
+        <Navbar />
+        <main className="pt-[72px]">
+          <section className="store-section bg-[#fffaf6]">
+            <div className="store-container max-w-[1320px]">
+              <DatabaseConfigNotice />
+            </div>
+          </section>
+        </main>
+        <Footer />
+      </>
+    );
+  }
+
   const category = await getCategoryBySlug(params.slug);
   if (!category) notFound();
 

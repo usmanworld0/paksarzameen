@@ -13,10 +13,12 @@ import { getStorefrontNavigation } from "@/lib/storefront-navigation";
 import { normalizeImageSrc, truncate } from "@/lib/utils";
 import Link from "next/link";
 import type { StorefrontHeroData } from "@/types/storefront";
+import { DatabaseConfigNotice } from "@/components/storefront/DatabaseConfigNotice";
 
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
+  const dbConfigured = Boolean(process.env.DATABASE_URL?.trim());
   const region = await getRequestRegion();
   const [{ products: featured }, categories, artists, navigation] = await Promise.all([
     getProducts({ featured: true, limit: 8 }),
@@ -50,6 +52,12 @@ export default async function HomePage() {
     <>
       <Navbar data={navigation} />
       <main className="store-shell">
+        {!dbConfigured && (
+          <div className="store-container pt-10">
+            <DatabaseConfigNotice />
+          </div>
+        )}
+
         <HeroSection data={heroData} />
 
         <CategorySection categories={categories} />

@@ -1,4 +1,29 @@
 /** @type {import('next').NextConfig} */
+// Normalize equivalent env aliases so Vercel/runtime config is resilient.
+if (!process.env.NEXTAUTH_SECRET && process.env.AUTH_SECRET) {
+  process.env.NEXTAUTH_SECRET = process.env.AUTH_SECRET;
+}
+
+if (!process.env.AUTH_SECRET && process.env.NEXTAUTH_SECRET) {
+  process.env.AUTH_SECRET = process.env.NEXTAUTH_SECRET;
+}
+
+if (!process.env.NEXTAUTH_URL && process.env.AUTH_URL) {
+  process.env.NEXTAUTH_URL = process.env.AUTH_URL;
+}
+
+if (!process.env.AUTH_URL && process.env.NEXTAUTH_URL) {
+  process.env.AUTH_URL = process.env.NEXTAUTH_URL;
+}
+
+if (!process.env.NEXT_PUBLIC_SITE_URL && process.env.NEXTAUTH_URL) {
+  process.env.NEXT_PUBLIC_SITE_URL = process.env.NEXTAUTH_URL;
+}
+
+if (!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_CLOUD_NAME) {
+  process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME;
+}
+
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,

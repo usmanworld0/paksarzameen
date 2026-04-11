@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Navbar } from "@/components/storefront/Navbar";
 import { Footer } from "@/components/storefront/Footer";
 import { ArtistCard } from "@/components/storefront/ArtistCard";
+import { DatabaseConfigNotice } from "@/components/storefront/DatabaseConfigNotice";
 import { getArtists } from "@/actions/artists";
 
 export const dynamic = 'force-dynamic';
@@ -13,6 +14,7 @@ export const metadata: Metadata = {
 };
 
 export default async function ArtistsPage() {
+  const dbConfigured = Boolean(process.env.DATABASE_URL?.trim());
   const artists = await getArtists();
   const totalProducts = artists.reduce(
     (sum, artist) => sum + artist._count.products,
@@ -41,7 +43,9 @@ export default async function ArtistsPage() {
               </p>
             </div>
 
-            {artists.length === 0 ? (
+            {!dbConfigured ? (
+              <DatabaseConfigNotice />
+            ) : artists.length === 0 ? (
               <div className="store-card rounded-[22px] py-20 text-center">
                 <p className="text-neutral-400 text-sm">
                   Artisan profiles coming soon.

@@ -53,18 +53,33 @@ export type GalleryUploadImage = {
   };
 };
 
-export function getApprovedGalleryImages(): Promise<ApprovedGalleryImage[]> {
-  return prisma.image.findMany({
-    where: { approved: true },
-    select: approvedGallerySelect,
-    orderBy: { createdAt: "desc" },
-  }) as Promise<ApprovedGalleryImage[]>;
+export async function getApprovedGalleryImages(): Promise<ApprovedGalleryImage[]> {
+  try {
+    return (await prisma.image.findMany({
+      where: { approved: true },
+      select: approvedGallerySelect,
+      orderBy: { createdAt: "desc" },
+    })) as ApprovedGalleryImage[];
+  } catch (err) {
+    // Defensive: if the images table doesn't exist or DB is unavailable,
+    // don't crash the entire page — log and return an empty list.
+    // The real fix is to ensure migrations are applied or DATABASE_URL is correct.
+    // eslint-disable-next-line no-console
+    console.error("getApprovedGalleryImages error:", err);
+    return [];
+  }
 }
 
-export function getUserGalleryImages(userId: string): Promise<GalleryUploadImage[]> {
-  return prisma.image.findMany({
-    where: { userId },
-    include: galleryImageInclude,
-    orderBy: { createdAt: "desc" },
-  }) as Promise<GalleryUploadImage[]>;
+export async function getUserGalleryImages(userId: string): Promise<GalleryUploadImage[]> {
+  try {
+    return (await prisma.image.findMany({
+      where: { userId },
+      include: galleryImageInclude,
+      orderBy: { createdAt: "desc" },
+    })) as GalleryUploadImage[];
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error("getUserGalleryImages error:", err);
+    return [];
+  }
 }

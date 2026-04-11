@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import { siteConfig } from "@/config/site";
 import { BloodBankRequestForm } from "@/features/blood-bank/components/BloodBankRequestForm";
+import { EmergencyBloodRequest } from "@/features/blood-bank/components/EmergencyBloodRequest";
 
 import styles from "./BloodBankPage.module.css";
 
@@ -110,6 +111,9 @@ export default function BloodBankPage() {
             <p className={styles.formEyebrow}>Registration</p>
             <h2 className={styles.formTitle}>Personal Donor Cabinet</h2>
             <BloodBankRequestForm />
+            <div style={{ marginTop: "1.25rem" }}>
+              <EmergencyBloodRequest />
+            </div>
 
             <div className={styles.vectorRail} aria-label="Blood bank illustrations">
               {bloodBankVectors.map((item, index) => (

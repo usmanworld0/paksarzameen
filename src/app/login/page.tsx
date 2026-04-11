@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth/next";
-import { ArrowRight, ShieldCheck } from "lucide-react";
 
-import { LoginWithGoogleButton } from "@/features/auth/components/LoginWithGoogleButton";
+import { LoginForm } from "@/features/auth/components/LoginForm";
 import { authOptions } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Login",
-  description: "Sign in with Google to upload artwork to the customer gallery.",
+  description: "Secure email and password sign-in for protected Paksarzameen pages.",
 };
 
 type LoginPageProps = {
@@ -16,64 +15,40 @@ type LoginPageProps = {
 };
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
+  const params = await searchParams;
+  const callbackUrl = params.callbackUrl ?? "/dashboard";
   const session = await getServerSession(authOptions);
 
   if (session?.user?.id) {
-    redirect("/upload-art");
+    redirect(callbackUrl);
   }
 
-  const params = await searchParams;
-  const callbackUrl = params.callbackUrl ?? "/upload-art";
-
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(15,122,71,0.14),_transparent_34%),linear-gradient(180deg,_#f7fbf8_0%,_#eef5ef_100%)] px-4 py-16 sm:px-6 lg:px-8">
-      <section className="mx-auto grid min-h-[calc(100vh-8rem)] max-w-6xl overflow-hidden rounded-[2rem] border border-white/60 bg-white/85 shadow-[0_30px_120px_rgba(6,33,18,0.12)] backdrop-blur-2xl lg:grid-cols-[1.1fr_0.9fr]">
-        <div className="relative flex items-end overflow-hidden bg-psz-green p-10 text-white sm:p-14">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.2),_transparent_35%),radial-gradient(circle_at_bottom_left,_rgba(255,255,255,0.08),_transparent_28%)]" />
-          <div className="relative z-10 max-w-xl space-y-6">
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em]">
-              <ShieldCheck className="h-4 w-4" />
-              Customer Art Gallery
-            </div>
-            <div className="space-y-3">
-              <h1 className="text-4xl font-semibold tracking-tight sm:text-6xl">
-                Sign in to submit your artwork.
+    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(16,99,62,0.22),_transparent_42%),linear-gradient(160deg,_#f6fbf7_0%,_#edf5ef_52%,_#e8f0ea_100%)] px-4 py-14 sm:px-6 lg:px-10">
+      <section className="mx-auto grid min-h-[calc(100vh-7rem)] max-w-6xl overflow-hidden rounded-[2rem] border border-emerald-100/70 bg-white/70 shadow-[0_34px_120px_rgba(4,45,29,0.15)] backdrop-blur-2xl lg:grid-cols-[1.05fr_0.95fr]">
+        <div className="relative overflow-hidden bg-[linear-gradient(140deg,#0d6b41_0%,#0c5636_100%)] p-8 text-white sm:p-12 lg:p-14">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_22%_18%,rgba(255,255,255,0.22),transparent_38%),radial-gradient(circle_at_80%_78%,rgba(152,255,198,0.2),transparent_36%)]" />
+          <div className="relative z-10 flex h-full flex-col justify-between gap-6">
+            <div className="space-y-4">
+              <p className="inline-flex rounded-full border border-white/25 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em]">
+                Secure Portal
+              </p>
+              <h1 className="max-w-lg text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl">
+                Sign in with email and password.
               </h1>
-              <p className="max-w-lg text-base leading-7 text-white/78 sm:text-lg">
-                Use your Google account to upload art, keep your submissions
-                linked to your profile, and track pending approvals from one
-                place.
+              <p className="max-w-lg text-base leading-7 text-emerald-50/90 sm:text-lg">
+                Access your blood bank dashboard, manage your donor profile, and respond to emergency requests.
               </p>
             </div>
-            <div className="flex items-center gap-3 text-sm text-white/80">
-              <ArrowRight className="h-4 w-4" />
-              Protected uploads, review workflow, and personal gallery history.
+
+            <div className="rounded-2xl border border-white/20 bg-white/10 p-5 text-sm leading-6 text-emerald-50/90">
+              Passwords are hashed with bcrypt and private routes are protected with JWT sessions.
             </div>
           </div>
         </div>
 
-        <div className="flex items-center justify-center px-6 py-12 sm:px-12">
-          <div className="w-full max-w-md space-y-8">
-            <div className="space-y-3 text-center">
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-psz-green">
-                Google Authentication
-              </p>
-              <h2 className="text-3xl font-semibold tracking-tight text-psz-black">
-                Welcome back
-              </h2>
-              <p className="text-sm leading-6 text-neutral-600">
-                Authenticate once and use the same session for uploads and your
-                personal gallery.
-              </p>
-            </div>
-
-            <LoginWithGoogleButton callbackUrl={callbackUrl} />
-
-            <div className="rounded-2xl border border-neutral-200 bg-neutral-50 px-4 py-4 text-sm leading-6 text-neutral-600">
-              After login, you will be redirected to the protected upload page
-              where you can submit artwork for review.
-            </div>
-          </div>
+        <div className="flex items-center justify-center px-5 py-10 sm:px-10">
+          <LoginForm callbackUrl={callbackUrl} />
         </div>
       </section>
     </main>

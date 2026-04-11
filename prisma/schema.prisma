@@ -11,6 +11,8 @@ model User {
   id            String    @id @default(uuid()) @db.Uuid
   name          String?
   email         String?   @unique
+  passwordHash  String?   @map("password_hash")
+  role          UserRole  @default(donor)
   emailVerified DateTime? @map("email_verified")
   image         String?
   createdAt     DateTime   @default(now()) @map("created_at")
@@ -19,8 +21,16 @@ model User {
   accounts Account[]
   sessions Session[]
   images   Image[]
+  profile  UserProfile?
+  passwordResetTokens PasswordResetToken[]
 
   @@map("users")
+}
+
+enum UserRole {
+  donor
+  admin
+  hospital
 }
 
 model Account {
@@ -90,4 +100,48 @@ model Image {
   @@index([userId, approved])
   @@index([approved, createdAt])
   @@map("images")
+}
+
+model OtpCode {
+  id        String   @id @default(uuid()) @db.Uuid
+  email     String
+  otp       String
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([email, createdAt])
+  @@index([expiresAt])
+  @@map("otp_codes")
+}
+
+model UserProfile {
+  userId             String    @id @map("user_id") @db.Uuid
+  phone              String?
+  city               String?
+  bloodGroup         String?   @map("blood_group")
+  availabilityStatus String    @default("unavailable") @map("availability_status")
+  lastDonationDate   DateTime? @map("last_donation_date")
+  emergencyContact   String?   @map("emergency_contact")
+  profileImage       String?   @map("profile_image")
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([city, bloodGroup, availabilityStatus])
+  @@map("user_profile")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  tokenHash String   @map("token_hash")
+  expiresAt DateTime @map("expires_at")
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, used, expiresAt])
+  @@map("password_reset_tokens")
 }

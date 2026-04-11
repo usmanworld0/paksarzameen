@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Sora } from "next/font/google";
+import { Manrope, Outfit } from "next/font/google";
 
 import { Navbar } from "@/components/header/Navbar";
 import { Footer } from "@/components/footer/Footer";
@@ -9,13 +9,13 @@ import { siteConfig } from "@/config/site";
 
 import "./globals.css";
 
-const inter = Inter({
+const manrope = Manrope({
   variable: "--font-body",
   subsets: ["latin"],
   display: "swap",
 });
 
-const sora = Sora({
+const outfit = Outfit({
   variable: "--font-display",
   subsets: ["latin"],
   display: "swap",
@@ -152,7 +152,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(siteSchema) }}
         />
       </head>
-      <body className={`${inter.variable} ${sora.variable} antialiased`}>
+      <body className={`${manrope.variable} ${outfit.variable} antialiased`}>
         <Providers>
           <div className="app-boot-loader" aria-hidden="true">
             <div className="app-boot-loader__spinner" />

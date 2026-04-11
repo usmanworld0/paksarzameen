@@ -149,5 +149,52 @@ ON images (user_id, approved);
 CREATE INDEX IF NOT EXISTS images_approved_created_at_idx
 ON images (approved, created_at DESC);
 
+-- PSZ Main Web (Email OTP Authentication)
+CREATE TABLE IF NOT EXISTS otp_codes (
+	id uuid PRIMARY KEY,
+	email text NOT NULL,
+	otp text NOT NULL,
+	expires_at timestamptz NOT NULL,
+	created_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS otp_codes_email_created_at_idx
+ON otp_codes (email, created_at DESC);
+
+CREATE INDEX IF NOT EXISTS otp_codes_expires_at_idx
+ON otp_codes (expires_at);
+
+-- PSZ Main Web (Email/Password Auth + User Management)
+ALTER TABLE users ADD COLUMN IF NOT EXISTS password_hash text;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS role text NOT NULL DEFAULT 'donor';
+
+CREATE TABLE IF NOT EXISTS user_profile (
+	user_id uuid PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+	phone text,
+	city text,
+	blood_group text,
+	availability_status text NOT NULL DEFAULT 'unavailable',
+	last_donation_date timestamptz,
+	emergency_contact text,
+	profile_image text,
+	created_at timestamptz NOT NULL DEFAULT now(),
+	updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS user_profile_city_blood_group_availability_idx
+ON user_profile (city, blood_group, availability_status);
+
+CREATE TABLE IF NOT EXISTS password_reset_tokens (
+	id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+	user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+	token_hash text NOT NULL,
+	expires_at timestamptz NOT NULL,
+	used boolean NOT NULL DEFAULT false,
+	created_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS password_reset_tokens_user_used_expiry_idx
+ON password_reset_tokens (user_id, used, expires_at);
+
 -- Paksarzameen Store (Google Auth + Gallery parity)
 -- The store app now uses the same auth and gallery table set as the main app.

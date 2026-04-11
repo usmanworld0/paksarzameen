@@ -49,37 +49,37 @@ export default function ContactPage() {
         <div className="pointer-events-none absolute right-[-5rem] top-10 h-80 w-80 rounded-full bg-[#2ea874]/18 blur-3xl" />
         <div className="pointer-events-none absolute bottom-[-5.5rem] left-[30%] h-72 w-72 rounded-full bg-[#74c498]/16 blur-3xl" />
 
-        <header className="relative z-10 mx-auto w-full max-w-screen-xl px-[5%] pb-14 pt-28 sm:pb-16 sm:pt-32 lg:pt-36">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#1f8f63]">
+        <header className="relative z-10 mx-auto w-full max-w-screen-xl px-[5%] pb-10 pt-22 sm:pb-16 sm:pt-32 lg:pt-36">
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#1f8f63] sm:text-sm sm:tracking-[0.24em]">
             Contact
           </p>
-          <h1 className="mt-3 max-w-4xl font-heading text-4xl font-bold tracking-tight text-[#173429] sm:text-5xl lg:text-6xl">
+          <h1 className="mt-3 max-w-4xl font-heading text-3xl font-bold tracking-tight text-[#173429] sm:text-5xl lg:text-6xl">
             Contact PakSarZameen
           </h1>
-          <p className="mt-4 max-w-3xl text-lg leading-relaxed text-[#496257]">
+          <p className="mt-4 max-w-3xl text-[1.45rem] leading-relaxed text-[#496257] sm:text-lg">
             Connect with our team in Bahawalpur for volunteering, partnerships,
             blood bank coordination, media inquiries, and community development
             initiatives across Pakistan.
           </p>
 
-          <div className="mt-7 flex flex-wrap gap-2.5">
-            <span className="inline-flex items-center rounded-full border border-white/75 bg-white/88 px-5 py-2.5 text-sm font-semibold uppercase tracking-[0.1em] text-[#355246] shadow-[0_8px_20px_rgba(38,85,62,0.12)]">
+          <div className="mt-5 flex flex-wrap gap-2 sm:mt-7 sm:gap-2.5">
+            <span className="inline-flex items-center rounded-full border border-white/75 bg-white/88 px-4 py-2 text-[1.1rem] font-semibold uppercase tracking-[0.08em] text-[#355246] shadow-[0_8px_20px_rgba(38,85,62,0.12)] sm:px-5 sm:py-2.5 sm:text-sm sm:tracking-[0.1em]">
               Community Support
             </span>
-            <span className="inline-flex items-center rounded-full border border-white/75 bg-white/88 px-5 py-2.5 text-sm font-semibold uppercase tracking-[0.1em] text-[#355246] shadow-[0_8px_20px_rgba(38,85,62,0.12)]">
+            <span className="inline-flex items-center rounded-full border border-white/75 bg-white/88 px-4 py-2 text-[1.1rem] font-semibold uppercase tracking-[0.08em] text-[#355246] shadow-[0_8px_20px_rgba(38,85,62,0.12)] sm:px-5 sm:py-2.5 sm:text-sm sm:tracking-[0.1em]">
               Partnership Desk
             </span>
-            <span className="inline-flex items-center rounded-full border border-white/75 bg-white/88 px-5 py-2.5 text-sm font-semibold uppercase tracking-[0.1em] text-[#355246] shadow-[0_8px_20px_rgba(38,85,62,0.12)]">
+            <span className="inline-flex items-center rounded-full border border-white/75 bg-white/88 px-4 py-2 text-[1.1rem] font-semibold uppercase tracking-[0.08em] text-[#355246] shadow-[0_8px_20px_rgba(38,85,62,0.12)] sm:px-5 sm:py-2.5 sm:text-sm sm:tracking-[0.1em]">
               Emergency Coordination
             </span>
           </div>
         </header>
       </section>
 
-      <main className="mx-auto w-full max-w-screen-xl px-[5%] py-16 sm:py-20">
+      <main className="mx-auto w-full max-w-screen-xl px-[5%] py-12 sm:py-20">
       <section className="grid gap-6 lg:grid-cols-2">
-        <article className="rounded-3xl border border-[#d0e1d8] bg-[linear-gradient(165deg,rgba(255,255,255,0.98),rgba(245,251,247,0.94))] p-6 shadow-[0_14px_34px_rgba(35,98,72,0.12)] sm:p-7">
-          <h2 className="font-heading text-[1.75rem] font-semibold text-[#1a3a2e]">
+        <article className="rounded-3xl border border-[#d0e1d8] bg-[linear-gradient(165deg,rgba(255,255,255,0.98),rgba(245,251,247,0.94))] p-5 shadow-[0_14px_34px_rgba(35,98,72,0.12)] sm:p-7">
+          <h2 className="font-heading text-[1.55rem] font-semibold text-[#1a3a2e] sm:text-[1.75rem]">
             Phone
           </h2>
           <p className="mt-3 break-words text-base leading-relaxed text-[#4f665c]">
@@ -91,7 +91,7 @@ export default function ContactPage() {
             </a>
           </p>
 
-          <h2 className="mt-6 font-heading text-[1.75rem] font-semibold text-[#1a3a2e]">
+          <h2 className="mt-6 font-heading text-[1.55rem] font-semibold text-[#1a3a2e] sm:text-[1.75rem]">
             Address
           </h2>
           <address className="mt-3 not-italic text-base leading-relaxed text-[#4f665c]">
@@ -100,7 +100,7 @@ export default function ContactPage() {
             ))}
           </address>
 
-          <h2 className="mt-6 font-heading text-[1.75rem] font-semibold text-[#1a3a2e]">
+          <h2 className="mt-6 font-heading text-[1.55rem] font-semibold text-[#1a3a2e] sm:text-[1.75rem]">
             Email
           </h2>
           <p className="mt-3 break-words text-base leading-relaxed text-[#4f665c]">
@@ -112,7 +112,7 @@ export default function ContactPage() {
             </a>
           </p>
 
-          <h2 className="mt-6 font-heading text-[1.75rem] font-semibold text-[#1a3a2e]">
+          <h2 className="mt-6 font-heading text-[1.55rem] font-semibold text-[#1a3a2e] sm:text-[1.75rem]">
             Emergency Contacts
           </h2>
           <ul className="mt-3 space-y-2 text-base leading-relaxed text-[#4f665c]">
@@ -126,8 +126,8 @@ export default function ContactPage() {
           </ul>
         </article>
 
-        <article className="rounded-3xl border border-[#d0e1d8] bg-[linear-gradient(165deg,rgba(255,255,255,0.98),rgba(245,251,247,0.94))] p-6 shadow-[0_14px_34px_rgba(35,98,72,0.12)] sm:p-7">
-          <h2 className="font-heading text-[1.75rem] font-semibold text-[#1a3a2e]">
+        <article className="rounded-3xl border border-[#d0e1d8] bg-[linear-gradient(165deg,rgba(255,255,255,0.98),rgba(245,251,247,0.94))] p-5 shadow-[0_14px_34px_rgba(35,98,72,0.12)] sm:p-7">
+          <h2 className="font-heading text-[1.55rem] font-semibold text-[#1a3a2e] sm:text-[1.75rem]">
             Social Profiles
           </h2>
           <ul className="mt-4 space-y-3 text-base text-[#4f665c]">
@@ -173,7 +173,7 @@ export default function ContactPage() {
             </li>
           </ul>
 
-          <h2 className="mt-6 font-heading text-[1.75rem] font-semibold text-[#1a3a2e]">
+          <h2 className="mt-6 font-heading text-[1.55rem] font-semibold text-[#1a3a2e] sm:text-[1.75rem]">
             Quick Links
           </h2>
           <p className="mt-3 flex flex-wrap gap-x-3 gap-y-2 text-base text-[#4f665c]">
@@ -195,8 +195,8 @@ export default function ContactPage() {
           </p>
         </article>
 
-        <article className="rounded-3xl border border-[#d0e1d8] bg-[linear-gradient(165deg,rgba(255,255,255,0.98),rgba(245,251,247,0.94))] p-6 shadow-[0_14px_34px_rgba(35,98,72,0.12)] sm:p-7 lg:col-span-2">
-          <h2 className="font-heading text-[1.75rem] font-semibold text-[#1a3a2e]">
+        <article className="rounded-3xl border border-[#d0e1d8] bg-[linear-gradient(165deg,rgba(255,255,255,0.98),rgba(245,251,247,0.94))] p-5 shadow-[0_14px_34px_rgba(35,98,72,0.12)] sm:p-7 lg:col-span-2">
+          <h2 className="font-heading text-[1.55rem] font-semibold text-[#1a3a2e] sm:text-[1.75rem]">
             Send a Message
           </h2>
           <p className="mt-3 text-base text-[#4f665c]">

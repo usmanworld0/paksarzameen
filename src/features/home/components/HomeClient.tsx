@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useCallback, useState } from "react";
+import { useEffect, useRef, useCallback, useState, type TouchEvent } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
@@ -65,6 +65,8 @@ export function HomeClient() {
   const [isCoverHovered, setIsCoverHovered] = useState(false);
   const [isCoverPlaying, setIsCoverPlaying] = useState(false);
   const coverVideoRef = useRef<HTMLVideoElement | null>(null);
+  const heartTouchStartX = useRef<number | null>(null);
+  const heartTouchDeltaX = useRef(0);
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -105,6 +107,38 @@ export function HomeClient() {
     }
     setActiveHeartSlide((prev) => (prev - 1 + totalHeartSlides) % totalHeartSlides);
   }, [totalHeartSlides]);
+
+  const onHeartTouchStart = useCallback((event: TouchEvent<HTMLDivElement>) => {
+    heartTouchStartX.current = event.touches[0]?.clientX ?? null;
+    heartTouchDeltaX.current = 0;
+  }, []);
+
+  const onHeartTouchMove = useCallback((event: TouchEvent<HTMLDivElement>) => {
+    if (heartTouchStartX.current === null) {
+      return;
+    }
+    const currentX = event.touches[0]?.clientX;
+    if (typeof currentX !== "number") {
+      return;
+    }
+    heartTouchDeltaX.current = currentX - heartTouchStartX.current;
+  }, []);
+
+  const onHeartTouchEnd = useCallback(() => {
+    if (heartTouchStartX.current === null) {
+      return;
+    }
+
+    const threshold = 42;
+    if (heartTouchDeltaX.current <= -threshold) {
+      goToNextHeartSlide();
+    } else if (heartTouchDeltaX.current >= threshold) {
+      goToPrevHeartSlide();
+    }
+
+    heartTouchStartX.current = null;
+    heartTouchDeltaX.current = 0;
+  }, [goToNextHeartSlide, goToPrevHeartSlide]);
 
   const revealHeroText = useCallback(() => {
     gsap.set(".hero-label", { opacity: 1, y: 0 });
@@ -594,6 +628,14 @@ export function HomeClient() {
     const dots = Array.from(section.querySelectorAll(".prog-dot")) as HTMLElement[];
     if (!cards.length) return;
 
+    const isMobileProgramsView =
+      typeof window !== "undefined" && window.matchMedia("(max-width: 768px)").matches;
+    if (isMobileProgramsView) {
+      gsap.set(cards, { clearProps: "all" });
+      gsap.set(dots, { clearProps: "all" });
+      return;
+    }
+
     // Initial state — all cards hidden below with blur + tilt
     gsap.set(cards, {
       y: "110%",
@@ -713,10 +755,7 @@ export function HomeClient() {
     let heroSafetyTimeout: ReturnType<typeof setTimeout> | null = null;
     let mobileFallbackCleanup: (() => void) | null = null;
 
-    const isMobileLite =
-      window.matchMedia("(max-width: 1024px)").matches ||
-      window.matchMedia("(pointer: coarse)").matches ||
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const isMobileLite = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     if (isMobileLite) {
       document.documentElement.classList.add("motion-lite");
@@ -1249,7 +1288,14 @@ export function HomeClient() {
         </div>
 
         <div className="heart-half heart-half-bottom">
-          <div className="heart-bottom-carousel-window" aria-live="polite">
+          <div
+            className="heart-bottom-carousel-window"
+            aria-live="polite"
+            onTouchStart={onHeartTouchStart}
+            onTouchMove={onHeartTouchMove}
+            onTouchEnd={onHeartTouchEnd}
+            onTouchCancel={onHeartTouchEnd}
+          >
             <div
               className="heart-bottom-carousel-track"
               style={{ transform: `translate3d(-${activeHeartSlide * 100}%, 0, 0)` }}

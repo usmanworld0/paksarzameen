@@ -539,8 +539,29 @@
 }
 
 @media (max-width: 640px) {
+  .page {
+    padding: 0.85rem 0 3rem;
+  }
+
   .container {
     width: min(96vw, 96vw);
+  }
+
+  .breadcrumb {
+    margin-bottom: 0.8rem;
+    font-size: 0.78rem;
+    gap: 0.25rem;
+  }
+
+  .hero,
+  .storySection,
+  .outcomeSection,
+  .gallerySection,
+  .mediaSection,
+  .hopeSection,
+  .linksSection,
+  .closure {
+    margin-top: 1rem;
   }
 
   .title {
@@ -548,13 +569,93 @@
     max-width: 16ch;
   }
 
+  .lead {
+    margin-top: 0.9rem;
+    font-size: 0.95rem;
+    line-height: 1.64;
+  }
+
+  .summary {
+    margin-top: 0.6rem;
+    font-size: 0.9rem;
+    line-height: 1.62;
+  }
+
+  .pillRow {
+    margin-top: 0.95rem;
+    gap: 0.55rem;
+  }
+
+  .pill {
+    min-width: 0;
+    width: calc(50% - 0.3rem);
+    border-radius: 14px;
+    padding: 0.64rem 0.72rem;
+  }
+
+  .actionRow {
+    margin-top: 0.95rem;
+    width: 100%;
+    gap: 0.55rem;
+  }
+
+  .buttonPrimary,
+  .buttonSecondary {
+    width: 100%;
+    min-height: 2.6rem;
+    padding: 0.62rem 0.95rem;
+  }
+
   .heroImageFrame {
     min-height: 42vh;
+  }
+
+  .factCard {
+    border-radius: 14px;
+    padding: 0.74rem;
+  }
+
+  .chapterCard,
+  .outcomeSection,
+  .mediaItem,
+  .hopeCard,
+  .linkCard,
+  .closure {
+    border-radius: 16px;
+  }
+
+  .chapterCard,
+  .outcomeSection,
+  .hopeCard,
+  .linkCard,
+  .closure {
+    padding: 0.8rem;
   }
 
   .sectionHeading h2,
   .sectionHeadingCompact h2,
   .closure h2 {
     font-size: clamp(1.5rem, 8vw, 2.1rem);
+  }
+
+  .sectionHeadingCompact p,
+  .chapterCard p,
+  .outcomeList li,
+  .closure > p {
+    line-height: 1.56;
+  }
+}
+
+@media (max-width: 420px) {
+  .container {
+    width: min(95vw, 95vw);
+  }
+
+  .title {
+    font-size: clamp(1.9rem, 9.4vw, 2.6rem);
+  }
+
+  .pill {
+    width: 100%;
   }
 }

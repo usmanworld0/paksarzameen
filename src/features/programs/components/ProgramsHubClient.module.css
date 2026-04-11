@@ -273,42 +273,104 @@
 
 @media (max-width: 760px) {
   .section {
+    width: min(100%, 100vw);
+    padding-inline: 1.2rem;
     padding-bottom: 4.2rem;
   }
 
   .heroContent {
     max-width: none;
+    gap: 0.8rem;
+  }
+
+  .title {
+    font-size: clamp(2.2rem, 8.8vw, 3.5rem);
+  }
+
+  .description {
+    font-size: 0.98rem;
+    line-height: 1.62;
+  }
+
+  .controls {
+    border-radius: 16px;
+    padding: 0.85rem;
+  }
+
+  .searchInput {
+    min-height: 3rem;
+  }
+
+  .categoryRow {
+    gap: 0.5rem;
+  }
+
+  .categoryButton {
+    font-size: 0.66rem;
+    letter-spacing: 0.12em;
+    padding: 0.52rem 0.72rem;
   }
 
   .heroOrbit {
-    min-height: 36rem;
+    min-height: auto;
+    display: grid;
+    gap: 0.72rem;
     overflow: visible;
   }
 
+  .heroOrbitGlow,
   .heroOrbitRing {
-    inset: 6% 0 6% 25%;
+    display: none;
   }
 
   .heroOrbitItem {
-    width: min(20.4rem, 76vw);
-    min-height: 10.3rem;
-    grid-template-columns: 5.2rem 1fr;
+    position: relative;
+    top: auto !important;
+    right: auto !important;
+    width: 100%;
+    min-height: 9.2rem;
+    grid-template-columns: 4.6rem 1fr;
+    border-radius: 20px;
+    padding: 0.8rem;
+    transform: none !important;
+    animation: none;
   }
 
   .heroOrbitBadge {
-    width: 5.2rem;
-    height: 5.2rem;
+    width: 4.6rem;
+    height: 4.6rem;
   }
 
   .heroOrbitItem:nth-child(2),
   .heroOrbitItem:nth-child(4),
   .heroOrbitItem:nth-child(5) {
-    transform: translateX(0) rotate(0deg);
+    transform: none;
   }
 
   .emptyState {
-    left: 7%;
-    right: 7%;
-    top: 50%;
+    position: relative;
+    left: auto;
+    right: auto;
+    top: auto;
+    transform: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .section {
+    padding-inline: 0.9rem;
+    padding-bottom: 3.6rem;
+  }
+
+  .title {
+    font-size: clamp(2rem, 8.4vw, 3rem);
+  }
+
+  .heroOrbitText p {
+    font-size: 0.86rem;
+  }
+
+  .heroOrbitText span {
+    font-size: 0.62rem;
   }
 }

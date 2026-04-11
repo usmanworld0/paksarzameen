@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, Loader2, Upload, X } from "lucide-react";
+import { ArrowLeft, ChevronDown, Loader2, Upload, X } from "lucide-react";
 import type { CustomizationOption } from "@prisma/client";
 import { formatRegionalPrice } from "@/lib/pricing";
 import { parseCustomizationOptions } from "@/lib/customizations";
@@ -57,6 +57,7 @@ export function CategoryCustomizationPanel({
   const [referenceImageName, setReferenceImageName] = useState("");
   const [referenceNotes, setReferenceNotes] = useState("");
   const [uploadingReferenceImage, setUploadingReferenceImage] = useState(false);
+  const [expandedGroupKey, setExpandedGroupKey] = useState<string | null>(null);
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
   const referenceInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -96,6 +97,18 @@ export function CategoryCustomizationPanel({
       ),
     [selections]
   );
+
+  useEffect(() => {
+    if (!selectedOption || selectedOption.fieldType !== "select") {
+      setExpandedGroupKey(null);
+      return;
+    }
+
+    const firstGroup = selectedOption.groups[0];
+    setExpandedGroupKey(
+      firstGroup ? `${selectedOption.id}::${firstGroup.label}` : null
+    );
+  }, [selectedOption]);
 
   useEffect(() => {
     if (!onBaseImageChange) return;
@@ -280,7 +293,7 @@ export function CategoryCustomizationPanel({
   if (parsedOptions.length === 0) return null;
 
   return (
-    <section className={embedded ? "space-y-6" : "mb-12 rounded-2xl border border-neutral-200 bg-neutral-50 p-7 sm:p-10"}>
+    <section className={embedded ? "space-y-5 sm:space-y-6" : "mb-10 rounded-2xl border border-neutral-200 bg-neutral-50 p-4 sm:mb-12 sm:p-7 lg:p-10"}>
       <div className="flex flex-col gap-3">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-400">
@@ -296,7 +309,7 @@ export function CategoryCustomizationPanel({
       </div>
 
       {!selectedOption ? (
-        <div className="mt-8 space-y-6">
+        <div className="mt-6 space-y-5 sm:mt-8 sm:space-y-6">
           <div className={embedded ? "grid grid-cols-1 gap-4" : "grid grid-cols-1 gap-5 md:grid-cols-2"}>
             {parsedOptions.map((option) => {
               const optionKeyPrefix = `${option.id}::`;
@@ -317,11 +330,11 @@ export function CategoryCustomizationPanel({
                   key={option.id}
                   type="button"
                   onClick={() => openOption(option.id)}
-                  className="rounded-2xl border border-neutral-200 bg-white p-6 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:border-neutral-900 hover:shadow-md"
+                  className="rounded-2xl border border-neutral-200 bg-white p-4 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:border-neutral-900 hover:shadow-md sm:p-6"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="text-lg font-semibold text-neutral-900 sm:text-xl">{option.name}</p>
+                      <p className="text-[1.05rem] font-semibold text-neutral-900 sm:text-xl">{option.name}</p>
                       <p className="mt-1 text-xs uppercase tracking-[0.18em] text-neutral-500">
                         {option.fieldType}
                         {option.required ? " • Required" : " • Optional"}
@@ -351,8 +364,8 @@ export function CategoryCustomizationPanel({
 
         </div>
       ) : (
-        <div className="mt-8 space-y-6">
-          <div className="flex items-center justify-between gap-3">
+        <div className="mt-6 space-y-5 sm:mt-8 sm:space-y-6">
+          <div className="flex flex-wrap items-center justify-between gap-3">
             <button
               type="button"
               onClick={backToOptions}
@@ -366,8 +379,8 @@ export function CategoryCustomizationPanel({
             </p>
           </div>
 
-          <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">
-            <div className="flex items-end justify-between gap-4 border-b border-neutral-200 pb-4">
+          <div className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm sm:p-6">
+            <div className="flex flex-col items-start justify-between gap-3 border-b border-neutral-200 pb-4 sm:flex-row sm:items-end sm:gap-4">
               <div>
                 <p className="text-[10px] uppercase tracking-[0.28em] text-neutral-400">
                   {selectedOption.required ? "Required" : "Optional"}
@@ -389,10 +402,21 @@ export function CategoryCustomizationPanel({
                 {selectedOption.groups.map((group) => {
                   const groupKey = `${selectedOption.id}::${group.label}`;
                   const selected = selections[groupKey]?.value;
+                  const isExpanded = expandedGroupKey === groupKey;
 
                   return (
                     <section key={groupKey} className="overflow-hidden rounded-[22px] border border-neutral-200 bg-white shadow-[0_10px_28px_rgba(0,0,0,0.04)]">
-                      <div className="flex items-center justify-between border-b border-neutral-200 px-5 py-4">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setExpandedGroupKey((previous) =>
+                            previous === groupKey ? null : groupKey
+                          )
+                        }
+                        className="flex w-full items-center justify-between gap-3 border-b border-neutral-200 px-5 py-4 text-left"
+                        aria-expanded={isExpanded}
+                        aria-controls={`${groupKey}-panel`}
+                      >
                         <div>
                           <p className="text-[10px] uppercase tracking-[0.28em] text-neutral-400">
                             {group.label}
@@ -401,11 +425,17 @@ export function CategoryCustomizationPanel({
                             {(group.required || selectedOption.required) ? "Required" : "Optional"}
                           </p>
                         </div>
-                        <div className="h-3.5 w-3.5 rounded-full border border-neutral-300" />
-                      </div>
+                        <div className="flex items-center gap-2">
+                          <ChevronDown
+                            className={`h-4 w-4 text-neutral-500 transition-transform duration-200 ${
+                              isExpanded ? "rotate-180" : "rotate-0"
+                            }`}
+                          />
+                        </div>
+                      </button>
 
-                      {group.fieldType === "select" ? (
-                        <div className="space-y-3 p-5">
+                      {isExpanded && group.fieldType === "select" ? (
+                        <div className="space-y-3 p-4 sm:p-5">
                           {group.values.map((value) => {
                             const isSelected = selected === value.value;
                             const hasImage = Boolean(value.image);
@@ -426,48 +456,36 @@ export function CategoryCustomizationPanel({
                                     },
                                   }))
                                 }
-                                className={`flex w-full items-stretch overflow-hidden rounded-[18px] border text-left transition-all duration-300 ${
+                                className={`flex w-full flex-col items-stretch overflow-hidden rounded-[18px] border text-left transition-all duration-300 sm:flex-row ${
                                   isSelected
-                                    ? "border-neutral-900 bg-neutral-50 shadow-[0_10px_24px_rgba(0,0,0,0.05)]"
+                                    ? "border-neutral-900 bg-white"
                                     : "border-neutral-200 bg-white hover:border-neutral-900"
                                 }`}
                               >
-                                <div className="relative h-[96px] w-[132px] shrink-0 bg-neutral-100">
+                                <div className="relative h-40 w-full shrink-0 bg-neutral-100 sm:h-[96px] sm:w-[116px] lg:w-[124px]">
                                   {hasImage ? (
                                     <Image
                                       src={value.image!}
                                       alt={value.label}
                                       fill
-                                      sizes="132px"
+                                      sizes="(max-width: 640px) 100vw, 132px"
                                       className="object-cover"
                                     />
                                   ) : null}
                                 </div>
 
-                                <div className="flex min-w-0 flex-1 items-center justify-between gap-4 px-4 py-4">
-                                  <div className="min-w-0">
-                                    <p className="truncate text-[1rem] font-normal tracking-[-0.02em] text-neutral-900">
+                                <div className="flex min-w-0 flex-1 items-center justify-between gap-3 px-3 py-3 sm:px-4 sm:py-4">
+                                  <div className="min-w-0 pr-1">
+                                    <p className="text-[0.95rem] font-normal leading-tight tracking-[-0.02em] text-neutral-900 whitespace-normal break-words sm:truncate sm:text-[1rem]">
                                       {value.label}
-                                    </p>
-                                    <p className="mt-1 text-[11px] uppercase tracking-[0.16em] text-neutral-500">
-                                      {isSelected ? "Selected" : "Choose option"}
                                     </p>
                                   </div>
 
-                                  <div className="flex flex-col items-end gap-1">
-                                    <span className="text-[0.78rem] uppercase tracking-[0.18em] text-neutral-500">
+                                  <div className="ml-2 flex shrink-0 flex-col items-end gap-1">
+                                    <span className="whitespace-nowrap text-[0.74rem] uppercase tracking-[0.16em] text-neutral-500 sm:text-[0.78rem]">
                                       {value.priceAdjustment === 0
                                         ? formatRegionalPrice(0, region)
                                         : `+${formatRegionalPrice(value.priceAdjustment, region)}`}
-                                    </span>
-                                    <span
-                                      className={`rounded-full border px-3 py-1 text-[10px] uppercase tracking-[0.18em] ${
-                                        isSelected
-                                          ? "border-neutral-900 bg-neutral-900 text-white"
-                                          : "border-neutral-200 bg-white text-neutral-500"
-                                      }`}
-                                    >
-                                      {isSelected ? "Active" : "Select"}
                                     </span>
                                   </div>
                                 </div>
@@ -475,7 +493,7 @@ export function CategoryCustomizationPanel({
                             );
                           })}
                         </div>
-                      ) : group.fieldType === "textarea" ? (
+                      ) : isExpanded && group.fieldType === "textarea" ? (
                         <textarea
                           value={selected ?? ""}
                           onChange={(event) => {
@@ -503,9 +521,9 @@ export function CategoryCustomizationPanel({
                             });
                           }}
                           placeholder={group.placeholder || `Enter ${group.label.toLowerCase()}`}
-                          className="min-h-[120px] w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 text-base text-neutral-900 outline-none transition-colors focus:border-neutral-900"
+                          className="min-h-[120px] w-full rounded-lg border border-neutral-200 bg-white px-3 py-3 text-[15px] text-neutral-900 outline-none transition-colors focus:border-neutral-900 sm:px-4 sm:text-base"
                         />
-                      ) : group.fieldType === "image" ? (
+                      ) : isExpanded && group.fieldType === "image" ? (
                         <div className="space-y-2">
                           {selected ? (
                             <div className="relative h-40 w-full overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100">
@@ -562,7 +580,7 @@ export function CategoryCustomizationPanel({
                             }}
                           />
                         </div>
-                      ) : (
+                      ) : isExpanded ? (
                         <input
                           type={group.fieldType === "number" ? "number" : "text"}
                           min={group.fieldType === "number" ? group.min : undefined}
@@ -593,9 +611,9 @@ export function CategoryCustomizationPanel({
                             });
                           }}
                           placeholder={group.placeholder || `Enter ${group.label.toLowerCase()}`}
-                          className="h-12 w-full rounded-lg border border-neutral-200 bg-white px-4 text-base text-neutral-900 outline-none transition-colors focus:border-neutral-900"
+                          className="h-11 w-full rounded-lg border border-neutral-200 bg-white px-3 text-[15px] text-neutral-900 outline-none transition-colors focus:border-neutral-900 sm:h-12 sm:px-4 sm:text-base"
                         />
-                      )}
+                      ) : null}
                     </section>
                   );
                 })}
@@ -637,7 +655,7 @@ export function CategoryCustomizationPanel({
                           selectedOption.placeholder ||
                           `Enter ${selectedOption.name.toLowerCase()}`
                         }
-                        className="min-h-[120px] w-full rounded-lg border border-neutral-200 bg-white px-4 py-3 text-base text-neutral-900 outline-none transition-colors focus:border-neutral-900"
+                        className="min-h-[120px] w-full rounded-lg border border-neutral-200 bg-white px-3 py-3 text-[15px] text-neutral-900 outline-none transition-colors focus:border-neutral-900 sm:px-4 sm:text-base"
                       />
                     );
                   }
@@ -651,7 +669,7 @@ export function CategoryCustomizationPanel({
                         value={currentValue}
                         onChange={(event) => updateValue(event.target.value)}
                         placeholder={selectedOption.placeholder || "Enter number"}
-                        className="h-12 w-full rounded-lg border border-neutral-200 bg-white px-4 text-base text-neutral-900 outline-none transition-colors focus:border-neutral-900"
+                        className="h-11 w-full rounded-lg border border-neutral-200 bg-white px-3 text-[15px] text-neutral-900 outline-none transition-colors focus:border-neutral-900 sm:h-12 sm:px-4 sm:text-base"
                       />
                     );
                   }
@@ -665,7 +683,7 @@ export function CategoryCustomizationPanel({
                         selectedOption.placeholder ||
                         `Enter ${selectedOption.name.toLowerCase()}`
                       }
-                      className="h-12 w-full rounded-lg border border-neutral-200 bg-white px-4 text-base text-neutral-900 outline-none transition-colors focus:border-neutral-900"
+                      className="h-11 w-full rounded-lg border border-neutral-200 bg-white px-3 text-[15px] text-neutral-900 outline-none transition-colors focus:border-neutral-900 sm:h-12 sm:px-4 sm:text-base"
                     />
                   );
                 })()}

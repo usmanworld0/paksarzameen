@@ -43,7 +43,7 @@ export default async function CustomizationsPage({
       <main className="pt-[72px]">
         <section className="store-section">
           <div className="store-container">
-            <div className="mb-8 border-b border-[#e6d9cf] pb-6">
+            <div className="mb-6 border-b border-[#e6d9cf] pb-5 sm:mb-8 sm:pb-6">
               <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[#2c3d31]/80">
                 Bespoke Orders
               </p>
@@ -61,9 +61,9 @@ export default async function CustomizationsPage({
               </div>
             ) : (
               <>
-                <nav className="mb-8 overflow-x-auto border-b border-[#e8dbd0]">
+                <nav className="mb-6 overflow-x-auto border-b border-[#e8dbd0] sm:mb-8">
                   <div className="flex justify-center">
-                    <ul className="min-w-max flex items-center gap-8 px-4 whitespace-nowrap">
+                    <ul className="min-w-max flex items-center gap-5 px-3 whitespace-nowrap sm:gap-8 sm:px-4">
                     {customizableCategories.map((category) => {
                       const isActive = selectedCategory?.slug === category.slug;
 
@@ -71,7 +71,7 @@ export default async function CustomizationsPage({
                         <li key={category.id}>
                           <Link
                             href={`/customizations?category=${category.slug}`}
-                            className={`relative inline-flex py-4 text-sm font-semibold uppercase tracking-[0.12em] transition-colors duration-200 ${
+                            className={`relative inline-flex py-3 text-xs font-semibold uppercase tracking-[0.12em] transition-colors duration-200 sm:py-4 sm:text-sm ${
                               isActive
                                 ? "text-neutral-900"
                                 : "text-neutral-500 hover:text-neutral-800"
@@ -121,7 +121,7 @@ export default async function CustomizationsPage({
                         );
                       })()}
 
-                      <div className="mx-auto mt-8 flex w-[75%] flex-col items-center text-center">
+                      <div className="mx-auto mt-6 flex w-full max-w-3xl flex-col items-center px-2 text-center sm:mt-8 sm:w-[75%] sm:px-0">
                         {selectedCategory.description ? (
                           <p className="mt-4 max-w-2xl text-sm leading-relaxed text-neutral-600 sm:text-base">
                             {selectedCategory.description}
@@ -143,10 +143,10 @@ export default async function CustomizationsPage({
                           ))}
                         </div>
 
-                        <div className="mt-8 flex justify-center">
+                        <div className="mt-7 flex w-full justify-center sm:mt-8">
                           <Link
                             href={`/customizations/${selectedCategory.slug}`}
-                            className="store-button-primary inline-flex min-h-11 items-center justify-center px-7"
+                            className="store-button-primary inline-flex min-h-11 w-full max-w-[320px] items-center justify-center px-7"
                           >
                             <span className="btn-label">Customize</span>
                             <span className="btn-icon" aria-hidden>

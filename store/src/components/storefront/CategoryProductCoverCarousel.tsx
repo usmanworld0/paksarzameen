@@ -53,12 +53,12 @@ export function CategoryProductCoverCarousel({
 
   return (
     <div className="flex w-full flex-col items-center">
-      <div className="relative h-[60vh] w-[75%] min-h-[260px] overflow-hidden rounded-[24px] bg-white">
+      <div className="relative h-[52vh] w-full min-h-[220px] overflow-hidden rounded-[20px] bg-white sm:h-[60vh] sm:min-h-[260px] sm:w-[75%] sm:rounded-[24px]">
         <Image
           src={slides[index].image}
           alt={`${slides[index].label} cover`}
           fill
-          sizes="75vw"
+          sizes="(max-width: 640px) 100vw, 75vw"
           className="object-cover"
           priority
         />
@@ -68,7 +68,7 @@ export function CategoryProductCoverCarousel({
             <button
               type="button"
               onClick={() => move(-1)}
-              className="absolute left-4 top-1/2 z-10 -translate-y-1/2 rounded-full border border-black/15 bg-white/90 px-3 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-neutral-800 shadow-sm"
+              className="absolute left-3 top-1/2 z-10 -translate-y-1/2 rounded-full border border-black/15 bg-white/90 px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-neutral-800 shadow-sm sm:left-4 sm:px-3 sm:py-2 sm:text-xs"
               aria-label="Show previous product cover"
             >
               Prev
@@ -77,7 +77,7 @@ export function CategoryProductCoverCarousel({
             <button
               type="button"
               onClick={() => move(1)}
-              className="absolute right-4 top-1/2 z-10 -translate-y-1/2 rounded-full border border-black/15 bg-white/90 px-3 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-neutral-800 shadow-sm"
+              className="absolute right-3 top-1/2 z-10 -translate-y-1/2 rounded-full border border-black/15 bg-white/90 px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-neutral-800 shadow-sm sm:right-4 sm:px-3 sm:py-2 sm:text-xs"
               aria-label="Show next product cover"
             >
               Next

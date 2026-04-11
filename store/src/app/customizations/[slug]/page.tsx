@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Navbar } from "@/components/storefront/Navbar";
 import { CategoryCustomizationConfigurator } from "@/components/storefront/CategoryCustomizationConfigurator";
 import { getCategoryBySlug } from "@/actions/categories";
 
@@ -38,12 +39,17 @@ export default async function CategoryCustomizationPage({
   }
 
   return (
-    <CategoryCustomizationConfigurator
-      categoryName={category.name}
-      categorySlug={category.slug}
-      categoryImage={category.image}
-      categoryProductCount={category._count.products}
-      options={category.customizationOptions}
-    />
+    <>
+      <Navbar />
+      <main className="pt-[72px]">
+        <CategoryCustomizationConfigurator
+          categoryName={category.name}
+          categorySlug={category.slug}
+          categoryImage={category.image}
+          categoryProductCount={category._count.products}
+          options={category.customizationOptions}
+        />
+      </main>
+    </>
   );
 }

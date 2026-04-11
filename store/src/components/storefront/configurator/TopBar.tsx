@@ -1,13 +1,9 @@
 "use client";
 
-import { ArrowLeft, FileText } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-type TopBarProps = {
-  onOpenSidebar?: () => void;
-};
-
-export function TopBar({ onOpenSidebar }: TopBarProps) {
+export function TopBar() {
   const router = useRouter();
 
   return (
@@ -16,34 +12,20 @@ export function TopBar({ onOpenSidebar }: TopBarProps) {
         <button
           type="button"
           onClick={() => router.back()}
-          className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.16em] text-neutral-700 transition-opacity hover:opacity-60"
+          className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.14em] text-neutral-700 transition-opacity hover:opacity-60 sm:gap-2 sm:text-[11px] sm:tracking-[0.16em]"
         >
-          <ArrowLeft className="h-4 w-4" />
-          Change Model
+          <ArrowLeft className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+          <span className="hidden sm:inline">Change Model</span>
+          <span className="sm:hidden">Back</span>
         </button>
 
         <div className="text-center">
-          <a href="/" className="block text-xl leading-none tracking-[-0.03em]">PSZ</a>
+          <a href="/" className="block text-lg leading-none tracking-[-0.03em] sm:text-xl">PSZ</a>
         </div>
 
-        <>
-          <button
-            type="button"
-            className="hidden items-center gap-2 text-[11px] uppercase tracking-[0.16em] text-neutral-700 transition-opacity hover:opacity-60 lg:inline-flex"
-          >
-            <FileText className="h-4 w-4" />
-            Summary
-          </button>
-
-          <button
-            type="button"
-            onClick={onOpenSidebar}
-            className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.16em] text-neutral-700 transition-opacity hover:opacity-60 lg:hidden"
-          >
-            <FileText className="h-4 w-4" />
-            Summary
-          </button>
-        </>
+        <span className="text-[10px] uppercase tracking-[0.2em] text-neutral-500 sm:text-[11px]">
+          Customizer
+        </span>
       </div>
     </header>
   );

@@ -77,6 +77,8 @@ export function CategoryCustomizationConfigurator({
       }
       hideBottomInfo
       immersive
+      useStoreNavbar
+      mobilePinnedPreview
     />
   );
 }

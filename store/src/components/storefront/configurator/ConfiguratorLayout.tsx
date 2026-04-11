@@ -27,6 +27,8 @@ type ConfiguratorLayoutProps = {
   sidebarContent?: ReactNode;
   hideBottomInfo?: boolean;
   immersive?: boolean;
+  useStoreNavbar?: boolean;
+  mobilePinnedPreview?: boolean;
 };
 
 export function ConfiguratorLayout({
@@ -41,8 +43,10 @@ export function ConfiguratorLayout({
   sidebarContent,
   hideBottomInfo = false,
   immersive = false,
+  useStoreNavbar = false,
+  mobilePinnedPreview = false,
 }: ConfiguratorLayoutProps) {
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [isPreviewExpanded, setIsPreviewExpanded] = useState(false);
 
   const renderSidebarContent = () => {
     if (sidebarContent) {
@@ -59,50 +63,66 @@ export function ConfiguratorLayout({
   };
 
   return (
-    <div className={`bg-white text-neutral-900 ${immersive ? "min-h-screen lg:h-screen lg:overflow-hidden" : "min-h-screen"}`}>
-      <TopBar onOpenSidebar={() => setMobileSidebarOpen(true)} />
+    <div
+      className={`bg-white text-neutral-900 ${
+        useStoreNavbar
+          ? "h-[calc(100svh-72px)] overflow-hidden"
+          : immersive
+          ? "min-h-screen lg:h-screen lg:overflow-hidden"
+          : "min-h-screen"
+      }`}
+    >
+      {!useStoreNavbar ? <TopBar /> : null}
 
       <div
-        className={`mx-auto grid w-full max-w-[1800px] lg:grid-cols-[7fr_3fr] ${
-          immersive ? "lg:h-[calc(100vh-72px)] lg:overflow-hidden" : "lg:min-h-[calc(100vh-72px-220px)]"
-        }`}
+        className={`mx-auto grid w-full max-w-[1800px] ${
+          mobilePinnedPreview
+            ? isPreviewExpanded
+              ? "h-full grid-rows-[1fr_0fr] lg:grid-cols-[1fr_0fr] lg:grid-rows-1"
+              : "h-full grid-rows-[minmax(220px,34svh)_1fr] lg:grid-cols-[7fr_3fr] lg:grid-rows-1"
+            : "lg:grid-cols-[7fr_3fr]"
+        } ${
+          useStoreNavbar
+            ? "h-full overflow-hidden"
+            : immersive
+            ? "lg:h-[calc(100vh-72px)] lg:overflow-hidden"
+            : "lg:min-h-[calc(100vh-72px-220px)]"
+        } transition-[grid-template-columns,grid-template-rows] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]`}
       >
-        <ProductPreview sceneSrc={sceneSrc} layers={layers} controls={controls} />
+        <ProductPreview
+          sceneSrc={sceneSrc}
+          layers={layers}
+          mobilePinned={mobilePinnedPreview}
+          isExpanded={isPreviewExpanded}
+          onToggleExpand={() => setIsPreviewExpanded((previous) => !previous)}
+        />
 
-        <aside className="hidden h-full overflow-y-auto border-l border-black/10 bg-white lg:block">
+        <aside
+          className={`bg-white lg:hidden ${
+            mobilePinnedPreview
+              ? isPreviewExpanded
+                ? "max-h-0 overflow-hidden border-t-0 opacity-0"
+                : "overflow-y-auto border-t border-black/10 opacity-100"
+              : "border-t border-black/10"
+          }`}
+          aria-hidden={isPreviewExpanded ? "true" : "false"}
+        >
+          {renderSidebarContent()}
+        </aside>
+
+        <aside
+          className={`hidden h-full overflow-y-auto border-l border-black/10 bg-white transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] lg:block ${
+            isPreviewExpanded
+              ? "translate-x-8 opacity-0 pointer-events-none"
+              : "translate-x-0 opacity-100"
+          }`}
+          aria-hidden={isPreviewExpanded ? "true" : "false"}
+        >
           {renderSidebarContent()}
         </aside>
       </div>
 
       {!hideBottomInfo && productName ? <BottomInfo productName={productName} specs={specs} /> : null}
-
-      <div
-        className={`fixed inset-0 z-[60] bg-black/35 transition-opacity lg:hidden ${
-          mobileSidebarOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
-        }`}
-        onClick={() => setMobileSidebarOpen(false)}
-      />
-
-      <div
-        className={`fixed right-0 top-0 z-[70] h-full w-[min(88vw,420px)] border-l border-black/10 bg-white shadow-[0_24px_60px_rgba(0,0,0,0.2)] transition-transform duration-300 lg:hidden ${
-          mobileSidebarOpen ? "translate-x-0" : "translate-x-full"
-        }`}
-      >
-        <div className="flex h-[72px] items-center justify-between border-b border-black/10 px-5">
-          <p className="text-[11px] uppercase tracking-[0.2em] text-neutral-500">Summary</p>
-          <button
-            type="button"
-            onClick={() => setMobileSidebarOpen(false)}
-            className="text-[11px] uppercase tracking-[0.16em] text-neutral-700"
-          >
-            Close
-          </button>
-        </div>
-
-        <div className="h-[calc(100%-72px)] overflow-y-auto">
-          {renderSidebarContent()}
-        </div>
-      </div>
     </div>
   );
 }

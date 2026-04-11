@@ -328,7 +328,7 @@ export function AddToCartButton({
                                   isSelected && "store-choice-active"
                                 )}
                               >
-                                <span>{value.label}</span>
+                                <span className="whitespace-normal break-words">{value.label}</span>
                                 <span className="ml-1.5">
                                   {value.priceAdjustment === 0
                                     ? formatRegionalPrice(0, product.region)

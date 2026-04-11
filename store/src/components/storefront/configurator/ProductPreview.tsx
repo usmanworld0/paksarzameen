@@ -1,19 +1,54 @@
 import Image from "next/image";
-import { Camera, RotateCcw, Sofa, Sun } from "lucide-react";
-import type { PreviewControl, PreviewLayer } from "./types";
+import { Maximize2, Minimize2 } from "lucide-react";
+import type { PreviewLayer } from "./types";
 
 type ProductPreviewProps = {
   sceneSrc: string;
   layers: PreviewLayer[];
-  controls: PreviewControl[];
+  mobilePinned?: boolean;
+  isExpanded?: boolean;
+  onToggleExpand?: () => void;
 };
 
-const CONTROL_ICONS = [Camera, RotateCcw, Sofa, Sun];
-
-export function ProductPreview({ sceneSrc, layers, controls }: ProductPreviewProps) {
+export function ProductPreview({
+  sceneSrc,
+  layers,
+  mobilePinned = false,
+  isExpanded = false,
+  onToggleExpand,
+}: ProductPreviewProps) {
   return (
-    <section className="relative flex-1 bg-[#efefed] p-4 sm:p-6 lg:p-8">
-      <div className="relative mx-auto aspect-[16/9] w-full max-w-[1220px] overflow-hidden border border-black/10 bg-white">
+    <section
+      className={`relative flex-1 bg-[#efefed] ${
+        mobilePinned ? "h-full p-2 sm:p-3 lg:p-8" : "p-3 sm:p-6 lg:p-8"
+      }`}
+    >
+      <div
+        className={`relative mx-auto w-full overflow-hidden border border-black/10 bg-white ${
+          mobilePinned
+            ? "h-full max-w-none"
+            : "aspect-[16/9] max-w-[1220px]"
+        }`}
+      >
+        <button
+          type="button"
+          onClick={onToggleExpand}
+          className="absolute right-3 top-3 z-20 inline-flex items-center gap-2 rounded-full border border-black/15 bg-white/92 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-neutral-800 shadow-sm backdrop-blur-sm transition-all duration-300 hover:border-black hover:bg-white"
+          aria-label={isExpanded ? "Show customization options" : "Expand preview"}
+        >
+          {isExpanded ? (
+            <>
+              <Minimize2 className="h-3.5 w-3.5" />
+              Options
+            </>
+          ) : (
+            <>
+              <Maximize2 className="h-3.5 w-3.5" />
+              Expand
+            </>
+          )}
+        </button>
+
         <Image
           src={sceneSrc}
           alt="Luxury background scene"
@@ -39,27 +74,7 @@ export function ProductPreview({ sceneSrc, layers, controls }: ProductPreviewPro
           ))}
         </div>
 
-        <div className="pointer-events-none absolute bottom-8 left-1/2 h-12 w-[44%] -translate-x-1/2 rounded-[50%] bg-black/20 blur-2xl" />
-
-        <div className="absolute bottom-5 left-5 flex items-center gap-2">
-          {controls.map((control, index) => {
-            const Icon = CONTROL_ICONS[index % CONTROL_ICONS.length];
-            return (
-              <button
-                key={control.id}
-                type="button"
-                className={`inline-flex h-10 w-10 items-center justify-center rounded-full border text-neutral-800 transition-all duration-300 ${
-                  control.active
-                    ? "border-black bg-black text-white shadow-[0_8px_20px_rgba(0,0,0,0.2)]"
-                    : "border-black/30 bg-white/94 hover:border-black hover:bg-white"
-                }`}
-                aria-label={control.label}
-              >
-                <Icon className="h-4 w-4" />
-              </button>
-            );
-          })}
-        </div>
+        <div className="pointer-events-none absolute bottom-6 left-1/2 h-10 w-[56%] -translate-x-1/2 rounded-[50%] bg-black/20 blur-2xl sm:bottom-8 sm:h-12 sm:w-[44%]" />
       </div>
     </section>
   );

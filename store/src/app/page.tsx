@@ -5,6 +5,7 @@ import { ProductCard } from "@/components/storefront/ProductCard";
 import { CategorySection } from "@/components/storefront/CategorySection";
 import { ArtistCard } from "@/components/storefront/ArtistCard";
 import Image from "next/image";
+import CategoryCoverVideo from "@/components/storefront/CategoryCoverVideo";
 import { getProducts } from "@/actions/products";
 import { getCategories } from "@/actions/categories";
 import { getArtists } from "@/actions/artists";
@@ -64,17 +65,7 @@ export default async function HomePage() {
 
         {artists.length > 0 && (
           <>
-            <section className="relative h-[100svh] w-full overflow-hidden bg-neutral-100">
-              <Image
-                src="/images/store/artisans-cover.jpg"
-                alt="Artisans cover"
-                fill
-                sizes="100vw"
-                className="object-cover"
-                quality={90}
-                priority={false}
-              />
-            </section>
+            <CategoryCoverVideo src="/videos/categories.mp4" webmSrc="/videos/categories.webm" poster="/videos/posters/categories-mp4-poster.webp" />
 
             <section className="store-section bg-white">
               <div className="store-container">

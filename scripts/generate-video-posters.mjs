@@ -49,7 +49,8 @@ async function main() {
 
   const entries = await readdir(VIDEOS_DIR, { withFileTypes: true });
   const videos = entries.filter(
-    (e) => e.isFile() && extname(e.name).toLowerCase() === ".webm"
+    (e) =>
+      e.isFile() && [".webm", ".mp4"].includes(extname(e.name).toLowerCase())
   );
 
   console.log(`Found ${videos.length} videos\n`);

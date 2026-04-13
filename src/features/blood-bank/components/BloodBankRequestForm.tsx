@@ -1,6 +1,7 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import Link from "next/link";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 
 import styles from "./BloodBankRequestForm.module.css";
 
@@ -31,6 +32,9 @@ export function BloodBankRequestForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isAuthChecked, setIsAuthChecked] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [profile, setProfile] = useState<any | null>(null);
 
   const minDateTime = useMemo(() => {
     const now = new Date();
@@ -72,10 +76,78 @@ export function BloodBankRequestForm() {
     }
   }
 
+  useEffect(() => {
+    // Try to fetch profile to prefill form when user is authenticated
+    let mounted = true;
+
+    async function loadProfile() {
+      try {
+        const res = await fetch('/api/profile');
+        if (!mounted) return;
+        if (!res.ok) {
+          setIsAuthChecked(true);
+          setIsLoggedIn(false);
+          return;
+        }
+
+        const payload = await res.json();
+        const data = payload?.data;
+        if (data) {
+          if (data.profile) setProfile(data.profile);
+          setForm((prev) => ({
+            ...prev,
+            name: data.user?.name ?? prev.name,
+            contactNumber: data.profile?.phone ?? prev.contactNumber,
+            location: data.profile?.city ?? prev.location,
+            bloodGroup: data.profile?.bloodGroup ?? prev.bloodGroup,
+          }));
+          setIsLoggedIn(true);
+        }
+      } catch (e) {
+        // ignore network/profile errors — treat as unauthenticated
+      } finally {
+        if (mounted) setIsAuthChecked(true);
+      }
+    }
+
+    loadProfile();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  if (isAuthChecked && !isLoggedIn) {
+    return (
+      <div className={styles.authBox}>
+        <p className={styles.authText}>Please create an account or sign in to register as a donor — this makes coordination faster.</p>
+        <div className={styles.authButtons}>
+          <Link href="/signup" className={styles.authButton}>Create account</Link>
+          <Link href="/login" className={styles.authButton}>Sign in</Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <form onSubmit={handleSubmit} className={styles.form}>
       <h3 className={styles.title}>Blood Donation Registration</h3>
       <p className={styles.description}>Enter your basic details.</p>
+
+      {isLoggedIn && profile ? (
+        <div className={styles.profileSummary}>
+          <div>
+            <strong>{profile.name ?? form.name}</strong>
+            <div className={styles.profileRow}>
+              {profile.city ?? form.location} · {(profile.bloodGroup ?? form.bloodGroup) || "Blood group N/A"}
+            </div>
+            <div className={styles.profileRow}>Contact: {profile.phone ?? form.contactNumber}</div>
+          </div>
+          <div>
+            <Link href="/dashboard" className={styles.profileEdit}>Edit profile</Link>
+          </div>
+        </div>
+      ) : null}
 
       <div className={styles.grid}>
         <label className={styles.label}>

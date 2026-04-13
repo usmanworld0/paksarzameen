@@ -29,8 +29,7 @@ export default async function HomePage() {
 
   const firstFeatured = featured[0];
   const firstCategory = categories[0];
-  // Use the commonwealth header image as the hero media by default
-  const heroImageCandidate = "/images/commonwealth_header.jpeg";
+  const heroImageCandidate = "/videos/commonwealth_hero.mp4";
   const heroMediaSrc = normalizeImageSrc(heroImageCandidate, "/images/store_header.png");
   const heroMediaType = /\.(mp4|webm|ogg)$/i.test(heroMediaSrc) ? "video" : "image";
 
@@ -44,6 +43,7 @@ export default async function HomePage() {
     media: {
       type: heroMediaType,
       src: heroMediaSrc,
+      poster: "/videos/posters/commonwealth_hero-poster.webp",
       alt: firstFeatured?.name || firstCategory?.name || "Paksarzameen Store hero",
     },
   };

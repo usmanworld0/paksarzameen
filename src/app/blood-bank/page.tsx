@@ -104,8 +104,14 @@ export default function BloodBankPage() {
           <div className={styles.formShell}>
             <div className={styles.topMeta}>
               <span className={styles.metaText}>Already registered?</span>
-              <Link href="/contact" className={styles.metaLink}>
-                Contact Team
+              <Link href="/login" className={styles.metaLink}>
+                Sign in
+              </Link>
+              <span className={styles.metaText} style={{ marginLeft: 12 }}>
+                or
+              </span>
+              <Link href="/signup" className={styles.metaLink}>
+                Create account
               </Link>
             </div>
             <p className={styles.formEyebrow}>Registration</p>

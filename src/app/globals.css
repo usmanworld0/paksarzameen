@@ -5979,18 +5979,20 @@ body.menu-open {
     font-size: 1.3rem;
   }
 
-  .hero-section {
-    height: 86svh !important;
-    min-height: 62rem;
-  }
+  @media (min-width: 1024px) {
+    .hero-section {
+      height: 86svh !important;
+      min-height: 62rem;
+    }
 
-  .hero-section .hero-content {
-    width: min(100%, 38rem);
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: left;
-    align-items: flex-start;
+    .hero-section .hero-content {
+      width: min(100%, 38rem);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: left;
+      align-items: flex-start;
+    }
   }
 
   .hero-section .hero-title {

@@ -10,7 +10,6 @@ export function SignupForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState<"donor" | "hospital">("donor");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -24,7 +23,8 @@ export function SignupForm() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ name, email, password, role }),
+      // Default new accounts to `donor` so users can both donate and request blood.
+      body: JSON.stringify({ name, email, password, role: "donor" }),
     });
 
     const payload = (await response.json()) as { error?: string };
@@ -56,7 +56,7 @@ export function SignupForm() {
       <div className="space-y-1 text-center">
         <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-700">Join The Network</p>
         <h1 className="text-3xl font-semibold text-emerald-950">Create your account</h1>
-        <p className="text-sm text-emerald-900/70">Register as a donor or hospital representative.</p>
+        <p className="text-sm text-emerald-900/70">Create an account to register as a donor or request blood when needed.</p>
       </div>
 
       <label className="block space-y-2">
@@ -94,17 +94,6 @@ export function SignupForm() {
         />
       </label>
 
-      <label className="block space-y-2">
-        <span className="text-sm font-medium text-emerald-950">Role</span>
-        <select
-          value={role}
-          onChange={(event) => setRole(event.target.value as "donor" | "hospital")}
-          className="w-full rounded-xl border border-emerald-200 px-4 py-3 text-sm text-emerald-950 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
-        >
-          <option value="donor">Donor</option>
-          <option value="hospital">Hospital</option>
-        </select>
-      </label>
 
       <button
         type="submit"

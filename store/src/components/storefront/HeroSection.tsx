@@ -27,6 +27,7 @@ export function Hero({ data }: HeroSectionProps) {
           loop
           muted
           playsInline
+          preload="metadata"
           poster={media.poster}
         >
           <source src={media.src} type="video/mp4" />

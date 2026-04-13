@@ -198,3 +198,31 @@ ON password_reset_tokens (user_id, used, expires_at);
 
 -- Paksarzameen Store (Google Auth + Gallery parity)
 -- The store app now uses the same auth and gallery table set as the main app.
+
+-- Paksarzameen Store (Manual gallery signup + approval workflow)
+CREATE TABLE IF NOT EXISTS gallery_manual_signups (
+	id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+	user_id uuid NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+	full_name text NOT NULL,
+	email text NOT NULL UNIQUE,
+	status text NOT NULL DEFAULT 'active',
+	created_at timestamptz NOT NULL DEFAULT now(),
+	updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS gallery_manual_signups_status_idx
+ON gallery_manual_signups (status);
+
+CREATE TABLE IF NOT EXISTS gallery_manual_sessions (
+	id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+	signup_id uuid NOT NULL REFERENCES gallery_manual_signups(id) ON DELETE CASCADE,
+	token text NOT NULL UNIQUE,
+	expires_at timestamptz NOT NULL,
+	created_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS gallery_manual_sessions_signup_id_idx
+ON gallery_manual_sessions (signup_id);
+
+CREATE INDEX IF NOT EXISTS gallery_manual_sessions_expires_at_idx
+ON gallery_manual_sessions (expires_at);

@@ -923,21 +923,22 @@ export function HomeClient() {
         </div>
       </section>
 
+      <section className="home-dog-adoption-banner" aria-labelledby="home-dog-adoption-heading">
+        <div className="home-dog-adoption-banner__inner">
+          <p className="home-dog-adoption-banner__eyebrow">Animal Welfare Initiative</p>
+          <h2 id="home-dog-adoption-heading">
+            Adopt a Stray, Save a Soul - Give a homeless dog a loving home
+          </h2>
+          <Link href="/dog-adoption" className="home-dog-adoption-banner__cta">
+            Browse Dogs
+          </Link>
+        </div>
+      </section>
+
 
       {/* ════════════════════════════════════════════════ */}
       {/* PINNED VIDEO — Mission                          */}
       {/* ════════════════════════════════════════════════ */}
-      <section className="pinned-video-section section-mission" data-scroll-section="mission">
-        <LazyVideo src={VIDEOS.mission} rootMargin="400px" poster={VIDEO_POSTERS.programs} />
-        <div className="mission-bg-overlay" aria-hidden="true" />
-        <div className="section-text">
-          <p>
-            We connect volunteers, partners, and communities through practical
-            programs in education, health, blood support, environmental action,
-            and welfare.
-          </p>
-        </div>
-      </section>
        {/* ════════════════════════════════════════════════ */}
       {/* OCHI-STYLE MARQUEE BANNER                        */}
       {/* ════════════════════════════════════════════════ */}
@@ -1061,6 +1062,26 @@ export function HomeClient() {
         </div>
       </section>
 
+      <section className="home-gwr-holder-section" aria-labelledby="home-gwr-holder-heading">
+        <video
+          className="home-gwr-holder-video"
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="metadata"
+        >
+          <source src="/videos/GWR.mp4" type="video/mp4" />
+        </video>
+        <div className="home-gwr-holder-overlay" aria-hidden="true" />
+        <div className="home-gwr-holder-content">
+          <h2 id="home-gwr-holder-heading">Guinness World Record Holder</h2>
+          <Link href="/impact/environmental/gwr" className="home-gwr-holder-button">
+            View Full Story
+          </Link>
+        </div>
+      </section>
+
       
       {/* ════════════════════════════════════════════════ */}
       {/* MISSION PILLARS — Stats & CTA                   */}
@@ -1169,6 +1190,17 @@ export function HomeClient() {
       {/* ════════════════════════════════════════════════ */}
       {/* TESTIMONIALS — Community Voices (horizontal marquee) */}
       {/* ════════════════════════════════════════════════ */}
+      <section className="pinned-video-section section-mission" data-scroll-section="mission">
+        <LazyVideo src={VIDEOS.mission} rootMargin="400px" poster={VIDEO_POSTERS.programs} />
+        <div className="mission-bg-overlay" aria-hidden="true" />
+        <div className="section-text">
+          <p>
+            We connect volunteers, partners, and communities through practical
+            programs in education, health, blood support, environmental action,
+            and welfare.
+          </p>
+        </div>
+      </section>
       <section className="testimonials-section" data-scroll-section="voices">
         {/* decorative background elements */}
         <div className="voices-orb voices-orb-1" aria-hidden="true" />

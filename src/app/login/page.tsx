@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { getServerSession } from "next-auth/next";
 
 import { LoginForm } from "@/features/auth/components/LoginForm";
-import { authOptions } from "@/lib/auth";
+import { createClient } from "@/utils/supabase/server";
 
 export const metadata: Metadata = {
   title: "Login",
@@ -17,9 +16,12 @@ type LoginPageProps = {
 export default async function LoginPage({ searchParams }: LoginPageProps) {
   const params = await searchParams;
   const callbackUrl = params.callbackUrl ?? "/dashboard";
-  const session = await getServerSession(authOptions);
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  if (session?.user?.id) {
+  if (user?.id) {
     redirect(callbackUrl);
   }
 
@@ -42,7 +44,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             </div>
 
             <div className="rounded-2xl border border-white/20 bg-white/10 p-5 text-sm leading-6 text-emerald-50/90">
-              Passwords are hashed with bcrypt and private routes are protected with JWT sessions.
+              Use this login for donor and protected user flows. Admin access has its own sign-in page.
             </div>
           </div>
         </div>

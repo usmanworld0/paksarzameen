@@ -11,7 +11,8 @@ const DEFAULT_COMMONWEALTH_URL =
 export const navLinks: NavLink[] = [
   { label: "Home", href: "/" },
   { label: "About PSZ", href: "/about" },
-  { label: "Blood Bank", href: "/blood-bank" },
+  { label: "🐶 Adopt a Dog", href: "/dog-adoption" },
+  { label: "HealthCare", href: "/healthcare" },
   { label: "Programs", href: "/programs" },
   { label: "Impact", href: "/impact" },
   { label: "Get Involved", href: "/get-involved" },

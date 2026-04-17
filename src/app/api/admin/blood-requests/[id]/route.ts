@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import { normalizeStatus, updateBloodRequestStatus } from "@/lib/blood-bank";
-import { getAdminSession } from "@/lib/main-admin-auth";
+import { getRequiredAdminOrModuleApiUser } from "@/server/route-auth";
 
 type RouteContext = {
   params: Promise<{ id: string }>;
 };
 
 export async function PATCH(request: Request, context: RouteContext) {
-  const session = await getAdminSession();
+  const session = await getRequiredAdminOrModuleApiUser("blood_bank", "manage");
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

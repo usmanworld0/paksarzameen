@@ -2,6 +2,9 @@
 
 import { type CSSProperties, useEffect, useMemo, useState } from "react";
 import type { BloodRequestStatus } from "@/lib/blood-bank";
+import { createClient } from "@/utils/supabase/client";
+import { adminFetch } from "@/features/auth/utils/admin-api";
+import { canAccessAdminRoute, useAdminClientSession } from "@/features/auth/utils/admin-session-client";
 
 type BloodRequestRecord = {
   id: string;
@@ -33,6 +36,8 @@ const STATUS_OPTIONS: BloodRequestStatus[] = [
 ];
 
 export function AdminBloodRequestsPanel() {
+  const supabase = createClient();
+  const { session } = useAdminClientSession();
   const [rows, setRows] = useState<BloodRequestRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -44,14 +49,9 @@ export function AdminBloodRequestsPanel() {
     setError(null);
 
     try {
-      const response = await fetch("/api/admin/blood-requests", {
+      const response = await adminFetch("/api/admin/blood-requests", {
         cache: "no-store",
       });
-      if (response.status === 401) {
-        window.location.href = "/admin/login";
-        return;
-      }
-
       const payload = (await response.json()) as {
         data?: BloodRequestRecord[];
         error?: string;
@@ -77,7 +77,7 @@ export function AdminBloodRequestsPanel() {
     setSavingId(id);
     setError(null);
     try {
-      const response = await fetch(`/api/admin/blood-requests/${id}`, {
+      const response = await adminFetch(`/api/admin/blood-requests/${id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -103,7 +103,12 @@ export function AdminBloodRequestsPanel() {
   }
 
   async function logout() {
-    await fetch("/api/admin/logout", { method: "POST" });
+    await fetch("/api/admin/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+
+    await supabase.auth.signOut();
     window.location.href = "/admin/login";
   }
 
@@ -122,6 +127,25 @@ export function AdminBloodRequestsPanel() {
           <p style={{ marginTop: "0.5rem", color: "#4b5563", fontSize: "1.35rem" }}>
             Review emergency blood requests, track status changes, and keep response details organized.
           </p>
+          <div style={{ marginTop: "0.75rem", display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+            {[
+              { href: "/admin", label: "Control Center" },
+              { href: "/admin/dogs", label: "Manage Dogs" },
+              { href: "/admin/adoption-requests", label: "Adoption Requests" },
+              { href: "/admin/dog-updates", label: "Dog Updates" },
+              { href: "/admin/users", label: "User Management" },
+            ]
+              .filter((item) => canAccessAdminRoute(session, item.href))
+              .map((item) => (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  style={{ color: "#0f7a47", fontSize: "1.1rem", fontWeight: 700 }}
+                >
+                  {item.label} →
+                </a>
+              ))}
+          </div>
         </div>
 
         <div style={{ display: "flex", gap: "0.7rem", alignItems: "center" }}>

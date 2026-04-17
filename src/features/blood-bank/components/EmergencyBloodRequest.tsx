@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import { DonorChatBox } from "@/features/blood-bank/components/DonorChatBox";
 
 type MatchDonor = {
   id: string;
@@ -116,6 +117,7 @@ export function EmergencyBloodRequest() {
               </p>
               <p className="text-sm text-emerald-900/80">Contact: {donor.phone || donor.email || "Not provided"}</p>
               <p className="text-xs text-emerald-700/90">Eligibility: {donor.eligibility ? "Eligible" : "Not eligible yet"}</p>
+              <DonorChatBox donorUserId={donor.id} />
             </article>
           ))
         )}

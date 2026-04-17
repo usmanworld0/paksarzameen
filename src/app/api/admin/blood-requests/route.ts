@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { getBloodRequests } from "@/lib/blood-bank";
-import { getAdminSession } from "@/lib/main-admin-auth";
+import { getRequiredAdminOrModuleApiUser } from "@/server/route-auth";
 
 export async function GET() {
-  const session = await getAdminSession();
+  const session = await getRequiredAdminOrModuleApiUser("blood_bank", "view");
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

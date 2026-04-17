@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
 import { FormEvent, useState } from "react";
+import { createClient } from "@/utils/supabase/client";
 
 type Props = {
   callbackUrl: string;
@@ -11,6 +11,15 @@ type Props = {
 
 export function LoginForm({ callbackUrl }: Props) {
   const router = useRouter();
+  const [supabaseError] = useState(() => {
+    try {
+      createClient();
+      return null;
+    } catch (error) {
+      return error instanceof Error ? error.message : "Supabase is not configured.";
+    }
+  });
+  const supabase = supabaseError ? null : createClient();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -21,16 +30,21 @@ export function LoginForm({ callbackUrl }: Props) {
     setError(null);
     setIsSubmitting(true);
 
-    const result = await signIn("email-password", {
+    if (!supabase) {
+      setIsSubmitting(false);
+      setError(supabaseError ?? "Supabase is not configured.");
+      return;
+    }
+
+    const { error: signInError } = await supabase.auth.signInWithPassword({
       email,
       password,
-      redirect: false,
     });
 
     setIsSubmitting(false);
 
-    if (!result || result.error) {
-      setError("Invalid email or password.");
+    if (signInError) {
+      setError(signInError.message || "Invalid email or password.");
       return;
     }
 
@@ -90,6 +104,7 @@ export function LoginForm({ callbackUrl }: Props) {
       </div>
 
       {error ? <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p> : null}
+      {supabaseError ? <p className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">{supabaseError}</p> : null}
     </form>
   );
 }

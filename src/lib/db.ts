@@ -7,7 +7,7 @@ declare global {
 
 function createPool() {
   if (!process.env.DATABASE_URL) {
-    throw new Error("DATABASE_URL is required for Blood Bank backend.");
+    throw new Error("DATABASE_URL is required for backend database access.");
   }
 
   return new Pool({

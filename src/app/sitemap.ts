@@ -16,6 +16,7 @@ function priorityForPath(path: string) {
       "/impact",
       "/programs",
       "/get-involved",
+      "/healthcare",
       "/blood-bank",
       "/contact",
       "/news",
@@ -44,6 +45,7 @@ function changeFrequencyForPath(path: string): MetadataRoute.Sitemap[number]["ch
     path === "/impact" ||
     path === "/programs" ||
     path === "/get-involved" ||
+    path === "/healthcare" ||
     path === "/blood-bank"
   ) {
     return "monthly";
@@ -63,9 +65,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPaths = [
     "/",
     "/about",
+    "/healthcare",
+    "/healthcare/blood-bank",
+    "/healthcare/doctor",
     "/blood-bank",
     "/programs",
     "/impact",
+    "/dog-adoption",
+    "/my-adoptions",
     "/get-involved",
     "/news",
     "/contact",

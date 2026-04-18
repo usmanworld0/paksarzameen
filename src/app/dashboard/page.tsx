@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { getServerSession } from "next-auth/next";
 
-import { authOptions } from "@/lib/auth";
 import { ProfileDashboard } from "@/features/auth/components/ProfileDashboard";
+import { createClient } from "@/utils/supabase/server";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -11,9 +10,12 @@ export const metadata: Metadata = {
 };
 
 export default async function DashboardPage() {
-  const session = await getServerSession(authOptions);
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  if (!session?.user?.id) {
+  if (!user?.id) {
     redirect("/login?callbackUrl=/dashboard");
   }
 

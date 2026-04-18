@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
-import { assertHealthcareUserActive, createDonorChatMessage, listDonorChatMessages, normalizeUrgencyLevel } from "@/lib/healthcare";
+import { assertHealthcareUserActive, createDonorChatMessage, listDonorChatMessages } from "@/services/healthcare/core-service";
 import { getRequiredApiUser } from "@/server/route-auth";
+import { donorChatCreateSchema } from "@/lib/healthcare-validation";
+import { consumeRateLimit } from "@/lib/rate-limit";
+import { mapHealthcareError } from "@/services/healthcare/error-mapper";
 
 export const dynamic = "force-dynamic";
 
@@ -20,8 +23,8 @@ export async function GET(request: Request) {
     const data = await listDonorChatMessages(user.id, donorUserId);
     return NextResponse.json({ data });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to load donor chat.";
-    return NextResponse.json({ error: message }, { status: 500 });
+    const mapped = mapHealthcareError(error, "Failed to load donor chat.");
+    return NextResponse.json({ error: mapped.message, code: mapped.code }, { status: mapped.status });
   }
 }
 
@@ -29,50 +32,47 @@ export async function POST(request: Request) {
   const user = await getRequiredApiUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  const rate = consumeRateLimit({
+    key: `healthcare:blood-bank:chat:${user.id}`,
+    max: 30,
+    windowMs: 60_000,
+  });
+
+  if (!rate.allowed) {
+    return NextResponse.json({ error: "Rate limit exceeded for donor chat." }, { status: 429 });
+  }
+
   try {
     await assertHealthcareUserActive(user.id);
 
-    const body = (await request.json()) as {
-      donorUserId?: string;
-      body?: string;
-      bloodGroup?: string;
-      urgencyLevel?: string;
-      locationCity?: string;
-      donorVerified?: boolean;
-    };
-    const donorUserId = String(body.donorUserId ?? "").trim();
-    const text = String(body.body ?? "").trim();
-
-    if (!donorUserId) {
-      return NextResponse.json({ error: "donorUserId is required." }, { status: 400 });
+    const body = (await request.json()) as unknown;
+    const parsed = donorChatCreateSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        {
+          error: "Invalid donor chat payload.",
+          details: parsed.error.flatten(),
+        },
+        { status: 400 }
+      );
     }
-    if (!text) {
-      return NextResponse.json({ error: "Message body is required." }, { status: 400 });
-    }
-
-    const urgencyLevelRaw = String(body.urgencyLevel ?? "").trim();
-    const urgencyLevel = urgencyLevelRaw ? normalizeUrgencyLevel(urgencyLevelRaw) : null;
 
     const data = await createDonorChatMessage({
       requesterUserId: user.id,
-      donorUserId,
+      donorUserId: parsed.data.donorUserId,
       senderId: user.id,
       senderName: user.email ?? null,
-      body: text,
-      bloodGroup: String(body.bloodGroup ?? "").trim() || null,
-      urgencyLevel,
-      locationCity: String(body.locationCity ?? "").trim() || null,
-      donorVerified: Boolean(body.donorVerified),
+      body: parsed.data.body,
+      bloodGroup: parsed.data.bloodGroup ?? null,
+      urgencyLevel: parsed.data.urgencyLevel ?? null,
+      locationCity: parsed.data.locationCity ?? null,
+      donorVerified: Boolean(parsed.data.donorVerified),
+      bloodRequestId: parsed.data.bloodRequestId ?? null,
     });
 
     return NextResponse.json({ data, message: "Message sent." }, { status: 201 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to send donor chat message.";
-    const statusCode = message.startsWith("SUSPENDED:")
-      ? 403
-      : message.includes("required") || message.includes("Invalid")
-        ? 400
-        : 500;
-    return NextResponse.json({ error: message.replace(/^SUSPENDED:/, "") }, { status: statusCode });
+    const mapped = mapHealthcareError(error, "Failed to send donor chat message.");
+    return NextResponse.json({ error: mapped.message, code: mapped.code }, { status: mapped.status });
   }
 }

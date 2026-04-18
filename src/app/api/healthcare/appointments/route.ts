@@ -2,12 +2,15 @@ import { NextResponse } from "next/server";
 import {
   assertHealthcareUserActive,
   bookAppointment,
-  getAppointmentById,
   listAppointmentsForPatient,
   updateAppointmentStatus,
-} from "@/lib/healthcare";
+} from "@/services/healthcare/core-service";
 import { getRequiredApiUser } from "@/server/route-auth";
 import { prisma } from "@/lib/prisma";
+import { appointmentCancelSchema, appointmentCreateSchema } from "@/lib/healthcare-validation";
+import { consumeRateLimit } from "@/lib/rate-limit";
+import { enforceAppointmentCancellationRule } from "@/services/healthcare/core-service";
+import { mapHealthcareError } from "@/services/healthcare/error-mapper";
 
 export const dynamic = "force-dynamic";
 
@@ -27,8 +30,8 @@ export async function GET() {
     const data = await listAppointmentsForPatient(user.id);
     return NextResponse.json({ data });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to load appointments.";
-    return NextResponse.json({ error: message }, { status: 500 });
+    const mapped = mapHealthcareError(error, "Failed to load appointments.");
+    return NextResponse.json({ error: mapped.message, code: mapped.code }, { status: mapped.status });
   }
 }
 
@@ -39,6 +42,19 @@ export async function POST(request: Request) {
   }
 
   try {
+    const rate = consumeRateLimit({
+      key: `healthcare:appointment:create:${user.id}`,
+      max: 5,
+      windowMs: 60 * 60 * 1000,
+    });
+
+    if (!rate.allowed) {
+      return NextResponse.json(
+        { error: "Too many booking attempts. Please try again later." },
+        { status: 429 }
+      );
+    }
+
     await assertHealthcareUserActive(user.id);
 
     // Fetch full user data including CNIC from database
@@ -58,32 +74,29 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "DATABASE_URL is not configured." }, { status: 500 });
     }
 
-    const body = (await request.json()) as {
-      doctorId?: string;
-      slotId?: string;
-      reason?: string;
-    };
-
-    const doctorId = String(body.doctorId ?? "").trim();
-    const slotId = String(body.slotId ?? "").trim();
-    const reason = String(body.reason ?? "").trim();
-
-    if (!doctorId || !slotId || !reason) {
-      return NextResponse.json({ error: "doctorId, slotId, and reason are required." }, { status: 400 });
+    const body = (await request.json()) as unknown;
+    const parsed = appointmentCreateSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        {
+          error: "Invalid appointment request payload.",
+          details: parsed.error.flatten(),
+        },
+        { status: 400 }
+      );
     }
 
     const data = await bookAppointment({
-      doctorId,
+      doctorId: parsed.data.doctorId,
       patientUserId: user.id,
-      slotId,
-      reason,
+      slotId: parsed.data.slotId,
+      reason: parsed.data.reason,
     });
 
     return NextResponse.json({ data, message: "Appointment booked." }, { status: 201 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to book appointment.";
-    const statusCode = message.includes("required") || message.includes("Slot") ? 400 : 500;
-    return NextResponse.json({ error: message }, { status: statusCode });
+    const mapped = mapHealthcareError(error, "Failed to book appointment.");
+    return NextResponse.json({ error: mapped.message, code: mapped.code }, { status: mapped.status });
   }
 }
 
@@ -100,41 +113,28 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: "DATABASE_URL is not configured." }, { status: 500 });
     }
 
-    const body = (await request.json()) as {
-      appointmentId?: string;
-      status?: string;
-    };
-
-    const appointmentId = String(body.appointmentId ?? "").trim();
-    const status = String(body.status ?? "").trim().toLowerCase();
-
-    if (!appointmentId || status !== "cancelled") {
+    const body = (await request.json()) as unknown;
+    const parsed = appointmentCancelSchema.safeParse(body);
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: "Only appointment cancellation is supported here. appointmentId and status=cancelled are required." },
+        {
+          error: "Invalid cancellation payload.",
+          details: parsed.error.flatten(),
+        },
         { status: 400 }
       );
     }
 
-    const appointment = await getAppointmentById(appointmentId);
-    if (!appointment || appointment.patientUserId !== user.id) {
-      return NextResponse.json({ error: "Appointment not found." }, { status: 404 });
-    }
+    await enforceAppointmentCancellationRule({
+      appointmentId: parsed.data.appointmentId,
+      actingUserId: user.id,
+      minimumHoursBeforeStart: 2,
+    });
 
-    const slotStart = new Date(appointment.slotStart).getTime();
-    const now = Date.now();
-    const cancelWindowMs = 2 * 60 * 60 * 1000;
-    if (slotStart - now < cancelWindowMs) {
-      return NextResponse.json(
-        { error: "Appointments can only be cancelled at least 2 hours before slot start." },
-        { status: 400 }
-      );
-    }
-
-    const data = await updateAppointmentStatus(appointmentId, "cancelled");
+    const data = await updateAppointmentStatus(parsed.data.appointmentId, "cancelled");
     return NextResponse.json({ data, message: "Appointment cancelled." });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to update appointment.";
-    const statusCode = message.startsWith("SUSPENDED:") ? 403 : 500;
-    return NextResponse.json({ error: message.replace(/^SUSPENDED:/, "") }, { status: statusCode });
+    const mapped = mapHealthcareError(error, "Failed to update appointment.");
+    return NextResponse.json({ error: mapped.message, code: mapped.code }, { status: mapped.status });
   }
 }

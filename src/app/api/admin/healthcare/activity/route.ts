@@ -1,35 +1,29 @@
 import { NextResponse } from "next/server";
-import { getHealthCareAnalytics } from "@/services/healthcare/core-service";
 import { getRequiredAdminApiUser } from "@/server/route-auth";
+import { listHealthcareActivityLogs } from "@/services/healthcare/core-service";
 import { mapHealthcareError } from "@/services/healthcare/error-mapper";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(request: Request) {
   const admin = await getRequiredAdminApiUser();
   if (!admin) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
+    const { searchParams } = new URL(request.url);
+    const limitParam = Number(searchParams.get("limit") ?? "100");
+    const limit = Number.isFinite(limitParam) ? Math.min(Math.max(limitParam, 1), 200) : 100;
+
     if (!process.env.DATABASE_URL) {
-      return NextResponse.json({
-        data: {
-          doctorsTotal: 0,
-          activePatientsTotal: 0,
-          appointmentsTotal: 0,
-          donorChatMessagesTotal: 0,
-          appointmentMessagesTotal: 0,
-          suspendedUsersTotal: 0,
-          appointmentsByStatus: {},
-        },
-      });
+      return NextResponse.json({ data: [] });
     }
 
-    const data = await getHealthCareAnalytics();
+    const data = await listHealthcareActivityLogs(limit);
     return NextResponse.json({ data });
   } catch (error) {
-    const mapped = mapHealthcareError(error, "Failed to load healthcare analytics.");
+    const mapped = mapHealthcareError(error, "Failed to load activity logs.");
     return NextResponse.json({ error: mapped.message, code: mapped.code }, { status: mapped.status });
   }
 }

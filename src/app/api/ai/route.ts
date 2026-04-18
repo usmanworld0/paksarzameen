@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
+import { getRequiredApiUser } from "@/server/route-auth";
 import { aiQuestionSchema } from "@/lib/healthcare-validation";
 import { consumeRateLimit } from "@/lib/rate-limit";
 import { getSafeHealthAiResponse } from "@/services/healthcare/ai-service";
-import { getRequiredApiUser } from "@/server/route-auth";
 import { mapHealthcareError } from "@/services/healthcare/error-mapper";
 
 export const dynamic = "force-dynamic";
@@ -14,21 +14,26 @@ export async function POST(request: Request) {
   }
 
   const rate = consumeRateLimit({
-    key: `healthcare:quick-answer:${user.id}`,
+    key: `ai:${user.id}`,
     max: 10,
     windowMs: 60_000,
   });
 
   if (!rate.allowed) {
     return NextResponse.json(
-      { error: "Rate limit exceeded. Please wait before sending another question." },
-      { status: 429 }
+      {
+        error: "Rate limit exceeded. Please wait before asking another question.",
+      },
+      {
+        status: 429,
+      }
     );
   }
 
   try {
-    const body = (await request.json()) as unknown;
-    const parsed = aiQuestionSchema.safeParse(body);
+    const raw = (await request.json()) as unknown;
+    const parsed = aiQuestionSchema.safeParse(raw);
+
     if (!parsed.success) {
       return NextResponse.json(
         {
@@ -46,7 +51,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ data });
   } catch (error) {
-    const mapped = mapHealthcareError(error, "Failed to answer question.");
+    const mapped = mapHealthcareError(error, "Unable to process AI request.");
     return NextResponse.json({ error: mapped.message, code: mapped.code }, { status: mapped.status });
   }
 }

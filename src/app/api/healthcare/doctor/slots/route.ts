@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
-import { addDoctorSlot, assertHealthcareUserActive, getDoctorByUserId, listDoctorSlots } from "@/lib/healthcare";
+import { addDoctorSlot, assertHealthcareUserActive, getDoctorByUserId, listDoctorSlots } from "@/services/healthcare/core-service";
 import { getRequiredApiUser } from "@/server/route-auth";
+import { doctorSlotCreateSchema } from "@/lib/healthcare-validation";
+import { consumeRateLimit } from "@/lib/rate-limit";
+import { mapHealthcareError } from "@/services/healthcare/error-mapper";
 
 export const dynamic = "force-dynamic";
 
@@ -23,14 +26,24 @@ export async function GET() {
     const data = await listDoctorSlots(doctor.doctorId);
     return NextResponse.json({ data });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to load doctor slots.";
-    return NextResponse.json({ error: message }, { status: 500 });
+    const mapped = mapHealthcareError(error, "Failed to load doctor slots.");
+    return NextResponse.json({ error: mapped.message, code: mapped.code }, { status: mapped.status });
   }
 }
 
 export async function POST(request: Request) {
   const user = await getRequiredApiUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const rate = consumeRateLimit({
+    key: `healthcare:doctor:slots:${user.id}`,
+    max: 60,
+    windowMs: 60 * 60 * 1000,
+  });
+
+  if (!rate.allowed) {
+    return NextResponse.json({ error: "Too many slot operations. Please try later." }, { status: 429 });
+  }
 
   try {
     await assertHealthcareUserActive(user.id);
@@ -44,23 +57,22 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Doctor profile not found." }, { status: 403 });
     }
 
-    const body = (await request.json()) as { slotStart?: string; slotEnd?: string };
-    const slotStart = String(body.slotStart ?? "").trim();
-    const slotEnd = String(body.slotEnd ?? "").trim();
-
-    if (!slotStart || !slotEnd) {
-      return NextResponse.json({ error: "slotStart and slotEnd are required." }, { status: 400 });
+    const body = (await request.json()) as unknown;
+    const parsed = doctorSlotCreateSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        {
+          error: "Invalid slot payload.",
+          details: parsed.error.flatten(),
+        },
+        { status: 400 }
+      );
     }
 
-    const data = await addDoctorSlot(doctor.doctorId, slotStart, slotEnd);
+    const data = await addDoctorSlot(doctor.doctorId, parsed.data.slotStart, parsed.data.slotEnd);
     return NextResponse.json({ data, message: "Slot added." }, { status: 201 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to add slot.";
-    const statusCode = message.startsWith("SUSPENDED:")
-      ? 403
-      : message.includes("Invalid") || message.includes("conflicts") || message.includes("future")
-        ? 400
-        : 500;
-    return NextResponse.json({ error: message.replace(/^SUSPENDED:/, "") }, { status: statusCode });
+    const mapped = mapHealthcareError(error, "Failed to add slot.");
+    return NextResponse.json({ error: mapped.message, code: mapped.code }, { status: mapped.status });
   }
 }

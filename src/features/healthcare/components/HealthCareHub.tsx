@@ -30,10 +30,20 @@ type Appointment = {
   status: string;
 };
 
+type DoctorSuggestion = {
+  doctorId: string;
+  fullName: string;
+  specialization: string | null;
+  consultationFee: number | null;
+  experienceYears: number | null;
+  matchReason: string;
+};
+
 export function HealthCareHub() {
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState<string | null>(null);
   const [disclaimer, setDisclaimer] = useState<string | null>(null);
+  const [doctorSuggestions, setDoctorSuggestions] = useState<DoctorSuggestion[]>([]);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [slots, setSlots] = useState<Slot[]>([]);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -68,14 +78,29 @@ export function HealthCareHub() {
   }, []);
 
   async function askQuickAnswer() {
-    const response = await fetch("/api/healthcare/quick-answer", {
+    const response = await fetch("/api/ai", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ question }),
     });
-    const payload = (await response.json()) as { data?: { answer?: string; disclaimer?: string } };
+    const payload = (await response.json()) as {
+      data?: {
+        answer?: string;
+        disclaimer?: string;
+        doctorSuggestions?: DoctorSuggestion[];
+      };
+      error?: string;
+    };
+    if (!response.ok) {
+      setAnswer(payload.error ?? "No response available.");
+      setDisclaimer(null);
+      setDoctorSuggestions([]);
+      return;
+    }
+
     setAnswer(payload.data?.answer ?? "No response available.");
     setDisclaimer(payload.data?.disclaimer ?? null);
+    setDoctorSuggestions(payload.data?.doctorSuggestions ?? []);
   }
 
   async function book() {
@@ -135,6 +160,17 @@ export function HealthCareHub() {
         </div>
         {answer ? <p className="mt-4 rounded-xl bg-emerald-50 p-3 text-sm text-emerald-900">{answer}</p> : null}
         {disclaimer ? <p className="mt-2 text-xs text-amber-700">{disclaimer}</p> : null}
+        {doctorSuggestions.length > 0 ? (
+          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+            {doctorSuggestions.map((doctor) => (
+              <article key={doctor.doctorId} className="rounded-xl border border-blue-100 bg-blue-50 p-3">
+                <p className="text-sm font-semibold text-slate-900">{doctor.fullName}</p>
+                <p className="text-xs text-slate-600">{doctor.specialization ?? "General Medicine"}</p>
+                <p className="text-xs text-blue-800">{doctor.matchReason}</p>
+              </article>
+            ))}
+          </div>
+        ) : null}
       </section>
 
       <section className="rounded-3xl border border-emerald-100 bg-white p-6 shadow-sm sm:p-8">

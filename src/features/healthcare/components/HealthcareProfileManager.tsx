@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { Upload, Edit2, Save, X, Phone, MapPin, Heart, Calendar, Users, Briefcase } from "lucide-react";
+import { Upload, Edit2, Save, X, Phone, Heart, Users } from "lucide-react";
 
 type ProfileData = {
   name: string;
@@ -68,8 +68,7 @@ export function HealthcareProfileManager() {
         setProfile(fullProfile);
         setFormData(fullProfile);
       }
-    } catch (error) {
-      console.error("Failed to load profile:", error);
+    } catch {
       setFeedback({ type: "error", message: "Failed to load profile" });
     } finally {
       setLoading(false);
@@ -96,7 +95,7 @@ export function HealthcareProfileManager() {
         const error = (await response.json()) as { error?: string };
         setFeedback({ type: "error", message: error.error || "Failed to save profile" });
       }
-    } catch (error) {
+    } catch {
       setFeedback({ type: "error", message: "Failed to save profile" });
     } finally {
       setIsSaving(false);
@@ -134,7 +133,7 @@ export function HealthcareProfileManager() {
       } else {
         setFeedback({ type: "error", message: "Failed to upload photo" });
       }
-    } catch (error) {
+    } catch {
       setFeedback({ type: "error", message: "Failed to upload photo" });
     }
   }
@@ -446,7 +445,13 @@ export function HealthcareProfileManager() {
             {previewPhoto ? (
               <div className="space-y-4">
                 <div className="relative aspect-square w-full overflow-hidden rounded-lg border-2 border-slate-200">
-                  <img src={previewPhoto} alt="Preview" className="h-full w-full object-cover" />
+                  <Image
+                    src={previewPhoto}
+                    alt="Preview"
+                    fill
+                    unoptimized
+                    className="object-cover"
+                  />
                 </div>
                 <button
                   onClick={() => {

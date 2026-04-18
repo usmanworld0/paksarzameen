@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { MessageCircle, Calendar, Users, Heart, AlertCircle, ChevronDown, X } from "lucide-react";
+import { MessageCircle, Calendar, Users, Heart, AlertCircle } from "lucide-react";
 import { HealthcareProfileManager } from "./HealthcareProfileManager";
 import { AppointmentChatBox } from "./AppointmentChatBox";
 
@@ -32,11 +32,21 @@ type Appointment = {
   status: string;
 };
 
+type DoctorSuggestion = {
+  doctorId: string;
+  fullName: string;
+  specialization: string | null;
+  consultationFee: number | null;
+  experienceYears: number | null;
+  matchReason: string;
+};
+
 export function HealthCareHubProfessional() {
   const [activeTab, setActiveTab] = useState<"dashboard" | "doctors" | "appointments" | "profile">("dashboard");
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState<string | null>(null);
   const [disclaimer, setDisclaimer] = useState<string | null>(null);
+  const [doctorSuggestions, setDoctorSuggestions] = useState<DoctorSuggestion[]>([]);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [slots, setSlots] = useState<Slot[]>([]);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -45,8 +55,6 @@ export function HealthCareHubProfessional() {
   const [reason, setReason] = useState("");
   const [booking, setBooking] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
-  const [expandedDoctor, setExpandedDoctor] = useState<string | null>(null);
-  const [bookingModal, setBookingModal] = useState(false);
 
   const filteredSlots = slots.filter((slot) => slot.doctorId === selectedDoctorId);
 
@@ -66,14 +74,29 @@ export function HealthCareHubProfessional() {
   }
 
   async function askQuickAnswer() {
-    const response = await fetch("/api/healthcare/quick-answer", {
+    const response = await fetch("/api/ai", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ question }),
     });
-    const payload = (await response.json()) as { data?: { answer?: string; disclaimer?: string } };
+    const payload = (await response.json()) as {
+      data?: {
+        answer?: string;
+        disclaimer?: string;
+        doctorSuggestions?: DoctorSuggestion[];
+      };
+      error?: string;
+    };
+    if (!response.ok) {
+      setAnswer(payload.error ?? "Unable to process question.");
+      setDisclaimer(null);
+      setDoctorSuggestions([]);
+      return;
+    }
+
     setAnswer(payload.data?.answer ?? "No response available.");
     setDisclaimer(payload.data?.disclaimer ?? null);
+    setDoctorSuggestions(payload.data?.doctorSuggestions ?? []);
   }
 
   async function book() {
@@ -105,7 +128,6 @@ export function HealthCareHubProfessional() {
       setFeedback("✓ Appointment booked successfully!");
       setReason("");
       setSelectedSlotId("");
-      setBookingModal(false);
       await loadData();
     } finally {
       setBooking(false);
@@ -207,6 +229,21 @@ export function HealthCareHubProfessional() {
                   <div className="flex gap-3 rounded-lg border border-amber-200 bg-amber-50 p-4">
                     <AlertCircle className="h-5 w-5 flex-shrink-0 text-amber-600 mt-0.5" />
                     <p className="text-xs text-amber-800">{disclaimer}</p>
+                  </div>
+                )}
+
+                {doctorSuggestions.length > 0 && (
+                  <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
+                    <p className="text-sm font-semibold text-blue-900">Suggested Doctors (System Logic)</p>
+                    <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                      {doctorSuggestions.map((suggestion) => (
+                        <div key={suggestion.doctorId} className="rounded-md border border-blue-100 bg-white p-3">
+                          <p className="text-sm font-semibold text-slate-900">{suggestion.fullName}</p>
+                          <p className="text-xs text-slate-600">{suggestion.specialization ?? "General Medicine"}</p>
+                          <p className="mt-1 text-xs text-blue-800">{suggestion.matchReason}</p>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
@@ -337,7 +374,6 @@ export function HealthCareHubProfessional() {
                         <button
                           onClick={() => {
                             setSelectedDoctorId(doctor.doctorId);
-                            setBookingModal(true);
                           }}
                           className="w-full rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700"
                         >

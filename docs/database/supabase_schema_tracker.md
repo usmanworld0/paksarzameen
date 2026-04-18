@@ -470,6 +470,8 @@ CREATE TABLE IF NOT EXISTS healthcare_appointments (
 	slot_id text NOT NULL REFERENCES healthcare_doctor_slots(id) ON DELETE CASCADE,
 	reason text NOT NULL,
 	status text NOT NULL DEFAULT 'pending',
+	cancelled_at timestamptz,
+	completed_at timestamptz,
 	created_at timestamptz NOT NULL DEFAULT now(),
 	updated_at timestamptz NOT NULL DEFAULT now(),
 	CONSTRAINT healthcare_appointments_status_check CHECK (status IN ('pending', 'confirmed', 'completed', 'cancelled'))
@@ -481,6 +483,9 @@ CREATE TABLE IF NOT EXISTS healthcare_appointment_messages (
 	sender_id text NOT NULL,
 	sender_name text,
 	body text NOT NULL,
+	attachment_url text,
+	is_read boolean NOT NULL DEFAULT false,
+	read_at timestamptz,
 	created_at timestamptz NOT NULL DEFAULT now()
 );
 
@@ -489,10 +494,23 @@ CREATE TABLE IF NOT EXISTS healthcare_blood_donor_chats (
 	room_key text NOT NULL,
 	donor_user_id uuid NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
 	requester_user_id uuid NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+	blood_request_id text,
 	sender_id text NOT NULL,
 	sender_name text,
 	body text NOT NULL,
+	blood_group text,
+	urgency_level text,
+	location_city text,
+	donor_verified boolean NOT NULL DEFAULT false,
 	created_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS ai_logs (
+	id text PRIMARY KEY,
+	user_id text,
+	question text NOT NULL,
+	response text NOT NULL,
+	timestamp timestamptz NOT NULL DEFAULT now()
 );
 
 CREATE INDEX IF NOT EXISTS healthcare_doctors_user_id_idx
@@ -512,3 +530,6 @@ ON healthcare_appointment_messages (appointment_id, created_at ASC);
 
 CREATE INDEX IF NOT EXISTS healthcare_blood_donor_chats_room_idx
 ON healthcare_blood_donor_chats (room_key, created_at ASC);
+
+CREATE INDEX IF NOT EXISTS ai_logs_timestamp_idx
+ON ai_logs (timestamp DESC);

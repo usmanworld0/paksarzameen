@@ -3,10 +3,11 @@ import {
   assertHealthcareUserActive,
   getDoctorByUserId,
   listAppointmentsForDoctor,
-  normalizeAppointmentStatus,
-  updateAppointmentStatus,
-} from "@/lib/healthcare";
+  updateAppointmentByDoctor,
+} from "@/services/healthcare/core-service";
 import { getRequiredApiUser } from "@/server/route-auth";
+import { doctorAppointmentStatusSchema } from "@/lib/healthcare-validation";
+import { mapHealthcareError } from "@/services/healthcare/error-mapper";
 
 export const dynamic = "force-dynamic";
 
@@ -29,8 +30,8 @@ export async function GET() {
     const data = await listAppointmentsForDoctor(doctor.doctorId);
     return NextResponse.json({ data });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to load doctor appointments.";
-    return NextResponse.json({ error: message }, { status: 500 });
+    const mapped = mapHealthcareError(error, "Failed to load doctor appointments.");
+    return NextResponse.json({ error: mapped.message, code: mapped.code }, { status: mapped.status });
   }
 }
 
@@ -50,28 +51,27 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: "Doctor profile not found." }, { status: 403 });
     }
 
-    const body = (await request.json()) as { appointmentId?: string; status?: string };
-    const appointmentId = String(body.appointmentId ?? "").trim();
-    if (!appointmentId) {
-      return NextResponse.json({ error: "appointmentId is required." }, { status: 400 });
+    const body = (await request.json()) as unknown;
+    const parsed = doctorAppointmentStatusSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        {
+          error: "Invalid appointment status payload.",
+          details: parsed.error.flatten(),
+        },
+        { status: 400 }
+      );
     }
 
-    const status = normalizeAppointmentStatus(body.status);
-    const data = await updateAppointmentStatus(appointmentId, status);
-    if (data.doctorId !== doctor.doctorId) {
-      return NextResponse.json({ error: "Forbidden." }, { status: 403 });
-    }
+    const data = await updateAppointmentByDoctor({
+      appointmentId: parsed.data.appointmentId,
+      doctorId: doctor.doctorId,
+      status: parsed.data.status,
+    });
 
     return NextResponse.json({ data, message: "Appointment updated." });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to update appointment.";
-    const statusCode = message.startsWith("SUSPENDED:")
-      ? 403
-      : message.includes("Invalid") || message.includes("cannot")
-        ? 400
-        : message.includes("not found")
-          ? 404
-          : 500;
-    return NextResponse.json({ error: message.replace(/^SUSPENDED:/, "") }, { status: statusCode });
+    const mapped = mapHealthcareError(error, "Failed to update appointment.");
+    return NextResponse.json({ error: mapped.message, code: mapped.code }, { status: mapped.status });
   }
 }

@@ -59,6 +59,7 @@ export type DonorChatMessageRecord = {
   roomKey: string;
   donorUserId: string;
   requesterUserId: string;
+  bloodRequestId: string | null;
   senderId: string;
   senderName: string | null;
   body: string;
@@ -217,6 +218,7 @@ export async function ensureHealthCareSchema() {
   await pool.query(`ALTER TABLE healthcare_blood_donor_chats ADD COLUMN IF NOT EXISTS urgency_level text;`);
   await pool.query(`ALTER TABLE healthcare_blood_donor_chats ADD COLUMN IF NOT EXISTS location_city text;`);
   await pool.query(`ALTER TABLE healthcare_blood_donor_chats ADD COLUMN IF NOT EXISTS donor_verified boolean NOT NULL DEFAULT false;`);
+  await pool.query(`ALTER TABLE healthcare_blood_donor_chats ADD COLUMN IF NOT EXISTS blood_request_id text;`);
 
   await pool.query(`
     CREATE TABLE IF NOT EXISTS healthcare_audit_logs (
@@ -241,6 +243,16 @@ export async function ensureHealthCareSchema() {
   `);
 
   await pool.query(`
+    CREATE TABLE IF NOT EXISTS ai_logs (
+      id text PRIMARY KEY,
+      user_id text,
+      question text NOT NULL,
+      response text NOT NULL,
+      timestamp timestamptz NOT NULL DEFAULT now()
+    );
+  `);
+
+  await pool.query(`
     CREATE TABLE IF NOT EXISTS healthcare_user_suspensions (
       user_id uuid PRIMARY KEY,
       is_suspended boolean NOT NULL DEFAULT false,
@@ -258,6 +270,7 @@ export async function ensureHealthCareSchema() {
   await pool.query(`CREATE INDEX IF NOT EXISTS healthcare_blood_donor_chats_lookup_idx ON healthcare_blood_donor_chats (donor_user_id, requester_user_id, created_at DESC);`);
   await pool.query(`CREATE INDEX IF NOT EXISTS healthcare_audit_logs_created_idx ON healthcare_audit_logs (created_at DESC);`);
   await pool.query(`CREATE INDEX IF NOT EXISTS healthcare_ai_logs_created_idx ON healthcare_ai_logs (created_at DESC);`);
+  await pool.query(`CREATE INDEX IF NOT EXISTS ai_logs_timestamp_idx ON ai_logs (timestamp DESC);`);
 
   didEnsureHealthCareSchema = true;
 }
@@ -320,6 +333,45 @@ export async function logHealthCareAiInteraction(input: {
       normalizedText(input.answer),
     ]
   );
+
+  await pool.query(
+    `
+    INSERT INTO ai_logs (id, user_id, question, response)
+    VALUES ($1, $2, $3, $4);
+    `,
+    [
+      randomUUID(),
+      normalizedNullableText(input.userId),
+      normalizedText(input.question),
+      normalizedText(input.answer),
+    ]
+  );
+}
+
+export async function listHealthcareActivityLogs(limit = 100) {
+  await ensureHealthCareSchema();
+  const pool = getDbPool();
+  const safeLimit = Number.isFinite(limit) ? Math.max(1, Math.min(200, Math.floor(limit))) : 100;
+
+  const result = await pool.query(
+    `
+    SELECT id, actor_user_id, action, entity_type, entity_id, metadata, created_at
+    FROM healthcare_audit_logs
+    ORDER BY created_at DESC
+    LIMIT $1;
+    `,
+    [safeLimit]
+  );
+
+  return result.rows.map((row) => ({
+    id: String(row.id),
+    actorUserId: row.actor_user_id ? String(row.actor_user_id) : null,
+    action: String(row.action),
+    entityType: String(row.entity_type),
+    entityId: row.entity_id ? String(row.entity_id) : null,
+    metadata: row.metadata && typeof row.metadata === "object" ? (row.metadata as Record<string, unknown>) : null,
+    createdAt: new Date(String(row.created_at)).toISOString(),
+  }));
 }
 
 export async function assertHealthcareUserActive(userId: string) {
@@ -954,7 +1006,7 @@ export async function listDonorChatMessages(requesterUserId: string, donorUserId
   const roomKey = getDonorRoomKey(requesterUserId, donorUserId);
   const result = await pool.query(
     `
-    SELECT id, room_key, donor_user_id, requester_user_id, sender_id, sender_name, body, blood_group, urgency_level, location_city, donor_verified, created_at
+    SELECT id, room_key, donor_user_id, requester_user_id, blood_request_id, sender_id, sender_name, body, blood_group, urgency_level, location_city, donor_verified, created_at
     FROM healthcare_blood_donor_chats
     WHERE room_key = $1
     ORDER BY created_at ASC;
@@ -975,6 +1027,7 @@ export async function createDonorChatMessage(input: {
   urgencyLevel?: UrgencyLevel | null;
   locationCity?: string | null;
   donorVerified?: boolean;
+  bloodRequestId?: string | null;
 }) {
   await ensureHealthCareSchema();
   const pool = getDbPool();
@@ -991,6 +1044,7 @@ export async function createDonorChatMessage(input: {
       room_key,
       donor_user_id,
       requester_user_id,
+      blood_request_id,
       sender_id,
       sender_name,
       body,
@@ -999,14 +1053,15 @@ export async function createDonorChatMessage(input: {
       location_city,
       donor_verified
     )
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-    RETURNING id, room_key, donor_user_id, requester_user_id, sender_id, sender_name, body, blood_group, urgency_level, location_city, donor_verified, created_at;
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+    RETURNING id, room_key, donor_user_id, requester_user_id, blood_request_id, sender_id, sender_name, body, blood_group, urgency_level, location_city, donor_verified, created_at;
     `,
     [
       randomUUID(),
       roomKey,
       input.donorUserId,
       input.requesterUserId,
+      normalizedNullableText(input.bloodRequestId),
       input.senderId,
       input.senderName,
       content,
@@ -1121,6 +1176,7 @@ function mapDonorChatMessageRow(row: Record<string, unknown>): DonorChatMessageR
     roomKey: String(row.room_key),
     donorUserId: String(row.donor_user_id),
     requesterUserId: String(row.requester_user_id),
+    bloodRequestId: row.blood_request_id ? String(row.blood_request_id) : null,
     senderId: String(row.sender_id),
     senderName: row.sender_name ? String(row.sender_name) : null,
     body: String(row.body),

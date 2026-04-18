@@ -9,6 +9,7 @@ export function SignupForm() {
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [cnic, setCnic] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -18,13 +19,21 @@ export function SignupForm() {
     setError(null);
     setIsSubmitting(true);
 
+    // Validate CNIC format (Pakistani CNIC: 5 digits - 7 digits - 1 digit)
+    const cnicRegex = /^\d{5}-\d{7}-\d{1}$/;
+    if (!cnicRegex.test(cnic)) {
+      setError("Please enter a valid CNIC format (e.g., 12345-1234567-1)");
+      setIsSubmitting(false);
+      return;
+    }
+
     const response = await fetch("/api/auth/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       // Default new accounts to `donor` so users can both donate and request blood.
-      body: JSON.stringify({ name, email, password, role: "donor" }),
+      body: JSON.stringify({ name, email, cnic, password, role: "donor" }),
     });
 
     const payload = (await response.json()) as { error?: string };
@@ -56,7 +65,7 @@ export function SignupForm() {
       <div className="space-y-1 text-center">
         <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-700">Join The Network</p>
         <h1 className="text-3xl font-semibold text-emerald-950">Create your account</h1>
-        <p className="text-sm text-emerald-900/70">Create an account to register as a donor or request blood when needed.</p>
+        <p className="text-sm text-emerald-900/70">Create an account to register as a donor or request blood when needed. CNIC is required for healthcare appointments.</p>
       </div>
 
       <label className="block space-y-2">
@@ -79,6 +88,18 @@ export function SignupForm() {
           onChange={(event) => setEmail(event.target.value)}
           className="w-full rounded-xl border border-emerald-200 px-4 py-3 text-sm text-emerald-950 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
           placeholder="you@example.com"
+        />
+      </label>
+
+      <label className="block space-y-2">
+        <span className="text-sm font-medium text-emerald-950">CNIC</span>
+        <input
+          required
+          type="text"
+          value={cnic}
+          onChange={(event) => setCnic(event.target.value)}
+          className="w-full rounded-xl border border-emerald-200 px-4 py-3 text-sm text-emerald-950 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+          placeholder="e.g., 12345-1234567-1"
         />
       </label>
 

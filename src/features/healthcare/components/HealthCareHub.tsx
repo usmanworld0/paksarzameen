@@ -141,6 +141,12 @@ export function HealthCareHub() {
         <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-700">Doctor Appointments</p>
         <h2 className="mt-2 text-2xl font-semibold text-slate-900">Book an Appointment</h2>
 
+        <div className="mt-4 rounded-xl border border-blue-200 bg-blue-50 p-3">
+          <p className="text-sm text-blue-900">
+            <span className="font-semibold">ℹ️ CNIC Required:</span> You must have provided your CNIC (National Identity Card) during signup to book appointments. If you haven&apos;t, please sign up with your CNIC information.
+          </p>
+        </div>
+
         <div className="mt-4 grid gap-3 sm:grid-cols-3">
           <select
             value={selectedDoctorId}

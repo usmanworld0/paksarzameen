@@ -11,6 +11,7 @@ model User {
   id            String    @id @default(uuid()) @db.Uuid
   name          String?
   email         String?   @unique
+  cnic          String?   @unique
   passwordHash  String?   @map("password_hash")
   role          UserRole  @default(donor)
   emailVerified DateTime? @map("email_verified")
@@ -123,6 +124,13 @@ model UserProfile {
   lastDonationDate   DateTime? @map("last_donation_date")
   emergencyContact   String?   @map("emergency_contact")
   profileImage       String?   @map("profile_image")
+  dateOfBirth        DateTime? @map("date_of_birth")
+  gender             String?
+  address            String?
+  allergies          String?
+  medicalHistory     String?   @map("medical_history")
+  occupation         String?
+  maritalStatus      String?   @map("marital_status")
   createdAt          DateTime  @default(now()) @map("created_at")
   updatedAt          DateTime  @updatedAt @map("updated_at")
 

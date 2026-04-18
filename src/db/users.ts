@@ -11,6 +11,13 @@ export type ProfileUpdateInput = {
   lastDonationDate?: string | null;
   emergencyContact?: string;
   profileImage?: string;
+  dateOfBirth?: string | null;
+  gender?: string;
+  address?: string;
+  allergies?: string;
+  medicalHistory?: string;
+  occupation?: string;
+  maritalStatus?: string;
 };
 
 export async function findUserByEmail(email: string) {
@@ -20,6 +27,7 @@ export async function findUserByEmail(email: string) {
 export async function createUserWithProfile(input: {
   name: string;
   email: string;
+  cnic?: string;
   passwordHash: string;
   role: UserRole;
 }) {
@@ -27,6 +35,7 @@ export async function createUserWithProfile(input: {
     data: {
       name: input.name,
       email: input.email,
+      cnic: input.cnic || null,
       passwordHash: input.passwordHash,
       role: input.role,
       profile: {
@@ -47,6 +56,7 @@ export async function getUserWithProfileById(userId: string) {
 
 export async function upsertProfile(userId: string, updates: ProfileUpdateInput) {
   const parsedLastDonationDate = updates.lastDonationDate ? new Date(updates.lastDonationDate) : null;
+  const parsedDateOfBirth = updates.dateOfBirth ? new Date(updates.dateOfBirth) : null;
 
   if (updates.name && updates.name.trim()) {
     await prisma.user.update({
@@ -66,6 +76,13 @@ export async function upsertProfile(userId: string, updates: ProfileUpdateInput)
       lastDonationDate: parsedLastDonationDate,
       emergencyContact: updates.emergencyContact || null,
       profileImage: updates.profileImage || null,
+      dateOfBirth: parsedDateOfBirth,
+      gender: updates.gender || null,
+      address: updates.address || null,
+      allergies: updates.allergies || null,
+      medicalHistory: updates.medicalHistory || null,
+      occupation: updates.occupation || null,
+      maritalStatus: updates.maritalStatus || null,
     },
     update: {
       phone: updates.phone || null,
@@ -75,6 +92,13 @@ export async function upsertProfile(userId: string, updates: ProfileUpdateInput)
       lastDonationDate: parsedLastDonationDate,
       emergencyContact: updates.emergencyContact || null,
       profileImage: updates.profileImage || null,
+      dateOfBirth: parsedDateOfBirth,
+      gender: updates.gender || null,
+      address: updates.address || null,
+      allergies: updates.allergies || null,
+      medicalHistory: updates.medicalHistory || null,
+      occupation: updates.occupation || null,
+      maritalStatus: updates.maritalStatus || null,
     },
   });
 }

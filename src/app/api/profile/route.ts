@@ -9,8 +9,11 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const data = await getProfileData(user.id);
-  return NextResponse.json({ data });
+  const profileData = await getProfileData(user.id);
+  return NextResponse.json({
+    user: { name: user.email ? user.email.split("@")[0] : "User", email: user.email },
+    profile: profileData,
+  });
 }
 
 export async function PUT(request: Request) {
@@ -29,6 +32,13 @@ export async function PUT(request: Request) {
       lastDonationDate?: string | null;
       emergencyContact?: string;
       profileImage?: string;
+      dateOfBirth?: string | null;
+      gender?: string;
+      address?: string;
+      allergies?: string;
+      medicalHistory?: string;
+      occupation?: string;
+      maritalStatus?: string;
     };
 
     const data = await updateProfileData(user.id, body);

@@ -7,6 +7,7 @@ import {
   updateAppointmentStatus,
 } from "@/lib/healthcare";
 import { getRequiredApiUser } from "@/server/route-auth";
+import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
@@ -39,6 +40,19 @@ export async function POST(request: Request) {
 
   try {
     await assertHealthcareUserActive(user.id);
+
+    // Fetch full user data including CNIC from database
+    const fullUser = await prisma.user.findUnique({
+      where: { id: user.id },
+      select: { cnic: true },
+    });
+
+    if (!fullUser?.cnic) {
+      return NextResponse.json(
+        { error: "CNIC is required to book an appointment. Please complete your profile with CNIC information." },
+        { status: 403 }
+      );
+    }
 
     if (!process.env.DATABASE_URL) {
       return NextResponse.json({ error: "DATABASE_URL is not configured." }, { status: 500 });

@@ -16,11 +16,13 @@ import { safeText, assertValidPassword, isValidEmail, normalizeEmail } from "@/s
 export async function signupWithEmailPassword(input: {
   name: string;
   email: string;
+  cnic: string;
   password: string;
   role?: UserRole;
 }) {
   const email = normalizeEmail(input.email);
   const name = safeText(input.name, 80);
+  const cnic = safeText(input.cnic, 20);
   const role = input.role ?? "donor";
 
   if (!name) {
@@ -29,6 +31,10 @@ export async function signupWithEmailPassword(input: {
 
   if (!isValidEmail(email)) {
     throw new Error("Please provide a valid email address.");
+  }
+
+  if (!cnic) {
+    throw new Error("CNIC is required.");
   }
 
   assertValidPassword(input.password);
@@ -42,6 +48,7 @@ export async function signupWithEmailPassword(input: {
   const user = await createUserWithProfile({
     name,
     email,
+    cnic,
     passwordHash,
     role,
   });

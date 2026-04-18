@@ -9,6 +9,9 @@ export const metadata: Metadata = {
   description: "Secure email and password sign-in for protected Paksarzameen pages.",
 };
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 type LoginPageProps = {
   searchParams: Promise<{ callbackUrl?: string }>;
 };

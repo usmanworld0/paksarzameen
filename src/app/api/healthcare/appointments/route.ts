@@ -1,5 +1,11 @@
 import { NextResponse } from "next/server";
-import { bookAppointment, listAppointmentsForPatient } from "@/lib/healthcare";
+import {
+  assertHealthcareUserActive,
+  bookAppointment,
+  getAppointmentById,
+  listAppointmentsForPatient,
+  updateAppointmentStatus,
+} from "@/lib/healthcare";
 import { getRequiredApiUser } from "@/server/route-auth";
 
 export const dynamic = "force-dynamic";
@@ -11,6 +17,8 @@ export async function GET() {
   }
 
   try {
+    await assertHealthcareUserActive(user.id);
+
     if (!process.env.DATABASE_URL) {
       return NextResponse.json({ data: [] });
     }
@@ -30,6 +38,8 @@ export async function POST(request: Request) {
   }
 
   try {
+    await assertHealthcareUserActive(user.id);
+
     if (!process.env.DATABASE_URL) {
       return NextResponse.json({ error: "DATABASE_URL is not configured." }, { status: 500 });
     }
@@ -60,5 +70,57 @@ export async function POST(request: Request) {
     const message = error instanceof Error ? error.message : "Failed to book appointment.";
     const statusCode = message.includes("required") || message.includes("Slot") ? 400 : 500;
     return NextResponse.json({ error: message }, { status: statusCode });
+  }
+}
+
+export async function PATCH(request: Request) {
+  const user = await getRequiredApiUser();
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    await assertHealthcareUserActive(user.id);
+
+    if (!process.env.DATABASE_URL) {
+      return NextResponse.json({ error: "DATABASE_URL is not configured." }, { status: 500 });
+    }
+
+    const body = (await request.json()) as {
+      appointmentId?: string;
+      status?: string;
+    };
+
+    const appointmentId = String(body.appointmentId ?? "").trim();
+    const status = String(body.status ?? "").trim().toLowerCase();
+
+    if (!appointmentId || status !== "cancelled") {
+      return NextResponse.json(
+        { error: "Only appointment cancellation is supported here. appointmentId and status=cancelled are required." },
+        { status: 400 }
+      );
+    }
+
+    const appointment = await getAppointmentById(appointmentId);
+    if (!appointment || appointment.patientUserId !== user.id) {
+      return NextResponse.json({ error: "Appointment not found." }, { status: 404 });
+    }
+
+    const slotStart = new Date(appointment.slotStart).getTime();
+    const now = Date.now();
+    const cancelWindowMs = 2 * 60 * 60 * 1000;
+    if (slotStart - now < cancelWindowMs) {
+      return NextResponse.json(
+        { error: "Appointments can only be cancelled at least 2 hours before slot start." },
+        { status: 400 }
+      );
+    }
+
+    const data = await updateAppointmentStatus(appointmentId, "cancelled");
+    return NextResponse.json({ data, message: "Appointment cancelled." });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to update appointment.";
+    const statusCode = message.startsWith("SUSPENDED:") ? 403 : 500;
+    return NextResponse.json({ error: message.replace(/^SUSPENDED:/, "") }, { status: statusCode });
   }
 }

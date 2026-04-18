@@ -318,6 +318,53 @@ ALTER TABLE adoption_requests ENABLE ROW LEVEL SECURITY;
 ALTER TABLE dog_post_adoption_updates ENABLE ROW LEVEL SECURITY;
 ALTER TABLE blood_bank_requests ENABLE ROW LEVEL SECURITY;
 
+-- PSZ Main Web (HealthCare production hardening)
+ALTER TABLE healthcare_doctors ADD COLUMN IF NOT EXISTS experience_years integer;
+ALTER TABLE healthcare_doctors ADD COLUMN IF NOT EXISTS consultation_fee numeric(10,2);
+
+ALTER TABLE healthcare_appointments ADD COLUMN IF NOT EXISTS cancelled_at timestamptz;
+ALTER TABLE healthcare_appointments ADD COLUMN IF NOT EXISTS completed_at timestamptz;
+
+ALTER TABLE healthcare_appointment_messages ADD COLUMN IF NOT EXISTS attachment_url text;
+ALTER TABLE healthcare_appointment_messages ADD COLUMN IF NOT EXISTS is_read boolean NOT NULL DEFAULT false;
+ALTER TABLE healthcare_appointment_messages ADD COLUMN IF NOT EXISTS read_at timestamptz;
+
+ALTER TABLE healthcare_blood_donor_chats ADD COLUMN IF NOT EXISTS blood_group text;
+ALTER TABLE healthcare_blood_donor_chats ADD COLUMN IF NOT EXISTS urgency_level text;
+ALTER TABLE healthcare_blood_donor_chats ADD COLUMN IF NOT EXISTS location_city text;
+ALTER TABLE healthcare_blood_donor_chats ADD COLUMN IF NOT EXISTS donor_verified boolean NOT NULL DEFAULT false;
+
+CREATE TABLE IF NOT EXISTS healthcare_audit_logs (
+	id text PRIMARY KEY,
+	actor_user_id text,
+	action text NOT NULL,
+	entity_type text NOT NULL,
+	entity_id text,
+	metadata jsonb,
+	created_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS healthcare_audit_logs_created_idx
+ON healthcare_audit_logs (created_at DESC);
+
+CREATE TABLE IF NOT EXISTS healthcare_ai_logs (
+	id text PRIMARY KEY,
+	user_id text,
+	question text NOT NULL,
+	answer text NOT NULL,
+	created_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS healthcare_ai_logs_created_idx
+ON healthcare_ai_logs (created_at DESC);
+
+CREATE TABLE IF NOT EXISTS healthcare_user_suspensions (
+	user_id uuid PRIMARY KEY,
+	is_suspended boolean NOT NULL DEFAULT false,
+	reason text,
+	updated_at timestamptz NOT NULL DEFAULT now()
+);
+
 -- Profiles: user can read/update own profile, admin can manage all.
 CREATE POLICY profiles_select_own_or_admin ON profiles
 FOR SELECT USING (auth.uid() = id OR EXISTS (

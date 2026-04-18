@@ -2,6 +2,8 @@ import { randomUUID } from "crypto";
 import { getDbPool } from "@/lib/db";
 
 export type AppointmentStatus = "pending" | "confirmed" | "completed" | "cancelled";
+export type AppointmentActorRole = "doctor" | "patient" | "admin" | "system";
+export type UrgencyLevel = "low" | "medium" | "high" | "critical";
 
 export type DoctorRecord = {
   doctorId: string;
@@ -10,6 +12,8 @@ export type DoctorRecord = {
   fullName: string;
   specialization: string | null;
   bio: string | null;
+  experienceYears: number | null;
+  consultationFee: number | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -44,6 +48,9 @@ export type AppointmentMessageRecord = {
   senderId: string;
   senderName: string | null;
   body: string;
+  attachmentUrl: string | null;
+  isRead: boolean;
+  readAt: string | null;
   createdAt: string;
 };
 
@@ -55,15 +62,60 @@ export type DonorChatMessageRecord = {
   senderId: string;
   senderName: string | null;
   body: string;
+  bloodGroup: string | null;
+  urgencyLevel: UrgencyLevel | null;
+  locationCity: string | null;
+  donorVerified: boolean;
   createdAt: string;
 };
 
 const APPOINTMENT_STATUSES: AppointmentStatus[] = ["pending", "confirmed", "completed", "cancelled"];
+const URGENCY_LEVELS: UrgencyLevel[] = ["low", "medium", "high", "critical"];
 
 let didEnsureHealthCareSchema = false;
 
 function normalizedText(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
+}
+
+function normalizedNullableText(value: unknown) {
+  const text = normalizedText(value);
+  return text ? text : null;
+}
+
+function normalizedNumber(value: unknown) {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string" && value.trim()) {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  return null;
+}
+
+function normalizedUrl(value: unknown) {
+  const url = normalizedText(value);
+  if (!url) return null;
+
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
+      throw new Error("Invalid attachment URL.");
+    }
+  } catch {
+    throw new Error("Invalid attachment URL.");
+  }
+
+  return url;
+}
+
+export function normalizeUrgencyLevel(value: unknown): UrgencyLevel {
+  const level = normalizedText(value).toLowerCase();
+  if ((URGENCY_LEVELS as string[]).includes(level)) {
+    return level as UrgencyLevel;
+  }
+
+  throw new Error("Invalid urgency level.");
 }
 
 export function normalizeAppointmentStatus(value: unknown): AppointmentStatus {
@@ -86,10 +138,15 @@ export async function ensureHealthCareSchema() {
       full_name text NOT NULL,
       specialization text,
       bio text,
+      experience_years integer,
+      consultation_fee numeric(10,2),
       created_at timestamptz NOT NULL DEFAULT now(),
       updated_at timestamptz NOT NULL DEFAULT now()
     );
   `);
+
+  await pool.query(`ALTER TABLE healthcare_doctors ADD COLUMN IF NOT EXISTS experience_years integer;`);
+  await pool.query(`ALTER TABLE healthcare_doctors ADD COLUMN IF NOT EXISTS consultation_fee numeric(10,2);`);
 
   await pool.query(`
     CREATE TABLE IF NOT EXISTS healthcare_doctor_slots (
@@ -110,11 +167,16 @@ export async function ensureHealthCareSchema() {
       slot_id text NOT NULL REFERENCES healthcare_doctor_slots(id) ON DELETE CASCADE,
       reason text NOT NULL,
       status text NOT NULL DEFAULT 'pending',
+      cancelled_at timestamptz,
+      completed_at timestamptz,
       created_at timestamptz NOT NULL DEFAULT now(),
       updated_at timestamptz NOT NULL DEFAULT now(),
       CONSTRAINT healthcare_appointments_status_check CHECK (status IN ('pending', 'confirmed', 'completed', 'cancelled'))
     );
   `);
+
+  await pool.query(`ALTER TABLE healthcare_appointments ADD COLUMN IF NOT EXISTS cancelled_at timestamptz;`);
+  await pool.query(`ALTER TABLE healthcare_appointments ADD COLUMN IF NOT EXISTS completed_at timestamptz;`);
 
   await pool.query(`
     CREATE TABLE IF NOT EXISTS healthcare_appointment_messages (
@@ -123,9 +185,16 @@ export async function ensureHealthCareSchema() {
       sender_id text NOT NULL,
       sender_name text,
       body text NOT NULL,
+      attachment_url text,
+      is_read boolean NOT NULL DEFAULT false,
+      read_at timestamptz,
       created_at timestamptz NOT NULL DEFAULT now()
     );
   `);
+
+  await pool.query(`ALTER TABLE healthcare_appointment_messages ADD COLUMN IF NOT EXISTS attachment_url text;`);
+  await pool.query(`ALTER TABLE healthcare_appointment_messages ADD COLUMN IF NOT EXISTS is_read boolean NOT NULL DEFAULT false;`);
+  await pool.query(`ALTER TABLE healthcare_appointment_messages ADD COLUMN IF NOT EXISTS read_at timestamptz;`);
 
   await pool.query(`
     CREATE TABLE IF NOT EXISTS healthcare_blood_donor_chats (
@@ -136,7 +205,47 @@ export async function ensureHealthCareSchema() {
       sender_id text NOT NULL,
       sender_name text,
       body text NOT NULL,
+      blood_group text,
+      urgency_level text,
+      location_city text,
+      donor_verified boolean NOT NULL DEFAULT false,
       created_at timestamptz NOT NULL DEFAULT now()
+    );
+  `);
+
+  await pool.query(`ALTER TABLE healthcare_blood_donor_chats ADD COLUMN IF NOT EXISTS blood_group text;`);
+  await pool.query(`ALTER TABLE healthcare_blood_donor_chats ADD COLUMN IF NOT EXISTS urgency_level text;`);
+  await pool.query(`ALTER TABLE healthcare_blood_donor_chats ADD COLUMN IF NOT EXISTS location_city text;`);
+  await pool.query(`ALTER TABLE healthcare_blood_donor_chats ADD COLUMN IF NOT EXISTS donor_verified boolean NOT NULL DEFAULT false;`);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS healthcare_audit_logs (
+      id text PRIMARY KEY,
+      actor_user_id text,
+      action text NOT NULL,
+      entity_type text NOT NULL,
+      entity_id text,
+      metadata jsonb,
+      created_at timestamptz NOT NULL DEFAULT now()
+    );
+  `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS healthcare_ai_logs (
+      id text PRIMARY KEY,
+      user_id text,
+      question text NOT NULL,
+      answer text NOT NULL,
+      created_at timestamptz NOT NULL DEFAULT now()
+    );
+  `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS healthcare_user_suspensions (
+      user_id uuid PRIMARY KEY,
+      is_suspended boolean NOT NULL DEFAULT false,
+      reason text,
+      updated_at timestamptz NOT NULL DEFAULT now()
     );
   `);
 
@@ -146,15 +255,170 @@ export async function ensureHealthCareSchema() {
   await pool.query(`CREATE INDEX IF NOT EXISTS healthcare_appointments_patient_idx ON healthcare_appointments (patient_user_id, created_at DESC);`);
   await pool.query(`CREATE INDEX IF NOT EXISTS healthcare_appointment_messages_idx ON healthcare_appointment_messages (appointment_id, created_at ASC);`);
   await pool.query(`CREATE INDEX IF NOT EXISTS healthcare_blood_donor_chats_room_idx ON healthcare_blood_donor_chats (room_key, created_at ASC);`);
+  await pool.query(`CREATE INDEX IF NOT EXISTS healthcare_blood_donor_chats_lookup_idx ON healthcare_blood_donor_chats (donor_user_id, requester_user_id, created_at DESC);`);
+  await pool.query(`CREATE INDEX IF NOT EXISTS healthcare_audit_logs_created_idx ON healthcare_audit_logs (created_at DESC);`);
+  await pool.query(`CREATE INDEX IF NOT EXISTS healthcare_ai_logs_created_idx ON healthcare_ai_logs (created_at DESC);`);
 
   didEnsureHealthCareSchema = true;
+}
+
+export async function createHealthcareAuditLog(input: {
+  actorUserId?: string | null;
+  action: string;
+  entityType: string;
+  entityId?: string | null;
+  metadata?: Record<string, unknown> | null;
+}) {
+  await ensureHealthCareSchema();
+  const pool = getDbPool();
+  await pool.query(
+    `
+    INSERT INTO healthcare_audit_logs (id, actor_user_id, action, entity_type, entity_id, metadata)
+    VALUES ($1, $2, $3, $4, $5, $6::jsonb);
+    `,
+    [
+      randomUUID(),
+      normalizedNullableText(input.actorUserId),
+      normalizedText(input.action),
+      normalizedText(input.entityType),
+      normalizedNullableText(input.entityId),
+      input.metadata ? JSON.stringify(input.metadata) : null,
+    ]
+  );
+}
+
+async function safeAuditLog(input: {
+  actorUserId?: string | null;
+  action: string;
+  entityType: string;
+  entityId?: string | null;
+  metadata?: Record<string, unknown> | null;
+}) {
+  try {
+    await createHealthcareAuditLog(input);
+  } catch {
+    // Audit logging is best-effort and should not break user flows.
+  }
+}
+
+export async function logHealthCareAiInteraction(input: {
+  userId?: string | null;
+  question: string;
+  answer: string;
+}) {
+  await ensureHealthCareSchema();
+  const pool = getDbPool();
+  await pool.query(
+    `
+    INSERT INTO healthcare_ai_logs (id, user_id, question, answer)
+    VALUES ($1, $2, $3, $4);
+    `,
+    [
+      randomUUID(),
+      normalizedNullableText(input.userId),
+      normalizedText(input.question),
+      normalizedText(input.answer),
+    ]
+  );
+}
+
+export async function assertHealthcareUserActive(userId: string) {
+  await ensureHealthCareSchema();
+  const pool = getDbPool();
+  const result = await pool.query(
+    `
+    SELECT is_suspended, reason
+    FROM healthcare_user_suspensions
+    WHERE user_id = $1
+    LIMIT 1;
+    `,
+    [userId]
+  );
+
+  const suspension = result.rows[0];
+  if (suspension && Boolean(suspension.is_suspended)) {
+    const reason = suspension.reason ? String(suspension.reason) : "Access is temporarily suspended.";
+    throw new Error(`SUSPENDED:${reason}`);
+  }
+}
+
+export async function setHealthcareUserSuspension(input: {
+  userId: string;
+  isSuspended: boolean;
+  reason?: string | null;
+  actorUserId?: string | null;
+}) {
+  await ensureHealthCareSchema();
+  const pool = getDbPool();
+
+  await pool.query(
+    `
+    INSERT INTO healthcare_user_suspensions (user_id, is_suspended, reason, updated_at)
+    VALUES ($1, $2, $3, now())
+    ON CONFLICT (user_id)
+    DO UPDATE SET
+      is_suspended = EXCLUDED.is_suspended,
+      reason = EXCLUDED.reason,
+      updated_at = now();
+    `,
+    [input.userId, input.isSuspended, normalizedNullableText(input.reason)]
+  );
+
+  await safeAuditLog({
+    actorUserId: input.actorUserId,
+    action: input.isSuspended ? "user_suspended" : "user_unsuspended",
+    entityType: "healthcare_user",
+    entityId: input.userId,
+    metadata: { reason: normalizedNullableText(input.reason) },
+  });
+}
+
+export async function getHealthCareAnalytics() {
+  await ensureHealthCareSchema();
+  const pool = getDbPool();
+
+  const [appointmentsByStatus, totals, doctors, activePatients] = await Promise.all([
+    pool.query(
+      `
+      SELECT status, COUNT(*)::int AS total
+      FROM healthcare_appointments
+      GROUP BY status;
+      `
+    ),
+    pool.query(
+      `
+      SELECT
+        (SELECT COUNT(*)::int FROM healthcare_appointments) AS appointments_total,
+        (SELECT COUNT(*)::int FROM healthcare_blood_donor_chats) AS donor_chat_messages_total,
+        (SELECT COUNT(*)::int FROM healthcare_appointment_messages) AS appointment_messages_total,
+        (SELECT COUNT(*)::int FROM healthcare_user_suspensions WHERE is_suspended = true) AS suspended_users_total;
+      `
+    ),
+    pool.query(`SELECT COUNT(*)::int AS doctors_total FROM healthcare_doctors;`),
+    pool.query(`SELECT COUNT(DISTINCT patient_user_id)::int AS active_patients_total FROM healthcare_appointments;`),
+  ]);
+
+  return {
+    doctorsTotal: Number(doctors.rows[0]?.doctors_total ?? 0),
+    activePatientsTotal: Number(activePatients.rows[0]?.active_patients_total ?? 0),
+    appointmentsTotal: Number(totals.rows[0]?.appointments_total ?? 0),
+    donorChatMessagesTotal: Number(totals.rows[0]?.donor_chat_messages_total ?? 0),
+    appointmentMessagesTotal: Number(totals.rows[0]?.appointment_messages_total ?? 0),
+    suspendedUsersTotal: Number(totals.rows[0]?.suspended_users_total ?? 0),
+    appointmentsByStatus: appointmentsByStatus.rows.reduce<Record<string, number>>((acc, row) => {
+      const status = String(row.status);
+      const total = Number(row.total ?? 0);
+      acc[status] = total;
+      return acc;
+    }, {}),
+  };
 }
 
 export async function listDoctors() {
   await ensureHealthCareSchema();
   const pool = getDbPool();
   const result = await pool.query(`
-    SELECT id, user_id, email, full_name, specialization, bio, created_at, updated_at
+    SELECT id, user_id, email, full_name, specialization, bio, experience_years, consultation_fee, created_at, updated_at
     FROM healthcare_doctors
     ORDER BY created_at DESC;
   `);
@@ -167,7 +431,7 @@ export async function getDoctorByUserId(userId: string) {
   const pool = getDbPool();
   const result = await pool.query(
     `
-    SELECT id, user_id, email, full_name, specialization, bio, created_at, updated_at
+    SELECT id, user_id, email, full_name, specialization, bio, experience_years, consultation_fee, created_at, updated_at
     FROM healthcare_doctors
     WHERE user_id = $1
     LIMIT 1;
@@ -185,15 +449,17 @@ export async function createDoctor(input: {
   fullName: string;
   specialization?: string | null;
   bio?: string | null;
+  experienceYears?: number | null;
+  consultationFee?: number | null;
 }) {
   await ensureHealthCareSchema();
   const pool = getDbPool();
 
   const result = await pool.query(
     `
-    INSERT INTO healthcare_doctors (id, user_id, email, full_name, specialization, bio)
-    VALUES ($1, $2, $3, $4, $5, $6)
-    RETURNING id, user_id, email, full_name, specialization, bio, created_at, updated_at;
+    INSERT INTO healthcare_doctors (id, user_id, email, full_name, specialization, bio, experience_years, consultation_fee)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+    RETURNING id, user_id, email, full_name, specialization, bio, experience_years, consultation_fee, created_at, updated_at;
     `,
     [
       randomUUID(),
@@ -202,8 +468,22 @@ export async function createDoctor(input: {
       normalizedText(input.fullName),
       normalizedText(input.specialization) || null,
       normalizedText(input.bio) || null,
+      normalizedNumber(input.experienceYears),
+      normalizedNumber(input.consultationFee),
     ]
   );
+
+  await safeAuditLog({
+    actorUserId: input.userId ?? null,
+    action: "doctor_created",
+    entityType: "doctor",
+    entityId: String(result.rows[0].id),
+    metadata: {
+      specialization: normalizedNullableText(input.specialization),
+      experienceYears: normalizedNumber(input.experienceYears),
+      consultationFee: normalizedNumber(input.consultationFee),
+    },
+  });
 
   return mapDoctorRow(result.rows[0]);
 }
@@ -218,8 +498,28 @@ export async function addDoctorSlot(doctorId: string, slotStart: string, slotEnd
 
   const start = new Date(slotStart);
   const end = new Date(slotEnd);
+  if (start <= new Date()) {
+    throw new Error("Slot start must be in the future.");
+  }
+
   if (end <= start) {
     throw new Error("Slot end must be after slot start.");
+  }
+
+  const conflict = await pool.query(
+    `
+    SELECT id
+    FROM healthcare_doctor_slots
+    WHERE doctor_id = $1
+      AND slot_start < $3
+      AND slot_end > $2
+    LIMIT 1;
+    `,
+    [doctorId, start.toISOString(), end.toISOString()]
+  );
+
+  if (conflict.rows[0]) {
+    throw new Error("Slot conflicts with an existing schedule block.");
   }
 
   const result = await pool.query(
@@ -230,6 +530,18 @@ export async function addDoctorSlot(doctorId: string, slotStart: string, slotEnd
     `,
     [randomUUID(), doctorId, start.toISOString(), end.toISOString()]
   );
+
+  await safeAuditLog({
+    actorUserId: doctorId,
+    action: "doctor_slot_added",
+    entityType: "doctor_slot",
+    entityId: String(result.rows[0].id),
+    metadata: {
+      doctorId,
+      slotStart: start.toISOString(),
+      slotEnd: end.toISOString(),
+    },
+  });
 
   return mapDoctorSlotRow(result.rows[0]);
 }
@@ -318,6 +630,26 @@ export async function bookAppointment(input: {
       throw new Error("Slot does not belong to selected doctor.");
     }
 
+    if (new Date(String(slot.slot_start)) <= new Date()) {
+      throw new Error("Cannot book an expired slot.");
+    }
+
+    const duplicateActiveAppointment = await client.query(
+      `
+      SELECT id
+      FROM healthcare_appointments
+      WHERE slot_id = $1
+        AND status IN ('pending', 'confirmed')
+      LIMIT 1
+      FOR UPDATE;
+      `,
+      [input.slotId]
+    );
+
+    if (duplicateActiveAppointment.rows[0]) {
+      throw new Error("Slot is already booked.");
+    }
+
     const reason = normalizedText(input.reason);
     if (!reason) throw new Error("Appointment reason is required.");
 
@@ -347,7 +679,20 @@ export async function bookAppointment(input: {
     );
 
     await client.query("COMMIT");
-    return getAppointmentById(String(appointmentResult.rows[0].id));
+    const appointmentId = String(appointmentResult.rows[0].id);
+
+    await safeAuditLog({
+      actorUserId: input.patientUserId,
+      action: "appointment_booked",
+      entityType: "appointment",
+      entityId: appointmentId,
+      metadata: {
+        doctorId: input.doctorId,
+        slotId: input.slotId,
+      },
+    });
+
+    return getAppointmentById(appointmentId);
   } catch (error) {
     await client.query("ROLLBACK");
     throw error;
@@ -454,18 +799,78 @@ export async function listAppointmentsForPatient(patientUserId: string) {
 export async function updateAppointmentStatus(appointmentId: string, status: AppointmentStatus) {
   await ensureHealthCareSchema();
   const pool = getDbPool();
-  await pool.query(
-    `
-    UPDATE healthcare_appointments
-    SET status = $2,
-        updated_at = now()
-    WHERE id = $1;
-    `,
-    [appointmentId, status]
-  );
+  const client = await pool.connect();
+
+  try {
+    await client.query("BEGIN");
+
+    const currentResult = await client.query(
+      `
+      SELECT id, status, slot_id, slot_start
+      FROM healthcare_appointments a
+      INNER JOIN healthcare_doctor_slots s ON s.id = a.slot_id
+      WHERE a.id = $1
+      LIMIT 1
+      FOR UPDATE;
+      `,
+      [appointmentId]
+    );
+
+    const current = currentResult.rows[0];
+    if (!current) {
+      throw new Error("Appointment not found.");
+    }
+
+    const currentStatus = String(current.status) as AppointmentStatus;
+    if (currentStatus === "cancelled" || currentStatus === "completed") {
+      throw new Error("Finalized appointments cannot be modified.");
+    }
+
+    if (currentStatus === "pending" && status === "completed") {
+      throw new Error("Pending appointment cannot be marked completed directly.");
+    }
+
+    if (status === "cancelled") {
+      await client.query(
+        `
+        UPDATE healthcare_doctor_slots
+        SET is_available = true
+        WHERE id = $1;
+        `,
+        [String(current.slot_id)]
+      );
+    }
+
+    await client.query(
+      `
+      UPDATE healthcare_appointments
+      SET status = $2,
+          cancelled_at = CASE WHEN $2 = 'cancelled' THEN now() ELSE cancelled_at END,
+          completed_at = CASE WHEN $2 = 'completed' THEN now() ELSE completed_at END,
+          updated_at = now()
+      WHERE id = $1;
+      `,
+      [appointmentId, status]
+    );
+
+    await client.query("COMMIT");
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
 
   const updated = await getAppointmentById(appointmentId);
   if (!updated) throw new Error("Appointment not found.");
+
+  await safeAuditLog({
+    action: "appointment_status_updated",
+    entityType: "appointment",
+    entityId: appointmentId,
+    metadata: { status },
+  });
+
   return updated;
 }
 
@@ -474,7 +879,7 @@ export async function listAppointmentMessages(appointmentId: string) {
   const pool = getDbPool();
   const result = await pool.query(
     `
-    SELECT id, appointment_id, sender_id, sender_name, body, created_at
+    SELECT id, appointment_id, sender_id, sender_name, body, attachment_url, is_read, read_at, created_at
     FROM healthcare_appointment_messages
     WHERE appointment_id = $1
     ORDER BY created_at ASC;
@@ -489,7 +894,8 @@ export async function createAppointmentMessage(
   appointmentId: string,
   senderId: string,
   senderName: string | null,
-  body: string
+  body: string,
+  attachmentUrl?: string | null
 ) {
   await ensureHealthCareSchema();
   const pool = getDbPool();
@@ -497,16 +903,44 @@ export async function createAppointmentMessage(
   const content = normalizedText(body);
   if (!content) throw new Error("Message body is required.");
 
+  const safeAttachmentUrl = normalizedUrl(attachmentUrl);
+
   const result = await pool.query(
     `
-    INSERT INTO healthcare_appointment_messages (id, appointment_id, sender_id, sender_name, body)
-    VALUES ($1, $2, $3, $4, $5)
-    RETURNING id, appointment_id, sender_id, sender_name, body, created_at;
+    INSERT INTO healthcare_appointment_messages (id, appointment_id, sender_id, sender_name, body, attachment_url)
+    VALUES ($1, $2, $3, $4, $5, $6)
+    RETURNING id, appointment_id, sender_id, sender_name, body, attachment_url, is_read, read_at, created_at;
     `,
-    [randomUUID(), appointmentId, senderId, senderName, content]
+    [randomUUID(), appointmentId, senderId, senderName, content, safeAttachmentUrl]
   );
 
+  await safeAuditLog({
+    actorUserId: senderId,
+    action: "appointment_message_created",
+    entityType: "appointment_message",
+    entityId: String(result.rows[0].id),
+    metadata: { appointmentId, hasAttachment: Boolean(safeAttachmentUrl) },
+  });
+
   return mapAppointmentMessageRow(result.rows[0]);
+}
+
+export async function markAppointmentMessagesRead(appointmentId: string, readerUserId: string) {
+  await ensureHealthCareSchema();
+  const pool = getDbPool();
+  const result = await pool.query(
+    `
+    UPDATE healthcare_appointment_messages
+    SET is_read = true,
+        read_at = COALESCE(read_at, now())
+    WHERE appointment_id = $1
+      AND sender_id <> $2
+      AND is_read = false;
+    `,
+    [appointmentId, readerUserId]
+  );
+
+  return Number(result.rowCount ?? 0);
 }
 
 function getDonorRoomKey(requesterUserId: string, donorUserId: string) {
@@ -520,7 +954,7 @@ export async function listDonorChatMessages(requesterUserId: string, donorUserId
   const roomKey = getDonorRoomKey(requesterUserId, donorUserId);
   const result = await pool.query(
     `
-    SELECT id, room_key, donor_user_id, requester_user_id, sender_id, sender_name, body, created_at
+    SELECT id, room_key, donor_user_id, requester_user_id, sender_id, sender_name, body, blood_group, urgency_level, location_city, donor_verified, created_at
     FROM healthcare_blood_donor_chats
     WHERE room_key = $1
     ORDER BY created_at ASC;
@@ -537,6 +971,10 @@ export async function createDonorChatMessage(input: {
   senderId: string;
   senderName: string | null;
   body: string;
+  bloodGroup?: string | null;
+  urgencyLevel?: UrgencyLevel | null;
+  locationCity?: string | null;
+  donorVerified?: boolean;
 }) {
   await ensureHealthCareSchema();
   const pool = getDbPool();
@@ -545,6 +983,7 @@ export async function createDonorChatMessage(input: {
   if (!content) throw new Error("Message body is required.");
 
   const roomKey = getDonorRoomKey(input.requesterUserId, input.donorUserId);
+  const urgency = input.urgencyLevel ? normalizeUrgencyLevel(input.urgencyLevel) : null;
   const result = await pool.query(
     `
     INSERT INTO healthcare_blood_donor_chats (
@@ -554,10 +993,14 @@ export async function createDonorChatMessage(input: {
       requester_user_id,
       sender_id,
       sender_name,
-      body
+      body,
+      blood_group,
+      urgency_level,
+      location_city,
+      donor_verified
     )
-    VALUES ($1, $2, $3, $4, $5, $6, $7)
-    RETURNING id, room_key, donor_user_id, requester_user_id, sender_id, sender_name, body, created_at;
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+    RETURNING id, room_key, donor_user_id, requester_user_id, sender_id, sender_name, body, blood_group, urgency_level, location_city, donor_verified, created_at;
     `,
     [
       randomUUID(),
@@ -567,8 +1010,24 @@ export async function createDonorChatMessage(input: {
       input.senderId,
       input.senderName,
       content,
+      normalizedNullableText(input.bloodGroup),
+      urgency,
+      normalizedNullableText(input.locationCity),
+      Boolean(input.donorVerified),
     ]
   );
+
+  await safeAuditLog({
+    actorUserId: input.senderId,
+    action: "blood_donor_chat_message_created",
+    entityType: "blood_donor_chat",
+    entityId: String(result.rows[0].id),
+    metadata: {
+      donorUserId: input.donorUserId,
+      requesterUserId: input.requesterUserId,
+      urgency,
+    },
+  });
 
   return mapDonorChatMessageRow(result.rows[0]);
 }
@@ -607,6 +1066,8 @@ function mapDoctorRow(row: Record<string, unknown>): DoctorRecord {
     fullName: String(row.full_name),
     specialization: row.specialization ? String(row.specialization) : null,
     bio: row.bio ? String(row.bio) : null,
+    experienceYears: row.experience_years === null || row.experience_years === undefined ? null : Number(row.experience_years),
+    consultationFee: row.consultation_fee === null || row.consultation_fee === undefined ? null : Number(row.consultation_fee),
     createdAt: new Date(String(row.created_at)).toISOString(),
     updatedAt: new Date(String(row.updated_at)).toISOString(),
   };
@@ -647,6 +1108,9 @@ function mapAppointmentMessageRow(row: Record<string, unknown>): AppointmentMess
     senderId: String(row.sender_id),
     senderName: row.sender_name ? String(row.sender_name) : null,
     body: String(row.body),
+    attachmentUrl: row.attachment_url ? String(row.attachment_url) : null,
+    isRead: Boolean(row.is_read),
+    readAt: row.read_at ? new Date(String(row.read_at)).toISOString() : null,
     createdAt: new Date(String(row.created_at)).toISOString(),
   };
 }
@@ -660,6 +1124,10 @@ function mapDonorChatMessageRow(row: Record<string, unknown>): DonorChatMessageR
     senderId: String(row.sender_id),
     senderName: row.sender_name ? String(row.sender_name) : null,
     body: String(row.body),
+    bloodGroup: row.blood_group ? String(row.blood_group) : null,
+    urgencyLevel: row.urgency_level ? (String(row.urgency_level) as UrgencyLevel) : null,
+    locationCity: row.location_city ? String(row.location_city) : null,
+    donorVerified: Boolean(row.donor_verified),
     createdAt: new Date(String(row.created_at)).toISOString(),
   };
 }

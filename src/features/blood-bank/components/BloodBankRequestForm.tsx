@@ -16,6 +16,13 @@ type FormState = {
   notes: string;
 };
 
+type ProfileSummary = {
+  name?: string | null;
+  phone?: string | null;
+  city?: string | null;
+  bloodGroup?: string | null;
+};
+
 const INITIAL_STATE: FormState = {
   name: "",
   neededAt: "",
@@ -34,7 +41,7 @@ export function BloodBankRequestForm() {
   const [error, setError] = useState<string | null>(null);
   const [isAuthChecked, setIsAuthChecked] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [profile, setProfile] = useState<any | null>(null);
+  const [profile, setProfile] = useState<ProfileSummary | null>(null);
 
   const minDateTime = useMemo(() => {
     const now = new Date();
@@ -103,7 +110,7 @@ export function BloodBankRequestForm() {
           }));
           setIsLoggedIn(true);
         }
-      } catch (e) {
+      } catch {
         // ignore network/profile errors — treat as unauthenticated
       } finally {
         if (mounted) setIsAuthChecked(true);

@@ -8,12 +8,16 @@ type AppointmentMessage = {
   senderId: string;
   senderName: string | null;
   body: string;
+  attachmentUrl: string | null;
+  isRead: boolean;
+  readAt: string | null;
   createdAt: string;
 };
 
 export function AppointmentChatBox({ appointmentId }: { appointmentId: string }) {
   const [messages, setMessages] = useState<AppointmentMessage[]>([]);
   const [value, setValue] = useState("");
+  const [attachmentUrl, setAttachmentUrl] = useState("");
   const [sending, setSending] = useState(false);
 
   useEffect(() => {
@@ -26,6 +30,10 @@ export function AppointmentChatBox({ appointmentId }: { appointmentId: string })
       const payload = (await response.json()) as { data?: AppointmentMessage[] };
       if (active && response.ok) {
         setMessages(payload.data ?? []);
+        await fetch(`/api/healthcare/appointments/${appointmentId}/messages`, {
+          method: "PATCH",
+          cache: "no-store",
+        });
       }
     }
 
@@ -43,13 +51,14 @@ export function AppointmentChatBox({ appointmentId }: { appointmentId: string })
       const response = await fetch(`/api/healthcare/appointments/${appointmentId}/messages`, {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ body: value }),
+        body: JSON.stringify({ body: value, attachmentUrl: attachmentUrl || undefined }),
       });
 
       const payload = (await response.json()) as { data?: AppointmentMessage };
       if (response.ok && payload.data) {
         setMessages((prev) => [...prev, payload.data as AppointmentMessage]);
         setValue("");
+        setAttachmentUrl("");
       }
     } finally {
       setSending(false);
@@ -65,6 +74,16 @@ export function AppointmentChatBox({ appointmentId }: { appointmentId: string })
               {message.senderName ?? "User"} • {new Date(message.createdAt).toLocaleString()}
             </p>
             <p className="rounded-lg bg-slate-50 p-2 text-slate-800">{message.body}</p>
+            {message.attachmentUrl ? (
+              <a
+                href={message.attachmentUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-1 inline-block text-xs font-semibold text-emerald-700 underline"
+              >
+                Open attachment
+              </a>
+            ) : null}
           </div>
         ))}
       </div>
@@ -85,6 +104,12 @@ export function AppointmentChatBox({ appointmentId }: { appointmentId: string })
           {sending ? "Sending..." : "Send"}
         </button>
       </div>
+      <input
+        value={attachmentUrl}
+        onChange={(event) => setAttachmentUrl(event.target.value)}
+        placeholder="Optional attachment URL (https://...)"
+        className="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2 text-xs"
+      />
     </div>
   );
 }

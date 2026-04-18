@@ -42,6 +42,8 @@ export async function POST(request: Request) {
       fullName?: string;
       specialization?: string;
       bio?: string;
+      experienceYears?: number;
+      consultationFee?: number;
     };
 
     const email = String(body.email ?? "").trim().toLowerCase();
@@ -49,6 +51,14 @@ export async function POST(request: Request) {
     const fullName = String(body.fullName ?? "").trim();
     const specialization = String(body.specialization ?? "").trim();
     const bio = String(body.bio ?? "").trim();
+    const experienceYears =
+      typeof body.experienceYears === "number" && Number.isFinite(body.experienceYears)
+        ? Math.max(0, Math.floor(body.experienceYears))
+        : null;
+    const consultationFee =
+      typeof body.consultationFee === "number" && Number.isFinite(body.consultationFee)
+        ? Math.max(0, Number(body.consultationFee))
+        : null;
 
     if (!email || !password || password.length < 8 || !fullName) {
       return NextResponse.json(
@@ -90,6 +100,8 @@ export async function POST(request: Request) {
       fullName,
       specialization: specialization || null,
       bio: bio || null,
+      experienceYears,
+      consultationFee,
     });
 
     return NextResponse.json({ data, message: "Doctor account created." }, { status: 201 });

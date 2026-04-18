@@ -8,26 +8,28 @@ import ChatBox from "@/components/dog/ChatBox";
 
 export const dynamic = "force-dynamic";
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-  const dog = await getDogById(params.id);
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const dog = await getDogById(id);
   return {
     title: dog ? `My Pet · ${dog.name}` : "My Pet",
   };
 }
 
-export default async function MyPetPage({ params }: { params: { id: string } }) {
+export default async function MyPetPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await requireAuthenticatedUser();
   if (!session?.id) return null;
 
-  const dog = await getDogById(params.id);
+  const { id } = await params;
+  const dog = await getDogById(id);
   if (!dog) return (
     <main className="min-h-screen px-4 pb-20 pt-28 sm:px-6 lg:px-10">
       <div className="mx-auto max-w-4xl">Dog not found.</div>
     </main>
   );
 
-  const updates = await listDogPostAdoptionUpdates(params.id);
-  const messages = await listDogMessages(params.id);
+  const updates = await listDogPostAdoptionUpdates(id);
+  const messages = await listDogMessages(id);
 
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,_#f8fcf8_0%,_#edf5ef_100%)] px-4 pb-20 pt-28 sm:px-6 lg:px-10">
@@ -65,7 +67,7 @@ export default async function MyPetPage({ params }: { params: { id: string } }) 
           <div className="rounded-2xl border border-slate-200 bg-white p-5">
             <h2 className="text-lg font-semibold">Messages</h2>
             <div className="mt-3">
-              <ChatBox dogId={params.id} initialMessages={messages} />
+              <ChatBox dogId={id} initialMessages={messages} />
             </div>
           </div>
         </div>

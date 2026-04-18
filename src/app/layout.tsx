@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Manrope, Outfit } from "next/font/google";
 
 import { Navbar } from "@/components/header/Navbar";
 import { Footer } from "@/components/footer/Footer";
@@ -8,18 +7,6 @@ import { Providers } from "@/components/providers";
 import { siteConfig } from "@/config/site";
 
 import "./globals.css";
-
-const manrope = Manrope({
-  variable: "--font-body",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const outfit = Outfit({
-  variable: "--font-display",
-  subsets: ["latin"],
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.siteUrl),
@@ -152,7 +139,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(siteSchema) }}
         />
       </head>
-      <body className={`${manrope.variable} ${outfit.variable} antialiased`}>
+      <body className="antialiased">
         <Providers>
           <div className="app-boot-loader" aria-hidden="true">
             <div className="app-boot-loader__spinner" />

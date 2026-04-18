@@ -1,11 +1,3 @@
-function getRequiredEnv(name: string) {
-  const value = process.env[name];
-  if (!value) {
-    return "";
-  }
-  return value;
-}
-
 export function getSupabaseUrl() {
   return process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
 }

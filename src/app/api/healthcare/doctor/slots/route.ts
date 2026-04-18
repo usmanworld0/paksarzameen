@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { addDoctorSlot, getDoctorByUserId, listDoctorSlots } from "@/lib/healthcare";
+import { addDoctorSlot, assertHealthcareUserActive, getDoctorByUserId, listDoctorSlots } from "@/lib/healthcare";
 import { getRequiredApiUser } from "@/server/route-auth";
 
 export const dynamic = "force-dynamic";
@@ -9,6 +9,8 @@ export async function GET() {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   try {
+    await assertHealthcareUserActive(user.id);
+
     if (!process.env.DATABASE_URL) {
       return NextResponse.json({ data: [] });
     }
@@ -31,6 +33,8 @@ export async function POST(request: Request) {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   try {
+    await assertHealthcareUserActive(user.id);
+
     if (!process.env.DATABASE_URL) {
       return NextResponse.json({ error: "DATABASE_URL is not configured." }, { status: 500 });
     }
@@ -52,7 +56,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ data, message: "Slot added." }, { status: 201 });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to add slot.";
-    const statusCode = message.includes("Invalid") ? 400 : 500;
-    return NextResponse.json({ error: message }, { status: statusCode });
+    const statusCode = message.startsWith("SUSPENDED:")
+      ? 403
+      : message.includes("Invalid") || message.includes("conflicts") || message.includes("future")
+        ? 400
+        : 500;
+    return NextResponse.json({ error: message.replace(/^SUSPENDED:/, "") }, { status: statusCode });
   }
 }

@@ -8,6 +8,8 @@ type Doctor = {
   email: string;
   fullName: string;
   specialization: string | null;
+  experienceYears?: number | null;
+  consultationFee?: number | null;
 };
 
 export function AdminHealthCarePanel() {
@@ -16,6 +18,8 @@ export function AdminHealthCarePanel() {
   const [fullName, setFullName] = useState("");
   const [specialization, setSpecialization] = useState("");
   const [bio, setBio] = useState("");
+  const [experienceYears, setExperienceYears] = useState("");
+  const [consultationFee, setConsultationFee] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -43,7 +47,15 @@ export function AdminHealthCarePanel() {
       const response = await adminFetch("/api/admin/healthcare/doctors", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ email, password, fullName, specialization, bio }),
+        body: JSON.stringify({
+          email,
+          password,
+          fullName,
+          specialization,
+          bio,
+          experienceYears: experienceYears ? Number(experienceYears) : undefined,
+          consultationFee: consultationFee ? Number(consultationFee) : undefined,
+        }),
       });
 
       const payload = (await response.json()) as { error?: string };
@@ -58,6 +70,8 @@ export function AdminHealthCarePanel() {
       setFullName("");
       setSpecialization("");
       setBio("");
+      setExperienceYears("");
+      setConsultationFee("");
       await loadDoctors();
     } finally {
       setLoading(false);
@@ -79,6 +93,8 @@ export function AdminHealthCarePanel() {
             <input value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Password" type="password" required minLength={8} className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
             <input value={fullName} onChange={(event) => setFullName(event.target.value)} placeholder="Doctor full name" required className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
             <input value={specialization} onChange={(event) => setSpecialization(event.target.value)} placeholder="Specialization" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+            <input value={experienceYears} onChange={(event) => setExperienceYears(event.target.value)} placeholder="Experience years (optional)" type="number" min={0} className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+            <input value={consultationFee} onChange={(event) => setConsultationFee(event.target.value)} placeholder="Consultation fee (optional)" type="number" min={0} step="0.01" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
             <textarea value={bio} onChange={(event) => setBio(event.target.value)} placeholder="Bio" className="min-h-24 rounded-lg border border-slate-300 px-3 py-2 text-sm" />
 
             <button type="submit" disabled={loading} className="rounded-full bg-emerald-700 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60">
@@ -97,6 +113,9 @@ export function AdminHealthCarePanel() {
                 <p className="text-sm font-semibold text-slate-900">{doctor.fullName}</p>
                 <p className="text-xs text-slate-600">{doctor.email}</p>
                 <p className="text-xs text-emerald-700">{doctor.specialization ?? "General"}</p>
+                <p className="text-xs text-slate-500">
+                  {doctor.experienceYears ?? 0} years exp • Fee {doctor.consultationFee ?? 0}
+                </p>
               </article>
             ))}
           </div>

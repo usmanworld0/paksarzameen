@@ -1,5 +1,12 @@
 import { NextResponse } from "next/server";
-import { createAppointmentMessage, getAppointmentById, getDoctorByUserId, listAppointmentMessages } from "@/lib/healthcare";
+import {
+  assertHealthcareUserActive,
+  createAppointmentMessage,
+  getAppointmentById,
+  getDoctorByUserId,
+  listAppointmentMessages,
+  markAppointmentMessagesRead,
+} from "@/lib/healthcare";
 import { getRequiredApiUser } from "@/server/route-auth";
 
 type RouteContext = {
@@ -29,6 +36,8 @@ export async function GET(_: Request, context: RouteContext) {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   try {
+    await assertHealthcareUserActive(user.id);
+
     const { id } = await context.params;
     const access = await isAllowedForAppointment(user.id, id);
     if (!access.allowed) {
@@ -48,22 +57,52 @@ export async function POST(request: Request, context: RouteContext) {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   try {
+    await assertHealthcareUserActive(user.id);
+
     const { id } = await context.params;
     const access = await isAllowedForAppointment(user.id, id);
     if (!access.allowed) {
       return NextResponse.json({ error: "Forbidden." }, { status: 403 });
     }
 
-    const body = (await request.json()) as { body?: string };
+    const body = (await request.json()) as { body?: string; attachmentUrl?: string };
     const text = String(body.body ?? "").trim();
     if (!text) {
       return NextResponse.json({ error: "Message body is required." }, { status: 400 });
     }
 
-    const data = await createAppointmentMessage(id, user.id, user.email ?? null, text);
+    const attachmentUrl = typeof body.attachmentUrl === "string" ? body.attachmentUrl : null;
+    const data = await createAppointmentMessage(id, user.id, user.email ?? null, text, attachmentUrl);
     return NextResponse.json({ data, message: "Message sent." }, { status: 201 });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to create message.";
-    return NextResponse.json({ error: message }, { status: 500 });
+    const statusCode = message.startsWith("SUSPENDED:") || message.includes("Forbidden")
+      ? 403
+      : message.includes("required") || message.includes("Invalid")
+        ? 400
+        : 500;
+    return NextResponse.json({ error: message.replace(/^SUSPENDED:/, "") }, { status: statusCode });
+  }
+}
+
+export async function PATCH(_: Request, context: RouteContext) {
+  const user = await getRequiredApiUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  try {
+    await assertHealthcareUserActive(user.id);
+
+    const { id } = await context.params;
+    const access = await isAllowedForAppointment(user.id, id);
+    if (!access.allowed) {
+      return NextResponse.json({ error: "Forbidden." }, { status: 403 });
+    }
+
+    const updatedCount = await markAppointmentMessagesRead(id, user.id);
+    return NextResponse.json({ data: { updatedCount }, message: "Read receipts updated." });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to update read receipts.";
+    const statusCode = message.startsWith("SUSPENDED:") ? 403 : 500;
+    return NextResponse.json({ error: message.replace(/^SUSPENDED:/, "") }, { status: statusCode });
   }
 }

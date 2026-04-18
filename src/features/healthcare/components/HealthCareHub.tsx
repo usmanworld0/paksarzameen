@@ -8,6 +8,8 @@ type Doctor = {
   fullName: string;
   specialization: string | null;
   bio: string | null;
+  experienceYears: number | null;
+  consultationFee: number | null;
 };
 
 type Slot = {
@@ -31,6 +33,7 @@ type Appointment = {
 export function HealthCareHub() {
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState<string | null>(null);
+  const [disclaimer, setDisclaimer] = useState<string | null>(null);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [slots, setSlots] = useState<Slot[]>([]);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -70,8 +73,9 @@ export function HealthCareHub() {
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ question }),
     });
-    const payload = (await response.json()) as { data?: { answer?: string } };
+    const payload = (await response.json()) as { data?: { answer?: string; disclaimer?: string } };
     setAnswer(payload.data?.answer ?? "No response available.");
+    setDisclaimer(payload.data?.disclaimer ?? null);
   }
 
   async function book() {
@@ -130,6 +134,7 @@ export function HealthCareHub() {
           </button>
         </div>
         {answer ? <p className="mt-4 rounded-xl bg-emerald-50 p-3 text-sm text-emerald-900">{answer}</p> : null}
+        {disclaimer ? <p className="mt-2 text-xs text-amber-700">{disclaimer}</p> : null}
       </section>
 
       <section className="rounded-3xl border border-emerald-100 bg-white p-6 shadow-sm sm:p-8">
@@ -148,7 +153,10 @@ export function HealthCareHub() {
             <option value="">Select doctor</option>
             {doctors.map((doctor) => (
               <option key={doctor.doctorId} value={doctor.doctorId}>
-                {doctor.fullName}{doctor.specialization ? ` - ${doctor.specialization}` : ""}
+                {doctor.fullName}
+                {doctor.specialization ? ` - ${doctor.specialization}` : ""}
+                {doctor.experienceYears !== null ? ` • ${doctor.experienceYears}y exp` : ""}
+                {doctor.consultationFee !== null ? ` • Fee ${doctor.consultationFee}` : ""}
               </option>
             ))}
           </select>

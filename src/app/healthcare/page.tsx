@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function HealthCarePage() {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-50 to-emerald-50">
+    <main className="min-h-screen bg-gradient-to-br from-slate-50 to-emerald-50 pt-28 sm:pt-32">
       <HealthCareHubProfessional />
     </main>
   );

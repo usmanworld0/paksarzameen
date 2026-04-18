@@ -141,7 +141,7 @@ export function HealthCareHubProfessional() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-emerald-50">
       {/* Header */}
-      <div className="border-b border-slate-200 bg-white shadow-sm sticky top-0 z-40">
+      <div className="sticky top-[6.5rem] z-40 border-b border-slate-200 bg-white shadow-sm sm:top-28">
         <div className="mx-auto max-w-7xl px-6 py-4">
           <div className="flex items-center justify-between">
             <div>

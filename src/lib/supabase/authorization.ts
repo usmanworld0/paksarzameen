@@ -38,55 +38,65 @@ function mapActionColumn(action: PermissionAction) {
 }
 
 export async function getAuthenticatedUser() {
-  const supabase = await createSupabaseServerClient();
+  let supabase;
 
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
-
-  if (userError || !user) {
+  try {
+    supabase = await createSupabaseServerClient();
+  } catch {
     return null;
   }
 
-  const { data: profile, error: profileError } = await supabase
-    .from("profiles")
-    .select("id, email, role")
-    .eq("id", user.id)
-    .maybeSingle();
+  try {
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
 
-  if (profileError) {
-    return null;
-  }
-
-  const email = String(profile?.email ?? user.email ?? "").trim().toLowerCase();
-  const fallbackAdmins = getAdminFallbackEmails();
-  const isFallbackAdmin = Boolean(email) && fallbackAdmins.includes(email);
-  const baseRole = normalizeRole(profile?.role ?? user.user_metadata?.role);
-
-  let role: AppRole = isFallbackAdmin ? "admin" : baseRole;
-  if (role !== "admin" && hasSupabaseServiceRoleKey()) {
-    try {
-      const supabaseAdmin = getSupabaseAdminClient();
-      const { data: adminProfile, error: adminProfileError } = await supabaseAdmin
-        .from("profiles")
-        .select("role")
-        .eq("id", user.id)
-        .maybeSingle<{ role?: string }>();
-
-      if (!adminProfileError && normalizeRole(adminProfile?.role) === "admin") {
-        role = "admin";
-      }
-    } catch {
-      // Ignore fallback failures and continue with the best known role.
+    if (userError || !user) {
+      return null;
     }
-  }
 
-  return {
-    id: String(profile?.id ?? user.id),
-    email,
-    role,
-  } satisfies AuthenticatedUser;
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("id, email, role")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if (profileError) {
+      return null;
+    }
+
+    const email = String(profile?.email ?? user.email ?? "").trim().toLowerCase();
+    const fallbackAdmins = getAdminFallbackEmails();
+    const isFallbackAdmin = Boolean(email) && fallbackAdmins.includes(email);
+    const baseRole = normalizeRole(profile?.role ?? user.user_metadata?.role);
+
+    let role: AppRole = isFallbackAdmin ? "admin" : baseRole;
+    if (role !== "admin" && hasSupabaseServiceRoleKey()) {
+      try {
+        const supabaseAdmin = getSupabaseAdminClient();
+        const { data: adminProfile, error: adminProfileError } = await supabaseAdmin
+          .from("profiles")
+          .select("role")
+          .eq("id", user.id)
+          .maybeSingle<{ role?: string }>();
+
+        if (!adminProfileError && normalizeRole(adminProfile?.role) === "admin") {
+          role = "admin";
+        }
+      } catch {
+        // Ignore fallback failures and continue with the best known role.
+      }
+    }
+
+    return {
+      id: String(profile?.id ?? user.id),
+      email,
+      role,
+    } satisfies AuthenticatedUser;
+  } catch {
+    return null;
+  }
 }
 
 export async function hasTenantPermission(
@@ -94,21 +104,31 @@ export async function hasTenantPermission(
   moduleName: ModuleName,
   action: PermissionAction
 ) {
-  const supabase = await createSupabaseServerClient();
+  let supabase;
 
-  const { data, error } = await supabase
-    .from("tenant_permissions")
-    .select("can_view, can_edit, can_manage")
-    .eq("user_id", userId)
-    .eq("module", moduleName)
-    .maybeSingle<TenantPermission>();
-
-  if (error || !data) {
+  try {
+    supabase = await createSupabaseServerClient();
+  } catch {
     return false;
   }
 
-  const column = mapActionColumn(action);
-  return Boolean(data[column]);
+  try {
+    const { data, error } = await supabase
+      .from("tenant_permissions")
+      .select("can_view, can_edit, can_manage")
+      .eq("user_id", userId)
+      .eq("module", moduleName)
+      .maybeSingle<TenantPermission>();
+
+    if (error || !data) {
+      return false;
+    }
+
+    const column = mapActionColumn(action);
+    return Boolean(data[column]);
+  } catch {
+    return false;
+  }
 }
 
 export async function requireAuthenticatedUser() {

@@ -16,6 +16,7 @@ export type DogRecord = {
   imageUrl: string;
   status: DogStatus;
   createdBy?: string | null;
+  createdAt: string;
   updatedAt: string;
 };
 
@@ -52,6 +53,7 @@ export type CreateDogInput = {
   area?: string | null;
   description: string;
   imageUrl: string;
+  createdBy?: string | null;
   status?: DogStatus;
 };
 

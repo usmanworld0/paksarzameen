@@ -1,24 +1,40 @@
 import { NextResponse } from "next/server";
-import { createDoctor, listDoctors } from "@/services/healthcare/core-service";
+import { createDoctor, listDoctorsWithFilters } from "@/services/healthcare/core-service";
 import { getRequiredAdminApiUser } from "@/server/route-auth";
 import { getSupabaseAdminClient } from "@/lib/supabase/admin";
 import { hasSupabaseServiceRoleKey } from "@/lib/supabase/env";
-import { doctorCreateSchema } from "@/lib/healthcare-validation";
+import { doctorCreateSchema, doctorListQuerySchema } from "@/lib/healthcare-validation";
 import { consumeRateLimit } from "@/lib/rate-limit";
 import { mapHealthcareError } from "@/services/healthcare/error-mapper";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(request: Request) {
   const admin = await getRequiredAdminApiUser();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   try {
-    if (!process.env.DATABASE_URL) {
-      return NextResponse.json({ data: [] });
+    const { searchParams } = new URL(request.url);
+    const parsed = doctorListQuerySchema.safeParse({
+      search: searchParams.get("search") ?? undefined,
+      specialization: searchParams.get("specialization") ?? undefined,
+      minExperience: searchParams.get("minExperience") ?? undefined,
+      maxFee: searchParams.get("maxFee") ?? undefined,
+      sortBy: searchParams.get("sortBy") ?? undefined,
+      sortOrder: searchParams.get("sortOrder") ?? undefined,
+    });
+
+    if (!parsed.success) {
+      return NextResponse.json(
+        {
+          error: "Invalid doctors query parameters.",
+          details: parsed.error.flatten(),
+        },
+        { status: 400 }
+      );
     }
 
-    const data = await listDoctors();
+    const data = await listDoctorsWithFilters(parsed.data);
     return NextResponse.json({ data });
   } catch (error) {
     const mapped = mapHealthcareError(error, "Failed to load doctors.");
@@ -43,10 +59,6 @@ export async function POST(request: Request) {
 
     if (!rate.allowed) {
       return NextResponse.json({ error: "Daily doctor creation limit exceeded." }, { status: 429 });
-    }
-
-    if (!process.env.DATABASE_URL) {
-      return NextResponse.json({ error: "DATABASE_URL is not configured." }, { status: 500 });
     }
 
     const body = (await request.json()) as unknown;

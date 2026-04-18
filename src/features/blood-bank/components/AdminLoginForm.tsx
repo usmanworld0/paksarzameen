@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { AlertCircle, Eye, EyeOff, Loader2, ShieldCheck } from "lucide-react";
+import { createClient } from "@/utils/supabase/client";
 
 type LoginState = {
   email: string;
@@ -9,6 +10,15 @@ type LoginState = {
 };
 
 export function AdminLoginForm() {
+  const [supabaseError] = useState(() => {
+    try {
+      createClient();
+      return null;
+    } catch (error) {
+      return error instanceof Error ? error.message : "Supabase is not configured.";
+    }
+  });
+  const supabase = supabaseError ? null : createClient();
   const [credentials, setCredentials] = useState<LoginState>({
     email: "",
     password: "",
@@ -16,11 +26,15 @@ export function AdminLoginForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hint, setHint] = useState<string | null>(null);
+  const [redirectTo, setRedirectTo] = useState<string | null>(null);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsSubmitting(true);
     setError(null);
+    setHint(null);
+    setRedirectTo(null);
 
     try {
       const formData = new FormData();
@@ -34,12 +48,45 @@ export function AdminLoginForm() {
       });
 
       const loginPayload = (await loginResponse.json()) as {
+        success?: boolean;
+        role?: "admin" | "tenant" | "user";
         error?: string;
+        code?: string;
+        hint?: string;
         redirectTo?: string;
+        session?: {
+          accessToken?: string;
+          refreshToken?: string;
+        };
       };
 
       if (!loginResponse.ok) {
+        setHint(loginPayload.hint ?? null);
+        if (loginPayload.code === "USER_ACCOUNT_REDIRECT" && loginPayload.redirectTo) {
+          setRedirectTo(loginPayload.redirectTo);
+        }
         throw new Error(loginPayload.error ?? "Unable to login.");
+      }
+
+      if (loginPayload.role === "user") {
+        if (!supabase) {
+          throw new Error(supabaseError ?? "Supabase is not configured.");
+        }
+
+        const accessToken = loginPayload.session?.accessToken;
+        const refreshToken = loginPayload.session?.refreshToken;
+        if (!accessToken || !refreshToken) {
+          throw new Error("Unable to start user session. Please try again.");
+        }
+
+        const { error: setSessionError } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        });
+
+        if (setSessionError) {
+          throw new Error(setSessionError.message || "Unable to start user session.");
+        }
       }
 
       window.location.assign(loginPayload.redirectTo || "/admin");
@@ -111,7 +158,7 @@ export function AdminLoginForm() {
             <h1 className="text-3xl font-light text-neutral-900" style={{ fontFamily: "'Playfair Display', serif" }}>
               Welcome back
             </h1>
-            <p className="mt-2 text-sm text-neutral-400">Sign in to access your admin control center</p>
+            <p className="mt-2 text-sm text-neutral-400">Centralized access login for admin, tenant, and user dashboards</p>
             <p className="mt-3 text-xs text-neutral-400">Default access: abdullahtanseer@gmail.com / CommonWe@lth!</p>
           </div>
 
@@ -164,6 +211,27 @@ export function AdminLoginForm() {
                 <span>{error}</span>
               </div>
             ) : null}
+
+              {hint ? (
+                <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                  <p>{hint}</p>
+                  {redirectTo ? (
+                    <button
+                      type="button"
+                      onClick={() => window.location.assign(redirectTo)}
+                      className="mt-2 rounded-md bg-amber-100 px-3 py-1.5 text-xs font-semibold text-amber-900"
+                    >
+                      Go to User Login
+                    </button>
+                  ) : null}
+                </div>
+              ) : null}
+
+              {supabaseError ? (
+                <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                  <p>{supabaseError}</p>
+                </div>
+              ) : null}
 
             <button
               type="submit"

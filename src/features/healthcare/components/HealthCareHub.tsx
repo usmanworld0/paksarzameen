@@ -59,17 +59,36 @@ export function HealthCareHub() {
   );
 
   async function loadData() {
-    const doctorsResponse = await fetch("/api/healthcare/doctors", { cache: "no-store" });
-    const doctorsPayload = (await doctorsResponse.json()) as {
-      data?: { doctors?: Doctor[]; slots?: Slot[] };
-    };
-    setDoctors(doctorsPayload.data?.doctors ?? []);
-    setSlots(doctorsPayload.data?.slots ?? []);
+    try {
+      const doctorsResponse = await fetch("/api/healthcare/doctors", { cache: "no-store" });
+      const doctorsPayload = (await doctorsResponse.json()) as {
+        data?: { doctors?: Doctor[]; slots?: Slot[] };
+        error?: string;
+      };
 
-    const appointmentsResponse = await fetch("/api/healthcare/appointments", { cache: "no-store" });
-    const appointmentsPayload = (await appointmentsResponse.json()) as { data?: Appointment[] };
-    if (appointmentsResponse.ok) {
-      setAppointments(appointmentsPayload.data ?? []);
+      if (!doctorsResponse.ok) {
+        setDoctors([]);
+        setSlots([]);
+        setFeedback(doctorsPayload.error ?? "Unable to load doctors right now.");
+        return;
+      }
+
+      setDoctors(doctorsPayload.data?.doctors ?? []);
+      setSlots(doctorsPayload.data?.slots ?? []);
+
+      const appointmentsResponse = await fetch("/api/healthcare/appointments", { cache: "no-store" });
+      const appointmentsPayload = (await appointmentsResponse.json()) as { data?: Appointment[]; error?: string };
+      if (appointmentsResponse.ok) {
+        setAppointments(appointmentsPayload.data ?? []);
+      } else {
+        setAppointments([]);
+        setFeedback(appointmentsPayload.error ?? "Unable to load appointments right now.");
+      }
+    } catch {
+      setDoctors([]);
+      setSlots([]);
+      setAppointments([]);
+      setFeedback("Unable to load healthcare data right now.");
     }
   }
 

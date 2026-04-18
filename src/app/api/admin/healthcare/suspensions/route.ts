@@ -13,10 +13,6 @@ export async function POST(request: Request) {
   }
 
   try {
-    if (!process.env.DATABASE_URL) {
-      return NextResponse.json({ error: "DATABASE_URL is not configured." }, { status: 500 });
-    }
-
     const body = (await request.json()) as unknown;
     const parsed = suspensionSchema.safeParse(body);
     if (!parsed.success) {

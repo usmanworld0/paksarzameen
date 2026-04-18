@@ -6,15 +6,14 @@ import {
   updateAppointmentStatus,
 } from "@/services/healthcare/core-service";
 import { getRequiredApiUser } from "@/server/route-auth";
-import { prisma } from "@/lib/prisma";
-import { appointmentCancelSchema, appointmentCreateSchema } from "@/lib/healthcare-validation";
+import { appointmentCancelSchema, appointmentCreateSchema, appointmentListQuerySchema } from "@/lib/healthcare-validation";
 import { consumeRateLimit } from "@/lib/rate-limit";
 import { enforceAppointmentCancellationRule } from "@/services/healthcare/core-service";
 import { mapHealthcareError } from "@/services/healthcare/error-mapper";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(request: Request) {
   const user = await getRequiredApiUser();
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -23,11 +22,25 @@ export async function GET() {
   try {
     await assertHealthcareUserActive(user.id);
 
-    if (!process.env.DATABASE_URL) {
-      return NextResponse.json({ data: [] });
+    const { searchParams } = new URL(request.url);
+    const parsed = appointmentListQuerySchema.safeParse({
+      status: searchParams.get("status") ?? undefined,
+      search: searchParams.get("search") ?? undefined,
+      sortBy: searchParams.get("sortBy") ?? undefined,
+      sortOrder: searchParams.get("sortOrder") ?? undefined,
+    });
+
+    if (!parsed.success) {
+      return NextResponse.json(
+        {
+          error: "Invalid appointments query parameters.",
+          details: parsed.error.flatten(),
+        },
+        { status: 400 }
+      );
     }
 
-    const data = await listAppointmentsForPatient(user.id);
+    const data = await listAppointmentsForPatient(user.id, parsed.data);
     return NextResponse.json({ data });
   } catch (error) {
     const mapped = mapHealthcareError(error, "Failed to load appointments.");
@@ -56,23 +69,6 @@ export async function POST(request: Request) {
     }
 
     await assertHealthcareUserActive(user.id);
-
-    // Fetch full user data including CNIC from database
-    const fullUser = await prisma.user.findUnique({
-      where: { id: user.id },
-      select: { cnic: true },
-    });
-
-    if (!fullUser?.cnic) {
-      return NextResponse.json(
-        { error: "CNIC is required to book an appointment. Please complete your profile with CNIC information." },
-        { status: 403 }
-      );
-    }
-
-    if (!process.env.DATABASE_URL) {
-      return NextResponse.json({ error: "DATABASE_URL is not configured." }, { status: 500 });
-    }
 
     const body = (await request.json()) as unknown;
     const parsed = appointmentCreateSchema.safeParse(body);
@@ -108,10 +104,6 @@ export async function PATCH(request: Request) {
 
   try {
     await assertHealthcareUserActive(user.id);
-
-    if (!process.env.DATABASE_URL) {
-      return NextResponse.json({ error: "DATABASE_URL is not configured." }, { status: 500 });
-    }
 
     const body = (await request.json()) as unknown;
     const parsed = appointmentCancelSchema.safeParse(body);

@@ -32,6 +32,19 @@ export function mapHealthcareError(error: unknown, fallbackMessage: string): Hea
   }
 
   if (
+    lower.includes("could not find the table") ||
+    lower.includes("relation") && lower.includes("does not exist") ||
+    lower.includes("schema cache")
+  ) {
+    return {
+      code: "HEALTHCARE_SCHEMA_NOT_INITIALIZED",
+      message:
+        "Healthcare schema is not initialized in Supabase. Run docs/database/healthcare_schema_init.sql in the Supabase SQL Editor and retry.",
+      status: 503,
+    };
+  }
+
+  if (
     lower.includes("invalid") ||
     lower.includes("required") ||
     lower.includes("conflict") ||

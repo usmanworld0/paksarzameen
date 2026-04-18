@@ -10,6 +10,7 @@ import {
 import { headers } from "next/headers";
 import { getSupabaseAnonClient, getSupabaseAdminClient } from "@/lib/supabase/admin";
 import { getAdminFallbackEmails, hasSupabaseServiceRoleKey } from "@/lib/supabase/env";
+import { getAdminSessionFromCookies } from "@/lib/admin-session";
 
 type RouteUser = {
   id: string;
@@ -82,10 +83,43 @@ async function resolveUserFromBearerToken() {
   }
 }
 
+async function resolveUserFromAdminSession() {
+  const session = await getAdminSessionFromCookies();
+  if (!session || !hasSupabaseServiceRoleKey()) {
+    return null;
+  }
+
+  try {
+    const supabaseAdmin = getSupabaseAdminClient();
+    const { data: profile, error } = await supabaseAdmin
+      .from("profiles")
+      .select("id, email, role")
+      .eq("email", session.email)
+      .maybeSingle<{ id?: string; email?: string; role?: string }>();
+
+    if (error || !profile?.id) {
+      return null;
+    }
+
+    return {
+      id: profile.id,
+      email: String(profile.email ?? session.email).trim().toLowerCase(),
+      role: session.role === "admin" ? "admin" : normalizeRole(profile.role ?? "tenant"),
+    } satisfies RouteUser;
+  } catch {
+    return null;
+  }
+}
+
 export async function getRequiredApiUser() {
   const cookieUser = await requireAuthenticatedUser();
   if (cookieUser) {
     return cookieUser;
+  }
+
+  const adminSessionUser = await resolveUserFromAdminSession();
+  if (adminSessionUser) {
+    return adminSessionUser;
   }
 
   return resolveUserFromBearerToken();

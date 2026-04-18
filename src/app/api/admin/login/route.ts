@@ -127,11 +127,31 @@ export async function POST(request: NextRequest) {
     }
 
     if (!sessionRole) {
-      await supabase.auth.signOut();
-      return NextResponse.json(
-        { error: "This account does not have admin or tenant panel access." },
-        { status: 403 }
+      if (!data.session?.access_token || !data.session?.refresh_token) {
+        return NextResponse.json(
+          {
+            error: "Unable to initialize user session.",
+          },
+          { status: 401 }
+        );
+      }
+
+      const response = NextResponse.json(
+        {
+          success: true,
+          role: "user",
+          redirectTo: "/dashboard",
+          session: {
+            accessToken: data.session.access_token,
+            refreshToken: data.session.refresh_token,
+          },
+        },
+        { status: 200 }
       );
+
+      // Ensure stale admin sessions do not leak into normal user access.
+      response.cookies.set(ADMIN_SESSION_COOKIE_NAME, "", getAdminSessionCookieOptions(0));
+      return response;
     }
 
     await supabase.auth.signOut();

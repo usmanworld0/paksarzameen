@@ -55,21 +55,86 @@ export function HealthCareHubProfessional() {
   const [reason, setReason] = useState("");
   const [booking, setBooking] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
+  const [doctorSearch, setDoctorSearch] = useState("");
+  const [doctorSpecialization, setDoctorSpecialization] = useState("");
+  const [doctorMinExperience, setDoctorMinExperience] = useState("");
+  const [doctorMaxFee, setDoctorMaxFee] = useState("");
+  const [doctorSortBy, setDoctorSortBy] = useState("recent");
+  const [doctorSortOrder, setDoctorSortOrder] = useState("desc");
+  const [appointmentSearch, setAppointmentSearch] = useState("");
+  const [appointmentStatus, setAppointmentStatus] = useState("all");
+  const [appointmentSortBy, setAppointmentSortBy] = useState("createdAt");
+  const [appointmentSortOrder, setAppointmentSortOrder] = useState("desc");
+  const [cancellingAppointmentId, setCancellingAppointmentId] = useState<string | null>(null);
 
   const filteredSlots = slots.filter((slot) => slot.doctorId === selectedDoctorId);
 
   async function loadData() {
-    const doctorsResponse = await fetch("/api/healthcare/doctors", { cache: "no-store" });
-    const doctorsPayload = (await doctorsResponse.json()) as {
-      data?: { doctors?: Doctor[]; slots?: Slot[] };
-    };
-    setDoctors(doctorsPayload.data?.doctors ?? []);
-    setSlots(doctorsPayload.data?.slots ?? []);
+    try {
+      console.log("[loadData] Starting to load doctors and appointments...");
+      const params = new URLSearchParams();
+      if (doctorSearch.trim()) params.set("search", doctorSearch.trim());
+      if (doctorSpecialization.trim()) params.set("specialization", doctorSpecialization.trim());
+      if (doctorMinExperience.trim()) params.set("minExperience", doctorMinExperience.trim());
+      if (doctorMaxFee.trim()) params.set("maxFee", doctorMaxFee.trim());
+      params.set("sortBy", doctorSortBy);
+      params.set("sortOrder", doctorSortOrder);
 
-    const appointmentsResponse = await fetch("/api/healthcare/appointments", { cache: "no-store" });
-    const appointmentsPayload = (await appointmentsResponse.json()) as { data?: Appointment[] };
-    if (appointmentsResponse.ok) {
-      setAppointments(appointmentsPayload.data ?? []);
+      const doctorsResponse = await fetch(`/api/healthcare/doctors?${params.toString()}`, { cache: "no-store" });
+      const doctorsPayload = (await doctorsResponse.json()) as {
+        data?: { doctors?: Doctor[]; slots?: Slot[] };
+        error?: string;
+      };
+
+      console.log("[loadData] Doctors response status:", doctorsResponse.status);
+      console.log("[loadData] Doctors payload:", doctorsPayload);
+
+      if (!doctorsResponse.ok) {
+        const errorMsg = doctorsPayload.error ?? "Unable to load doctors right now.";
+        console.error("[loadData] Doctors API error:", errorMsg);
+        setDoctors([]);
+        setSlots([]);
+        setFeedback(errorMsg);
+        return;
+      }
+
+      const doctors = doctorsPayload.data?.doctors ?? [];
+      const slots = doctorsPayload.data?.slots ?? [];
+      console.log(`[loadData] Loaded ${doctors.length} doctors and ${slots.length} slots`);
+      
+      setDoctors(doctors);
+      setSlots(slots);
+
+      const appointmentParams = new URLSearchParams();
+      if (appointmentSearch.trim()) appointmentParams.set("search", appointmentSearch.trim());
+      if (appointmentStatus !== "all") appointmentParams.set("status", appointmentStatus);
+      appointmentParams.set("sortBy", appointmentSortBy);
+      appointmentParams.set("sortOrder", appointmentSortOrder);
+
+      const appointmentsResponse = await fetch(`/api/healthcare/appointments?${appointmentParams.toString()}`, {
+        cache: "no-store",
+      });
+      const appointmentsPayload = (await appointmentsResponse.json()) as { data?: Appointment[]; error?: string };
+      
+      console.log("[loadData] Appointments response status:", appointmentsResponse.status);
+      
+      if (appointmentsResponse.ok) {
+        const appointments = appointmentsPayload.data ?? [];
+        console.log(`[loadData] Loaded ${appointments.length} appointments`);
+        setAppointments(appointments);
+      } else {
+        const errorMsg = appointmentsPayload.error ?? "Unable to load appointments right now.";
+        console.error("[loadData] Appointments API error:", errorMsg);
+        setAppointments([]);
+        setFeedback(errorMsg);
+      }
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : String(err);
+      console.error("[loadData] Exception:", errorMsg, err);
+      setDoctors([]);
+      setSlots([]);
+      setAppointments([]);
+      setFeedback("Unable to load healthcare data right now.");
     }
   }
 
@@ -134,9 +199,44 @@ export function HealthCareHubProfessional() {
     }
   }
 
+  async function cancelAppointment(appointmentId: string) {
+    setCancellingAppointmentId(appointmentId);
+    setFeedback(null);
+
+    try {
+      const response = await fetch("/api/healthcare/appointments", {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          appointmentId,
+          status: "cancelled",
+        }),
+      });
+
+      const payload = (await response.json()) as { error?: string };
+      if (!response.ok) {
+        setFeedback(payload.error ?? "Unable to cancel appointment.");
+        return;
+      }
+
+      setFeedback("Appointment cancelled successfully.");
+      await loadData();
+    } finally {
+      setCancellingAppointmentId(null);
+    }
+  }
+
   useEffect(() => {
     void loadData();
   }, []);
+
+  useEffect(() => {
+    void loadData();
+  }, [doctorSortBy, doctorSortOrder]);
+
+  useEffect(() => {
+    void loadData();
+  }, [appointmentStatus, appointmentSortBy, appointmentSortOrder]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-emerald-50">
@@ -286,6 +386,82 @@ export function HealthCareHubProfessional() {
         {activeTab === "doctors" && (
           <div className="space-y-4">
             <h2 className="text-2xl font-bold text-slate-900">Find & Book a Doctor</h2>
+
+            <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                <input
+                  value={doctorSearch}
+                  onChange={(event) => setDoctorSearch(event.target.value)}
+                  placeholder="Search doctor, specialization, bio"
+                  className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                />
+                <input
+                  value={doctorSpecialization}
+                  onChange={(event) => setDoctorSpecialization(event.target.value)}
+                  placeholder="Filter specialization"
+                  className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                />
+                <input
+                  value={doctorMinExperience}
+                  onChange={(event) => setDoctorMinExperience(event.target.value)}
+                  placeholder="Min experience (years)"
+                  type="number"
+                  min={0}
+                  className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                />
+                <input
+                  value={doctorMaxFee}
+                  onChange={(event) => setDoctorMaxFee(event.target.value)}
+                  placeholder="Max fee"
+                  type="number"
+                  min={0}
+                  className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                />
+                <select
+                  value={doctorSortBy}
+                  onChange={(event) => setDoctorSortBy(event.target.value)}
+                  className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                >
+                  <option value="recent">Sort by newest</option>
+                  <option value="experience">Sort by experience</option>
+                  <option value="fee">Sort by fee</option>
+                  <option value="name">Sort by name</option>
+                </select>
+                <select
+                  value={doctorSortOrder}
+                  onChange={(event) => setDoctorSortOrder(event.target.value)}
+                  className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                >
+                  <option value="desc">Descending</option>
+                  <option value="asc">Ascending</option>
+                </select>
+              </div>
+
+              <div className="mt-3 flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => void loadData()}
+                  className="rounded-lg bg-slate-900 px-4 py-2 text-xs font-semibold text-white"
+                >
+                  Apply Search/Filters
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDoctorSearch("");
+                    setDoctorSpecialization("");
+                    setDoctorMinExperience("");
+                    setDoctorMaxFee("");
+                    setDoctorSortBy("recent");
+                    setDoctorSortOrder("desc");
+                  }}
+                  className="rounded-lg border border-slate-300 px-4 py-2 text-xs font-semibold text-slate-700"
+                >
+                  Reset
+                </button>
+              </div>
+            </div>
+
             {doctors.length === 0 ? (
               <div className="rounded-xl border border-slate-200 bg-white p-8 text-center">
                 <Users className="mx-auto h-12 w-12 text-slate-300" />
@@ -391,7 +567,63 @@ export function HealthCareHubProfessional() {
         {/* Appointments Tab */}
         {activeTab === "appointments" && (
           <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-slate-900">Your Appointments</h2>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h2 className="text-2xl font-bold text-slate-900">Your Appointments</h2>
+              <button
+                type="button"
+                onClick={() => void loadData()}
+                className="rounded-lg border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700"
+              >
+                Refresh
+              </button>
+            </div>
+
+            <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                <input
+                  value={appointmentSearch}
+                  onChange={(event) => setAppointmentSearch(event.target.value)}
+                  placeholder="Search reason"
+                  className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                />
+                <select
+                  value={appointmentStatus}
+                  onChange={(event) => setAppointmentStatus(event.target.value)}
+                  className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                >
+                  <option value="all">All statuses</option>
+                  <option value="pending">pending</option>
+                  <option value="confirmed">confirmed</option>
+                  <option value="completed">completed</option>
+                  <option value="cancelled">cancelled</option>
+                </select>
+                <select
+                  value={appointmentSortBy}
+                  onChange={(event) => setAppointmentSortBy(event.target.value)}
+                  className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                >
+                  <option value="createdAt">Sort by created time</option>
+                  <option value="slotStart">Sort by appointment time</option>
+                </select>
+                <select
+                  value={appointmentSortOrder}
+                  onChange={(event) => setAppointmentSortOrder(event.target.value)}
+                  className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                >
+                  <option value="desc">Descending</option>
+                  <option value="asc">Ascending</option>
+                </select>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => void loadData()}
+                className="mt-3 rounded-lg bg-slate-900 px-4 py-2 text-xs font-semibold text-white"
+              >
+                Apply Search/Filters
+              </button>
+            </div>
+
             {appointments.length === 0 ? (
               <div className="rounded-xl border border-slate-200 bg-white p-8 text-center">
                 <Calendar className="mx-auto h-12 w-12 text-slate-300" />
@@ -433,6 +665,18 @@ export function HealthCareHubProfessional() {
                     </div>
 
                     <div className="mt-4 border-t pt-4">
+                      {(appointment.status === "pending" || appointment.status === "confirmed") && (
+                        <button
+                          type="button"
+                          disabled={cancellingAppointmentId === appointment.appointmentId}
+                          onClick={() => void cancelAppointment(appointment.appointmentId)}
+                          className="mb-3 rounded-lg border border-red-300 px-3 py-2 text-xs font-semibold text-red-700 disabled:opacity-60"
+                        >
+                          {cancellingAppointmentId === appointment.appointmentId
+                            ? "Cancelling..."
+                            : "Cancel Appointment"}
+                        </button>
+                      )}
                       <AppointmentChatBox appointmentId={appointment.appointmentId} />
                     </div>
                   </div>

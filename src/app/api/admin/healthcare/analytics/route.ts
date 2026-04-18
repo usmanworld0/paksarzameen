@@ -12,20 +12,6 @@ export async function GET() {
   }
 
   try {
-    if (!process.env.DATABASE_URL) {
-      return NextResponse.json({
-        data: {
-          doctorsTotal: 0,
-          activePatientsTotal: 0,
-          appointmentsTotal: 0,
-          donorChatMessagesTotal: 0,
-          appointmentMessagesTotal: 0,
-          suspendedUsersTotal: 0,
-          appointmentsByStatus: {},
-        },
-      });
-    }
-
     const data = await getHealthCareAnalytics();
     return NextResponse.json({ data });
   } catch (error) {

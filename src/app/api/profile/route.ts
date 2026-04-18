@@ -9,11 +9,55 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const profileData = await getProfileData(user.id);
-  return NextResponse.json({
-    user: { name: user.email ? user.email.split("@")[0] : "User", email: user.email },
-    profile: profileData,
-  });
+  try {
+    const profileData = await getProfileData(user.id);
+    if (profileData) {
+      return NextResponse.json(profileData);
+    }
+
+    return NextResponse.json({
+      user: {
+        id: user.id,
+        name: user.email ? user.email.split("@")[0] : "User",
+        email: user.email,
+        role: user.role,
+      },
+      profile: {
+        phone: "",
+        city: "",
+        bloodGroup: "",
+        availabilityStatus: "unavailable",
+        lastDonationDate: "",
+        emergencyContact: "",
+        profileImage: "",
+      },
+      eligibility: {
+        isEligible: true,
+        rule: "Eligible every 3 months after last donation",
+      },
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unable to load profile.";
+    console.error("[/api/profile GET]", message, error);
+
+    const errorCode = message.includes("does not exist")
+      ? "SCHEMA_NOT_FOUND"
+      : message.includes("permission")
+        ? "PERMISSION_DENIED"
+        : "PROFILE_LOAD_ERROR";
+
+    return NextResponse.json(
+      {
+        error: message,
+        code: errorCode,
+        hint:
+          errorCode === "SCHEMA_NOT_FOUND"
+            ? "Run docs/database/healthcare_schema_init.sql in Supabase SQL Editor"
+            : undefined,
+      },
+      { status: 500 }
+    );
+  }
 }
 
 export async function PUT(request: Request) {

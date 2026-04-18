@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
-import { upsertProfile } from "@/db/users";
 import { uploadImageFile } from "@/lib/cloudinary";
+import { updateProfileData } from "@/server/profile-service";
 import { getRequiredApiUser } from "@/server/route-auth";
 
 export async function POST(request: Request) {
@@ -12,14 +12,14 @@ export async function POST(request: Request) {
 
   try {
     const formData = await request.formData();
-    const file = formData.get("image");
+    const fileField = formData.get("image") ?? formData.get("file");
 
-    if (!(file instanceof File) || !file.type.startsWith("image/")) {
+    if (!(fileField instanceof File) || !fileField.type.startsWith("image/")) {
       return NextResponse.json({ error: "Please upload a valid image file." }, { status: 400 });
     }
 
-    const uploaded = await uploadImageFile(file, "blood-bank-profiles");
-    await upsertProfile(user.id, {
+    const uploaded = await uploadImageFile(fileField, "blood-bank-profiles");
+    await updateProfileData(user.id, {
       profileImage: uploaded.url,
     });
 

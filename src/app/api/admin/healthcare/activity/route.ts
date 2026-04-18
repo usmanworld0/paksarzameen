@@ -16,10 +16,6 @@ export async function GET(request: Request) {
     const limitParam = Number(searchParams.get("limit") ?? "100");
     const limit = Number.isFinite(limitParam) ? Math.min(Math.max(limitParam, 1), 200) : 100;
 
-    if (!process.env.DATABASE_URL) {
-      return NextResponse.json({ data: [] });
-    }
-
     const data = await listHealthcareActivityLogs(limit);
     return NextResponse.json({ data });
   } catch (error) {

@@ -19,34 +19,46 @@ export function AppointmentChatBox({ appointmentId }: { appointmentId: string })
   const [value, setValue] = useState("");
   const [attachmentUrl, setAttachmentUrl] = useState("");
   const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    let active = true;
-
-    async function loadMessages() {
-      const response = await fetch(`/api/healthcare/appointments/${appointmentId}/messages`, {
-        cache: "no-store",
-      });
-      const payload = (await response.json()) as { data?: AppointmentMessage[] };
-      if (active && response.ok) {
-        setMessages(payload.data ?? []);
-        await fetch(`/api/healthcare/appointments/${appointmentId}/messages`, {
-          method: "PATCH",
-          cache: "no-store",
-        });
-      }
+  async function loadMessages(signal?: AbortSignal) {
+    const response = await fetch(`/api/healthcare/appointments/${appointmentId}/messages`, {
+      cache: "no-store",
+      signal,
+    });
+    const payload = (await response.json()) as { data?: AppointmentMessage[]; error?: string };
+    if (!response.ok) {
+      setError(payload.error ?? "Unable to load chat messages.");
+      return;
     }
 
-    void loadMessages();
+    setMessages(payload.data ?? []);
+    await fetch(`/api/healthcare/appointments/${appointmentId}/messages`, {
+      method: "PATCH",
+      cache: "no-store",
+      signal,
+    });
+  }
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    void loadMessages(controller.signal);
+
+    const intervalId = window.setInterval(() => {
+      void loadMessages(controller.signal);
+    }, 8000);
 
     return () => {
-      active = false;
+      controller.abort();
+      window.clearInterval(intervalId);
     };
   }, [appointmentId]);
 
   async function sendMessage() {
     if (!value.trim()) return;
     setSending(true);
+    setError(null);
     try {
       const response = await fetch(`/api/healthcare/appointments/${appointmentId}/messages`, {
         method: "POST",
@@ -54,11 +66,20 @@ export function AppointmentChatBox({ appointmentId }: { appointmentId: string })
         body: JSON.stringify({ body: value, attachmentUrl: attachmentUrl || undefined }),
       });
 
-      const payload = (await response.json()) as { data?: AppointmentMessage };
+      const payload = (await response.json()) as { data?: AppointmentMessage; error?: string };
+      if (!response.ok) {
+        setError(payload.error ?? "Unable to send message.");
+        return;
+      }
+
       if (response.ok && payload.data) {
         setMessages((prev) => [...prev, payload.data as AppointmentMessage]);
         setValue("");
         setAttachmentUrl("");
+        await fetch(`/api/healthcare/appointments/${appointmentId}/messages`, {
+          method: "PATCH",
+          cache: "no-store",
+        });
       }
     } finally {
       setSending(false);
@@ -110,6 +131,7 @@ export function AppointmentChatBox({ appointmentId }: { appointmentId: string })
         placeholder="Optional attachment URL (https://...)"
         className="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2 text-xs"
       />
+      {error ? <p className="mt-2 text-xs text-red-700">{error}</p> : null}
     </div>
   );
 }

@@ -39,14 +39,27 @@ export function HealthcareProfileManager() {
 
   async function loadProfile() {
     try {
+      console.log("[HealthcareProfileManager] Loading profile...");
       const response = await fetch("/api/profile", { cache: "no-store" });
       const payload = (await response.json()) as {
-        user?: {
-          name: string;
-          email: string;
-        };
+        user?: { name: string; email: string };
         profile?: Partial<ProfileData>;
+        error?: string;
+        code?: string;
+        hint?: string;
       };
+
+      console.log("[HealthcareProfileManager] Profile response status:", response.status);
+      console.log("[HealthcareProfileManager] Profile payload:", payload);
+
+      if (!response.ok) {
+        const errorMsg = payload.error || "Failed to load profile";
+        const hint = payload.hint ? ` (${payload.hint})` : "";
+        console.error("[HealthcareProfileManager] Profile API error:", errorMsg, hint);
+        setFeedback({ type: "error", message: errorMsg + hint });
+        setLoading(false);
+        return;
+      }
 
       if (response.ok && payload.user) {
         const fullProfile: ProfileData = {
@@ -65,11 +78,17 @@ export function HealthcareProfileManager() {
           medicalHistory: payload.profile?.medicalHistory || "",
           profileImage: payload.profile?.profileImage || "",
         };
+        console.log("[HealthcareProfileManager] Profile loaded successfully");
         setProfile(fullProfile);
         setFormData(fullProfile);
+      } else {
+        console.error("[HealthcareProfileManager] Invalid payload structure:", payload);
+        setFeedback({ type: "error", message: "Profile data incomplete" });
       }
-    } catch {
-      setFeedback({ type: "error", message: "Failed to load profile" });
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : String(err);
+      console.error("[HealthcareProfileManager] Exception:", errorMsg, err);
+      setFeedback({ type: "error", message: "Failed to load profile: " + errorMsg });
     } finally {
       setLoading(false);
     }

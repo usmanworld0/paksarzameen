@@ -1,6 +1,6 @@
 import { detectHealthEmergency, generateHealthGeneralAnswer } from "@/lib/ai";
 import { getDoctorRecommendationsBySymptoms } from "@/services/healthcare/doctor-recommendation-service";
-import { logHealthCareAiInteraction } from "@/lib/healthcare";
+import { logHealthCareAiInteraction } from "@/services/healthcare/core-service";
 import type { HealthAiResponse } from "@/types/healthcare-ai";
 
 const AI_DISCLAIMER = "This is not medical advice. Please consult a doctor.";

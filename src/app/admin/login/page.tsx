@@ -5,8 +5,8 @@ import { requireAdminUser } from "@/lib/supabase/authorization";
 import { getAdminSessionDefaultRoute, getAdminSessionFromCookies } from "@/lib/admin-session";
 
 export const metadata: Metadata = {
-  title: "Admin Login",
-  description: "Admin access uses the main Supabase login flow.",
+  title: "Access Login",
+  description: "Centralized access login routes each account to its allowed panel or dashboard.",
 };
 
 export default async function AdminLoginPage() {

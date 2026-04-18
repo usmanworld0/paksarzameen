@@ -1,4 +1,4 @@
-import { listDoctors } from "@/lib/healthcare";
+import { listDoctors } from "@/services/healthcare/core-service";
 import type { DoctorRecommendation } from "@/types/healthcare-ai";
 import { mapSymptomsToSpecializations } from "@/services/healthcare/rules";
 

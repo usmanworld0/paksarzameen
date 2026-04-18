@@ -24,9 +24,40 @@ export const appointmentCancelSchema = z.object({
   status: z.literal("cancelled"),
 });
 
+export const appointmentListQuerySchema = z.object({
+  status: z.enum(["pending", "confirmed", "cancelled", "completed"]).optional(),
+  search: z.string().trim().max(120).optional(),
+  sortBy: z.enum(["createdAt", "slotStart"]).optional(),
+  sortOrder: z.enum(["asc", "desc"]).optional(),
+});
+
+const dateTimeFlexibleSchema = z.string().trim().refine((value) => !Number.isNaN(new Date(value).getTime()), {
+  message: "Invalid date/time format.",
+});
+
+const dateOnlySchema = z.string().trim().regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format. Use YYYY-MM-DD.");
+const timeOnlySchema = z.string().trim().regex(/^\d{2}:\d{2}$/, "Invalid time format. Use HH:MM.");
+
 export const doctorSlotCreateSchema = z.object({
-  slotStart: z.string().datetime({ offset: true }),
-  slotEnd: z.string().datetime({ offset: true }),
+  slotStart: dateTimeFlexibleSchema,
+  slotEnd: dateTimeFlexibleSchema,
+});
+
+export const doctorBulkScheduleCreateSchema = z.object({
+  startDate: dateOnlySchema,
+  endDate: dateOnlySchema.optional(),
+  startTime: timeOnlySchema,
+  endTime: timeOnlySchema,
+  slotDurationMinutes: z.number().int().min(10).max(240),
+});
+
+export const doctorSlotAvailabilitySchema = z.object({
+  slotId: z.string().trim().min(1),
+  isAvailable: z.boolean(),
+});
+
+export const doctorSlotDeleteSchema = z.object({
+  slotId: z.string().trim().min(1),
 });
 
 export const appointmentMessageCreateSchema = z.object({
@@ -74,3 +105,31 @@ export const doctorAppointmentStatusSchema = z.object({
   appointmentId: z.string().trim().min(1),
   status: z.enum(["pending", "confirmed", "cancelled", "completed"]),
 });
+
+export const doctorListQuerySchema = z.object({
+  search: z.string().trim().max(120).optional(),
+  specialization: z.string().trim().max(80).optional(),
+  minExperience: z.coerce.number().int().min(0).max(70).optional(),
+  maxFee: z.coerce.number().min(0).max(1_000_000).optional(),
+  sortBy: z.enum(["recent", "experience", "fee", "name"]).optional(),
+  sortOrder: z.enum(["asc", "desc"]).optional(),
+});
+
+export const doctorAppointmentQuerySchema = z.object({
+  status: z.enum(["pending", "confirmed", "cancelled", "completed"]).optional(),
+  search: z.string().trim().max(120).optional(),
+  sortBy: z.enum(["createdAt", "slotStart"]).optional(),
+  sortOrder: z.enum(["asc", "desc"]).optional(),
+});
+
+export const doctorProfileUpdateSchema = z
+  .object({
+    fullName: z.string().trim().min(2).max(120).optional(),
+    specialization: z.string().trim().max(80).nullable().optional(),
+    bio: z.string().trim().max(1200).nullable().optional(),
+    experienceYears: z.number().int().min(0).max(70).nullable().optional(),
+    consultationFee: z.number().min(0).max(1_000_000).nullable().optional(),
+  })
+  .refine((value) => Object.keys(value).length > 0, {
+    message: "At least one profile field must be provided.",
+  });

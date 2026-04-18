@@ -12,7 +12,9 @@ export function createClient() {
   const publishableKey = getSupabasePublishableKey();
 
   if (!supabaseUrl || !publishableKey) {
-    throw new Error("Supabase public environment variables are not configured.");
+    throw new Error(
+      "Supabase public environment variables are not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY (or NEXT_PUBLIC_SUPABASE_ANON_KEY)."
+    );
   }
 
   if (!browserClient) {

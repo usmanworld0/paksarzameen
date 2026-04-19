@@ -57,6 +57,7 @@ Output is ranked and limited to top 5 donors.
 - Reset tokens stored hashed (not raw)
 - Profile APIs require authenticated session
 - Sensitive values are environment-driven
+- The shared `/login` page now checks for Supabase public config before creating a server client, so missing auth env renders the sign-in UI instead of crashing the page.
 
 ## Routes/Pages Added
 - /signup

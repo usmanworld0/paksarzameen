@@ -31,6 +31,8 @@ This pass finalizes professional hardening for the Health module with strict AI 
 - Slot conflict prevention is preserved.
 - Appointment lifecycle statuses: `pending`, `confirmed`, `cancelled`, `completed`.
 - Cancellation policy is enforced in service layer with minimum time window checks.
+- The public doctors API now falls back to a built-in demo catalog when the live healthcare table is empty or the schema is not yet initialized, so deployed pages still render doctors and slots instead of an empty state.
+- Public doctor and slot reads now use the anon Supabase client first, so a missing service-role secret no longer blocks the live healthcare directory when the tables already contain data.
 
 ## Test Coverage Added
 - Healthcare safety rules test suite:

@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
 
-import { getSupabaseAdminClient } from "@/lib/supabase/admin";
+import { getSupabaseAdminClient, getSupabaseReadClient } from "@/lib/supabase/admin";
 import { canCancelAppointment } from "@/services/healthcare/rules";
 
 export type AppointmentStatus = "pending" | "confirmed" | "completed" | "cancelled";
@@ -142,6 +142,54 @@ type HealthcareDoctorSlotRow = {
 const APPOINTMENT_STATUSES: AppointmentStatus[] = ["pending", "confirmed", "completed", "cancelled"];
 const URGENCY_LEVELS: UrgencyLevel[] = ["low", "medium", "high", "critical"];
 
+const DEMO_DOCTORS = [
+  {
+    doctorId: "demo-cardiology",
+    email: "dr.ahmed@demo.paksarzameen.org",
+    fullName: "Dr. Ahmed Khan",
+    specialization: "Cardiology",
+    bio: "Heart and cardiovascular care with a focus on prevention and long-term management.",
+    experienceYears: 15,
+    consultationFee: 500,
+  },
+  {
+    doctorId: "demo-pediatrics",
+    email: "dr.fatima@demo.paksarzameen.org",
+    fullName: "Dr. Fatima Ali",
+    specialization: "Pediatrics",
+    bio: "Child health, vaccinations, fever, growth, and routine pediatric follow-ups.",
+    experienceYears: 12,
+    consultationFee: 400,
+  },
+  {
+    doctorId: "demo-general-medicine",
+    email: "dr.hassan@demo.paksarzameen.org",
+    fullName: "Dr. Hassan Malik",
+    specialization: "General Medicine",
+    bio: "Primary care support for common illnesses, ongoing symptoms, and initial diagnosis.",
+    experienceYears: 10,
+    consultationFee: 300,
+  },
+  {
+    doctorId: "demo-orthopedics",
+    email: "dr.aisha@demo.paksarzameen.org",
+    fullName: "Dr. Aisha Khan",
+    specialization: "Orthopedics",
+    bio: "Bone, joint, sprain, and mobility care with sports-injury support.",
+    experienceYears: 8,
+    consultationFee: 450,
+  },
+  {
+    doctorId: "demo-dermatology",
+    email: "dr.omar@demo.paksarzameen.org",
+    fullName: "Dr. Omar Hassan",
+    specialization: "Dermatology",
+    bio: "Skin, hair, and cosmetic concerns including rashes, acne, and allergies.",
+    experienceYears: 9,
+    consultationFee: 350,
+  },
+] as const;
+
 function normalizedText(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
 }
@@ -180,6 +228,10 @@ function getSupabase() {
   return getSupabaseAdminClient();
 }
 
+function getPublicSupabase() {
+  return getSupabaseReadClient();
+}
+
 function getDonorRoomKey(requesterUserId: string, donorUserId: string) {
   return [requesterUserId, donorUserId].sort().join(":");
 }
@@ -210,6 +262,101 @@ function mapSlotRow(row: HealthcareDoctorSlotRow): DoctorSlotRecord {
   };
 }
 
+function buildDemoDoctors(): DoctorRecord[] {
+  const now = Date.now();
+
+  return DEMO_DOCTORS.map((doctor, index) => ({
+    doctorId: doctor.doctorId,
+    userId: null,
+    email: doctor.email,
+    fullName: doctor.fullName,
+    specialization: doctor.specialization,
+    bio: doctor.bio,
+    experienceYears: doctor.experienceYears,
+    consultationFee: doctor.consultationFee,
+    createdAt: new Date(now - (index + 1) * 86_400_000).toISOString(),
+    updatedAt: new Date(now - (index + 1) * 3_600_000).toISOString(),
+  }));
+}
+
+function buildDemoSlots(): DoctorSlotRecord[] {
+  const now = new Date();
+  const doctors = buildDemoDoctors();
+  const slots: DoctorSlotRecord[] = [];
+
+  doctors.forEach((doctor, doctorIndex) => {
+    for (let dayOffset = 1; dayOffset <= 4; dayOffset += 1) {
+      const day = new Date(now);
+      day.setDate(now.getDate() + dayOffset);
+      const startHour = 10 + doctorIndex;
+      const start = new Date(day);
+      start.setHours(startHour, 0, 0, 0);
+      const end = new Date(start);
+      end.setHours(start.getHours() + 1);
+
+      slots.push({
+        slotId: `${doctor.doctorId}-slot-${dayOffset}`,
+        doctorId: doctor.doctorId,
+        slotStart: start.toISOString(),
+        slotEnd: end.toISOString(),
+        isAvailable: true,
+        createdAt: new Date(start.getTime() - 86_400_000).toISOString(),
+      });
+    }
+  });
+
+  return slots;
+}
+
+function filterAndSortDemoDoctors(filters: DoctorListFilters) {
+  const records = buildDemoDoctors();
+  const search = normalizedText(filters.search).toLowerCase();
+  const specialization = normalizedText(filters.specialization).toLowerCase();
+  const minExperience = normalizedNumber(filters.minExperience);
+  const maxFee = normalizedNumber(filters.maxFee);
+  const sortBy = filters.sortBy ?? "recent";
+  const ascending = (filters.sortOrder ?? "desc") === "asc";
+
+  const filtered = records.filter((doctor) => {
+    const matchesSearch =
+      !search ||
+      [doctor.fullName, doctor.specialization ?? "", doctor.bio ?? ""].some((value) => value.toLowerCase().includes(search));
+    const matchesSpecialization = !specialization || (doctor.specialization ?? "").toLowerCase().includes(specialization);
+    const matchesExperience = minExperience === null || (doctor.experienceYears ?? 0) >= minExperience;
+    const matchesFee = maxFee === null || (doctor.consultationFee ?? Number.POSITIVE_INFINITY) <= maxFee;
+
+    return matchesSearch && matchesSpecialization && matchesExperience && matchesFee;
+  });
+
+  return filtered.sort((left, right) => {
+    if (sortBy === "experience") {
+      const diff = (left.experienceYears ?? 0) - (right.experienceYears ?? 0);
+      return ascending ? diff : -diff;
+    }
+
+
+  export function getDemoDoctorsWithFilters(filters: DoctorListFilters) {
+    return filterAndSortDemoDoctors(filters);
+  }
+
+  export function getDemoAvailableDoctorSlots() {
+    return buildDemoSlots();
+  }
+    if (sortBy === "fee") {
+      const diff = (left.consultationFee ?? 0) - (right.consultationFee ?? 0);
+      return ascending ? diff : -diff;
+    }
+
+    if (sortBy === "name") {
+      const diff = left.fullName.localeCompare(right.fullName);
+      return ascending ? diff : -diff;
+    }
+
+    const diff = new Date(left.createdAt).getTime() - new Date(right.createdAt).getTime();
+    return ascending ? diff : -diff;
+  });
+}
+
 export function normalizeUrgencyLevel(value: unknown): UrgencyLevel {
   const level = normalizedText(value).toLowerCase();
   if ((URGENCY_LEVELS as string[]).includes(level)) {
@@ -224,7 +371,7 @@ export async function listDoctors() {
 }
 
 export async function listDoctorsWithFilters(filters: DoctorListFilters) {
-  const supabase = getSupabase();
+  const supabase = getPublicSupabase();
 
   let query = supabase
     .from("healthcare_doctors")
@@ -270,7 +417,7 @@ export async function listDoctorsWithFilters(filters: DoctorListFilters) {
 }
 
 export async function getDoctorById(doctorId: string) {
-  const supabase = getSupabase();
+  const supabase = getPublicSupabase();
   const { data, error } = await supabase
     .from("healthcare_doctors")
     .select("id,user_id,email,full_name,specialization,bio,experience_years,consultation_fee,created_at,updated_at")
@@ -283,7 +430,7 @@ export async function getDoctorById(doctorId: string) {
 }
 
 export async function getDoctorByUserId(userId: string) {
-  const supabase = getSupabase();
+  const supabase = getPublicSupabase();
   const { data, error } = await supabase
     .from("healthcare_doctors")
     .select("id,user_id,email,full_name,specialization,bio,experience_years,consultation_fee,created_at,updated_at")
@@ -396,7 +543,7 @@ export async function deleteDoctor(doctorId: string) {
 }
 
 export async function listDoctorSlots(doctorId: string, onlyAvailable = false) {
-  const supabase = getSupabase();
+  const supabase = getPublicSupabase();
   let query = supabase
     .from("healthcare_doctor_slots")
     .select("id,doctor_id,slot_start,slot_end,is_available,created_at")
@@ -413,7 +560,7 @@ export async function listDoctorSlots(doctorId: string, onlyAvailable = false) {
 }
 
 export async function listAvailableDoctorSlots() {
-  const supabase = getSupabase();
+  const supabase = getPublicSupabase();
   const { data: slots, error: slotError } = await supabase
     .from("healthcare_doctor_slots")
     .select("id,doctor_id,slot_start,slot_end,is_available,created_at")

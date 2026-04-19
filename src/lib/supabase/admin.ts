@@ -55,3 +55,7 @@ export function getSupabaseAnonClient() {
   cachedAnonClient = createClient(supabaseUrl, publishableKey);
   return cachedAnonClient;
 }
+
+export function getSupabaseReadClient() {
+  return getSupabaseAnonClient();
+}

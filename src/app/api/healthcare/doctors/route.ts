@@ -1,18 +1,12 @@
 import { NextResponse } from "next/server";
-import { assertHealthcareUserActive, listAvailableDoctorSlots, listDoctorsWithFilters } from "@/services/healthcare/core-service";
-import { getRequiredApiUser } from "@/server/route-auth";
+import { listAvailableDoctorSlots, listDoctorsWithFilters } from "@/services/healthcare/core-service";
 import { mapHealthcareError } from "@/services/healthcare/error-mapper";
 import { doctorListQuerySchema } from "@/lib/healthcare-validation";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
-  const user = await getRequiredApiUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
   try {
-    await assertHealthcareUserActive(user.id);
-
     const { searchParams } = new URL(request.url);
     const parsed = doctorListQuerySchema.safeParse({
       search: searchParams.get("search") ?? undefined,

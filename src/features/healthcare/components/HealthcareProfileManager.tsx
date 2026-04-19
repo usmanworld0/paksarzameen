@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { Upload, Edit2, Save, X, Phone, Heart, Users } from "lucide-react";
@@ -29,6 +30,7 @@ export function HealthcareProfileManager() {
   const [previewPhoto, setPreviewPhoto] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(true);
+  const [authRequired, setAuthRequired] = useState(false);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
   const [formData, setFormData] = useState<Partial<ProfileData>>({});
@@ -39,7 +41,6 @@ export function HealthcareProfileManager() {
 
   async function loadProfile() {
     try {
-      console.log("[HealthcareProfileManager] Loading profile...");
       const response = await fetch("/api/profile", { cache: "no-store" });
       const payload = (await response.json()) as {
         user?: { name: string; email: string };
@@ -49,17 +50,21 @@ export function HealthcareProfileManager() {
         hint?: string;
       };
 
-      console.log("[HealthcareProfileManager] Profile response status:", response.status);
-      console.log("[HealthcareProfileManager] Profile payload:", payload);
-
       if (!response.ok) {
         const errorMsg = payload.error || "Failed to load profile";
         const hint = payload.hint ? ` (${payload.hint})` : "";
-        console.error("[HealthcareProfileManager] Profile API error:", errorMsg, hint);
-        setFeedback({ type: "error", message: errorMsg + hint });
+        if (response.status === 401) {
+          setAuthRequired(true);
+          setFeedback(null);
+        } else {
+          console.error("[HealthcareProfileManager] Profile API error:", errorMsg, hint);
+          setFeedback({ type: "error", message: errorMsg + hint });
+        }
         setLoading(false);
         return;
       }
+
+      setAuthRequired(false);
 
       if (response.ok && payload.user) {
         const fullProfile: ProfileData = {
@@ -78,7 +83,6 @@ export function HealthcareProfileManager() {
           medicalHistory: payload.profile?.medicalHistory || "",
           profileImage: payload.profile?.profileImage || "",
         };
-        console.log("[HealthcareProfileManager] Profile loaded successfully");
         setProfile(fullProfile);
         setFormData(fullProfile);
       } else {
@@ -176,6 +180,23 @@ export function HealthcareProfileManager() {
     return <div className="flex items-center justify-center py-12">
       <div className="text-slate-600">Loading profile...</div>
     </div>;
+  }
+
+  if (authRequired && !profile) {
+    return (
+      <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm">
+        <p className="text-lg font-semibold text-slate-900">Sign in to view your healthcare profile</p>
+        <p className="mt-2 text-sm text-slate-600">Your session is missing or expired. Log in again to continue managing your profile.</p>
+        <div className="mt-5">
+          <Link
+            href="/login?callbackUrl=/healthcare"
+            className="inline-flex items-center justify-center rounded-xl bg-emerald-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-700"
+          >
+            Go to login
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   if (!profile) {

@@ -68,6 +68,24 @@ export function HealthCareHubProfessional() {
   const [cancellingAppointmentId, setCancellingAppointmentId] = useState<string | null>(null);
 
   const filteredSlots = slots.filter((slot) => slot.doctorId === selectedDoctorId);
+  const selectedDoctor = doctors.find((doctor) => doctor.doctorId === selectedDoctorId) ?? null;
+
+  function openBookingPanel(doctorId: string) {
+    setSelectedDoctorId(doctorId);
+    const availableSlots = slots.filter((slot) => slot.doctorId === doctorId);
+    setSelectedSlotId(availableSlots[0]?.slotId ?? "");
+    setReason("");
+    setFeedback(null);
+    if (activeTab !== "doctors") {
+      setActiveTab("doctors");
+    }
+  }
+
+  function closeBookingPanel() {
+    setSelectedDoctorId("");
+    setSelectedSlotId("");
+    setReason("");
+  }
 
   async function loadData() {
     try {
@@ -387,6 +405,83 @@ export function HealthCareHubProfessional() {
           <div className="space-y-4">
             <h2 className="text-2xl font-bold text-slate-900">Find & Book a Doctor</h2>
 
+              {selectedDoctor ? (
+                <div className="rounded-2xl border border-emerald-200 bg-white p-5 shadow-sm">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-700">Booking Panel</p>
+                      <h3 className="mt-1 text-xl font-semibold text-slate-900">Dr. {selectedDoctor.fullName}</h3>
+                      <p className="text-sm text-slate-600">
+                        {selectedDoctor.specialization ?? "General Medicine"}
+                        {selectedDoctor.experienceYears ? ` • ${selectedDoctor.experienceYears}+ years` : ""}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={closeBookingPanel}
+                      className="rounded-full border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"
+                    >
+                      Close
+                    </button>
+                  </div>
+
+                  <div className="mt-4 space-y-3">
+                    {filteredSlots.length > 0 ? (
+                      <>
+                        <label className="block space-y-2">
+                          <span className="text-sm font-medium text-slate-700">Choose a slot</span>
+                          <select
+                            value={selectedSlotId}
+                            onChange={(event) => setSelectedSlotId(event.target.value)}
+                            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                          >
+                            <option value="">Choose slot</option>
+                            {filteredSlots.map((slot) => (
+                              <option key={slot.slotId} value={slot.slotId}>
+                                {new Date(slot.slotStart).toLocaleString()} - {new Date(slot.slotEnd).toLocaleTimeString()}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+
+                        <label className="block space-y-2">
+                          <span className="text-sm font-medium text-slate-700">Reason for visit</span>
+                          <textarea
+                            value={reason}
+                            onChange={(event) => setReason(event.target.value)}
+                            placeholder="Describe your symptoms or concern"
+                            rows={3}
+                            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                          />
+                        </label>
+
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            type="button"
+                            onClick={() => void book()}
+                            disabled={booking || !selectedSlotId || !reason.trim()}
+                            className="rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
+                          >
+                            {booking ? "Booking..." : "Confirm Appointment"}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={closeBookingPanel}
+                            className="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+                        No available slots for this doctor right now. You can still keep the doctor selected and try again once slots are published.
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : null}
+
             <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 <input
@@ -498,64 +593,13 @@ export function HealthCareHubProfessional() {
                         </div>
                       )}
 
-                      {/* Expandable Slots */}
-                      {filteredSlots.length > 0 && selectedDoctorId === doctor.doctorId && (
-                        <div className="border-t pt-4 space-y-3">
-                          <p className="text-sm font-medium text-slate-700">Select a time slot:</p>
-                          <select
-                            value={selectedSlotId}
-                            onChange={(event) => setSelectedSlotId(event.target.value)}
-                            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                          >
-                            <option value="">Choose slot</option>
-                            {filteredSlots.map((slot) => (
-                              <option key={slot.slotId} value={slot.slotId}>
-                                {new Date(slot.slotStart).toLocaleString()} -{" "}
-                                {new Date(slot.slotEnd).toLocaleTimeString()}
-                              </option>
-                            ))}
-                          </select>
-
-                          <textarea
-                            value={selectedDoctorId === doctor.doctorId ? reason : ""}
-                            onChange={(event) => setReason(event.target.value)}
-                            placeholder="Reason for visit"
-                            rows={2}
-                            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                          />
-
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => void book()}
-                              disabled={booking}
-                              className="flex-1 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:opacity-60"
-                            >
-                              {booking ? "Booking..." : "Confirm Booking"}
-                            </button>
-                            <button
-                              onClick={() => {
-                                setSelectedDoctorId("");
-                                setSelectedSlotId("");
-                                setReason("");
-                              }}
-                              className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-                            >
-                              Cancel
-                            </button>
-                          </div>
-                        </div>
-                      )}
-
-                      {selectedDoctorId !== doctor.doctorId && (
-                        <button
-                          onClick={() => {
-                            setSelectedDoctorId(doctor.doctorId);
-                          }}
-                          className="w-full rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700"
-                        >
-                          Book Appointment
-                        </button>
-                      )}
+                      <button
+                        type="button"
+                        onClick={() => openBookingPanel(doctor.doctorId)}
+                        className="w-full rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700"
+                      >
+                        Book Appointment
+                      </button>
                     </div>
                   </div>
                 ))}

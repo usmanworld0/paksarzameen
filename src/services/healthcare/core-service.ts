@@ -334,14 +334,6 @@ function filterAndSortDemoDoctors(filters: DoctorListFilters) {
       return ascending ? diff : -diff;
     }
 
-
-  export function getDemoDoctorsWithFilters(filters: DoctorListFilters) {
-    return filterAndSortDemoDoctors(filters);
-  }
-
-  export function getDemoAvailableDoctorSlots() {
-    return buildDemoSlots();
-  }
     if (sortBy === "fee") {
       const diff = (left.consultationFee ?? 0) - (right.consultationFee ?? 0);
       return ascending ? diff : -diff;
@@ -355,6 +347,14 @@ function filterAndSortDemoDoctors(filters: DoctorListFilters) {
     const diff = new Date(left.createdAt).getTime() - new Date(right.createdAt).getTime();
     return ascending ? diff : -diff;
   });
+}
+
+export function getDemoDoctorsWithFilters(filters: DoctorListFilters) {
+  return filterAndSortDemoDoctors(filters);
+}
+
+export function getDemoAvailableDoctorSlots() {
+  return buildDemoSlots();
 }
 
 export function normalizeUrgencyLevel(value: unknown): UrgencyLevel {

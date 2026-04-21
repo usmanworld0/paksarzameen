@@ -23,11 +23,13 @@ import {
 export async function signupWithEmailPassword(input: {
   name: string;
   email: string;
+  cnic: string;
   password: string;
   role?: UserRole;
 }) {
   const email = normalizeEmail(input.email);
   const name = safeText(input.name, 80);
+  const cnic = normalizeCnic(input.cnic);
   const role = input.role ?? "donor";
 
   if (!name) {
@@ -36,6 +38,10 @@ export async function signupWithEmailPassword(input: {
 
   if (!isValidEmail(email)) {
     throw new Error("Please provide a valid email address.");
+  }
+
+  if (!isValidCnic(cnic)) {
+    throw new Error("Please provide a valid CNIC format (e.g., 12345-1234567-1).");
   }
 
   assertValidPassword(input.password);
@@ -49,6 +55,7 @@ export async function signupWithEmailPassword(input: {
   const user = await createUserWithProfile({
     name,
     email,
+    cnic,
     passwordHash,
     role,
   });

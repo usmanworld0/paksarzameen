@@ -9,6 +9,7 @@ export function SignupForm() {
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [cnic, setCnic] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -16,6 +17,13 @@ export function SignupForm() {
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
+
+    const normalizedCnic = cnic.trim();
+    if (!/^\d{5}-\d{7}-\d$/.test(normalizedCnic)) {
+      setError("Please provide a valid CNIC format (e.g., 12345-1234567-1).");
+      return;
+    }
+
     setIsSubmitting(true);
 
     const response = await fetch("/api/auth/signup", {
@@ -24,7 +32,7 @@ export function SignupForm() {
         "Content-Type": "application/json",
       },
       // Default new accounts to `donor` so users can both donate and request blood.
-      body: JSON.stringify({ name, email, password, role: "donor" }),
+      body: JSON.stringify({ name, email, cnic: normalizedCnic, password, role: "donor" }),
     });
 
     const payload = (await response.json()) as { error?: string };
@@ -79,6 +87,21 @@ export function SignupForm() {
           onChange={(event) => setEmail(event.target.value)}
           className="w-full rounded-xl border border-emerald-200 px-4 py-3 text-sm text-emerald-950 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
           placeholder="you@example.com"
+        />
+      </label>
+
+      <label className="block space-y-2">
+        <span className="text-sm font-medium text-emerald-950">CNIC</span>
+        <input
+          required
+          inputMode="numeric"
+          value={cnic}
+          onChange={(event) => setCnic(event.target.value)}
+          className="w-full rounded-xl border border-emerald-200 px-4 py-3 text-sm text-emerald-950 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+          placeholder="12345-1234567-1"
+          pattern="\d{5}-\d{7}-\d"
+          maxLength={15}
+          title="CNIC format should be 12345-1234567-1"
         />
       </label>
 

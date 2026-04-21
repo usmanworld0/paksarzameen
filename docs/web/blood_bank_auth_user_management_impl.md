@@ -17,7 +17,7 @@ Implemented a production-oriented authentication and user management system for 
   - password_hash
   - role (donor | admin | hospital)
 - Added user_profile table/model:
-  - user_id, phone, city, blood_group, availability_status, last_donation_date, emergency_contact, profile_image
+  - user_id, cnic, phone, city, blood_group, availability_status, last_donation_date, emergency_contact, profile_image
 - Added password_reset_tokens table/model:
   - id, user_id, token_hash, expires_at, used
 
@@ -39,9 +39,14 @@ Implemented a production-oriented authentication and user management system for 
 
 ## Password Reset Flow
 1. User submits email on forgot-password page
-2. Server creates random reset token, stores SHA-256 hash with 30-minute expiry
-3. Reset link is emailed via Nodemailer
-4. Reset endpoint validates hashed token, updates password hash, marks token as used
+2. User confirms CNIC, and the server binds the reset token hash to token + CNIC without reading CNIC from the users table
+3. Server creates random reset token, stores SHA-256 hash with 30-minute expiry
+4. Reset link is emailed via Nodemailer
+5. Reset endpoint validates hashed token, updates password hash, marks token as used
+
+## CNIC Storage Update
+- CNIC is persisted on `user_profile.cnic` during signup, not on `users.cnic`, so Prisma auth queries no longer depend on a missing column in the live database.
+- The profile API now exposes CNIC from `user_profile` for downstream healthcare and recovery flows.
 
 ## Donor Matching Logic
 For emergency requests, each donor is scored with:

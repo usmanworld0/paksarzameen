@@ -35,11 +35,11 @@ export async function createUserWithProfile(input: {
     data: {
       name: input.name,
       email: input.email,
-      cnic: input.cnic,
       passwordHash: input.passwordHash,
       role: input.role,
       profile: {
         create: {
+          cnic: input.cnic,
           availabilityStatus: "unavailable",
         },
       },

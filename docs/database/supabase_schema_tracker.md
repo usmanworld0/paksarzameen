@@ -41,6 +41,91 @@ CREATE TABLE IF NOT EXISTS coupons (
 	updated_at timestamptz NOT NULL DEFAULT now()
 );
 
+-- Paksarzameen Store (Core catalog)
+CREATE TABLE IF NOT EXISTS categories (
+	id text PRIMARY KEY,
+	name text NOT NULL,
+	slug text NOT NULL UNIQUE,
+	description text,
+	image text,
+	customizable boolean NOT NULL DEFAULT false,
+	created_at timestamptz NOT NULL DEFAULT now(),
+	updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS artists (
+	id text PRIMARY KEY,
+	name text NOT NULL,
+	slug text NOT NULL UNIQUE,
+	bio text,
+	location text,
+	profile_image text,
+	social_links jsonb,
+	created_at timestamptz NOT NULL DEFAULT now(),
+	updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS products (
+	id text PRIMARY KEY,
+	name text NOT NULL,
+	slug text NOT NULL UNIQUE,
+	description text,
+	materials text,
+	care_instructions text,
+	heritage_story text,
+	price double precision NOT NULL,
+	compare_at_price double precision,
+	stock integer NOT NULL DEFAULT 0,
+	category_id text NOT NULL REFERENCES categories(id),
+	artist_id text REFERENCES artists(id),
+	customizable boolean NOT NULL DEFAULT false,
+	featured boolean NOT NULL DEFAULT false,
+	active boolean NOT NULL DEFAULT true,
+	created_at timestamptz NOT NULL DEFAULT now(),
+	updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS store_regions (
+	id text PRIMARY KEY,
+	code text NOT NULL UNIQUE,
+	name text NOT NULL,
+	currency text NOT NULL,
+	locale text NOT NULL,
+	country_codes jsonb NOT NULL,
+	active boolean NOT NULL DEFAULT false,
+	is_default boolean NOT NULL DEFAULT false,
+	created_at timestamptz NOT NULL DEFAULT now(),
+	updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS product_region_prices (
+	id text PRIMARY KEY,
+	product_id text NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+	region_id text NOT NULL REFERENCES store_regions(id) ON DELETE CASCADE,
+	price double precision NOT NULL,
+	compare_at_price double precision,
+	created_at timestamptz NOT NULL DEFAULT now(),
+	updated_at timestamptz NOT NULL DEFAULT now(),
+	UNIQUE (product_id, region_id)
+);
+
+CREATE TABLE IF NOT EXISTS product_images (
+	id text PRIMARY KEY,
+	product_id text NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+	image_url text NOT NULL,
+	alt_text text,
+	position integer NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS customization_options (
+	id text PRIMARY KEY,
+	category_id text NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
+	name text NOT NULL,
+	options jsonb,
+	required boolean NOT NULL DEFAULT false,
+	position integer NOT NULL DEFAULT 0
+);
+
 -- Paksarzameen Store (Product Information accordion fields)
 ALTER TABLE products ADD COLUMN IF NOT EXISTS materials text;
 ALTER TABLE products ADD COLUMN IF NOT EXISTS care_instructions text;
@@ -170,6 +255,7 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS role text NOT NULL DEFAULT 'donor';
 
 CREATE TABLE IF NOT EXISTS user_profile (
 	user_id uuid PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+	cnic text UNIQUE,
 	phone text,
 	city text,
 	blood_group text,
@@ -183,6 +269,9 @@ CREATE TABLE IF NOT EXISTS user_profile (
 
 CREATE INDEX IF NOT EXISTS user_profile_city_blood_group_availability_idx
 ON user_profile (city, blood_group, availability_status);
+
+ALTER TABLE users DROP COLUMN IF EXISTS cnic;
+ALTER TABLE user_profile ADD COLUMN IF NOT EXISTS cnic text UNIQUE;
 
 CREATE TABLE IF NOT EXISTS password_reset_tokens (
 	id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -366,22 +455,26 @@ CREATE TABLE IF NOT EXISTS healthcare_user_suspensions (
 );
 
 -- Profiles: user can read/update own profile, admin can manage all.
+DROP POLICY IF EXISTS profiles_select_own_or_admin ON profiles;
 CREATE POLICY profiles_select_own_or_admin ON profiles
 FOR SELECT USING (auth.uid() = id OR EXISTS (
 	SELECT 1 FROM profiles p WHERE p.id = auth.uid() AND p.role = 'admin'
 ));
 
+DROP POLICY IF EXISTS profiles_update_own_or_admin ON profiles;
 CREATE POLICY profiles_update_own_or_admin ON profiles
 FOR UPDATE USING (auth.uid() = id OR EXISTS (
 	SELECT 1 FROM profiles p WHERE p.id = auth.uid() AND p.role = 'admin'
 ));
 
 -- Tenant permissions: user can read own entries, admin can manage all.
+DROP POLICY IF EXISTS tenant_permissions_select_own_or_admin ON tenant_permissions;
 CREATE POLICY tenant_permissions_select_own_or_admin ON tenant_permissions
 FOR SELECT USING (user_id = auth.uid() OR EXISTS (
 	SELECT 1 FROM profiles p WHERE p.id = auth.uid() AND p.role = 'admin'
 ));
 
+DROP POLICY IF EXISTS tenant_permissions_admin_manage ON tenant_permissions;
 CREATE POLICY tenant_permissions_admin_manage ON tenant_permissions
 FOR ALL USING (EXISTS (
 	SELECT 1 FROM profiles p WHERE p.id = auth.uid() AND p.role = 'admin'
@@ -389,6 +482,7 @@ FOR ALL USING (EXISTS (
 
 -- Dogs module: admins full access, authenticated users readable,
 -- tenants must have dog_adoption view permission.
+DROP POLICY IF EXISTS dogs_select_with_dog_permission ON dogs;
 CREATE POLICY dogs_select_with_dog_permission ON dogs
 FOR SELECT USING (
 	EXISTS (SELECT 1 FROM profiles p WHERE p.id = auth.uid() AND p.role = 'admin')
@@ -399,18 +493,21 @@ FOR SELECT USING (
 	)
 );
 
+DROP POLICY IF EXISTS dogs_admin_manage ON dogs;
 CREATE POLICY dogs_admin_manage ON dogs
 FOR ALL USING (EXISTS (
 	SELECT 1 FROM profiles p WHERE p.id = auth.uid() AND p.role = 'admin'
 ));
 
 -- Adoption requests: requester can read/write own requests, admins full access.
+DROP POLICY IF EXISTS adoption_requests_select_own_or_admin ON adoption_requests;
 CREATE POLICY adoption_requests_select_own_or_admin ON adoption_requests
 FOR SELECT USING (
 	user_id = auth.uid()
 	OR EXISTS (SELECT 1 FROM profiles p WHERE p.id = auth.uid() AND p.role = 'admin')
 );
 
+DROP POLICY IF EXISTS adoption_requests_insert_self ON adoption_requests;
 CREATE POLICY adoption_requests_insert_self ON adoption_requests
 FOR INSERT WITH CHECK (
 	user_id = auth.uid()
@@ -423,22 +520,26 @@ FOR INSERT WITH CHECK (
 	)
 );
 
+DROP POLICY IF EXISTS adoption_requests_admin_manage ON adoption_requests;
 CREATE POLICY adoption_requests_admin_manage ON adoption_requests
 FOR ALL USING (EXISTS (
 	SELECT 1 FROM profiles p WHERE p.id = auth.uid() AND p.role = 'admin'
 ));
 
 -- Dog post-adoption updates and blood requests: admin-managed tables.
+DROP POLICY IF EXISTS dog_post_updates_admin_only ON dog_post_adoption_updates;
 CREATE POLICY dog_post_updates_admin_only ON dog_post_adoption_updates
 FOR ALL USING (EXISTS (
 	SELECT 1 FROM profiles p WHERE p.id = auth.uid() AND p.role = 'admin'
 ));
 
+DROP POLICY IF EXISTS blood_bank_requests_admin_full ON blood_bank_requests;
 CREATE POLICY blood_bank_requests_admin_full ON blood_bank_requests
 FOR ALL USING (EXISTS (
 	SELECT 1 FROM profiles p WHERE p.id = auth.uid() AND p.role = 'admin'
 ));
 
+DROP POLICY IF EXISTS blood_bank_requests_insert_public ON blood_bank_requests;
 CREATE POLICY blood_bank_requests_insert_public ON blood_bank_requests
 FOR INSERT WITH CHECK (true);
 

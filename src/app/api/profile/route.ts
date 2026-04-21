@@ -23,6 +23,7 @@ export async function GET() {
         role: user.role,
       },
       profile: {
+        cnic: "",
         phone: "",
         city: "",
         bloodGroup: "",

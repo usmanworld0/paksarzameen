@@ -29,6 +29,7 @@ type UserRow = {
 };
 
 type UserProfileRow = {
+  cnic: string | null;
   phone: string | null;
   city: string | null;
   blood_group: string | null;
@@ -67,6 +68,7 @@ function profileToResponse(user: UserRow | null, profile: UserProfileRow | null)
       role: user.role ?? "user",
     },
     profile: {
+      cnic: profile?.cnic ?? "",
       phone: profile?.phone ?? "",
       city: profile?.city ?? "",
       bloodGroup: profile?.blood_group ?? "",
@@ -90,7 +92,7 @@ export async function getProfileData(userId: string) {
       supabase.from("profiles").select("id,email,role").eq("id", userId).maybeSingle<UserRow>(),
       supabase
         .from("user_profile")
-        .select("phone,city,blood_group,availability_status,last_donation_date,emergency_contact,profile_image")
+        .select("cnic,phone,city,blood_group,availability_status,last_donation_date,emergency_contact,profile_image")
         .eq("user_id", userId)
         .maybeSingle<UserProfileRow>(),
     ]);

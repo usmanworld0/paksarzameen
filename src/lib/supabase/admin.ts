@@ -62,14 +62,16 @@ export function getSupabaseReadClient() {
     throw new Error("NEXT_PUBLIC_SUPABASE_URL (or SUPABASE_URL) is required for Supabase read operations.");
   }
 
-  const publishableKey = getSupabasePublishableKey();
-  if (publishableKey) {
-    return getSupabaseAnonClient();
-  }
-
+  // This helper is used by server-only services/routes.
+  // Prefer service-role reads when available so a stale publishable key cannot break server data loading.
   const serviceRoleKey = getSupabaseServiceRoleKey();
   if (serviceRoleKey) {
     return getSupabaseAdminClient();
+  }
+
+  const publishableKey = getSupabasePublishableKey();
+  if (publishableKey) {
+    return getSupabaseAnonClient();
   }
 
   throw new Error(

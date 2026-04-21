@@ -11,8 +11,7 @@ import { doctorListQuerySchema } from "@/lib/healthcare-validation";
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
-  const allowDemoFallback =
-    process.env.NODE_ENV !== "production" || process.env.HEALTHCARE_ALLOW_DEMO_FALLBACK === "true";
+  const allowDemoFallback = process.env.NODE_ENV !== "production";
 
   try {
     const { searchParams } = new URL(request.url);

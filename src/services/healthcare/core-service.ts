@@ -1,6 +1,7 @@
 import { randomUUID } from "crypto";
 
 import { getSupabaseAdminClient, getSupabaseReadClient } from "@/lib/supabase/admin";
+import { hasSupabaseConfig } from "@/lib/supabase/env";
 import { canCancelAppointment } from "@/services/healthcare/rules";
 
 export type AppointmentStatus = "pending" | "confirmed" | "completed" | "cancelled";
@@ -371,6 +372,10 @@ export async function listDoctors() {
 }
 
 export async function listDoctorsWithFilters(filters: DoctorListFilters) {
+  if (!hasSupabaseConfig()) {
+    return filterAndSortDemoDoctors(filters);
+  }
+
   const supabase = getPublicSupabase();
 
   let query = supabase
@@ -417,6 +422,10 @@ export async function listDoctorsWithFilters(filters: DoctorListFilters) {
 }
 
 export async function getDoctorById(doctorId: string) {
+  if (!hasSupabaseConfig()) {
+    return null;
+  }
+
   const supabase = getPublicSupabase();
   const { data, error } = await supabase
     .from("healthcare_doctors")
@@ -430,6 +439,10 @@ export async function getDoctorById(doctorId: string) {
 }
 
 export async function getDoctorByUserId(userId: string) {
+  if (!hasSupabaseConfig()) {
+    return null;
+  }
+
   const supabase = getPublicSupabase();
   const { data, error } = await supabase
     .from("healthcare_doctors")
@@ -543,6 +556,11 @@ export async function deleteDoctor(doctorId: string) {
 }
 
 export async function listDoctorSlots(doctorId: string, onlyAvailable = false) {
+  if (!hasSupabaseConfig()) {
+    const demoSlots = buildDemoSlots().filter((slot) => slot.doctorId === doctorId);
+    return onlyAvailable ? demoSlots.filter((slot) => slot.isAvailable) : demoSlots;
+  }
+
   const supabase = getPublicSupabase();
   let query = supabase
     .from("healthcare_doctor_slots")
@@ -560,6 +578,10 @@ export async function listDoctorSlots(doctorId: string, onlyAvailable = false) {
 }
 
 export async function listAvailableDoctorSlots() {
+  if (!hasSupabaseConfig()) {
+    return getDemoAvailableDoctorSlots();
+  }
+
   const supabase = getPublicSupabase();
   const { data: slots, error: slotError } = await supabase
     .from("healthcare_doctor_slots")
@@ -801,6 +823,23 @@ export async function deleteDoctorSlot(input: { doctorId: string; slotId: string
 
 async function hydrateAppointments(rows: HealthcareAppointmentRow[]): Promise<AppointmentRecord[]> {
   if (!rows.length) return [];
+  if (!hasSupabaseConfig()) {
+    return rows.map((row) => ({
+      appointmentId: row.id,
+      doctorId: row.doctor_id,
+      doctorName: "Doctor",
+      patientUserId: row.patient_user_id,
+      patientName: null,
+      slotId: row.slot_id,
+      slotStart: new Date(row.created_at).toISOString(),
+      slotEnd: new Date(row.created_at).toISOString(),
+      reason: row.reason,
+      status: row.status,
+      createdAt: new Date(row.created_at).toISOString(),
+      updatedAt: new Date(row.updated_at).toISOString(),
+    } satisfies AppointmentRecord));
+  }
+
   const supabase = getSupabase();
 
   const doctorIds = Array.from(new Set(rows.map((row) => row.doctor_id)));
@@ -853,6 +892,10 @@ async function hydrateAppointments(rows: HealthcareAppointmentRow[]): Promise<Ap
 }
 
 export async function getAppointmentById(appointmentId: string) {
+  if (!hasSupabaseConfig()) {
+    return null;
+  }
+
   const supabase = getSupabase();
   const { data, error } = await supabase
     .from("healthcare_appointments")
@@ -868,6 +911,10 @@ export async function getAppointmentById(appointmentId: string) {
 }
 
 export async function listAppointmentsForDoctor(doctorId: string, filters: AppointmentListFilters = {}) {
+  if (!hasSupabaseConfig()) {
+    return [];
+  }
+
   const supabase = getSupabase();
   let query = supabase
     .from("healthcare_appointments")
@@ -907,6 +954,10 @@ export async function listAppointmentsForDoctor(doctorId: string, filters: Appoi
 }
 
 export async function listAppointmentsForPatient(patientUserId: string, filters: AppointmentListFilters = {}) {
+  if (!hasSupabaseConfig()) {
+    return [];
+  }
+
   const supabase = getSupabase();
   let query = supabase
     .from("healthcare_appointments")
@@ -1094,6 +1145,10 @@ export async function createAppointmentMessage(
 }
 
 export async function listAppointmentMessages(appointmentId: string) {
+  if (!hasSupabaseConfig()) {
+    return [];
+  }
+
   const supabase = getSupabase();
   const { data, error } = await supabase
     .from("healthcare_appointment_messages")
@@ -1117,6 +1172,10 @@ export async function listAppointmentMessages(appointmentId: string) {
 }
 
 export async function markAppointmentMessagesRead(appointmentId: string, readerUserId: string) {
+  if (!hasSupabaseConfig()) {
+    return 0;
+  }
+
   const supabase = getSupabase();
 
   const { data, error } = await supabase
@@ -1197,6 +1256,10 @@ export async function createDonorChatMessage(input: {
 }
 
 export async function listDonorChatMessages(requesterUserId: string, donorUserId: string) {
+  if (!hasSupabaseConfig()) {
+    return [];
+  }
+
   const supabase = getSupabase();
   const roomKey = getDonorRoomKey(requesterUserId, donorUserId);
 
@@ -1231,6 +1294,10 @@ export async function getBloodDonorMatches(input: {
   city?: string;
   limit?: number;
 }): Promise<BloodDonorMatch[]> {
+  if (!hasSupabaseConfig()) {
+    return [];
+  }
+
   const supabase = getSupabase();
   const limit = Number.isFinite(input.limit) ? Math.max(1, Math.min(25, Number(input.limit))) : 10;
 
@@ -1288,6 +1355,10 @@ export async function getBloodDonorMatches(input: {
 }
 
 export async function assertHealthcareUserActive(userId: string) {
+  if (!hasSupabaseConfig()) {
+    return;
+  }
+
   const supabase = getSupabase();
   const { data, error } = await supabase
     .from("healthcare_user_suspensions")
@@ -1324,6 +1395,18 @@ export async function setHealthcareUserSuspension(input: {
 }
 
 export async function getHealthCareAnalytics() {
+  if (!hasSupabaseConfig()) {
+    return {
+      doctorsTotal: 0,
+      activePatientsTotal: 0,
+      appointmentsTotal: 0,
+      donorChatMessagesTotal: 0,
+      appointmentMessagesTotal: 0,
+      suspendedUsersTotal: 0,
+      appointmentsByStatus: {},
+    };
+  }
+
   const supabase = getSupabase();
 
   const [doctors, activePatients, appointments, donorMessages, appointmentMessages, suspensions, byStatus] = await Promise.all([
@@ -1393,6 +1476,10 @@ export async function logHealthCareAiInteraction(input: {
 }
 
 export async function listHealthcareActivityLogs(limit = 100) {
+  if (!hasSupabaseConfig()) {
+    return [];
+  }
+
   const supabase = getSupabase();
   const safeLimit = Number.isFinite(limit) ? Math.max(1, Math.min(200, Math.floor(limit))) : 100;
 

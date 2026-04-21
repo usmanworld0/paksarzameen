@@ -33,6 +33,8 @@ This pass finalizes professional hardening for the Health module with strict AI 
 - Cancellation policy is enforced in service layer with minimum time window checks.
 - The public doctors API now falls back to a built-in demo catalog when the live healthcare table is empty or the schema is not yet initialized, so deployed pages still render doctors and slots instead of an empty state.
 - Public doctor and slot reads now use the anon Supabase client first, so a missing service-role secret no longer blocks the live healthcare directory when the tables already contain data.
+- If the public Supabase URL or publishable key is missing entirely, healthcare read helpers now return demo or empty datasets instead of throwing `NEXT_PUBLIC_SUPABASE_URL is required for Supabase operations`, allowing the public directory to keep rendering in no-config environments.
+- The protected dashboard page now shows a configuration notice instead of crashing when Supabase public config is absent.
 
 ## Test Coverage Added
 - Healthcare safety rules test suite:

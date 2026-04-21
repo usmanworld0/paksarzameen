@@ -1,11 +1,49 @@
 import { NextResponse } from "next/server";
 import { getSupabaseAdminClient } from "@/lib/supabase/admin";
+import {
+  getSupabasePublishableKey,
+  getSupabaseServiceRoleKey,
+  getSupabaseUrl,
+} from "@/lib/supabase/env";
 
 /**
  * Diagnostic endpoint to check Supabase connectivity and schema.
  * Use at /api/health/supabase to verify healthcare setup.
  */
 export async function GET() {
+  const env = {
+    hasSupabaseUrl: Boolean(getSupabaseUrl()),
+    hasPublishableKey: Boolean(getSupabasePublishableKey()),
+    hasServiceRoleKey: Boolean(getSupabaseServiceRoleKey()),
+  };
+
+  if (!env.hasSupabaseUrl) {
+    return NextResponse.json(
+      {
+        timestamp: new Date().toISOString(),
+        status: "misconfigured",
+        env,
+        message: "Supabase URL is not configured.",
+        nextSteps: "Set NEXT_PUBLIC_SUPABASE_URL (or SUPABASE_URL) in deployment environment variables.",
+      },
+      { status: 503 }
+    );
+  }
+
+  if (!env.hasServiceRoleKey) {
+    return NextResponse.json(
+      {
+        timestamp: new Date().toISOString(),
+        status: "partial",
+        env,
+        message: "Service role key is not configured for admin diagnostics.",
+        nextSteps:
+          "Set SUPABASE_SERVICE_ROLE_KEY (or SUPABASE_SECRET_KEY). Public reads may still work if RLS allows anon access.",
+      },
+      { status: 503 }
+    );
+  }
+
   const checks = {
     supabaseConnection: false,
     tablesExist: {
@@ -62,6 +100,7 @@ export async function GET() {
     return NextResponse.json({
       timestamp: new Date().toISOString(),
       status: checks.errors.length === 0 ? "healthy" : "unhealthy",
+      env,
       checks,
       nextSteps:
         checks.errors.length > 0
@@ -73,6 +112,7 @@ export async function GET() {
       {
         timestamp: new Date().toISOString(),
         status: "error",
+        env,
         message: error instanceof Error ? error.message : String(error),
         nextSteps: "Verify SUPABASE_SERVICE_ROLE_KEY and NEXT_PUBLIC_SUPABASE_URL environment variables.",
       },

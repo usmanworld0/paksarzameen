@@ -11,6 +11,9 @@ import { doctorListQuerySchema } from "@/lib/healthcare-validation";
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
+  const allowDemoFallback =
+    process.env.NODE_ENV !== "production" || process.env.HEALTHCARE_ALLOW_DEMO_FALLBACK === "true";
+
   try {
     const { searchParams } = new URL(request.url);
     const parsed = doctorListQuerySchema.safeParse({
@@ -38,6 +41,17 @@ export async function GET(request: Request) {
     ]);
 
     if (!doctors.length) {
+      if (!allowDemoFallback) {
+        return NextResponse.json(
+          {
+            error:
+              "Healthcare doctors are unavailable from the live database in production. Check Supabase RLS policies and deployment environment variables (NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY, SUPABASE_SERVICE_ROLE_KEY).",
+            code: "HEALTHCARE_LIVE_DATA_UNAVAILABLE",
+          },
+          { status: 503 }
+        );
+      }
+
       return NextResponse.json({
         data: {
           doctors: getDemoDoctorsWithFilters(parsed.data),
@@ -51,7 +65,7 @@ export async function GET(request: Request) {
   } catch (error) {
     const mapped = mapHealthcareError(error, "Failed to load doctors.");
 
-    if (mapped.code === "HEALTHCARE_SCHEMA_NOT_INITIALIZED") {
+    if (mapped.code === "HEALTHCARE_SCHEMA_NOT_INITIALIZED" && allowDemoFallback) {
       return NextResponse.json({
         data: {
           doctors: getDemoDoctorsWithFilters({}),

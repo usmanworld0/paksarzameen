@@ -35,6 +35,10 @@ This pass finalizes professional hardening for the Health module with strict AI 
 - Public doctor and slot reads now use the anon Supabase client first, so a missing service-role secret no longer blocks the live healthcare directory when the tables already contain data.
 - If the public Supabase URL or publishable key is missing entirely, healthcare read helpers now return demo or empty datasets instead of throwing `NEXT_PUBLIC_SUPABASE_URL is required for Supabase operations`, allowing the public directory to keep rendering in no-config environments.
 - The protected dashboard page now shows a configuration notice instead of crashing when Supabase public config is absent.
+- For deployed environments with strict RLS, healthcare doctor/slot reads now retry through the server service-role client when anon reads come back empty, preventing false fallback to demo data when real records exist.
+- In production, silent demo fallback on `/api/healthcare/doctors` is now disabled by default. If live doctors cannot be read, the API returns an explicit `503` with `HEALTHCARE_LIVE_DATA_UNAVAILABLE` so misconfiguration is visible and fixable.
+- Demo fallback can be explicitly re-enabled with `HEALTHCARE_ALLOW_DEMO_FALLBACK=true` when needed for staged demos.
+- Supabase health diagnostics endpoint (`/api/health/supabase`) now reports env presence booleans and clear `misconfigured/partial` statuses instead of only generic 500 errors.
 
 ## Test Coverage Added
 - Healthcare safety rules test suite:

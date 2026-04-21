@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 
 import { getSupabaseAdminClient, getSupabaseReadClient } from "@/lib/supabase/admin";
-import { hasSupabaseConfig } from "@/lib/supabase/env";
+import { getSupabaseUrl, hasSupabaseConfig, hasSupabaseServiceRoleKey } from "@/lib/supabase/env";
 import { canCancelAppointment } from "@/services/healthcare/rules";
 
 export type AppointmentStatus = "pending" | "confirmed" | "completed" | "cancelled";
@@ -233,6 +233,10 @@ function getPublicSupabase() {
   return getSupabaseReadClient();
 }
 
+function hasHealthcareReadConfig() {
+  return Boolean(getSupabaseUrl() && (hasSupabaseConfig() || hasSupabaseServiceRoleKey()));
+}
+
 function getDonorRoomKey(requesterUserId: string, donorUserId: string) {
   return [requesterUserId, donorUserId].sort().join(":");
 }
@@ -372,7 +376,7 @@ export async function listDoctors() {
 }
 
 export async function listDoctorsWithFilters(filters: DoctorListFilters) {
-  if (!hasSupabaseConfig()) {
+  if (!hasHealthcareReadConfig()) {
     return filterAndSortDemoDoctors(filters);
   }
 
@@ -418,11 +422,52 @@ export async function listDoctorsWithFilters(filters: DoctorListFilters) {
   const { data, error } = await query;
 
   if (error) throw new Error(error.message);
-  return (data ?? []).map((row) => mapDoctorRow(row as HealthcareDoctorRow));
+
+  const mapped = (data ?? []).map((row) => mapDoctorRow(row as HealthcareDoctorRow));
+  if (mapped.length > 0 || !hasSupabaseServiceRoleKey()) {
+    return mapped;
+  }
+
+  // If anon reads are blocked by RLS in production, retry on server with service-role client.
+  const admin = getSupabaseAdminClient();
+  let adminQuery = admin
+    .from("healthcare_doctors")
+    .select("id,user_id,email,full_name,specialization,bio,experience_years,consultation_fee,created_at,updated_at");
+
+  if (search) {
+    const escaped = search.replace(/,/g, " ").replace(/\s+/g, " ").trim();
+    adminQuery = adminQuery.or(`full_name.ilike.%${escaped}%,specialization.ilike.%${escaped}%,bio.ilike.%${escaped}%`);
+  }
+
+  if (specialization) {
+    adminQuery = adminQuery.ilike("specialization", `%${specialization}%`);
+  }
+
+  if (minExperience !== null) {
+    adminQuery = adminQuery.gte("experience_years", minExperience);
+  }
+
+  if (maxFee !== null) {
+    adminQuery = adminQuery.lte("consultation_fee", maxFee);
+  }
+
+  if (sortBy === "experience") {
+    adminQuery = adminQuery.order("experience_years", { ascending, nullsFirst: false });
+  } else if (sortBy === "fee") {
+    adminQuery = adminQuery.order("consultation_fee", { ascending, nullsFirst: false });
+  } else if (sortBy === "name") {
+    adminQuery = adminQuery.order("full_name", { ascending });
+  } else {
+    adminQuery = adminQuery.order("created_at", { ascending: false });
+  }
+
+  const { data: adminData, error: adminError } = await adminQuery;
+  if (adminError) throw new Error(adminError.message);
+  return (adminData ?? []).map((row) => mapDoctorRow(row as HealthcareDoctorRow));
 }
 
 export async function getDoctorById(doctorId: string) {
-  if (!hasSupabaseConfig()) {
+  if (!hasHealthcareReadConfig()) {
     return null;
   }
 
@@ -439,7 +484,7 @@ export async function getDoctorById(doctorId: string) {
 }
 
 export async function getDoctorByUserId(userId: string) {
-  if (!hasSupabaseConfig()) {
+  if (!hasHealthcareReadConfig()) {
     return null;
   }
 
@@ -556,7 +601,7 @@ export async function deleteDoctor(doctorId: string) {
 }
 
 export async function listDoctorSlots(doctorId: string, onlyAvailable = false) {
-  if (!hasSupabaseConfig()) {
+  if (!hasHealthcareReadConfig()) {
     const demoSlots = buildDemoSlots().filter((slot) => slot.doctorId === doctorId);
     return onlyAvailable ? demoSlots.filter((slot) => slot.isAvailable) : demoSlots;
   }
@@ -578,7 +623,7 @@ export async function listDoctorSlots(doctorId: string, onlyAvailable = false) {
 }
 
 export async function listAvailableDoctorSlots() {
-  if (!hasSupabaseConfig()) {
+  if (!hasHealthcareReadConfig()) {
     return getDemoAvailableDoctorSlots();
   }
 
@@ -591,7 +636,20 @@ export async function listAvailableDoctorSlots() {
     .order("slot_start", { ascending: true });
 
   if (slotError) throw new Error(slotError.message);
-  const slotRows = (slots ?? []) as HealthcareDoctorSlotRow[];
+  let slotRows = (slots ?? []) as HealthcareDoctorSlotRow[];
+  if (!slotRows.length && hasSupabaseServiceRoleKey()) {
+    const admin = getSupabaseAdminClient();
+    const { data: adminSlots, error: adminSlotError } = await admin
+      .from("healthcare_doctor_slots")
+      .select("id,doctor_id,slot_start,slot_end,is_available,created_at")
+      .eq("is_available", true)
+      .gte("slot_start", new Date().toISOString())
+      .order("slot_start", { ascending: true });
+
+    if (adminSlotError) throw new Error(adminSlotError.message);
+    slotRows = (adminSlots ?? []) as HealthcareDoctorSlotRow[];
+  }
+
   if (!slotRows.length) return [];
 
   const doctorIds = Array.from(new Set(slotRows.map((row) => row.doctor_id)));

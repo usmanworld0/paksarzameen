@@ -57,5 +57,22 @@ export function getSupabaseAnonClient() {
 }
 
 export function getSupabaseReadClient() {
-  return getSupabaseAnonClient();
+  const supabaseUrl = getSupabaseUrl();
+  if (!supabaseUrl) {
+    throw new Error("NEXT_PUBLIC_SUPABASE_URL (or SUPABASE_URL) is required for Supabase read operations.");
+  }
+
+  const publishableKey = getSupabasePublishableKey();
+  if (publishableKey) {
+    return getSupabaseAnonClient();
+  }
+
+  const serviceRoleKey = getSupabaseServiceRoleKey();
+  if (serviceRoleKey) {
+    return getSupabaseAdminClient();
+  }
+
+  throw new Error(
+    "Supabase read client is not configured. Set NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY (or ANON alias), or provide SUPABASE_SERVICE_ROLE_KEY for server-side reads."
+  );
 }

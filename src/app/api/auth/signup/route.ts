@@ -7,7 +7,6 @@ export async function POST(request: Request) {
     const body = (await request.json()) as {
       name?: string;
       email?: string;
-      cnic?: string;
       password?: string;
       role?: "donor" | "admin" | "hospital";
     };
@@ -15,7 +14,6 @@ export async function POST(request: Request) {
     const user = await signupWithEmailPassword({
       name: body.name ?? "",
       email: body.email ?? "",
-      cnic: body.cnic ?? "",
       password: body.password ?? "",
       role: body.role,
     });
@@ -27,7 +25,6 @@ export async function POST(request: Request) {
           id: user.id,
           name: user.name,
           email: user.email,
-          cnic: user.cnic,
           role: user.role,
         },
       },

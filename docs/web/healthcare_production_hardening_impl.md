@@ -39,6 +39,7 @@ This pass finalizes professional hardening for the Health module with strict AI 
 - In production, silent demo fallback on `/api/healthcare/doctors` is now disabled by default. If live doctors cannot be read, the API returns an explicit `503` with `HEALTHCARE_LIVE_DATA_UNAVAILABLE` so misconfiguration is visible and fixable.
 - Demo fallback can be explicitly re-enabled with `HEALTHCARE_ALLOW_DEMO_FALLBACK=true` when needed for staged demos.
 - Supabase health diagnostics endpoint (`/api/health/supabase`) now reports env presence booleans and clear `misconfigured/partial` statuses instead of only generic 500 errors.
+- Supabase URL and publishable key must be supplied through environment variables in deployment and local `.env.local`; the resolver no longer ships hardcoded fallback values in source.
 
 ## Test Coverage Added
 - Healthcare safety rules test suite:

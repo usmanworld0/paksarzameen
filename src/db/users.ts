@@ -27,7 +27,6 @@ export async function findUserByEmail(email: string) {
 export async function createUserWithProfile(input: {
   name: string;
   email: string;
-  cnic?: string;
   passwordHash: string;
   role: UserRole;
 }) {
@@ -35,7 +34,6 @@ export async function createUserWithProfile(input: {
     data: {
       name: input.name,
       email: input.email,
-      cnic: input.cnic || null,
       passwordHash: input.passwordHash,
       role: input.role,
       profile: {

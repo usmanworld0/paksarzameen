@@ -3,12 +3,24 @@
 import Link from "next/link";
 import { FormEvent, useMemo, useState } from "react";
 
+function formatCnicInput(value: string) {
+  const digits = value.replace(/\D/g, "").slice(0, 13);
+  const part1 = digits.slice(0, 5);
+  const part2 = digits.slice(5, 12);
+  const part3 = digits.slice(12, 13);
+
+  if (digits.length <= 5) return part1;
+  if (digits.length <= 12) return `${part1}-${part2}`;
+  return `${part1}-${part2}-${part3}`;
+}
+
 type Props = {
   token?: string;
 };
 
 export function ResetPasswordForm({ token = "" }: Props) {
   const hasToken = useMemo(() => token.trim().length > 0, [token]);
+  const [cnic, setCnic] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -32,7 +44,7 @@ export function ResetPasswordForm({ token = "" }: Props) {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ token, password }),
+      body: JSON.stringify({ token, cnic, password }),
     });
 
     const payload = (await response.json()) as { error?: string; message?: string };
@@ -44,6 +56,7 @@ export function ResetPasswordForm({ token = "" }: Props) {
     }
 
     setMessage(payload.message ?? "Password updated.");
+    setCnic("");
     setPassword("");
     setConfirmPassword("");
   }
@@ -61,6 +74,22 @@ export function ResetPasswordForm({ token = "" }: Props) {
         </p>
       ) : (
         <form onSubmit={onSubmit} className="mt-5 space-y-4">
+          <label className="block space-y-2">
+            <span className="text-sm font-medium text-emerald-950">Confirm CNIC</span>
+            <input
+              type="text"
+              required
+              value={cnic}
+              onChange={(event) => setCnic(formatCnicInput(event.target.value))}
+              className="w-full rounded-xl border border-emerald-200 px-4 py-3 text-sm text-emerald-950 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+              placeholder="12345-1234567-1"
+              inputMode="numeric"
+              maxLength={15}
+              pattern="\d{5}-\d{7}-\d"
+              title="Enter CNIC as 12345-1234567-1"
+            />
+          </label>
+
           <label className="block space-y-2">
             <span className="text-sm font-medium text-emerald-950">New password</span>
             <input

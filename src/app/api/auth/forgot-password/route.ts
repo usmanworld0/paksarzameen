@@ -6,10 +6,11 @@ import { generatePasswordResetToken } from "@/server/auth-service";
 
 export async function POST(request: Request) {
   try {
-    const body = (await request.json()) as { email?: string };
+    const body = (await request.json()) as { email?: string; cnic?: string };
     const email = body.email ?? "";
+    const cnic = body.cnic ?? "";
 
-    const result = await generatePasswordResetToken(email);
+    const result = await generatePasswordResetToken({ email, cnic });
 
     if (result?.user.email) {
       const origin = getAuthUrl();

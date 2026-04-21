@@ -11,7 +11,14 @@ import {
   type UserRole,
 } from "@/db/users";
 import { hashPassword, verifyPassword } from "@/lib/password";
-import { safeText, assertValidPassword, isValidEmail, normalizeEmail } from "@/server/validation";
+import {
+  safeText,
+  assertValidPassword,
+  isValidEmail,
+  normalizeEmail,
+  isValidCnic,
+  normalizeCnic,
+} from "@/server/validation";
 
 export async function signupWithEmailPassword(input: {
   name: string;
@@ -69,8 +76,14 @@ export async function validateUserCredentials(input: { email: string; password: 
   return user;
 }
 
-export async function generatePasswordResetToken(emailInput: string) {
-  const email = normalizeEmail(emailInput);
+export async function generatePasswordResetToken(input: { email: string; cnic: string }) {
+  const email = normalizeEmail(input.email);
+  const cnic = normalizeCnic(input.cnic);
+
+  if (!isValidCnic(cnic)) {
+    throw new Error("Please provide a valid CNIC format (e.g., 12345-1234567-1).");
+  }
+
   const user = await findUserByEmail(email);
 
   if (!user || !user.email) {
@@ -80,7 +93,7 @@ export async function generatePasswordResetToken(emailInput: string) {
   await markUserResetTokensUsed(user.id);
 
   const token = crypto.randomBytes(32).toString("hex");
-  const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+  const tokenHash = crypto.createHash("sha256").update(`${token}:${cnic}`).digest("hex");
   const expiresAt = new Date(Date.now() + 1000 * 60 * 30);
 
   await createPasswordResetTokenRecord({
@@ -96,10 +109,15 @@ export async function generatePasswordResetToken(emailInput: string) {
   };
 }
 
-export async function resetPasswordWithToken(input: { token: string; password: string }) {
+export async function resetPasswordWithToken(input: { token: string; cnic: string; password: string }) {
   assertValidPassword(input.password);
 
-  const tokenHash = crypto.createHash("sha256").update(input.token).digest("hex");
+  const cnic = normalizeCnic(input.cnic);
+  if (!isValidCnic(cnic)) {
+    throw new Error("Please provide a valid CNIC format (e.g., 12345-1234567-1).");
+  }
+
+  const tokenHash = crypto.createHash("sha256").update(`${input.token}:${cnic}`).digest("hex");
   const resetRecord = await findValidResetToken(tokenHash);
 
   if (!resetRecord) {

@@ -3,8 +3,20 @@
 import Link from "next/link";
 import { FormEvent, useState } from "react";
 
+function formatCnicInput(value: string) {
+  const digits = value.replace(/\D/g, "").slice(0, 13);
+  const part1 = digits.slice(0, 5);
+  const part2 = digits.slice(5, 12);
+  const part3 = digits.slice(12, 13);
+
+  if (digits.length <= 5) return part1;
+  if (digits.length <= 12) return `${part1}-${part2}`;
+  return `${part1}-${part2}-${part3}`;
+}
+
 export function ForgotPasswordForm() {
   const [email, setEmail] = useState("");
+  const [cnic, setCnic] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
@@ -18,7 +30,7 @@ export function ForgotPasswordForm() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({ email, cnic }),
     });
 
     const payload = (await response.json()) as { message?: string };
@@ -31,7 +43,7 @@ export function ForgotPasswordForm() {
       <div className="space-y-1 text-center">
         <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-700">Password Recovery</p>
         <h1 className="text-3xl font-semibold text-emerald-950">Forgot password</h1>
-        <p className="text-sm text-emerald-900/70">Enter your email and we will send a reset link.</p>
+        <p className="text-sm text-emerald-900/70">Enter your email and CNIC to receive a reset link.</p>
       </div>
 
       <label className="block space-y-2">
@@ -43,6 +55,22 @@ export function ForgotPasswordForm() {
           onChange={(event) => setEmail(event.target.value)}
           className="w-full rounded-xl border border-emerald-200 px-4 py-3 text-sm text-emerald-950 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
           placeholder="you@example.com"
+        />
+      </label>
+
+      <label className="block space-y-2">
+        <span className="text-sm font-medium text-emerald-950">CNIC</span>
+        <input
+          type="text"
+          required
+          value={cnic}
+          onChange={(event) => setCnic(formatCnicInput(event.target.value))}
+          className="w-full rounded-xl border border-emerald-200 px-4 py-3 text-sm text-emerald-950 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+          placeholder="12345-1234567-1"
+          inputMode="numeric"
+          maxLength={15}
+          pattern="\d{5}-\d{7}-\d"
+          title="Enter CNIC as 12345-1234567-1"
         />
       </label>
 

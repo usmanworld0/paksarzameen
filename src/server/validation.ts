@@ -16,6 +16,14 @@ export function assertValidPassword(password: string) {
   }
 }
 
+export function normalizeCnic(cnic: string) {
+  return cnic.replace(/\s+/g, "").trim();
+}
+
+export function isValidCnic(cnic: string) {
+  return /^\d{5}-\d{7}-\d$/.test(normalizeCnic(cnic));
+}
+
 export function safeText(value: unknown, max = 120) {
   if (typeof value !== "string") {
     return "";

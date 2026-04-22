@@ -196,7 +196,10 @@ export function ProfileDashboard() {
           <h1 className="text-3xl font-semibold text-emerald-950">{data.user.name || "Your Profile"}</h1>
           <p className="text-sm text-emerald-900/75">{data.user.email} | Role: {data.user.role}</p>
         </div>
-        <LogoutButton callbackUrl="/login" />
+        <LogoutButton
+          callbackUrl="/login"
+          className="rounded-2xl border border-emerald-200 bg-white px-4 py-2.5 text-sm font-semibold text-emerald-800 shadow-sm transition hover:bg-emerald-50"
+        />
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">

@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
+import { getServerSession } from "next-auth/next";
 
 import { LoginForm } from "@/features/auth/components/LoginForm";
-import { hasSupabaseConfig } from "@/lib/supabase/env";
-import { createClient } from "@/utils/supabase/server";
+import { authOptions } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Login",
@@ -20,15 +20,10 @@ type LoginPageProps = {
 export default async function LoginPage({ searchParams }: LoginPageProps) {
   const params = await searchParams;
   const callbackUrl = params.callbackUrl ?? "/dashboard";
-  if (hasSupabaseConfig()) {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+  const session = await getServerSession(authOptions);
 
-    if (user?.id) {
-      redirect(callbackUrl);
-    }
+  if (session?.user?.id) {
+    redirect(callbackUrl);
   }
 
   return (

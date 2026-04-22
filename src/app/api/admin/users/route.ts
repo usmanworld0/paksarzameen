@@ -8,14 +8,26 @@ type ProfileRow = {
   email: string | null;
   role: string | null;
   created_at: string | null;
+  updated_at: string | null;
 };
 
 type UserProfileRow = {
   user_id: string;
+  cnic: string | null;
+  phone: string | null;
   city: string | null;
   blood_group: string | null;
   availability_status: string | null;
   profile_image: string | null;
+  last_donation_date: string | null;
+  emergency_contact: string | null;
+  date_of_birth: string | null;
+  gender: string | null;
+  address: string | null;
+  allergies: string | null;
+  medical_history: string | null;
+  occupation: string | null;
+  marital_status: string | null;
 };
 
 type TenantPermissionRow = {
@@ -31,10 +43,22 @@ type UserDirectoryItem = {
   email: string;
   role: string;
   createdAt: string;
+  updatedAt: string;
+  cnic: string;
+  phone: string;
   city: string;
   bloodGroup: string;
   availabilityStatus: string;
   profileImage: string;
+  lastDonationDate: string;
+  emergencyContact: string;
+  dateOfBirth: string;
+  gender: string;
+  address: string;
+  allergies: string;
+  medicalHistory: string;
+  occupation: string;
+  maritalStatus: string;
   modules: Array<{
     module: string;
     canView: boolean;
@@ -75,7 +99,7 @@ export async function GET(request: Request) {
 
     let query = supabase
       .from("profiles")
-      .select("id,email,role,created_at", { count: "exact" })
+      .select("id,email,role,created_at,updated_at", { count: "exact" })
       .order("created_at", { ascending: false })
       .limit(limit);
 
@@ -144,10 +168,22 @@ export async function GET(request: Request) {
         email: row.email ?? "",
         role: normalizeRole(row.role),
         createdAt: row.created_at ?? new Date(0).toISOString(),
+        updatedAt: row.updated_at ?? row.created_at ?? new Date(0).toISOString(),
+        cnic: profile?.cnic ?? "",
+        phone: profile?.phone ?? "",
         city: profile?.city ?? "",
         bloodGroup: profile?.blood_group ?? "",
         availabilityStatus: profile?.availability_status ?? "unavailable",
         profileImage: profile?.profile_image ?? "",
+        lastDonationDate: profile?.last_donation_date ?? "",
+        emergencyContact: profile?.emergency_contact ?? "",
+        dateOfBirth: profile?.date_of_birth ?? "",
+        gender: profile?.gender ?? "",
+        address: profile?.address ?? "",
+        allergies: profile?.allergies ?? "",
+        medicalHistory: profile?.medical_history ?? "",
+        occupation: profile?.occupation ?? "",
+        maritalStatus: profile?.marital_status ?? "",
         modules,
       };
     });

@@ -36,6 +36,7 @@ Implemented a production-oriented authentication and user management system for 
 - Signup creates user + empty profile (availability defaults to unavailable)
 - Login validates bcrypt password hash and issues JWT session
 - Session includes user id and role
+- The public `/login` page now signs users in through the same NextAuth credentials provider used by signup, instead of using Supabase password auth.
 
 ## Password Reset Flow
 1. User submits email, CNIC, and a new password on the forgot-password page
@@ -62,6 +63,7 @@ Output is ranked and limited to top 5 donors.
 - Profile APIs require authenticated session
 - Sensitive values are environment-driven
 - The shared `/login` page now checks for Supabase public config before creating a server client, so missing auth env renders the sign-in UI instead of crashing the page.
+- The shared `/login` and `/dashboard` pages now use `getServerSession(authOptions)` so the login redirect and dashboard guard match the credentials session created by the user auth flow.
 
 ## Routes/Pages Added
 - /signup

@@ -5,6 +5,8 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { Upload, Edit2, Save, X, Phone, Heart, Users } from "lucide-react";
 
+import { LogoutButton } from "@/features/auth/components/LogoutButton";
+
 type ProfileData = {
   name: string;
   email: string;
@@ -256,7 +258,7 @@ export function HealthcareProfileManager() {
           </div>
 
           {/* Edit Button */}
-          <div>
+          <div className="flex flex-col gap-3 sm:items-end">
             {!isEditing ? (
               <button
                 onClick={() => setIsEditing(true)}
@@ -274,6 +276,11 @@ export function HealthcareProfileManager() {
                 Cancel
               </button>
             )}
+
+            <LogoutButton
+              callbackUrl="/login"
+              className="flex items-center gap-2 rounded-xl border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+            />
           </div>
         </div>
       </div>

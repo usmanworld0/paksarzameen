@@ -250,8 +250,26 @@ CREATE INDEX IF NOT EXISTS otp_codes_expires_at_idx
 ON otp_codes (expires_at);
 
 -- PSZ Main Web (Email/Password Auth + User Management)
+DO $$
+BEGIN
+	CREATE TYPE "UserRole" AS ENUM ('donor', 'admin', 'hospital');
+EXCEPTION
+	WHEN duplicate_object THEN NULL;
+END
+$$;
+
 ALTER TABLE users ADD COLUMN IF NOT EXISTS password_hash text;
-ALTER TABLE users ADD COLUMN IF NOT EXISTS role text NOT NULL DEFAULT 'donor';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS role "UserRole" NOT NULL DEFAULT 'donor';
+ALTER TABLE users ALTER COLUMN role DROP DEFAULT;
+ALTER TABLE users
+	ALTER COLUMN role TYPE "UserRole"
+	USING (
+		CASE
+			WHEN role::text IN ('donor', 'admin', 'hospital') THEN role::text::"UserRole"
+			ELSE 'donor'::"UserRole"
+		END
+	);
+ALTER TABLE users ALTER COLUMN role SET DEFAULT 'donor';
 
 CREATE TABLE IF NOT EXISTS user_profile (
 	user_id uuid PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,

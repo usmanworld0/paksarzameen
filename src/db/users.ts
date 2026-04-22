@@ -26,7 +26,30 @@ async function ensureAuthSchema() {
   if (!authSchemaReady) {
     authSchemaReady = (async () => {
       await prisma.$executeRawUnsafe("ALTER TABLE users ADD COLUMN IF NOT EXISTS password_hash text");
-      await prisma.$executeRawUnsafe("ALTER TABLE users ADD COLUMN IF NOT EXISTS role text NOT NULL DEFAULT 'donor'");
+
+      await prisma.$executeRawUnsafe(`
+        DO $$
+        BEGIN
+          CREATE TYPE "UserRole" AS ENUM ('donor', 'admin', 'hospital');
+        EXCEPTION
+          WHEN duplicate_object THEN NULL;
+        END
+        $$;
+      `);
+
+      await prisma.$executeRawUnsafe("ALTER TABLE users ADD COLUMN IF NOT EXISTS role \"UserRole\" NOT NULL DEFAULT 'donor'");
+      await prisma.$executeRawUnsafe("ALTER TABLE users ALTER COLUMN role DROP DEFAULT");
+      await prisma.$executeRawUnsafe(`
+        ALTER TABLE users
+        ALTER COLUMN role TYPE "UserRole"
+        USING (
+          CASE
+            WHEN role::text IN ('donor', 'admin', 'hospital') THEN role::text::"UserRole"
+            ELSE 'donor'::"UserRole"
+          END
+        )
+      `);
+      await prisma.$executeRawUnsafe("ALTER TABLE users ALTER COLUMN role SET DEFAULT 'donor'");
 
       await prisma.$executeRawUnsafe(`
         CREATE TABLE IF NOT EXISTS user_profile (

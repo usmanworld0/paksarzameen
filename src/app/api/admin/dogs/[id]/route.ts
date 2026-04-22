@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { getDogById, parseUpdateDogPayload, updateDog, deleteDog } from "@/lib/dog-adoption";
 import { hasCloudinaryUploadConfig, uploadImageFile } from "@/lib/cloudinary";
+import { hasDatabaseConnection } from "@/lib/db";
 import { getRequiredAdminOrModuleApiUser } from "@/server/route-auth";
 
 type RouteContext = {
@@ -17,8 +18,11 @@ export async function GET(_: Request, context: RouteContext) {
   }
 
   try {
-    if (!process.env.DATABASE_URL) {
-      return NextResponse.json({ error: "DATABASE_URL is not configured." }, { status: 500 });
+    if (!hasDatabaseConnection()) {
+      return NextResponse.json(
+        { error: "Database is not configured. Set DATABASE_URL (or a supported DB URL alias)." },
+        { status: 500 }
+      );
     }
 
     const { id } = await context.params;
@@ -42,8 +46,11 @@ export async function PATCH(request: Request, context: RouteContext) {
   }
 
   try {
-    if (!process.env.DATABASE_URL) {
-      return NextResponse.json({ error: "DATABASE_URL is not configured." }, { status: 500 });
+    if (!hasDatabaseConnection()) {
+      return NextResponse.json(
+        { error: "Database is not configured. Set DATABASE_URL (or a supported DB URL alias)." },
+        { status: 500 }
+      );
     }
 
     const { id } = await context.params;
@@ -104,8 +111,11 @@ export async function DELETE(_: Request, context: RouteContext) {
   }
 
   try {
-    if (!process.env.DATABASE_URL) {
-      return NextResponse.json({ error: "DATABASE_URL is not configured." }, { status: 500 });
+    if (!hasDatabaseConnection()) {
+      return NextResponse.json(
+        { error: "Database is not configured. Set DATABASE_URL (or a supported DB URL alias)." },
+        { status: 500 }
+      );
     }
 
     const { id } = await context.params;

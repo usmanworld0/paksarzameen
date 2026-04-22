@@ -7,6 +7,7 @@ import {
   parseCreateDogPayload,
 } from "@/lib/dog-adoption";
 import { hasCloudinaryUploadConfig, uploadImageFile } from "@/lib/cloudinary";
+import { hasDatabaseConnection } from "@/lib/db";
 import { getRequiredAdminOrModuleApiUser } from "@/server/route-auth";
 
 export const dynamic = "force-dynamic";
@@ -18,8 +19,11 @@ export async function GET() {
   }
 
   try {
-    if (!process.env.DATABASE_URL) {
-      return NextResponse.json({ error: "DATABASE_URL is not configured." }, { status: 500 });
+    if (!hasDatabaseConnection()) {
+      return NextResponse.json(
+        { error: "Database is not configured. Set DATABASE_URL (or a supported DB URL alias)." },
+        { status: 500 }
+      );
     }
 
     const data = await listDogs();
@@ -37,8 +41,11 @@ export async function POST(request: Request) {
   }
 
   try {
-    if (!process.env.DATABASE_URL) {
-      return NextResponse.json({ error: "DATABASE_URL is not configured." }, { status: 500 });
+    if (!hasDatabaseConnection()) {
+      return NextResponse.json(
+        { error: "Database is not configured. Set DATABASE_URL (or a supported DB URL alias)." },
+        { status: 500 }
+      );
     }
 
     const contentType = request.headers.get("content-type") ?? "";

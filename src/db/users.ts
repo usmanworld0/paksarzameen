@@ -123,6 +123,14 @@ export async function findUserByEmail(email: string) {
   return prisma.user.findUnique({ where: { email } });
 }
 
+export async function findUserByEmailWithProfile(email: string) {
+  await ensureAuthSchema();
+  return prisma.user.findUnique({
+    where: { email },
+    include: { profile: true },
+  });
+}
+
 export async function createUserWithProfile(input: {
   name: string;
   email: string;

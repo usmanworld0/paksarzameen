@@ -1,7 +1,18 @@
 import { v2 as cloudinary } from "cloudinary";
 
+function normalizeEnvValue(value: string | undefined) {
+  const trimmed = value?.trim();
+
+  if (!trimmed) {
+    return "";
+  }
+
+  // Accept values copied from docs or dashboards with wrapping quotes/brackets.
+  return trimmed.replace(/^(["'<]+)(.*?)([>"']+)$/u, "$2").trim();
+}
+
 function getRequiredEnv(name: string) {
-  const value = process.env[name];
+  const value = normalizeEnvValue(process.env[name]);
 
   if (!value) {
     throw new Error(`${name} is required for Cloudinary uploads.`);
@@ -13,11 +24,13 @@ function getRequiredEnv(name: string) {
 let isCloudinaryConfigured = false;
 
 export function hasCloudinaryUploadConfig() {
+  const cloudinaryUrl = normalizeEnvValue(process.env.CLOUDINARY_URL);
+  const cloudName = normalizeEnvValue(process.env.CLOUDINARY_CLOUD_NAME);
+  const apiKey = normalizeEnvValue(process.env.CLOUDINARY_API_KEY);
+  const apiSecret = normalizeEnvValue(process.env.CLOUDINARY_API_SECRET);
+
   return Boolean(
-    process.env.CLOUDINARY_URL ||
-      (process.env.CLOUDINARY_CLOUD_NAME &&
-        process.env.CLOUDINARY_API_KEY &&
-        process.env.CLOUDINARY_API_SECRET)
+    cloudinaryUrl || (cloudName && apiKey && apiSecret)
   );
 }
 
@@ -26,10 +39,10 @@ function ensureCloudinaryConfigured() {
     return;
   }
 
-  const cloudinaryUrl = process.env.CLOUDINARY_URL;
-  const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
-  const apiKey = process.env.CLOUDINARY_API_KEY;
-  const apiSecret = process.env.CLOUDINARY_API_SECRET;
+  const cloudinaryUrl = normalizeEnvValue(process.env.CLOUDINARY_URL);
+  const cloudName = normalizeEnvValue(process.env.CLOUDINARY_CLOUD_NAME);
+  const apiKey = normalizeEnvValue(process.env.CLOUDINARY_API_KEY);
+  const apiSecret = normalizeEnvValue(process.env.CLOUDINARY_API_SECRET);
 
   if (cloudName && apiKey && apiSecret) {
     cloudinary.config({

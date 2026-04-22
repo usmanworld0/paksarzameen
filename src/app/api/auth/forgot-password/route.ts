@@ -1,35 +1,26 @@
 import { NextResponse } from "next/server";
 
-import { sendPasswordResetEmail } from "@/lib/mailer";
-import { getAuthUrl } from "@/lib/auth-env";
-import { generatePasswordResetToken } from "@/server/auth-service";
+import { resetPasswordWithEmailCnic } from "@/server/auth-service";
 
 export async function POST(request: Request) {
   try {
-    const body = (await request.json()) as { email?: string; cnic?: string };
+    const body = (await request.json()) as { email?: string; cnic?: string; password?: string };
     const email = body.email ?? "";
     const cnic = body.cnic ?? "";
+    const password = body.password ?? "";
 
-    const result = await generatePasswordResetToken({ email, cnic });
-
-    if (result?.user.email) {
-      const origin = getAuthUrl();
-      const resetUrl = `${origin}/reset-password?token=${encodeURIComponent(result.token)}`;
-      await sendPasswordResetEmail({
-        email: result.user.email,
-        resetUrl,
-      });
-    }
+    await resetPasswordWithEmailCnic({ email, cnic, password });
 
     return NextResponse.json({
-      message: "If an account exists for this email, a reset link has been sent.",
+      message: "Password updated successfully.",
     });
-  } catch {
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unable to reset password.";
     return NextResponse.json(
       {
-        message: "If an account exists for this email, a reset link has been sent.",
+        error: message,
       },
-      { status: 200 }
+      { status: 400 }
     );
   }
 }

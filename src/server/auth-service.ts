@@ -4,6 +4,7 @@ import {
   createPasswordResetTokenRecord,
   createUserWithProfile,
   findUserByEmail,
+  findUserByEmailWithProfile,
   findValidResetToken,
   markUserResetTokensUsed,
   consumeResetToken,
@@ -114,6 +115,34 @@ export async function generatePasswordResetToken(input: { email: string; cnic: s
     expiresAt,
     user,
   };
+}
+
+export async function resetPasswordWithEmailCnic(input: { email: string; cnic: string; password: string }) {
+  const email = normalizeEmail(input.email);
+  const cnic = normalizeCnic(input.cnic);
+
+  if (!isValidEmail(email)) {
+    throw new Error("Please provide a valid email address.");
+  }
+
+  if (!isValidCnic(cnic)) {
+    throw new Error("Please provide a valid CNIC format (e.g., 12345-1234567-1).");
+  }
+
+  assertValidPassword(input.password);
+
+  const user = await findUserByEmailWithProfile(email);
+
+  if (!user?.profile?.cnic || normalizeCnic(user.profile.cnic) !== cnic) {
+    throw new Error("The provided email and CNIC do not match our records.");
+  }
+
+  await markUserResetTokensUsed(user.id);
+
+  const passwordHash = await hashPassword(input.password);
+  await updateUserPassword(user.id, passwordHash);
+
+  return true;
 }
 
 export async function resetPasswordWithToken(input: { token: string; cnic: string; password: string }) {

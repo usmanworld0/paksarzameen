@@ -7,7 +7,7 @@ import { authOptions } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Forgot Password",
-  description: "Request a secure password reset link.",
+  description: "Verify your email and CNIC to set a new password.",
 };
 
 export default async function ForgotPasswordPage() {

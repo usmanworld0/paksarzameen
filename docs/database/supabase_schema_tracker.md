@@ -263,6 +263,13 @@ CREATE TABLE IF NOT EXISTS user_profile (
 	last_donation_date timestamptz,
 	emergency_contact text,
 	profile_image text,
+	date_of_birth timestamptz,
+	gender text,
+	address text,
+	allergies text,
+	medical_history text,
+	occupation text,
+	marital_status text,
 	created_at timestamptz NOT NULL DEFAULT now(),
 	updated_at timestamptz NOT NULL DEFAULT now()
 );
@@ -272,6 +279,13 @@ ON user_profile (city, blood_group, availability_status);
 
 ALTER TABLE users DROP COLUMN IF EXISTS cnic;
 ALTER TABLE user_profile ADD COLUMN IF NOT EXISTS cnic text UNIQUE;
+ALTER TABLE user_profile ADD COLUMN IF NOT EXISTS date_of_birth timestamptz;
+ALTER TABLE user_profile ADD COLUMN IF NOT EXISTS gender text;
+ALTER TABLE user_profile ADD COLUMN IF NOT EXISTS address text;
+ALTER TABLE user_profile ADD COLUMN IF NOT EXISTS allergies text;
+ALTER TABLE user_profile ADD COLUMN IF NOT EXISTS medical_history text;
+ALTER TABLE user_profile ADD COLUMN IF NOT EXISTS occupation text;
+ALTER TABLE user_profile ADD COLUMN IF NOT EXISTS marital_status text;
 
 CREATE TABLE IF NOT EXISTS password_reset_tokens (
 	id uuid PRIMARY KEY DEFAULT gen_random_uuid(),

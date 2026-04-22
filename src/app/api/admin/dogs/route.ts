@@ -6,7 +6,7 @@ import {
   normalizeDogStatus,
   parseCreateDogPayload,
 } from "@/lib/dog-adoption";
-import { uploadImageFile } from "@/lib/cloudinary";
+import { hasCloudinaryUploadConfig, uploadImageFile } from "@/lib/cloudinary";
 import { getRequiredAdminOrModuleApiUser } from "@/server/route-auth";
 
 export const dynamic = "force-dynamic";
@@ -50,6 +50,16 @@ export async function POST(request: Request) {
 
       let imageUrl = imageUrlFromBody;
       if (file instanceof File && file.size > 0) {
+        if (!hasCloudinaryUploadConfig()) {
+          return NextResponse.json(
+            {
+              error:
+                "Image file upload is unavailable because Cloudinary server configuration is missing. Add Cloudinary env vars or provide an Image URL.",
+            },
+            { status: 400 }
+          );
+        }
+
         const uploaded = await uploadImageFile(file, "dog-adoption");
         imageUrl = uploaded.url;
       }

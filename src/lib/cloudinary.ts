@@ -12,18 +12,35 @@ function getRequiredEnv(name: string) {
 
 let isCloudinaryConfigured = false;
 
+export function hasCloudinaryUploadConfig() {
+  return Boolean(
+    process.env.CLOUDINARY_URL ||
+      (process.env.CLOUDINARY_CLOUD_NAME &&
+        process.env.CLOUDINARY_API_KEY &&
+        process.env.CLOUDINARY_API_SECRET)
+  );
+}
+
 function ensureCloudinaryConfigured() {
   if (isCloudinaryConfigured) {
     return;
   }
 
-  cloudinary.config({
-    secure: true,
-    cloud_name: getRequiredEnv("CLOUDINARY_CLOUD_NAME"),
-    api_key: getRequiredEnv("CLOUDINARY_API_KEY"),
-    api_secret: getRequiredEnv("CLOUDINARY_API_SECRET"),
-    url: process.env.CLOUDINARY_URL,
-  });
+  const cloudinaryUrl = process.env.CLOUDINARY_URL;
+
+  if (cloudinaryUrl) {
+    cloudinary.config({
+      secure: true,
+      url: cloudinaryUrl,
+    });
+  } else {
+    cloudinary.config({
+      secure: true,
+      cloud_name: getRequiredEnv("CLOUDINARY_CLOUD_NAME"),
+      api_key: getRequiredEnv("CLOUDINARY_API_KEY"),
+      api_secret: getRequiredEnv("CLOUDINARY_API_SECRET"),
+    });
+  }
 
   isCloudinaryConfigured = true;
 }

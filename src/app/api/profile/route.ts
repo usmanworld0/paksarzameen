@@ -12,10 +12,15 @@ export async function GET() {
   try {
     const profileData = await getProfileData(user.id);
     if (profileData) {
-      return NextResponse.json(profileData);
+      return NextResponse.json({
+        data: profileData,
+        user: profileData.user,
+        profile: profileData.profile,
+        eligibility: profileData.eligibility,
+      });
     }
 
-    return NextResponse.json({
+    const fallbackData = {
       user: {
         id: user.id,
         name: user.email ? user.email.split("@")[0] : "User",
@@ -31,11 +36,23 @@ export async function GET() {
         lastDonationDate: "",
         emergencyContact: "",
         profileImage: "",
+        dateOfBirth: "",
+        gender: "",
+        address: "",
+        allergies: "",
+        medicalHistory: "",
+        occupation: "",
+        maritalStatus: "",
       },
       eligibility: {
         isEligible: true,
         rule: "Eligible every 3 months after last donation",
       },
+    };
+
+    return NextResponse.json({
+      data: fallbackData,
+      ...fallbackData,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to load profile.";

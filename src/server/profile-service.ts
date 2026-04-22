@@ -4,6 +4,7 @@ import { safeText } from "@/server/validation";
 const ELIGIBILITY_DAYS = 90;
 
 export type ProfileUpdateInput = {
+  cnic?: string;
   name?: string;
   phone?: string;
   city?: string;
@@ -37,6 +38,13 @@ type UserProfileRow = {
   last_donation_date: string | null;
   emergency_contact: string | null;
   profile_image: string | null;
+  date_of_birth: string | null;
+  gender: string | null;
+  address: string | null;
+  allergies: string | null;
+  medical_history: string | null;
+  occupation: string | null;
+  marital_status: string | null;
 };
 
 function getSupabase() {
@@ -76,6 +84,13 @@ function profileToResponse(user: UserRow | null, profile: UserProfileRow | null)
       lastDonationDate: parsedLastDonationDate ? parsedLastDonationDate.toISOString().slice(0, 10) : "",
       emergencyContact: profile?.emergency_contact ?? "",
       profileImage: profile?.profile_image ?? "",
+      dateOfBirth: profile?.date_of_birth ? new Date(profile.date_of_birth).toISOString().slice(0, 10) : "",
+      gender: profile?.gender ?? "",
+      address: profile?.address ?? "",
+      allergies: profile?.allergies ?? "",
+      medicalHistory: profile?.medical_history ?? "",
+      occupation: profile?.occupation ?? "",
+      maritalStatus: profile?.marital_status ?? "",
     },
     eligibility: {
       isEligible: isEligibleForDonation(parsedLastDonationDate),
@@ -92,7 +107,7 @@ export async function getProfileData(userId: string) {
       supabase.from("profiles").select("id,email,role").eq("id", userId).maybeSingle<UserRow>(),
       supabase
         .from("user_profile")
-        .select("cnic,phone,city,blood_group,availability_status,last_donation_date,emergency_contact,profile_image")
+        .select("cnic,phone,city,blood_group,availability_status,last_donation_date,emergency_contact,profile_image,date_of_birth,gender,address,allergies,medical_history,occupation,marital_status")
         .eq("user_id", userId)
         .maybeSingle<UserProfileRow>(),
     ]);
@@ -118,6 +133,7 @@ export async function updateProfileData(userId: string, input: ProfileUpdateInpu
   const supabase = getSupabase();
 
   const payload: ProfileUpdateInput = {
+    cnic: safeText(input.cnic ?? "", 20),
     phone: safeText(input.phone ?? "", 30),
     city: safeText(input.city ?? "", 80),
     bloodGroup: safeText(input.bloodGroup ?? "", 3).toUpperCase(),
@@ -125,10 +141,18 @@ export async function updateProfileData(userId: string, input: ProfileUpdateInpu
     lastDonationDate: input.lastDonationDate ?? null,
     emergencyContact: safeText(input.emergencyContact ?? "", 30),
     profileImage: safeText(input.profileImage ?? "", 500),
+    dateOfBirth: input.dateOfBirth ?? null,
+    gender: safeText(input.gender ?? "", 40),
+    address: safeText(input.address ?? "", 400),
+    allergies: safeText(input.allergies ?? "", 400),
+    medicalHistory: safeText(input.medicalHistory ?? "", 1200),
+    occupation: safeText(input.occupation ?? "", 100),
+    maritalStatus: safeText(input.maritalStatus ?? "", 40),
   };
 
   const profileUpsert = {
     user_id: userId,
+    cnic: payload.cnic || null,
     phone: payload.phone || null,
     city: payload.city || null,
     blood_group: payload.bloodGroup || null,
@@ -136,6 +160,13 @@ export async function updateProfileData(userId: string, input: ProfileUpdateInpu
     last_donation_date: payload.lastDonationDate || null,
     emergency_contact: payload.emergencyContact || null,
     profile_image: payload.profileImage || null,
+    date_of_birth: payload.dateOfBirth || null,
+    gender: payload.gender || null,
+    address: payload.address || null,
+    allergies: payload.allergies || null,
+    medical_history: payload.medicalHistory || null,
+    occupation: payload.occupation || null,
+    marital_status: payload.maritalStatus || null,
     updated_at: new Date().toISOString(),
   };
 
@@ -155,6 +186,7 @@ export async function clearProfileData(userId: string) {
     .upsert(
       {
         user_id: userId,
+        cnic: null,
         phone: null,
         city: null,
         blood_group: null,
@@ -162,6 +194,13 @@ export async function clearProfileData(userId: string) {
         last_donation_date: null,
         emergency_contact: null,
         profile_image: null,
+        date_of_birth: null,
+        gender: null,
+        address: null,
+        allergies: null,
+        medical_history: null,
+        occupation: null,
+        marital_status: null,
         updated_at: new Date().toISOString(),
       },
       { onConflict: "user_id" }

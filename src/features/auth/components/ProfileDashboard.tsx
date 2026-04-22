@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
+import { Camera, ShieldCheck, UserCircle2 } from "lucide-react";
 
 import { LogoutButton } from "@/features/auth/components/LogoutButton";
 
@@ -13,6 +15,7 @@ type ProfileApiResponse = {
       role: string;
     };
     profile: {
+      cnic: string;
       phone: string;
       city: string;
       bloodGroup: string;
@@ -20,6 +23,13 @@ type ProfileApiResponse = {
       lastDonationDate: string;
       emergencyContact: string;
       profileImage: string;
+      dateOfBirth: string;
+      gender: string;
+      address: string;
+      allergies: string;
+      medicalHistory: string;
+      occupation: string;
+      maritalStatus: string;
     };
     eligibility: {
       isEligible: boolean;
@@ -29,18 +39,48 @@ type ProfileApiResponse = {
 };
 
 const BLOOD_GROUPS = ["", "A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
+const GENDER_OPTIONS = ["", "Male", "Female", "Other", "Prefer not to say"];
+const MARITAL_OPTIONS = ["", "Single", "Married", "Divorced", "Widowed", "Prefer not to say"];
+
+function getCompletionScore(data: ProfileApiResponse["data"] | null) {
+  if (!data) return 0;
+
+  const checks = [
+    Boolean(data.user.name),
+    Boolean(data.profile.cnic),
+    Boolean(data.profile.phone),
+    Boolean(data.profile.city),
+    Boolean(data.profile.bloodGroup),
+    Boolean(data.profile.emergencyContact),
+    Boolean(data.profile.dateOfBirth),
+    Boolean(data.profile.gender),
+    Boolean(data.profile.address),
+    Boolean(data.profile.profileImage),
+  ];
+
+  const completed = checks.filter(Boolean).length;
+  return Math.round((completed / checks.length) * 100);
+}
 
 export function ProfileDashboard() {
   const [data, setData] = useState<ProfileApiResponse["data"] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const completionScore = getCompletionScore(data);
 
   async function loadProfile() {
     setIsLoading(true);
     const response = await fetch("/api/profile");
-    const payload = (await response.json()) as ProfileApiResponse & { error?: string };
+    const payload = (await response.json()) as {
+      data?: ProfileApiResponse["data"];
+      user?: ProfileApiResponse["data"]["user"];
+      profile?: ProfileApiResponse["data"]["profile"];
+      eligibility?: ProfileApiResponse["data"]["eligibility"];
+      error?: string;
+    };
 
     if (!response.ok) {
       setError(payload.error ?? "Failed to load profile.");
@@ -48,7 +88,16 @@ export function ProfileDashboard() {
       return;
     }
 
-    setData(payload.data);
+    if (payload.data) {
+      setData(payload.data);
+    } else if (payload.user && payload.profile && payload.eligibility) {
+      setData({
+        user: payload.user,
+        profile: payload.profile,
+        eligibility: payload.eligibility,
+      });
+    }
+
     setIsLoading(false);
   }
 
@@ -106,6 +155,9 @@ export function ProfileDashboard() {
   }
 
   async function uploadProfileImage(file: File) {
+    setIsUploadingImage(true);
+    setError(null);
+    setMessage(null);
     const formData = new FormData();
     formData.append("image", file);
 
@@ -117,6 +169,7 @@ export function ProfileDashboard() {
     const payload = (await response.json()) as { imageUrl?: string; error?: string };
     if (!response.ok || !payload.imageUrl || !data) {
       setError(payload.error ?? "Image upload failed.");
+      setIsUploadingImage(false);
       return;
     }
 
@@ -128,6 +181,7 @@ export function ProfileDashboard() {
       },
     });
     setMessage("Profile image uploaded. Save profile to persist details.");
+    setIsUploadingImage(false);
   }
 
   if (isLoading || !data) {
@@ -145,17 +199,84 @@ export function ProfileDashboard() {
         <LogoutButton callbackUrl="/login" />
       </div>
 
-      <div className="rounded-2xl border border-emerald-100 bg-emerald-50/70 p-4 text-sm text-emerald-900">
-        Eligibility: <span className="font-semibold">{data.eligibility.isEligible ? "Eligible to donate" : "Not eligible yet"}</span>
-        <p className="text-xs text-emerald-800/80">{data.eligibility.rule}</p>
+      <div className="grid gap-4 md:grid-cols-3">
+        <div className="rounded-2xl border border-emerald-100 bg-emerald-50/70 p-4 text-sm text-emerald-900 md:col-span-2">
+          <p className="inline-flex items-center gap-2 font-semibold">
+            <ShieldCheck className="h-4 w-4" />
+            {data.eligibility.isEligible ? "Eligible to donate" : "Not eligible yet"}
+          </p>
+          <p className="mt-1 text-xs text-emerald-800/80">{data.eligibility.rule}</p>
+        </div>
+
+        <div className="rounded-2xl border border-emerald-100 bg-white p-4 shadow-sm">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700">Profile Completion</p>
+          <p className="mt-1 text-2xl font-semibold text-emerald-950">{completionScore}%</p>
+          <div className="mt-3 h-2 w-full rounded-full bg-emerald-100">
+            <div className="h-full rounded-full bg-emerald-600 transition-all" style={{ width: `${completionScore}%` }} />
+          </div>
+        </div>
       </div>
 
-      <form onSubmit={saveProfile} className="grid gap-4 rounded-3xl border border-emerald-100 bg-white p-6 shadow-[0_20px_60px_rgba(8,39,24,0.08)] sm:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-[320px_1fr]">
+        <div className="rounded-3xl border border-emerald-100 bg-white p-5 shadow-sm">
+          <div className="mx-auto flex h-36 w-36 items-center justify-center overflow-hidden rounded-full border-4 border-emerald-100 bg-emerald-50">
+            {data.profile.profileImage ? (
+              <Image
+                src={data.profile.profileImage}
+                alt="Profile"
+                width={144}
+                height={144}
+                unoptimized
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <UserCircle2 className="h-20 w-20 text-emerald-300" />
+            )}
+          </div>
+          <p className="mt-4 text-center text-sm text-emerald-900/80">Use a clear face photo for faster verification.</p>
+
+          <label className="mt-4 inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-white px-3 py-2.5 text-sm font-medium text-emerald-800 hover:bg-emerald-50">
+            <Camera className="h-4 w-4" />
+            {isUploadingImage ? "Uploading..." : "Upload Photo"}
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(event) => {
+                const file = event.target.files?.[0];
+                if (file) {
+                  void uploadProfileImage(file);
+                }
+              }}
+              disabled={isUploadingImage}
+            />
+          </label>
+
+          <button
+            type="button"
+            onClick={() => setData({ ...data, profile: { ...data.profile, profileImage: "" } })}
+            className="mt-2 w-full rounded-xl border border-emerald-200 px-3 py-2.5 text-sm font-medium text-emerald-700 hover:bg-emerald-50"
+          >
+            Remove Photo
+          </button>
+        </div>
+
+        <form onSubmit={saveProfile} className="grid gap-4 rounded-3xl border border-emerald-100 bg-white p-6 shadow-[0_20px_60px_rgba(8,39,24,0.08)] sm:grid-cols-2">
         <label className="space-y-1">
           <span className="text-sm font-medium text-emerald-950">Name</span>
           <input
             value={data.user.name ?? ""}
             onChange={(event) => setData({ ...data, user: { ...data.user, name: event.target.value } })}
+            className="w-full rounded-xl border border-emerald-200 px-3 py-2 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+          />
+        </label>
+
+        <label className="space-y-1">
+          <span className="text-sm font-medium text-emerald-950">CNIC</span>
+          <input
+            value={data.profile.cnic}
+            onChange={(event) => setData({ ...data, profile: { ...data.profile, cnic: event.target.value } })}
+            placeholder="xxxxx-xxxxxxx-x"
             className="w-full rounded-xl border border-emerald-200 px-3 py-2 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
           />
         </label>
@@ -232,28 +353,83 @@ export function ProfileDashboard() {
           />
         </label>
 
-        <label className="space-y-1 sm:col-span-2">
-          <span className="text-sm font-medium text-emerald-950">Profile image URL</span>
+        <label className="space-y-1">
+          <span className="text-sm font-medium text-emerald-950">Date of birth</span>
           <input
-            value={data.profile.profileImage}
-            onChange={(event) => setData({ ...data, profile: { ...data.profile, profileImage: event.target.value } })}
+            type="date"
+            value={data.profile.dateOfBirth}
+            onChange={(event) => setData({ ...data, profile: { ...data.profile, dateOfBirth: event.target.value } })}
             className="w-full rounded-xl border border-emerald-200 px-3 py-2 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
-            placeholder="https://..."
+          />
+        </label>
+
+        <label className="space-y-1">
+          <span className="text-sm font-medium text-emerald-950">Gender</span>
+          <select
+            value={data.profile.gender}
+            onChange={(event) => setData({ ...data, profile: { ...data.profile, gender: event.target.value } })}
+            className="w-full rounded-xl border border-emerald-200 px-3 py-2 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+          >
+            {GENDER_OPTIONS.map((option) => (
+              <option key={option || "none"} value={option}>
+                {option || "Select"}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="space-y-1">
+          <span className="text-sm font-medium text-emerald-950">Occupation</span>
+          <input
+            value={data.profile.occupation}
+            onChange={(event) => setData({ ...data, profile: { ...data.profile, occupation: event.target.value } })}
+            className="w-full rounded-xl border border-emerald-200 px-3 py-2 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+          />
+        </label>
+
+        <label className="space-y-1">
+          <span className="text-sm font-medium text-emerald-950">Marital status</span>
+          <select
+            value={data.profile.maritalStatus}
+            onChange={(event) => setData({ ...data, profile: { ...data.profile, maritalStatus: event.target.value } })}
+            className="w-full rounded-xl border border-emerald-200 px-3 py-2 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+          >
+            {MARITAL_OPTIONS.map((option) => (
+              <option key={option || "none"} value={option}>
+                {option || "Select"}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="space-y-1 sm:col-span-2">
+          <span className="text-sm font-medium text-emerald-950">Address</span>
+          <input
+            value={data.profile.address}
+            onChange={(event) => setData({ ...data, profile: { ...data.profile, address: event.target.value } })}
+            className="w-full rounded-xl border border-emerald-200 px-3 py-2 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
           />
         </label>
 
         <label className="space-y-1 sm:col-span-2">
-          <span className="text-sm font-medium text-emerald-950">Upload profile image (optional)</span>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(event) => {
-              const file = event.target.files?.[0];
-              if (file) {
-                void uploadProfileImage(file);
-              }
-            }}
-            className="w-full rounded-xl border border-emerald-200 bg-white px-3 py-2 text-sm text-emerald-900"
+          <span className="text-sm font-medium text-emerald-950">Allergies</span>
+          <textarea
+            value={data.profile.allergies}
+            onChange={(event) => setData({ ...data, profile: { ...data.profile, allergies: event.target.value } })}
+            rows={3}
+            className="w-full rounded-xl border border-emerald-200 px-3 py-2 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+            placeholder="Mention known allergies"
+          />
+        </label>
+
+        <label className="space-y-1 sm:col-span-2">
+          <span className="text-sm font-medium text-emerald-950">Medical history</span>
+          <textarea
+            value={data.profile.medicalHistory}
+            onChange={(event) => setData({ ...data, profile: { ...data.profile, medicalHistory: event.target.value } })}
+            rows={4}
+            className="w-full rounded-xl border border-emerald-200 px-3 py-2 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+            placeholder="Add important medical notes"
           />
         </label>
 
@@ -275,6 +451,7 @@ export function ProfileDashboard() {
           </button>
         </div>
       </form>
+      </div>
 
       {message ? <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">{message}</p> : null}
       {error ? <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p> : null}

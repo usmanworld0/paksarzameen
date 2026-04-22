@@ -69,6 +69,7 @@ export type CreateDogUpdateInput = {
 
 const DOG_STATUSES: DogStatus[] = ["available", "pending", "adopted"];
 const REQUEST_STATUSES: AdoptionRequestStatus[] = ["pending", "approved", "rejected"];
+const DEFAULT_DOG_IMAGE_URL = "/images/placeholders/10.png";
 
 let didEnsureDogAdoptionSchema = false;
 
@@ -101,7 +102,7 @@ export function parseCreateDogPayload(payload: unknown): CreateDogInput {
   const age = normalizedText(data.age);
   const gender = normalizedText(data.gender);
   const description = normalizedText(data.description);
-  const imageUrl = normalizedText(data.imageUrl);
+  const imageUrl = normalizedText(data.imageUrl) || DEFAULT_DOG_IMAGE_URL;
   const status = normalizeDogStatus(data.status, "available");
   const city = normalizedText(data.city) || null;
   const area = normalizedText(data.area) || null;
@@ -111,8 +112,6 @@ export function parseCreateDogPayload(payload: unknown): CreateDogInput {
   if (!age) throw new Error("Age is required.");
   if (!gender) throw new Error("Gender is required.");
   if (!description) throw new Error("Description is required.");
-  if (!imageUrl) throw new Error("Image URL is required.");
-
   return {
     name,
     breed,

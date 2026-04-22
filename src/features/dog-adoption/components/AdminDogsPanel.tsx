@@ -250,7 +250,7 @@ export function AdminDogsPanel() {
               </select>
               <input
                 className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                placeholder="Image URL (optional if upload provided)"
+                placeholder="Image URL (optional, otherwise a default placeholder is used)"
                 value={form.imageUrl}
                 onChange={(event) => setForm((prev) => ({ ...prev, imageUrl: event.target.value }))}
               />

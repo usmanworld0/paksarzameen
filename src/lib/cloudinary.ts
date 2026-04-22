@@ -27,11 +27,22 @@ function ensureCloudinaryConfigured() {
   }
 
   const cloudinaryUrl = process.env.CLOUDINARY_URL;
+  const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+  const apiKey = process.env.CLOUDINARY_API_KEY;
+  const apiSecret = process.env.CLOUDINARY_API_SECRET;
 
-  if (cloudinaryUrl) {
+  if (cloudName && apiKey && apiSecret) {
     cloudinary.config({
       secure: true,
-      url: cloudinaryUrl,
+      cloud_name: cloudName,
+      api_key: apiKey,
+      api_secret: apiSecret,
+    });
+  } else if (cloudinaryUrl) {
+    process.env.CLOUDINARY_URL = cloudinaryUrl;
+    cloudinary.config(true);
+    cloudinary.config({
+      secure: true,
     });
   } else {
     cloudinary.config({

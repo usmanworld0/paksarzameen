@@ -1,4 +1,6 @@
 import { prisma } from "@/lib/prisma";
+import { AdminDataNotice } from "@/components/admin/AdminDataNotice";
+import { safeAdminLoad } from "@/lib/admin-data";
 import { formatPrice } from "@/lib/utils";
 
 export const dynamic = 'force-dynamic';
@@ -17,7 +19,100 @@ import {
 } from "lucide-react";
 
 export default async function AnalyticsPage() {
-  const [
+  const { data: analytics, error } = await safeAdminLoad(
+    "admin analytics",
+    async () => {
+      const [
+        products,
+        categories,
+        artists,
+        sales,
+        orders,
+        customers,
+        availableProducts,
+        soldOutProducts,
+        activeSales,
+      ] = await Promise.all([
+        prisma.product.findMany({
+          select: {
+            id: true,
+            name: true,
+            price: true,
+            stock: true,
+            active: true,
+            featured: true,
+            categoryId: true,
+            artistId: true,
+            createdAt: true,
+          },
+        }),
+        prisma.category.findMany({
+          include: { _count: { select: { products: true } } },
+        }),
+        prisma.artist.findMany({
+          include: { _count: { select: { products: true } } },
+        }),
+        prisma.sale.findMany(),
+        prisma.order.findMany({
+          select: {
+            id: true,
+            total: true,
+            subtotal: true,
+            discount: true,
+            status: true,
+            createdAt: true,
+          },
+        }),
+        prisma.customer.count(),
+        prisma.product.count({ where: { stock: { gt: 0 } } }),
+        prisma.product.count({ where: { stock: 0 } }),
+        prisma.sale.count({
+          where: { active: true, endDate: { gte: new Date() } },
+        }),
+      ]);
+
+      return {
+        products,
+        categories,
+        artists,
+        sales,
+        orders,
+        customers,
+        availableProducts,
+        soldOutProducts,
+        activeSales,
+      };
+    },
+    {
+      products: [] as Array<{
+        id: string;
+        name: string;
+        price: number;
+        stock: number;
+        active: boolean;
+        featured: boolean;
+        categoryId: string;
+        artistId: string | null;
+        createdAt: Date;
+      }>,
+      categories: [] as Array<{ name: string; _count: { products: number } }>,
+      artists: [] as Array<{ name: string; _count: { products: number } }>,
+      sales: [] as Array<{ type: "STORE" | "CATEGORY" | "PRODUCT" }>,
+      orders: [] as Array<{
+        id: string;
+        total: number;
+        subtotal: number;
+        discount: number;
+        status: string;
+        createdAt: Date;
+      }>,
+      customers: 0,
+      availableProducts: 0,
+      soldOutProducts: 0,
+      activeSales: 0,
+    }
+  );
+  const {
     products,
     categories,
     artists,
@@ -27,44 +122,7 @@ export default async function AnalyticsPage() {
     availableProducts,
     soldOutProducts,
     activeSales,
-  ] = await Promise.all([
-    prisma.product.findMany({
-      select: {
-        id: true,
-        name: true,
-        price: true,
-        stock: true,
-        active: true,
-        featured: true,
-        categoryId: true,
-        artistId: true,
-        createdAt: true,
-      },
-    }),
-    prisma.category.findMany({
-      include: { _count: { select: { products: true } } },
-    }),
-    prisma.artist.findMany({
-      include: { _count: { select: { products: true } } },
-    }),
-    prisma.sale.findMany(),
-    prisma.order.findMany({
-      select: {
-        id: true,
-        total: true,
-        subtotal: true,
-        discount: true,
-        status: true,
-        createdAt: true,
-      },
-    }),
-    prisma.customer.count(),
-    prisma.product.count({ where: { stock: { gt: 0 } } }),
-    prisma.product.count({ where: { stock: 0 } }),
-    prisma.sale.count({
-      where: { active: true, endDate: { gte: new Date() } },
-    }),
-  ]);
+  } = analytics;
 
   const totalProducts = products.length;
   const activeProducts = products.filter((p) => p.active).length;
@@ -115,6 +173,8 @@ export default async function AnalyticsPage() {
           Overview of your store performance and product availability
         </p>
       </div>
+
+      {error ? <AdminDataNotice message={error} /> : null}
 
       {/* Key Metrics */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

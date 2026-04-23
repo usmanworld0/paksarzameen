@@ -3,7 +3,9 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 
 import { authOptions } from "@/lib/auth";
+import { AdminDataNotice } from "@/components/admin/AdminDataNotice";
 import { GalleryApprovalsTable } from "@/components/admin/GalleryApprovalsTable";
+import { safeAdminLoad } from "@/lib/admin-data";
 
 export const dynamic = "force-dynamic";
 
@@ -13,18 +15,31 @@ export default async function AdminGalleryPage() {
     redirect("/admin/login");
   }
 
-  const images = await prisma.image.findMany({
-    include: {
-      user: {
-        select: {
-          name: true,
-          email: true,
+  const { data: images, error } = await safeAdminLoad(
+    "admin gallery submissions",
+    () =>
+      prisma.image.findMany({
+        include: {
+          user: {
+            select: {
+              name: true,
+              email: true,
+            },
+          },
         },
-      },
-    },
-    orderBy: { createdAt: "desc" },
-    take: 300,
-  });
+        orderBy: { createdAt: "desc" },
+        take: 300,
+      }),
+    [] as Array<{
+      id: string;
+      imageUrl: string;
+      thumbnailUrl: string | null;
+      caption: string | null;
+      approved: boolean;
+      createdAt: Date;
+      user: { name: string | null; email: string | null };
+    }>
+  );
 
   const tableRows = images.map((image) => ({
     id: image.id,
@@ -55,6 +70,8 @@ export default async function AdminGalleryPage() {
       </div>
 
       <div className="h-px bg-neutral-100" />
+
+      {error ? <AdminDataNotice message={error} /> : null}
 
       <GalleryApprovalsTable rows={tableRows} />
     </div>

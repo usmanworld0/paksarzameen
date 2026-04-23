@@ -21,8 +21,8 @@ import { Loader2 } from "lucide-react";
 
 interface SaleFormProps {
   sale?: Sale;
-  categories: Category[];
-  products: Product[];
+  categories: Array<Pick<Category, "id" | "name">>;
+  products: Array<Pick<Product, "id" | "name">>;
 }
 
 export function SaleForm({ sale, categories, products }: SaleFormProps) {

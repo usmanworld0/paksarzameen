@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { AdminTable, type Column } from "@/components/admin/AdminTable";
+import { AdminDataNotice } from "@/components/admin/AdminDataNotice";
 import { deleteArtist } from "@/actions/artists";
+import { safeAdminLoad } from "@/lib/admin-data";
 import { Plus } from "lucide-react";
 
 export const dynamic = 'force-dynamic';
@@ -22,10 +24,21 @@ const columns: Column<ArtistRow>[] = [
 ];
 
 export default async function AdminArtistsPage() {
-  const artists = await prisma.artist.findMany({
-    include: { _count: { select: { products: true } } },
-    orderBy: { name: "asc" },
-  });
+  const { data: artists, error } = await safeAdminLoad(
+    "admin artists",
+    () =>
+      prisma.artist.findMany({
+        include: { _count: { select: { products: true } } },
+        orderBy: { name: "asc" },
+      }),
+    [] as Array<{
+      id: string;
+      name: string;
+      slug: string;
+      location: string | null;
+      _count: { products: number };
+    }>
+  );
 
   const tableData: ArtistRow[] = artists.map((artist) => ({
     id: artist.id,
@@ -55,6 +68,8 @@ export default async function AdminArtistsPage() {
       </div>
 
       <div className="h-px bg-neutral-100" />
+
+      {error ? <AdminDataNotice message={error} /> : null}
 
       <AdminTable
         columns={columns}

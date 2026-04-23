@@ -2,7 +2,9 @@ import Link from "next/link";
 import { Plus } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { AdminTable, type Column } from "@/components/admin/AdminTable";
+import { AdminDataNotice } from "@/components/admin/AdminDataNotice";
 import { deleteCoupon } from "@/actions/coupons";
+import { safeAdminLoad } from "@/lib/admin-data";
 
 export const dynamic = 'force-dynamic';
 
@@ -41,7 +43,18 @@ const columns: Column<CouponRow>[] = [
 ];
 
 export default async function AdminCouponsPage() {
-  const coupons = await prisma.coupon.findMany({ orderBy: { createdAt: "desc" } });
+  const { data: coupons, error } = await safeAdminLoad(
+    "admin coupons",
+    () => prisma.coupon.findMany({ orderBy: { createdAt: "desc" } }),
+    [] as Array<{
+      id: string;
+      name: string;
+      code: string;
+      discountPercent: number;
+      minSubtotal: number | null;
+      active: boolean;
+    }>
+  );
 
   const tableData: CouponRow[] = coupons.map((coupon) => ({
     id: coupon.id,
@@ -72,6 +85,8 @@ export default async function AdminCouponsPage() {
       </div>
 
       <div className="h-px bg-neutral-100" />
+
+      {error ? <AdminDataNotice message={error} /> : null}
 
       <AdminTable
         columns={columns}

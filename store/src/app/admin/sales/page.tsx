@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { AdminTable, type Column } from "@/components/admin/AdminTable";
+import { AdminDataNotice } from "@/components/admin/AdminDataNotice";
 import { deleteSale } from "@/actions/sales";
+import { safeAdminLoad } from "@/lib/admin-data";
 import { Plus } from "lucide-react";
 
 export const dynamic = 'force-dynamic';
@@ -44,9 +46,22 @@ const columns: Column<SaleRow>[] = [
 ];
 
 export default async function AdminSalesPage() {
-  const sales = await prisma.sale.findMany({
-    orderBy: { createdAt: "desc" },
-  });
+  const { data: sales, error } = await safeAdminLoad(
+    "admin sales",
+    () =>
+      prisma.sale.findMany({
+        orderBy: { createdAt: "desc" },
+      }),
+    [] as Array<{
+      id: string;
+      name: string;
+      type: string;
+      discountPercent: number;
+      startDate: Date;
+      endDate: Date;
+      active: boolean;
+    }>
+  );
 
   const now = new Date();
   const tableData: SaleRow[] = sales.map((sale) => {
@@ -85,6 +100,8 @@ export default async function AdminSalesPage() {
       </div>
 
       <div className="h-px bg-neutral-100" />
+
+      {error ? <AdminDataNotice message={error} /> : null}
 
       <AdminTable
         columns={columns}

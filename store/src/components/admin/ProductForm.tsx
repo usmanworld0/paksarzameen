@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import type { Product, Category, Artist, ProductRegionPrice, StoreRegion as PrismaStoreRegion } from "@prisma/client";
+import type { Artist, Category } from "@prisma/client";
 import type { StoreRegionRecord } from "@/lib/pricing";
 import { productSchema, type ProductFormData } from "@/lib/validations";
 import { slugify } from "@/lib/utils";
@@ -24,13 +24,39 @@ import {
 } from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
 
+type ProductFormProduct = {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  materials: string | null;
+  careInstructions: string | null;
+  heritageStory: string | null;
+  model3DUrl?: string | null;
+  modelOptimized?: boolean;
+  modelSize?: number | null;
+  price: number;
+  compareAtPrice: number | null;
+  stock: number;
+  categoryId: string;
+  artistId: string | null;
+  customizable: boolean;
+  featured: boolean;
+  active: boolean;
+  images: { imageUrl: string }[];
+  regionPrices?: Array<{
+    price: number;
+    compareAtPrice: number | null;
+    region: {
+      code: string;
+    };
+  }>;
+};
+
 interface ProductFormProps {
-  product?: Product & {
-    images: { imageUrl: string }[];
-    regionPrices?: (ProductRegionPrice & { region: PrismaStoreRegion })[];
-  };
-  categories: Category[];
-  artists: Artist[];
+  product?: ProductFormProduct;
+  categories: Array<Pick<Category, "id" | "name">>;
+  artists: Array<Pick<Artist, "id" | "name">>;
   regions: StoreRegionRecord[];
 }
 

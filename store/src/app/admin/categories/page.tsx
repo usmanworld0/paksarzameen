@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { AdminTable, type Column } from "@/components/admin/AdminTable";
+import { AdminDataNotice } from "@/components/admin/AdminDataNotice";
 import { deleteCategory } from "@/actions/categories";
+import { safeAdminLoad } from "@/lib/admin-data";
 import { Plus } from "lucide-react";
 
 export const dynamic = 'force-dynamic';
@@ -28,10 +30,21 @@ const columns: Column<CategoryRow>[] = [
 ];
 
 export default async function AdminCategoriesPage() {
-  const categories = await prisma.category.findMany({
-    include: { _count: { select: { products: true } } },
-    orderBy: { name: "asc" },
-  });
+  const { data: categories, error } = await safeAdminLoad(
+    "admin categories",
+    () =>
+      prisma.category.findMany({
+        include: { _count: { select: { products: true } } },
+        orderBy: { name: "asc" },
+      }),
+    [] as Array<{
+      id: string;
+      name: string;
+      slug: string;
+      customizable: boolean;
+      _count: { products: number };
+    }>
+  );
 
   const tableData: CategoryRow[] = categories.map((category) => ({
     id: category.id,
@@ -61,6 +74,8 @@ export default async function AdminCategoriesPage() {
       </div>
 
       <div className="h-px bg-neutral-100" />
+
+      {error ? <AdminDataNotice message={error} /> : null}
 
       <AdminTable
         columns={columns}

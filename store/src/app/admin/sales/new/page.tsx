@@ -1,18 +1,31 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import { AdminDataNotice } from "@/components/admin/AdminDataNotice";
 import { SaleForm } from "@/components/admin/SaleForm";
+import { getFirstAdminError, safeAdminLoad } from "@/lib/admin-data";
 import { ArrowLeft } from "lucide-react";
 
 export const dynamic = 'force-dynamic';
 
 export default async function NewSalePage() {
-  const [categories, products] = await Promise.all([
-    prisma.category.findMany({ orderBy: { name: "asc" } }),
-    prisma.product.findMany({
-      where: { active: true },
-      orderBy: { name: "asc" },
-    }),
+  const [categoriesResult, productsResult] = await Promise.all([
+    safeAdminLoad(
+      "sale categories",
+      () => prisma.category.findMany({ orderBy: { name: "asc" }, select: { id: true, name: true } }),
+      [] as Array<{ id: string; name: string }>
+    ),
+    safeAdminLoad(
+      "sale products",
+      () =>
+        prisma.product.findMany({
+          where: { active: true },
+          orderBy: { name: "asc" },
+          select: { id: true, name: true },
+        }),
+      [] as Array<{ id: string; name: string }>
+    ),
   ]);
+  const pageError = getFirstAdminError(categoriesResult.error, productsResult.error);
 
   return (
     <div className="space-y-6">
@@ -28,9 +41,19 @@ export default async function NewSalePage() {
         <p className="mt-1.5 text-sm text-neutral-400">Set up a new discount or promotion</p>
       </div>
       <div className="h-px bg-neutral-100" />
-      <div className="admin-form-card">
-        <SaleForm categories={categories} products={products} />
-      </div>
+      {pageError ? (
+        <AdminDataNotice
+          title="Unable to load sale form"
+          message={pageError}
+        />
+      ) : (
+        <div className="admin-form-card">
+          <SaleForm
+            categories={categoriesResult.data}
+            products={productsResult.data}
+          />
+        </div>
+      )}
     </div>
   );
 }

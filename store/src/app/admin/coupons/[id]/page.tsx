@@ -2,7 +2,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import { AdminDataNotice } from "@/components/admin/AdminDataNotice";
 import { CouponForm } from "@/components/admin/CouponForm";
+import { safeAdminLoad } from "@/lib/admin-data";
 
 export const dynamic = 'force-dynamic';
 
@@ -11,9 +13,13 @@ interface EditCouponPageProps {
 }
 
 export default async function EditCouponPage({ params }: EditCouponPageProps) {
-  const coupon = await prisma.coupon.findUnique({ where: { id: params.id } });
+  const { data: coupon, error } = await safeAdminLoad(
+    `coupon ${params.id}`,
+    () => prisma.coupon.findUnique({ where: { id: params.id } }),
+    null
+  );
 
-  if (!coupon) {
+  if (!error && !coupon) {
     notFound();
   }
 
@@ -28,12 +34,21 @@ export default async function EditCouponPage({ params }: EditCouponPageProps) {
         </Link>
         <p className="admin-page-subtitle">Promotions</p>
         <h1 className="admin-page-title mt-1">Edit Coupon</h1>
-        <p className="mt-1.5 text-sm text-neutral-400">Update "{coupon.name}"</p>
+        <p className="mt-1.5 text-sm text-neutral-400">
+          {coupon ? `Update "${coupon.name}"` : "Coupon details"}
+        </p>
       </div>
       <div className="h-px bg-neutral-100" />
-      <div className="admin-form-card">
-        <CouponForm coupon={coupon} />
-      </div>
+      {error || !coupon ? (
+        <AdminDataNotice
+          title="Unable to load coupon"
+          message={error || "This coupon could not be loaded right now."}
+        />
+      ) : (
+        <div className="admin-form-card">
+          <CouponForm coupon={coupon} />
+        </div>
+      )}
     </div>
   );
 }

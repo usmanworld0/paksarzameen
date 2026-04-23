@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import { AdminDataNotice } from "@/components/admin/AdminDataNotice";
 import { StatsCard } from "@/components/admin/StatsCard";
+import { getAdminDataErrorMessage } from "@/lib/admin-data";
 
 export const dynamic = 'force-dynamic';
 import { formatPrice } from "@/lib/utils";
@@ -39,6 +41,7 @@ export default async function AdminDashboard() {
     name: string;
     _count: { products: number };
   }> = [];
+  let dataError: string | null = null;
 
   const dbAvailable = Boolean(process.env.DATABASE_URL);
   if (dbAvailable) {
@@ -72,8 +75,8 @@ export default async function AdminDashboard() {
           include: { _count: { select: { products: true } } },
         }),
       ]);
-    } catch {
-      // Keep fallback values so the dashboard stays accessible without DB connectivity.
+    } catch (error) {
+      dataError = getAdminDataErrorMessage(error);
     }
   }
 
@@ -105,6 +108,8 @@ export default async function AdminDashboard() {
           Database is not configured. Add DATABASE_URL in store/.env.local, then run Prisma db push and seed.
         </div>
       )}
+
+      {dataError ? <AdminDataNotice message={dataError} /> : null}
 
       {/* Stats grid */}
       <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-6">

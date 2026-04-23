@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { AdminTable, type Column } from "@/components/admin/AdminTable";
+import { AdminDataNotice } from "@/components/admin/AdminDataNotice";
 import { formatPrice } from "@/lib/utils";
 import { deleteProduct } from "@/actions/products";
+import { safeAdminLoad } from "@/lib/admin-data";
 import { Plus } from "lucide-react";
 
 export const dynamic = 'force-dynamic';
@@ -37,14 +39,43 @@ const columns: Column<ProductRow>[] = [
 ];
 
 export default async function AdminProductsPage() {
-  const products = await prisma.product.findMany({
-    include: {
-      category: true,
-      artist: true,
-      images: { orderBy: { position: "asc" }, take: 1 },
-    },
-    orderBy: { createdAt: "desc" },
-  });
+  const { data: products, error } = await safeAdminLoad(
+    "admin products",
+    () =>
+      prisma.product.findMany({
+        select: {
+          id: true,
+          name: true,
+          price: true,
+          stock: true,
+          active: true,
+          featured: true,
+          category: {
+            select: {
+              name: true,
+            },
+          },
+          images: {
+            select: {
+              imageUrl: true,
+            },
+            orderBy: { position: "asc" },
+            take: 1,
+          },
+        },
+        orderBy: { createdAt: "desc" },
+      }),
+    [] as Array<{
+      id: string;
+      name: string;
+      price: number;
+      stock: number;
+      active: boolean;
+      featured: boolean;
+      category: { name: string };
+      images: Array<{ imageUrl: string }>;
+    }>
+  );
 
   const tableData: ProductRow[] = products.map((product) => ({
     id: product.id,
@@ -80,6 +111,8 @@ export default async function AdminProductsPage() {
       </div>
 
       <div className="h-px bg-neutral-100" />
+
+      {error ? <AdminDataNotice message={error} /> : null}
 
       <AdminTable
         columns={columns}

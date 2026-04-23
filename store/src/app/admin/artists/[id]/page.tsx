@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { AdminDataNotice } from "@/components/admin/AdminDataNotice";
 import { ArtistForm } from "@/components/admin/ArtistForm";
+import { safeAdminLoad } from "@/lib/admin-data";
 import { ArrowLeft } from "lucide-react";
 
 interface EditArtistPageProps {
@@ -9,8 +11,13 @@ interface EditArtistPageProps {
 }
 
 export default async function EditArtistPage({ params }: EditArtistPageProps) {
-  const artist = await prisma.artist.findUnique({ where: { id: params.id } });
-  if (!artist) notFound();
+  const { data: artist, error } = await safeAdminLoad(
+    `artist ${params.id}`,
+    () => prisma.artist.findUnique({ where: { id: params.id } }),
+    null
+  );
+
+  if (!error && !artist) notFound();
 
   return (
     <div className="space-y-6">
@@ -23,12 +30,21 @@ export default async function EditArtistPage({ params }: EditArtistPageProps) {
         </Link>
         <p className="admin-page-subtitle">Community</p>
         <h1 className="admin-page-title mt-1">Edit Artisan</h1>
-        <p className="mt-1.5 text-sm text-neutral-400">Update &quot;{artist.name}&quot;</p>
+        <p className="mt-1.5 text-sm text-neutral-400">
+          {artist ? `Update "${artist.name}"` : "Artisan details"}
+        </p>
       </div>
       <div className="h-px bg-neutral-100" />
-      <div className="admin-form-card">
-        <ArtistForm artist={artist} />
-      </div>
+      {error || !artist ? (
+        <AdminDataNotice
+          title="Unable to load artisan"
+          message={error || "This artisan could not be loaded right now."}
+        />
+      ) : (
+        <div className="admin-form-card">
+          <ArtistForm artist={artist} />
+        </div>
+      )}
     </div>
   );
 }

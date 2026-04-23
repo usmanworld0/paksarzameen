@@ -1,17 +1,28 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { ProductForm } from "@/components/admin/ProductForm";
+import { AdminDataNotice } from "@/components/admin/AdminDataNotice";
+import { getFirstAdminError, safeAdminLoad } from "@/lib/admin-data";
 import { getAllStoreRegions } from "@/lib/store-regions";
 import { ArrowLeft } from "lucide-react";
 
 export const dynamic = 'force-dynamic';
 
 export default async function NewProductPage() {
-  const [categories, artists, regions] = await Promise.all([
-    prisma.category.findMany({ orderBy: { name: "asc" } }),
-    prisma.artist.findMany({ orderBy: { name: "asc" } }),
+  const [categoriesResult, artistsResult, regions] = await Promise.all([
+    safeAdminLoad(
+      "product categories",
+      () => prisma.category.findMany({ orderBy: { name: "asc" }, select: { id: true, name: true } }),
+      [] as Array<{ id: string; name: string }>
+    ),
+    safeAdminLoad(
+      "product artists",
+      () => prisma.artist.findMany({ orderBy: { name: "asc" }, select: { id: true, name: true } }),
+      [] as Array<{ id: string; name: string }>
+    ),
     getAllStoreRegions(),
   ]);
+  const pageError = getFirstAdminError(categoriesResult.error, artistsResult.error);
 
   return (
     <div className="space-y-6">
@@ -27,9 +38,20 @@ export default async function NewProductPage() {
         <p className="mt-1.5 text-sm text-neutral-400">Add a new product to your catalog</p>
       </div>
       <div className="h-px bg-neutral-100" />
-      <div className="admin-form-card">
-        <ProductForm categories={categories} artists={artists} regions={regions} />
-      </div>
+      {pageError ? (
+        <AdminDataNotice
+          title="Unable to load product form"
+          message={pageError}
+        />
+      ) : (
+        <div className="admin-form-card">
+          <ProductForm
+            categories={categoriesResult.data}
+            artists={artistsResult.data}
+            regions={regions}
+          />
+        </div>
+      )}
     </div>
   );
 }

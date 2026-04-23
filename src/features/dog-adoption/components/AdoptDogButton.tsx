@@ -8,10 +8,18 @@ type AdoptDogButtonProps = {
 
 export function AdoptDogButton({ dogId }: AdoptDogButtonProps) {
   const [submitting, setSubmitting] = useState(false);
+  const [whatsappNumber, setWhatsappNumber] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
   async function handleAdopt() {
+    const normalizedWhatsapp = whatsappNumber.trim();
+    if (!normalizedWhatsapp) {
+      setError("Please provide your WhatsApp number so our admin can contact you.");
+      setSuccess(null);
+      return;
+    }
+
     setSubmitting(true);
     setError(null);
     setSuccess(null);
@@ -20,7 +28,7 @@ export function AdoptDogButton({ dogId }: AdoptDogButtonProps) {
       const response = await fetch("/api/adoption-requests", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ dogId }),
+        body: JSON.stringify({ dogId, whatsappNumber: normalizedWhatsapp }),
       });
 
       const payload = (await response.json()) as { error?: string; message?: string };
@@ -45,6 +53,24 @@ export function AdoptDogButton({ dogId }: AdoptDogButtonProps) {
 
   return (
     <div className="space-y-3">
+      <div className="space-y-2">
+        <label htmlFor={`adopt-whatsapp-${dogId}`} className="block text-sm font-medium text-slate-700">
+          WhatsApp Number
+        </label>
+        <input
+          id={`adopt-whatsapp-${dogId}`}
+          type="tel"
+          inputMode="tel"
+          autoComplete="tel"
+          value={whatsappNumber}
+          onChange={(event) => setWhatsappNumber(event.target.value)}
+          placeholder="03XX1234567"
+          className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+          disabled={submitting}
+        />
+        <p className="text-xs text-slate-500">Our admin will contact you on this WhatsApp number.</p>
+      </div>
+
       <button
         type="button"
         onClick={() => void handleAdopt()}

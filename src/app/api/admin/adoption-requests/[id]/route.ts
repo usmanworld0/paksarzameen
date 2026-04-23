@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { normalizeAdoptionRequestStatus, reviewAdoptionRequest } from "@/lib/dog-adoption";
+import { hasDatabaseConnection } from "@/lib/db";
 import { getRequiredAdminOrModuleApiUser } from "@/server/route-auth";
 
 type RouteContext = {
@@ -13,7 +14,7 @@ export async function PATCH(request: Request, context: RouteContext) {
   }
 
   try {
-    if (!process.env.DATABASE_URL) {
+    if (!hasDatabaseConnection()) {
       return NextResponse.json({ error: "DATABASE_URL is not configured." }, { status: 500 });
     }
 

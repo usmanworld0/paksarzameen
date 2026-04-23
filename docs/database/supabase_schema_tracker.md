@@ -370,10 +370,14 @@ CREATE TABLE IF NOT EXISTS adoption_requests (
 	id text PRIMARY KEY,
 	dog_id text NOT NULL REFERENCES dogs(id) ON DELETE CASCADE,
 	user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+	whatsapp_number text,
 	status text NOT NULL DEFAULT 'pending',
 	requested_at timestamptz NOT NULL DEFAULT now(),
 	CONSTRAINT adoption_requests_status_check CHECK (status IN ('pending', 'approved', 'rejected'))
 );
+
+ALTER TABLE adoption_requests
+	ADD COLUMN IF NOT EXISTS whatsapp_number text;
 
 CREATE INDEX IF NOT EXISTS adoption_requests_dog_id_idx
 ON adoption_requests (dog_id);

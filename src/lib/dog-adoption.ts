@@ -29,6 +29,7 @@ export type AdoptionRequestRecord = {
   userId: string;
   userName: string | null;
   userEmail: string | null;
+  whatsappNumber: string | null;
   status: AdoptionRequestStatus;
   requestedAt: string;
 };
@@ -212,11 +213,14 @@ export async function ensureDogAdoptionSchema() {
       id text PRIMARY KEY,
       dog_id text NOT NULL REFERENCES dogs(id) ON DELETE CASCADE,
       user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      whatsapp_number text,
       status text NOT NULL DEFAULT 'pending',
       requested_at timestamptz NOT NULL DEFAULT now(),
       CONSTRAINT adoption_requests_status_check CHECK (status IN ('pending', 'approved', 'rejected'))
     );
   `);
+
+  await pool.query(`ALTER TABLE adoption_requests ADD COLUMN IF NOT EXISTS whatsapp_number text;`);
 
   await pool.query(`
     CREATE TABLE IF NOT EXISTS dog_post_adoption_updates (
@@ -420,10 +424,19 @@ export async function deleteDog(dogId: string) {
   await pool.query(`DELETE FROM dogs WHERE id = $1`, [dogId]);
 }
 
-export async function createAdoptionRequest(dogId: string, userId: string) {
+export async function createAdoptionRequest(dogId: string, userId: string, whatsappNumber: string) {
   await ensureDogAdoptionSchema();
   const pool = getDbPool();
   const client = await pool.connect();
+  const normalizedWhatsapp = normalizedText(whatsappNumber);
+
+  if (!normalizedWhatsapp) {
+    throw new Error("WhatsApp number is required.");
+  }
+
+  if (!/^\+?[0-9\s\-()]{7,20}$/.test(normalizedWhatsapp)) {
+    throw new Error("Please enter a valid WhatsApp number.");
+  }
 
   try {
     await client.query("BEGIN");
@@ -458,11 +471,11 @@ export async function createAdoptionRequest(dogId: string, userId: string) {
 
     const requestResult = await client.query(
       `
-      INSERT INTO adoption_requests (id, dog_id, user_id, status)
-      VALUES ($1, $2, $3, 'pending')
-      RETURNING id, dog_id, user_id, status, requested_at;
+      INSERT INTO adoption_requests (id, dog_id, user_id, whatsapp_number, status)
+      VALUES ($1, $2, $3, $4, 'pending')
+      RETURNING id, dog_id, user_id, whatsapp_number, status, requested_at;
       `,
-      [randomUUID(), dogId, userId]
+      [randomUUID(), dogId, userId, normalizedWhatsapp]
     );
 
     await client.query(
@@ -481,6 +494,7 @@ export async function createAdoptionRequest(dogId: string, userId: string) {
       requestId: String(requestResult.rows[0].id),
       dogId: String(requestResult.rows[0].dog_id),
       userId: String(requestResult.rows[0].user_id),
+      whatsappNumber: requestResult.rows[0].whatsapp_number ? String(requestResult.rows[0].whatsapp_number) : null,
       status: String(requestResult.rows[0].status) as AdoptionRequestStatus,
       requestedAt: new Date(String(requestResult.rows[0].requested_at)).toISOString(),
     };
@@ -503,6 +517,7 @@ export async function listAdoptionRequests() {
       ar.user_id,
       ar.status,
       ar.requested_at,
+      ar.whatsapp_number,
       d.name AS dog_name,
       d.breed AS dog_breed,
       d.image_url AS dog_image_url,
@@ -529,6 +544,7 @@ export async function listMyAdoptionRequests(userId: string) {
       ar.user_id,
       ar.status,
       ar.requested_at,
+      ar.whatsapp_number,
       d.name AS dog_name,
       d.breed AS dog_breed,
       d.image_url AS dog_image_url,
@@ -813,6 +829,7 @@ function mapAdoptionRequestRow(row: Record<string, unknown>): AdoptionRequestRec
     userId: String(row.user_id),
     userName: row.user_name ? String(row.user_name) : null,
     userEmail: row.user_email ? String(row.user_email) : null,
+    whatsappNumber: row.whatsapp_number ? String(row.whatsapp_number) : null,
     status: String(row.status) as AdoptionRequestStatus,
     requestedAt: new Date(String(row.requested_at)).toISOString(),
   };

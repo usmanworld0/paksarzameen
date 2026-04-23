@@ -5,7 +5,6 @@ import { authOptions } from "@/lib/auth";
 import { uploadRawFile } from "@/lib/cloudinary";
 
 const RECOMMENDED_MODEL_SIZE_MB = 10;
-const MAX_MODEL_SIZE_MB = 25;
 
 export async function POST(request: Request) {
   try {
@@ -35,16 +34,6 @@ export async function POST(request: Request) {
     }
 
     const fileSizeMb = Number((file.size / (1024 * 1024)).toFixed(2));
-    if (fileSizeMb > MAX_MODEL_SIZE_MB) {
-      return NextResponse.json(
-        {
-          error:
-            "This 3D model is larger than 25MB. Optimize it before uploading so the product page stays fast.",
-        },
-        { status: 400 }
-      );
-    }
-
     const uploaded = await uploadRawFile(file, "commonwealth-lab/models");
     const warning =
       fileSizeMb > RECOMMENDED_MODEL_SIZE_MB

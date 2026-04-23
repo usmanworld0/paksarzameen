@@ -9,7 +9,31 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 
 const RECOMMENDED_MODEL_SIZE_MB = 10;
-const MAX_MODEL_SIZE_MB = 25;
+const AUTO_OPTIMIZE_THRESHOLD_MB = 25;
+
+async function optimizeModelBeforeUpload(file: File): Promise<File> {
+  const [{ WebIO }, { dedup, prune, weld }] = await Promise.all([
+    import("@gltf-transform/core"),
+    import("@gltf-transform/functions"),
+  ]);
+
+  const inputBytes = new Uint8Array(await file.arrayBuffer());
+  const io = new WebIO();
+  const document = await io.readBinary(inputBytes);
+
+  // Keep optimization deterministic and lightweight in-browser.
+  await document.transform(dedup(), prune(), weld());
+
+  const outputBytes = await io.writeBinary(document);
+  if (outputBytes.byteLength >= inputBytes.byteLength) {
+    return file;
+  }
+
+  return new File([outputBytes], file.name, {
+    type: "model/gltf-binary",
+    lastModified: Date.now(),
+  });
+}
 
 interface Model3DUploaderProps {
   model3DUrl: string;
@@ -29,6 +53,7 @@ export function Model3DUploader({
   onModelOptimizedChange,
 }: Model3DUploaderProps) {
   const [uploading, setUploading] = useState(false);
+  const [optimizing, setOptimizing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [warning, setWarning] = useState<string | null>(null);
 
@@ -55,43 +80,115 @@ export function Model3DUploader({
         return;
       }
 
-      if (fileSizeMb > MAX_MODEL_SIZE_MB) {
-        setError("This 3D model is larger than 25MB. Optimize it before uploading.");
-        event.target.value = "";
-        return;
-      }
+      let fileToUpload = file;
+      if (fileSizeMb > AUTO_OPTIMIZE_THRESHOLD_MB) {
+        setOptimizing(true);
+        setWarning("Large model detected. Running automatic optimization before upload...");
 
-      if (fileSizeMb > RECOMMENDED_MODEL_SIZE_MB) {
+        try {
+          const optimizedFile = await optimizeModelBeforeUpload(file);
+          const optimizedSizeMb = Number((optimizedFile.size / (1024 * 1024)).toFixed(2));
+
+          fileToUpload = optimizedFile;
+          if (optimizedFile.size < file.size) {
+            setWarning(
+              `Auto-optimized model from ${fileSizeMb.toFixed(2)}MB to ${optimizedSizeMb.toFixed(2)}MB before upload.`
+            );
+          } else {
+            setWarning(
+              "Automatic optimization completed, but no further size reduction was possible for this model."
+            );
+          }
+        } catch {
+          setWarning(
+            "Automatic optimization failed for this model. Uploading the original file instead."
+          );
+          fileToUpload = file;
+        } finally {
+          setOptimizing(false);
+        }
+      } else if (fileSizeMb > RECOMMENDED_MODEL_SIZE_MB) {
         setWarning("Large model detected. Upload is allowed, but optimization is strongly recommended.");
       }
 
       setUploading(true);
 
       try {
-        const formData = new FormData();
-        formData.append("file", file);
-
-        const response = await fetch("/api/upload/model", {
+        const signatureResponse = await fetch("/api/upload/model/signature", {
           method: "POST",
-          body: formData,
         });
 
-        const payload = (await response.json()) as {
-          url?: string;
+        const signaturePayload = (await signatureResponse.json()) as {
           error?: string;
-          warning?: string | null;
-          modelSize?: number;
-          modelOptimized?: boolean;
+          signature?: string;
+          timestamp?: number;
+          folder?: string;
+          apiKey?: string;
+          cloudName?: string;
+          resourceType?: string;
+          uniqueFilename?: boolean;
+          useFilename?: boolean;
         };
 
-        if (!response.ok || !payload.url) {
-          throw new Error(payload.error ?? "Model upload failed.");
+        if (!signatureResponse.ok) {
+          throw new Error(signaturePayload.error ?? "Failed to prepare model upload.");
         }
 
-        onModelUrlChange(payload.url);
-        onModelSizeChange(payload.modelSize ?? null);
-        onModelOptimizedChange(payload.modelOptimized ?? false);
-        setWarning(payload.warning ?? null);
+        if (
+          !signaturePayload.signature ||
+          !signaturePayload.timestamp ||
+          !signaturePayload.apiKey ||
+          !signaturePayload.cloudName ||
+          !signaturePayload.folder
+        ) {
+          throw new Error("Upload signature response was incomplete.");
+        }
+
+        const cloudinaryFormData = new FormData();
+        cloudinaryFormData.append("file", fileToUpload);
+        cloudinaryFormData.append("api_key", signaturePayload.apiKey);
+        cloudinaryFormData.append("timestamp", String(signaturePayload.timestamp));
+        cloudinaryFormData.append("signature", signaturePayload.signature);
+        cloudinaryFormData.append("folder", signaturePayload.folder);
+        cloudinaryFormData.append("resource_type", signaturePayload.resourceType ?? "raw");
+        cloudinaryFormData.append(
+          "unique_filename",
+          String(signaturePayload.uniqueFilename ?? true)
+        );
+        cloudinaryFormData.append(
+          "use_filename",
+          String(signaturePayload.useFilename ?? true)
+        );
+
+        const cloudinaryResponse = await fetch(
+          `https://api.cloudinary.com/v1_1/${signaturePayload.cloudName}/raw/upload`,
+          {
+            method: "POST",
+            body: cloudinaryFormData,
+          }
+        );
+
+        const cloudinaryPayload = (await cloudinaryResponse.json()) as {
+          secure_url?: string;
+          error?: { message?: string };
+          bytes?: number;
+        };
+
+        if (!cloudinaryResponse.ok || !cloudinaryPayload.secure_url) {
+          throw new Error(
+            cloudinaryPayload.error?.message ?? "Model upload failed."
+          );
+        }
+
+        const uploadedModelSizeMb = Number((fileToUpload.size / (1024 * 1024)).toFixed(2));
+        onModelUrlChange(cloudinaryPayload.secure_url);
+        onModelSizeChange(uploadedModelSizeMb);
+        onModelOptimizedChange(uploadedModelSizeMb <= RECOMMENDED_MODEL_SIZE_MB);
+        if (uploadedModelSizeMb > RECOMMENDED_MODEL_SIZE_MB) {
+          setWarning(
+            `Uploaded model is ${uploadedModelSizeMb.toFixed(2)}MB. Keep optimizing for best mobile performance.`
+          );
+        }
       } catch (uploadError) {
         setError(
           uploadError instanceof Error
@@ -120,14 +217,14 @@ export function Model3DUploader({
         </div>
 
         <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-neutral-300 bg-white px-4 py-2 text-xs font-semibold text-neutral-700 transition hover:border-neutral-900 hover:text-neutral-950">
-          {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-          {uploading ? "Uploading..." : "Upload .glb"}
+          {uploading || optimizing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+          {optimizing ? "Optimizing..." : uploading ? "Uploading..." : "Upload .glb"}
           <input
             type="file"
             accept=".glb,model/gltf-binary"
             className="hidden"
             onChange={handleUpload}
-            disabled={uploading}
+            disabled={uploading || optimizing}
           />
         </label>
       </div>
@@ -214,7 +311,7 @@ export function Model3DUploader({
 
       <div className="flex flex-wrap gap-2 text-xs text-neutral-400">
         <span>Recommended: under 10MB.</span>
-        <span>Hard limit: 25MB.</span>
+        <span>No hard size limit enforced.</span>
         <span>Supported format: `.glb`.</span>
       </div>
 

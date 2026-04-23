@@ -11,9 +11,16 @@ The storefront keeps image view as the default and only loads the 3D viewer afte
 ## Upload Rules
 
 - Recommended publish size: under `10MB`
-- Allowed with warning: `10MB` to `25MB`
-- Blocked in admin upload: over `25MB`
+- Auto-compression runs before upload for any file over `10MB`
+- Upload proceeds only if optimized output is within the Cloudinary account file limit (currently `10MB`)
+- If still over limit after optimization, upload is blocked with optimization guidance
 - Accepted format: `.glb`
+
+Current in-app compression pass includes:
+
+- Texture downscaling to `1024px` max dimension
+- Texture re-encode to `WebP`
+- Geometry quantization and cleanup transforms (`dedup`, `prune`, `weld`, `quantize`)
 
 ## Storage Strategy
 

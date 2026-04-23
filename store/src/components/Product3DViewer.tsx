@@ -1,11 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { Component, Suspense, useEffect, useRef, useState, type ReactNode } from "react";
+import { Component, Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Canvas } from "@react-three/fiber";
 import {
   Bounds,
-  Clone,
   Environment,
   Html,
   OrbitControls,
@@ -13,6 +12,7 @@ import {
 } from "@react-three/drei";
 import { Loader2, RotateCcw, Sparkles } from "lucide-react";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
+import { Box3, Group, Vector3 } from "three";
 
 type Product3DViewerProps = {
   modelUrl: string;
@@ -51,7 +51,7 @@ export function Product3DViewer({
         <Canvas
           frameloop={autoRotate ? "always" : "demand"}
           dpr={[1, 1.5]}
-          camera={{ position: [0, 0, 4], fov: 36, near: 0.1, far: 100 }}
+          camera={{ position: [0, 0, 4], fov: 32, near: 0.1, far: 100 }}
           gl={{ antialias: false, alpha: true, powerPreference: "high-performance" }}
           performance={{ min: 0.5 }}
           onCreated={({ gl }) => {
@@ -64,7 +64,7 @@ export function Product3DViewer({
 
           <Suspense fallback={<ViewerFallback posterUrl={posterUrl} alt={alt} />}>
             <Environment preset="studio" />
-            <Bounds fit clip observe margin={1.1}>
+            <Bounds fit clip observe margin={0.9}>
               <ModelScene modelUrl={modelUrl} onReady={onReady} />
             </Bounds>
           </Suspense>
@@ -79,6 +79,8 @@ export function Product3DViewer({
             dampingFactor={0.08}
             rotateSpeed={0.85}
             zoomSpeed={0.9}
+            minDistance={1.2}
+            maxDistance={9}
             autoRotate={autoRotate}
             autoRotateSpeed={0.9}
           />
@@ -115,12 +117,30 @@ function ModelScene({
   onReady?: () => void;
 }) {
   const gltf = useGLTF(modelUrl);
+  const normalizedScene = useMemo(() => {
+    const scene = gltf.scene.clone(true) as Group;
+    const bounds = new Box3().setFromObject(scene);
+    const size = new Vector3();
+    const center = new Vector3();
+
+    bounds.getSize(size);
+    bounds.getCenter(center);
+
+    const maxAxis = Math.max(size.x, size.y, size.z);
+    const targetSize = 2.25;
+    const safeScale = Number.isFinite(maxAxis) && maxAxis > 0 ? targetSize / maxAxis : 1;
+
+    scene.position.sub(center);
+    scene.scale.setScalar(safeScale);
+
+    return scene;
+  }, [gltf.scene]);
 
   useEffect(() => {
     onReady?.();
-  }, [gltf, onReady]);
+  }, [normalizedScene, onReady]);
 
-  return <Clone object={gltf.scene} />;
+  return <primitive object={normalizedScene} />;
 }
 
 function ViewerFallback({

@@ -9,10 +9,92 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 
 const RECOMMENDED_MODEL_SIZE_MB = 10;
+const CLOUDINARY_FILE_LIMIT_MB = 10;
 const AUTO_OPTIMIZE_THRESHOLD_MB = 25;
+const TEXTURE_MAX_DIMENSION = 1024;
+const TEXTURE_WEBP_QUALITY = 0.72;
+
+async function blobToBytes(blob: Blob): Promise<Uint8Array> {
+  return new Uint8Array(await blob.arrayBuffer());
+}
+
+async function imageToWebp(
+  source: Blob,
+  maxDimension: number,
+  quality: number
+): Promise<{ bytes: Uint8Array; width: number; height: number } | null> {
+  const bitmap = await createImageBitmap(source);
+  const ratio = Math.min(1, maxDimension / Math.max(bitmap.width, bitmap.height));
+  const width = Math.max(1, Math.round(bitmap.width * ratio));
+  const height = Math.max(1, Math.round(bitmap.height * ratio));
+
+  try {
+    if (typeof OffscreenCanvas !== "undefined") {
+      const canvas = new OffscreenCanvas(width, height);
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return null;
+      ctx.drawImage(bitmap, 0, 0, width, height);
+      const webpBlob = await canvas.convertToBlob({
+        type: "image/webp",
+        quality,
+      });
+      return { bytes: await blobToBytes(webpBlob), width, height };
+    }
+
+    if (typeof document !== "undefined") {
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return null;
+      ctx.drawImage(bitmap, 0, 0, width, height);
+
+      const webpBlob = await new Promise<Blob | null>((resolve) => {
+        canvas.toBlob(
+          (result) => resolve(result),
+          "image/webp",
+          quality
+        );
+      });
+
+      if (!webpBlob) return null;
+      return { bytes: await blobToBytes(webpBlob), width, height };
+    }
+
+    return null;
+  } finally {
+    bitmap.close();
+  }
+}
+
+async function compressTextures(document: import("@gltf-transform/core").Document): Promise<void> {
+  const root = document.getRoot();
+  const textures = root.listTextures();
+
+  for (const texture of textures) {
+    const image = texture.getImage();
+    if (!image || image.byteLength === 0) continue;
+
+    const mimeType = texture.getMimeType() ?? "image/png";
+    if (mimeType === "image/ktx2") continue;
+
+    const sourceBlob = new Blob([image], { type: mimeType });
+    const compressed = await imageToWebp(
+      sourceBlob,
+      TEXTURE_MAX_DIMENSION,
+      TEXTURE_WEBP_QUALITY
+    );
+
+    if (!compressed) continue;
+    if (compressed.bytes.byteLength >= image.byteLength) continue;
+
+    texture.setImage(compressed.bytes);
+    texture.setMimeType("image/webp");
+  }
+}
 
 async function optimizeModelBeforeUpload(file: File): Promise<File> {
-  const [{ WebIO }, { dedup, prune, weld }] = await Promise.all([
+  const [{ WebIO }, { dedup, prune, quantize, weld }] = await Promise.all([
     import("@gltf-transform/core"),
     import("@gltf-transform/functions"),
   ]);
@@ -21,8 +103,15 @@ async function optimizeModelBeforeUpload(file: File): Promise<File> {
   const io = new WebIO();
   const document = await io.readBinary(inputBytes);
 
-  // Keep optimization deterministic and lightweight in-browser.
-  await document.transform(dedup(), prune(), weld());
+  await compressTextures(document);
+
+  // Keep optimization deterministic and browser-compatible.
+  await document.transform(
+    dedup(),
+    prune(),
+    weld(),
+    quantize({ quantizePosition: 14, quantizeNormal: 10, quantizeTexcoord: 12 })
+  );
 
   const outputBytes = await io.writeBinary(document);
   if (outputBytes.byteLength >= inputBytes.byteLength) {
@@ -81,7 +170,7 @@ export function Model3DUploader({
       }
 
       let fileToUpload = file;
-      if (fileSizeMb > AUTO_OPTIMIZE_THRESHOLD_MB) {
+      if (fileSizeMb > RECOMMENDED_MODEL_SIZE_MB) {
         setOptimizing(true);
         setWarning("Large model detected. Running automatic optimization before upload...");
 
@@ -107,8 +196,25 @@ export function Model3DUploader({
         } finally {
           setOptimizing(false);
         }
-      } else if (fileSizeMb > RECOMMENDED_MODEL_SIZE_MB) {
-        setWarning("Large model detected. Upload is allowed, but optimization is strongly recommended.");
+      }
+
+      const uploadSizeMb = Number((fileToUpload.size / (1024 * 1024)).toFixed(2));
+      if (uploadSizeMb > CLOUDINARY_FILE_LIMIT_MB) {
+        setError(
+          `File size too large after optimization (${uploadSizeMb.toFixed(2)}MB). Your current Cloudinary plan limit is ${CLOUDINARY_FILE_LIMIT_MB}MB per file. Use gltf-transform/gltf-pipeline with smaller textures and lighter geometry, then upload again.`
+        );
+        event.target.value = "";
+        return;
+      }
+
+      if (uploadSizeMb > AUTO_OPTIMIZE_THRESHOLD_MB) {
+        setWarning(
+          `Model remains very large (${uploadSizeMb.toFixed(2)}MB) even after optimization. Expect slower loading on mobile devices.`
+        );
+      } else if (uploadSizeMb > RECOMMENDED_MODEL_SIZE_MB) {
+        setWarning(
+          `Model is ${uploadSizeMb.toFixed(2)}MB. Upload is allowed, but additional optimization is recommended.`
+        );
       }
 
       setUploading(true);
@@ -311,7 +417,7 @@ export function Model3DUploader({
 
       <div className="flex flex-wrap gap-2 text-xs text-neutral-400">
         <span>Recommended: under 10MB.</span>
-        <span>No hard size limit enforced.</span>
+        <span>Uploads above 10MB are blocked by the current Cloudinary plan limit.</span>
         <span>Supported format: `.glb`.</span>
       </div>
 

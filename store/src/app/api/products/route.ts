@@ -92,27 +92,60 @@ export async function POST(request: Request) {
       storeRegions
     );
 
-    const product = await prisma.product.create({
-      data: {
-        ...productData,
-        stock: availability ? 1 : 0,
-        artistId: productData.artistId || null,
-        compareAtPrice: productData.compareAtPrice || null,
-        model3DUrl: productData.model3DUrl || null,
-        modelOptimized: productData.model3DUrl ? productData.modelOptimized : false,
-        modelSize: productData.model3DUrl ? productData.modelSize || null : null,
-        images: {
-          create: (images || []).map((url, i) => ({
-            imageUrl: url,
-            position: i,
-          })),
-        },
-        regionPrices: {
-          create: buildProductRegionPriceCreateData(normalizedRegionPrices),
-        },
+    const sharedCreateData = {
+      name: productData.name,
+      slug: productData.slug,
+      description: productData.description,
+      price: productData.price,
+      compareAtPrice: productData.compareAtPrice || null,
+      stock: availability ? 1 : 0,
+      categoryId: productData.categoryId,
+      artistId: productData.artistId || null,
+      customizable: productData.customizable,
+      featured: productData.featured,
+      active: productData.active,
+      images: {
+        create: (images || []).map((url, i) => ({
+          imageUrl: url,
+          position: i,
+        })),
       },
-      include: { images: true, regionPrices: { include: { region: true } } },
-    });
+      regionPrices: {
+        create: buildProductRegionPriceCreateData(normalizedRegionPrices),
+      },
+    };
+
+    const extendedCreateData = {
+      ...sharedCreateData,
+      materials: productData.materials,
+      careInstructions: productData.careInstructions,
+      heritageStory: productData.heritageStory,
+      model3DUrl: productData.model3DUrl || null,
+      modelOptimized: productData.model3DUrl ? productData.modelOptimized : false,
+      modelSize: productData.model3DUrl ? productData.modelSize || null : null,
+    };
+
+    let product;
+
+    try {
+      product = await prisma.product.create({
+        data: extendedCreateData,
+        include: { images: true, regionPrices: { include: { region: true } } },
+      });
+    } catch (error) {
+      const isSchemaColumnMismatch =
+        error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2022";
+
+      if (!isSchemaColumnMismatch) {
+        throw error;
+      }
+
+      // Fallback for environments running an older product table schema.
+      product = await prisma.product.create({
+        data: sharedCreateData,
+        include: { images: true, regionPrices: { include: { region: true } } },
+      });
+    }
 
     revalidatePath("/");
     revalidatePath("/products");
@@ -125,6 +158,26 @@ export async function POST(request: Request) {
 
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
       return NextResponse.json({ error: "Product slug already exists." }, { status: 409 });
+    }
+
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2022") {
+      return NextResponse.json(
+        {
+          error:
+            "Product table schema is out of date. Run `npm run db:push` in the store project and try again.",
+        },
+        { status: 500 }
+      );
+    }
+
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+      return NextResponse.json(
+        {
+          error:
+            "Missing related records (category/region). Verify store regions are configured, then try again.",
+        },
+        { status: 400 }
+      );
     }
 
     return NextResponse.json({ error: "Failed to create product." }, { status: 500 });

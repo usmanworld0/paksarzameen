@@ -67,7 +67,7 @@ export function ProductGallery({
   return (
     <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[88px_minmax(0,1fr)] lg:items-start">
       {normalizedImages.length > 1 && (
-        <div className="order-2 flex gap-3 overflow-x-auto pb-1 lg:order-1 lg:max-h-[720px] lg:flex-col lg:overflow-y-auto lg:overflow-x-hidden lg:pb-0 scrollbar-thin">
+        <div className="order-2 flex gap-3 overflow-x-auto pb-1 lg:order-1 lg:max-h-[860px] lg:flex-col lg:overflow-y-auto lg:overflow-x-hidden lg:pb-0 scrollbar-thin">
           {normalizedImages.map((img, index) => (
             <button
               key={img.id}
@@ -136,7 +136,7 @@ export function ProductGallery({
           </div>
         ) : null}
 
-        <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[32px] border border-black/8 bg-[#f7f4ef]">
+        <div className="relative aspect-[4/5] min-h-[430px] w-full overflow-hidden rounded-[32px] border border-black/8 bg-[#f7f4ef] sm:min-h-[560px] lg:min-h-[760px]">
           {viewMode === "3d" && model3DUrl ? (
             <>
               {selectedImage ? (

@@ -139,6 +139,12 @@ export async function createProduct(data: Record<string, unknown>) {
         name: string;
         slug: string;
         description?: string;
+        materials?: string | null;
+        careInstructions?: string | null;
+        heritageStory?: string | null;
+        model3DUrl?: string | null;
+        modelOptimized?: boolean;
+        modelSize?: number | null;
         price: number;
         compareAtPrice?: number;
         availability?: boolean;
@@ -152,6 +158,16 @@ export async function createProduct(data: Record<string, unknown>) {
       artistId: (productData as { artistId?: string | null }).artistId || null,
       compareAtPrice:
         (productData as { compareAtPrice?: number | null }).compareAtPrice || null,
+      model3DUrl:
+        (productData as { model3DUrl?: string | null }).model3DUrl || null,
+      modelOptimized: (productData as { model3DUrl?: string | null; modelOptimized?: boolean })
+        .model3DUrl
+        ? Boolean((productData as { modelOptimized?: boolean }).modelOptimized)
+        : false,
+      modelSize: (productData as { model3DUrl?: string | null; modelSize?: number | null })
+        .model3DUrl
+        ? (productData as { modelSize?: number | null }).modelSize || null
+        : null,
       images: {
         create: ((images as string[]) || []).map((url, i) => ({
           imageUrl: url,
@@ -191,6 +207,12 @@ export async function updateProduct(
         name?: string;
         slug?: string;
         description?: string;
+        materials?: string | null;
+        careInstructions?: string | null;
+        heritageStory?: string | null;
+        model3DUrl?: string | null;
+        modelOptimized?: boolean;
+        modelSize?: number | null;
         price?: number;
         compareAtPrice?: number;
         availability?: boolean;
@@ -203,6 +225,16 @@ export async function updateProduct(
       artistId: (productData as { artistId?: string | null }).artistId || null,
       compareAtPrice:
         (productData as { compareAtPrice?: number | null }).compareAtPrice || null,
+      model3DUrl:
+        (productData as { model3DUrl?: string | null }).model3DUrl || null,
+      modelOptimized: (productData as { model3DUrl?: string | null; modelOptimized?: boolean })
+        .model3DUrl
+        ? Boolean((productData as { modelOptimized?: boolean }).modelOptimized)
+        : false,
+      modelSize: (productData as { model3DUrl?: string | null; modelSize?: number | null })
+        .model3DUrl
+        ? (productData as { modelSize?: number | null }).modelSize || null
+        : null,
       stock: availability === false ? 0 : 1,
       images: {
         create: ((images as string[]) || []).map((url, i) => ({

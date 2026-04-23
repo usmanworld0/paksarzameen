@@ -95,7 +95,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
           <div className="store-container">
             <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1.08fr)_minmax(360px,0.92fr)] lg:gap-16">
               <div className="lg:sticky lg:top-24 lg:h-fit">
-              <ProductGallery images={product.images} productName={product.name} />
+                <ProductGallery
+                  images={product.images}
+                  productName={product.name}
+                  model3DUrl={product.model3DUrl}
+                />
               </div>
 
               <div className="max-w-xl">

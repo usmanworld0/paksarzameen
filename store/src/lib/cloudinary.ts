@@ -1,4 +1,5 @@
 import { v2 as cloudinary } from "cloudinary";
+import { Readable } from "stream";
 
 const DEFAULT_CLOUDINARY_URL =
   "cloudinary://137426147159797:YY3hgPCKpxVCh2JeA-y-vX16Ifw@dzsz8qwjc";
@@ -34,6 +35,14 @@ export type CloudinaryUploadResult = {
   height: number | null;
   bytes: number | null;
   mimeType: string | null;
+};
+
+export type CloudinaryRawUploadResult = {
+  url: string;
+  publicId: string;
+  bytes: number | null;
+  mimeType: string | null;
+  originalFilename: string | null;
 };
 
 export async function uploadImageFile(
@@ -80,6 +89,48 @@ export async function uploadImage(
     ],
   });
   return { url: result.secure_url, publicId: result.public_id };
+}
+
+export async function uploadRawFile(
+  file: File,
+  folder: string = "commonwealth-lab/models"
+): Promise<CloudinaryRawUploadResult> {
+  const extension = file.name.split(".").pop()?.toLowerCase() || "bin";
+  const buffer = Buffer.from(await file.arrayBuffer());
+
+  return await new Promise<CloudinaryRawUploadResult>((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder,
+        resource_type: "raw",
+        use_filename: true,
+        unique_filename: true,
+        filename_override: file.name,
+        format: extension,
+      },
+      (error, result) => {
+        if (error) {
+          reject(error);
+          return;
+        }
+
+        if (!result) {
+          reject(new Error("Cloudinary did not return a result."));
+          return;
+        }
+
+        resolve({
+          url: result.secure_url,
+          publicId: result.public_id,
+          bytes: result.bytes ?? null,
+          mimeType: file.type || null,
+          originalFilename: result.original_filename ?? file.name,
+        });
+      }
+    );
+
+    Readable.from(buffer).pipe(uploadStream);
+  });
 }
 
 export async function deleteImage(publicId: string): Promise<void> {

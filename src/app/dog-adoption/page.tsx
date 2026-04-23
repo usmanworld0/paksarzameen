@@ -25,8 +25,8 @@ export default async function DogAdoptionPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[linear-gradient(180deg,_#f8fcf8_0%,_#eef6ef_100%)] px-4 pb-20 pt-28 sm:px-6 lg:px-10">
-      <section className="mx-auto max-w-7xl space-y-8">
+    <main className="min-h-screen bg-[linear-gradient(180deg,_#f8fcf8_0%,_#eef6ef_100%)] px-[4%] pb-20 pt-28">
+      <section className="mx-auto max-w-screen-2xl space-y-8">
         <div className="rounded-2xl border border-rose-200 bg-[linear-gradient(135deg,_#fff1f2_0%,_#ffe4e6_100%)] px-5 py-4 text-center shadow-sm sm:px-6">
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-rose-700">Adoption Drive</p>
           <p className="mt-1 text-lg font-semibold text-rose-900 sm:text-xl">Adopt a dog, save a life for 3500 only</p>

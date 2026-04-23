@@ -260,7 +260,7 @@ export function HealthCareHubProfessional() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-emerald-50">
       {/* Header */}
       <div className="sticky top-[6.5rem] z-40 border-b border-slate-200 bg-white shadow-sm sm:top-28">
-        <div className="mx-auto max-w-7xl px-6 py-4">
+        <div className="mx-auto max-w-screen-2xl px-[4%] py-4">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-slate-900">HealthCare Platform</h1>
@@ -276,7 +276,7 @@ export function HealthCareHubProfessional() {
 
       {/* Tab Navigation */}
       <div className="border-b border-slate-200 bg-white">
-        <div className="mx-auto max-w-7xl px-6">
+        <div className="mx-auto max-w-screen-2xl px-[4%]">
           <div className="flex gap-1 overflow-x-auto">
             {[
               { id: "dashboard", label: "Dashboard", icon: MessageCircle },
@@ -302,7 +302,7 @@ export function HealthCareHubProfessional() {
       </div>
 
       {/* Main Content */}
-      <div className="mx-auto max-w-7xl px-6 py-8">
+      <div className="mx-auto max-w-screen-2xl px-[4%] py-8">
         {/* Dashboard Tab */}
         {activeTab === "dashboard" && (
           <div className="space-y-6">

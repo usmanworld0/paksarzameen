@@ -74,6 +74,9 @@ export async function PATCH(
         stock: availability ? 1 : 0,
         artistId: productData.artistId || null,
         compareAtPrice: productData.compareAtPrice || null,
+        model3DUrl: productData.model3DUrl || null,
+        modelOptimized: productData.model3DUrl ? productData.modelOptimized : false,
+        modelSize: productData.model3DUrl ? productData.modelSize || null : null,
         images: images
           ? {
               create: images.map((url, i) => ({

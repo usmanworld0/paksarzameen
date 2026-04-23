@@ -57,6 +57,9 @@ model Product {
   customizable   Boolean  @default(false)
   featured       Boolean  @default(false)
   active         Boolean  @default(true)
+  model3DUrl     String?
+  modelOptimized Boolean  @default(false)
+  modelSize      Float?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 

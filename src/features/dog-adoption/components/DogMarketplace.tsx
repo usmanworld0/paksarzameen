@@ -9,7 +9,6 @@ import {
   FilterX,
   MapPin,
   Search,
-  ShieldCheck,
 } from "lucide-react";
 
 import type { DogRecord, DogStatus } from "@/lib/dog-adoption";
@@ -119,7 +118,6 @@ export function DogMarketplace({ dogs }: { dogs: DogRecord[] }) {
 
   const availableCount = dogs.filter((dog) => dog.status === "available").length;
   const adoptedCount = dogs.filter((dog) => dog.status === "adopted").length;
-  const cityCount = cityOptions.length;
   const activeFilterCount =
     (query.trim() ? 1 : 0) +
     (statusFilter !== "all" ? 1 : 0) +
@@ -138,39 +136,13 @@ export function DogMarketplace({ dogs }: { dogs: DogRecord[] }) {
 
   return (
     <div className="space-y-6">
-      <section className="grid gap-4 md:grid-cols-3">
-        <MarketplaceStat
-          label="Live listings"
-          value={String(dogs.length)}
-          helper="Fresh dog profiles from the rescue desk."
-        />
-        <MarketplaceStat
-          label="Ready to adopt"
-          value={String(availableCount)}
-          helper="Dogs currently open for adoption requests."
-        />
-        <MarketplaceStat
-          label="Cities covered"
-          value={String(cityCount)}
-          helper="Search by city to find a nearby companion."
-        />
-      </section>
-
-      <section className="grid gap-6 xl:grid-cols-[300px_minmax(0,1fr)]">
+      <section className="grid gap-6 xl:grid-cols-[320px_minmax(0,1fr)] 2xl:grid-cols-[340px_minmax(0,1fr)]">
         <aside className="space-y-4 xl:sticky xl:top-28 xl:self-start">
           <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-[0_22px_70px_-55px_rgba(15,23,42,0.65)] sm:p-6">
             <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.26em] text-slate-500">
-                  Filters
-                </p>
-                <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">
-                  Browse like a marketplace
-                </h2>
-                <p className="mt-2 text-sm leading-6 text-slate-600">
-                  Narrow the listings by breed, city, gender, or a keyword from each rescue profile.
-                </p>
-              </div>
+              <p className="pt-2 text-xs font-semibold uppercase tracking-[0.26em] text-slate-500">
+                Filters
+              </p>
 
               <button
                 type="button"
@@ -182,7 +154,7 @@ export function DogMarketplace({ dogs }: { dogs: DogRecord[] }) {
               </button>
             </div>
 
-            <div className="mt-6 space-y-4">
+            <div className="mt-5 space-y-4">
               <label className="block space-y-2">
                 <span className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
                   Search
@@ -277,30 +249,14 @@ export function DogMarketplace({ dogs }: { dogs: DogRecord[] }) {
               </label>
             </div>
           </div>
-
-          <div className="rounded-[28px] border border-emerald-100 bg-[linear-gradient(180deg,_#f7fdf9_0%,_#eff8f1_100%)] p-5 shadow-[0_18px_60px_-50px_rgba(16,185,129,0.7)] sm:p-6">
-            <p className="inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700">
-              <ShieldCheck className="h-4 w-4" />
-              Rescue note
-            </p>
-            <h3 className="mt-3 text-xl font-semibold text-slate-950">Every row opens a full profile</h3>
-            <p className="mt-2 text-sm leading-6 text-slate-700">
-              Use the listing to shortlist quickly, then open the detail page when you are ready to adopt or review the full story.
-            </p>
-          </div>
         </aside>
 
         <div className="space-y-4">
           <div className="rounded-[28px] border border-slate-200 bg-white p-4 shadow-[0_20px_70px_-55px_rgba(15,23,42,0.6)] sm:p-5">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
-                  Listings
-                </p>
-                <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">
-                  Rescue dogs in OLX-style rows
-                </h2>
-              </div>
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
+                Listings
+              </p>
 
               <div className="flex flex-wrap gap-2">
                 <StatusChip
@@ -376,19 +332,13 @@ export function DogMarketplace({ dogs }: { dogs: DogRecord[] }) {
                         <span className={`rounded-full px-3 py-1 text-xs font-semibold ${statusClass(dog.status)}`}>
                           {STATUS_LABELS[dog.status]}
                         </span>
-                        <span className="rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-slate-800">
-                          Verified listing
-                        </span>
                       </div>
                     </Link>
 
                     <div className="flex flex-col justify-between gap-5 p-5 sm:p-6">
                       <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
                         <div>
-                          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
-                            Rescue Listing
-                          </p>
-                          <h3 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">
+                          <h3 className="text-2xl font-semibold tracking-tight text-slate-950">
                             {dog.name}
                           </h3>
                           <p className="mt-2 text-sm text-slate-600">
@@ -420,7 +370,7 @@ export function DogMarketplace({ dogs }: { dogs: DogRecord[] }) {
                           value={LISTING_DATE_FORMATTER.format(new Date(dog.createdAt))}
                         />
                         <ListingFact
-                          icon={<ShieldCheck className="h-4 w-4 text-emerald-700" />}
+                          icon={<CalendarDays className="h-4 w-4 text-emerald-700" />}
                           label="Status"
                           value={getStatusMessage(dog.status)}
                         />
@@ -429,9 +379,6 @@ export function DogMarketplace({ dogs }: { dogs: DogRecord[] }) {
 
                     <div className="flex flex-col justify-between gap-5 border-t border-slate-200 bg-slate-50/80 p-5 sm:p-6 lg:border-l lg:border-t-0">
                       <div>
-                        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
-                          Next step
-                        </p>
                         <p className="mt-2 text-lg font-semibold text-slate-950">
                           {dog.status === "available" ? "Ready for adoption" : "See full profile"}
                         </p>
@@ -461,24 +408,6 @@ export function DogMarketplace({ dogs }: { dogs: DogRecord[] }) {
           )}
         </div>
       </section>
-    </div>
-  );
-}
-
-function MarketplaceStat({
-  label,
-  value,
-  helper,
-}: {
-  label: string;
-  value: string;
-  helper: string;
-}) {
-  return (
-    <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-[0_20px_70px_-58px_rgba(15,23,42,0.65)] sm:p-6">
-      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">{label}</p>
-      <p className="mt-3 text-4xl font-semibold tracking-tight text-slate-950">{value}</p>
-      <p className="mt-3 text-sm leading-6 text-slate-600">{helper}</p>
     </div>
   );
 }

@@ -12,6 +12,16 @@ const optionalText = z.preprocess(
   z.string().optional()
 );
 
+const optionalUrl = z.preprocess(
+  (value) => {
+    if (value === null || value === undefined) return undefined;
+    if (typeof value !== "string") return value;
+    const trimmed = value.trim();
+    return trimmed.length === 0 ? undefined : trimmed;
+  },
+  z.string().url("Enter a valid URL.").optional()
+);
+
 const optionalPositiveNumber = z.preprocess(
   (value) => {
     if (value === null || value === undefined || value === "") return undefined;
@@ -115,6 +125,9 @@ export const productSchema = z.object({
   materials: optionalText,
   careInstructions: optionalText,
   heritageStory: optionalText,
+  model3DUrl: optionalUrl,
+  modelOptimized: z.boolean().default(false),
+  modelSize: optionalPositiveNumber.nullable(),
   price: z.coerce.number().positive("Price must be positive"),
   compareAtPrice: optionalPositiveNumber.nullable(),
   availability: z.boolean().default(true),

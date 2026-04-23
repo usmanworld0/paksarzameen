@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { ImageUploader } from "./ImageUploader";
+import { Model3DUploader } from "./Model3DUploader";
 import {
   Select,
   SelectContent,
@@ -59,6 +60,9 @@ export function ProductForm({ product, categories, artists, regions }: ProductFo
       materials: product?.materials || "",
       careInstructions: product?.careInstructions || "",
       heritageStory: product?.heritageStory || "",
+      model3DUrl: product?.model3DUrl || "",
+      modelOptimized: product?.modelOptimized || false,
+      modelSize: product?.modelSize ?? null,
       price: product?.price || 0,
       compareAtPrice: product?.compareAtPrice || null,
       availability: (product?.stock ?? 0) > 0,
@@ -84,6 +88,9 @@ export function ProductForm({ product, categories, artists, regions }: ProductFo
   const nameValue = watch("name");
   const availabilityValue = watch("availability");
   const regionPriceValues = watch("regionPrices");
+  const model3DUrlValue = watch("model3DUrl") || "";
+  const modelOptimizedValue = watch("modelOptimized");
+  const modelSizeValue = watch("modelSize");
 
   function updateRegionalPrice(
     index: number,
@@ -364,6 +371,26 @@ export function ProductForm({ product, categories, artists, regions }: ProductFo
       <section className="space-y-4">
         <h3 className="text-sm font-semibold uppercase tracking-wider text-neutral-500">Media</h3>
         <ImageUploader images={images} onChange={setImages} />
+        <Model3DUploader
+          model3DUrl={model3DUrlValue}
+          modelSize={modelSizeValue ?? null}
+          modelOptimized={modelOptimizedValue}
+          onModelUrlChange={(value) =>
+            setValue("model3DUrl", value, { shouldValidate: true, shouldDirty: true })
+          }
+          onModelSizeChange={(value) =>
+            setValue("modelSize", value, { shouldValidate: true, shouldDirty: true })
+          }
+          onModelOptimizedChange={(value) =>
+            setValue("modelOptimized", value, { shouldValidate: true, shouldDirty: true })
+          }
+        />
+        {errors.model3DUrl && (
+          <p className="text-sm text-red-500">{errors.model3DUrl.message}</p>
+        )}
+        {errors.modelSize && (
+          <p className="text-sm text-red-500">{errors.modelSize.message}</p>
+        )}
       </section>
 
       <div className="h-px bg-neutral-100" />

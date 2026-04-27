@@ -3,6 +3,7 @@
 import { FormEvent, useMemo, useState } from "react";
 import {
   ArrowDownUp,
+  FileSpreadsheet,
   RefreshCcw,
   Search,
   Users,
@@ -105,6 +106,20 @@ type OperationRow = {
   createdAt: string;
 };
 
+type HealthcareAnalytics = {
+  doctorsTotal: number;
+  activePatientsTotal: number;
+  appointmentsTotal: number;
+  donorChatMessagesTotal: number;
+  appointmentMessagesTotal: number;
+  suspendedUsersTotal: number;
+  appointmentsByStatus: Record<string, number>;
+  appointmentCountsByDay: Record<string, number>;
+  appointmentCountsByMonth: Record<string, number>;
+  appointmentCountsByYear: Record<string, number>;
+  appointmentsByDoctor: Record<string, number>;
+};
+
 type TimeSeriesPoint = {
   label: string;
   blood: number;
@@ -135,6 +150,48 @@ function buildPolyline(points: number[], maxValue: number) {
       return `${x},${y}`;
     })
     .join(" ");
+}
+
+function toMonthKey(isoValue: string) {
+  return toDateOnly(isoValue).slice(0, 7);
+}
+
+function toYearKey(isoValue: string) {
+  return toDateOnly(isoValue).slice(0, 4);
+}
+
+function aggregateCountsByPeriod(
+  rows: Array<{ date: string; status: string }>,
+  keySelector: (isoDate: string) => string
+) {
+  const counters = new Map<string, { total: number; pending: number; approved: number; completed: number; rejected: number; cancelled: number; inProgress: number }>();
+
+  for (const row of rows) {
+    const key = keySelector(row.date);
+    const current = counters.get(key) ?? {
+      total: 0,
+      pending: 0,
+      approved: 0,
+      completed: 0,
+      rejected: 0,
+      cancelled: 0,
+      inProgress: 0,
+    };
+
+    current.total += 1;
+    const status = row.status.toLowerCase();
+    if (status === "pending") current.pending += 1;
+    if (status === "approved") current.approved += 1;
+    if (status === "completed") current.completed += 1;
+    if (status === "rejected") current.rejected += 1;
+    if (status === "cancelled") current.cancelled += 1;
+    if (status === "in_progress") current.inProgress += 1;
+    counters.set(key, current);
+  }
+
+  return Array.from(counters.entries())
+    .sort(([left], [right]) => left.localeCompare(right))
+    .map(([period, values]) => ({ period, ...values }));
 }
 
 function StatusBar({ label, value, total, colorClass }: { label: string; value: number; total: number; colorClass: string }) {
@@ -194,7 +251,9 @@ export function AdminControlCenter() {
   const [bloodRequests, setBloodRequests] = useState<BloodRequestRow[]>([]);
   const [dogs, setDogs] = useState<DogRow[]>([]);
   const [adoptionRequests, setAdoptionRequests] = useState<AdoptionRow[]>([]);
+  const [healthcareAnalytics, setHealthcareAnalytics] = useState<HealthcareAnalytics | null>(null);
   const [users, setUsers] = useState<UserDirectoryRow[]>([]);
+  const [isExporting, setIsExporting] = useState(false);
   const [opsSearch, setOpsSearch] = useState("");
   const [opsStatus, setOpsStatus] = useState("all");
   const [opsModule, setOpsModule] = useState<"all" | "blood" | "adoption" | "dogs">("all");
@@ -208,23 +267,30 @@ export function AdminControlCenter() {
     setAnalyticsError(null);
 
     try {
-      const [bloodRes, dogsRes, adoptionRes, usersRes] = await Promise.all([
+      const [bloodRes, dogsRes, adoptionRes, usersRes, healthcareRes] = await Promise.all([
         fetch("/api/admin/blood-requests", { credentials: "include" }),
         fetch("/api/admin/dogs", { credentials: "include" }),
         fetch("/api/admin/adoption-requests", { credentials: "include" }),
         fetch("/api/admin/users?limit=500", { credentials: "include" }),
+        fetch("/api/admin/healthcare/analytics", { credentials: "include" }),
       ]);
 
-      const [bloodPayload, dogsPayload, adoptionPayload, usersPayload] = await Promise.all([
+      const [bloodPayload, dogsPayload, adoptionPayload, usersPayload, healthcarePayload] = await Promise.all([
         bloodRes.json() as Promise<{ data?: BloodRequestRow[]; error?: string }>,
         dogsRes.json() as Promise<{ data?: DogRow[]; error?: string }>,
         adoptionRes.json() as Promise<{ data?: AdoptionRow[]; error?: string }>,
         usersRes.json() as Promise<{ data?: UserDirectoryRow[]; error?: string }>,
+        healthcareRes.json() as Promise<{ data?: HealthcareAnalytics; error?: string }>,
       ]);
 
-      if (!bloodRes.ok || !dogsRes.ok || !adoptionRes.ok || !usersRes.ok) {
+      if (!bloodRes.ok || !dogsRes.ok || !adoptionRes.ok || !usersRes.ok || !healthcareRes.ok) {
         throw new Error(
-          bloodPayload.error ?? dogsPayload.error ?? adoptionPayload.error ?? usersPayload.error ?? "Failed to load admin analytics."
+          bloodPayload.error ??
+            dogsPayload.error ??
+            adoptionPayload.error ??
+            usersPayload.error ??
+            healthcarePayload.error ??
+            "Failed to load admin analytics."
         );
       }
 
@@ -232,6 +298,7 @@ export function AdminControlCenter() {
       setDogs(dogsPayload.data ?? []);
       setAdoptionRequests(adoptionPayload.data ?? []);
       setUsers(usersPayload.data ?? []);
+      setHealthcareAnalytics(healthcarePayload.data ?? null);
     } catch (loadError) {
       setAnalyticsError(loadError instanceof Error ? loadError.message : "Failed to load dashboard insights.");
     } finally {
@@ -451,6 +518,78 @@ export function AdminControlCenter() {
     }
   }
 
+  async function exportStatsAsExcel() {
+    setError(null);
+    setSuccess(null);
+    setIsExporting(true);
+
+    try {
+      const [{ utils, writeFile }] = await Promise.all([import("xlsx")]);
+
+      const bloodRows = bloodRequests.map((row) => ({ date: row.createdAt, status: row.status }));
+      const adoptionRows = adoptionRequests.map((row) => ({ date: row.requestedAt, status: row.status }));
+
+      const bloodDaily = aggregateCountsByPeriod(bloodRows, toDateOnly);
+      const bloodMonthly = aggregateCountsByPeriod(bloodRows, toMonthKey);
+      const bloodYearly = aggregateCountsByPeriod(bloodRows, toYearKey);
+
+      const adoptionDaily = aggregateCountsByPeriod(adoptionRows, toDateOnly);
+      const adoptionMonthly = aggregateCountsByPeriod(adoptionRows, toMonthKey);
+      const adoptionYearly = aggregateCountsByPeriod(adoptionRows, toYearKey);
+
+      const healthcareDaily = Object.entries(healthcareAnalytics?.appointmentCountsByDay ?? {})
+        .sort(([left], [right]) => left.localeCompare(right))
+        .map(([period, total]) => ({ period, total }));
+      const healthcareMonthly = Object.entries(healthcareAnalytics?.appointmentCountsByMonth ?? {})
+        .sort(([left], [right]) => left.localeCompare(right))
+        .map(([period, total]) => ({ period, total }));
+      const healthcareYearly = Object.entries(healthcareAnalytics?.appointmentCountsByYear ?? {})
+        .sort(([left], [right]) => left.localeCompare(right))
+        .map(([period, total]) => ({ period, total }));
+      const healthcareByDoctor = Object.entries(healthcareAnalytics?.appointmentsByDoctor ?? {})
+        .sort(([left], [right]) => left.localeCompare(right))
+        .map(([doctorId, totalAppointments]) => ({ doctorId, totalAppointments }));
+
+      const healthcareByStatus = Object.entries(healthcareAnalytics?.appointmentsByStatus ?? {})
+        .sort(([left], [right]) => left.localeCompare(right))
+        .map(([status, total]) => ({ status, total }));
+
+      const summarySheet = utils.json_to_sheet([
+        {
+          generatedAt: new Date().toISOString(),
+          bloodRequestsTotal: bloodRequests.length,
+          adoptionRequestsTotal: adoptionRequests.length,
+          healthcareAppointmentsTotal: healthcareAnalytics?.appointmentsTotal ?? 0,
+          healthcareDoctorsTotal: healthcareAnalytics?.doctorsTotal ?? 0,
+          healthcareActivePatientsTotal: healthcareAnalytics?.activePatientsTotal ?? 0,
+          healthcareSuspendedUsersTotal: healthcareAnalytics?.suspendedUsersTotal ?? 0,
+        },
+      ]);
+
+      const workbook = utils.book_new();
+      utils.book_append_sheet(workbook, summarySheet, "Summary");
+      utils.book_append_sheet(workbook, utils.json_to_sheet(bloodDaily), "Blood Daily");
+      utils.book_append_sheet(workbook, utils.json_to_sheet(bloodMonthly), "Blood Monthly");
+      utils.book_append_sheet(workbook, utils.json_to_sheet(bloodYearly), "Blood Yearly");
+      utils.book_append_sheet(workbook, utils.json_to_sheet(adoptionDaily), "Adoption Daily");
+      utils.book_append_sheet(workbook, utils.json_to_sheet(adoptionMonthly), "Adoption Monthly");
+      utils.book_append_sheet(workbook, utils.json_to_sheet(adoptionYearly), "Adoption Yearly");
+      utils.book_append_sheet(workbook, utils.json_to_sheet(healthcareDaily), "Appointments Daily");
+      utils.book_append_sheet(workbook, utils.json_to_sheet(healthcareMonthly), "Appointments Monthly");
+      utils.book_append_sheet(workbook, utils.json_to_sheet(healthcareYearly), "Appointments Yearly");
+      utils.book_append_sheet(workbook, utils.json_to_sheet(healthcareByStatus), "Appointments Status");
+      utils.book_append_sheet(workbook, utils.json_to_sheet(healthcareByDoctor), "Appointments Doctor");
+
+      const fileDate = new Date().toISOString().slice(0, 10);
+      writeFile(workbook, `psz-admin-stats-${fileDate}.xlsx`);
+      setSuccess("Excel export generated successfully.");
+    } catch (exportError) {
+      setError(exportError instanceof Error ? exportError.message : "Failed to export stats Excel.");
+    } finally {
+      setIsExporting(false);
+    }
+  }
+
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,#f4faf5_0%,#eaf3ec_100%)] px-4 pb-16 pt-28 sm:px-6 lg:px-10">
       <section className="mx-auto max-w-7xl space-y-6">
@@ -463,14 +602,25 @@ export function AdminControlCenter() {
                 Manage tenant onboarding, assign module permissions, and operate dogs adoption and blood donation modules from one place.
               </p>
             </div>
-            <button
-              type="button"
-              onClick={() => void logout()}
-              disabled={isLoggingOut}
-              className="rounded-xl border border-emerald-200 bg-white px-4 py-2 text-sm font-semibold text-emerald-800 transition hover:bg-emerald-50 disabled:opacity-60"
-            >
-              {isLoggingOut ? "Logging out..." : "Logout"}
-            </button>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={() => void exportStatsAsExcel()}
+                disabled={isExporting || isLoadingAnalytics}
+                className="inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-white px-4 py-2 text-sm font-semibold text-emerald-800 transition hover:bg-emerald-50 disabled:opacity-60"
+              >
+                <FileSpreadsheet className="h-4 w-4" />
+                {isExporting ? "Exporting..." : "Export Stats (Excel)"}
+              </button>
+              <button
+                type="button"
+                onClick={() => void logout()}
+                disabled={isLoggingOut}
+                className="rounded-xl border border-emerald-200 bg-white px-4 py-2 text-sm font-semibold text-emerald-800 transition hover:bg-emerald-50 disabled:opacity-60"
+              >
+                {isLoggingOut ? "Logging out..." : "Logout"}
+              </button>
+            </div>
           </div>
         </header>
 

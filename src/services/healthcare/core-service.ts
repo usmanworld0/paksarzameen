@@ -1462,6 +1462,10 @@ export async function getHealthCareAnalytics() {
       appointmentMessagesTotal: 0,
       suspendedUsersTotal: 0,
       appointmentsByStatus: {},
+      appointmentCountsByDay: {},
+      appointmentCountsByMonth: {},
+      appointmentCountsByYear: {},
+      appointmentsByDoctor: {},
     };
   }
 
@@ -1470,7 +1474,7 @@ export async function getHealthCareAnalytics() {
   const [doctors, activePatients, appointments, donorMessages, appointmentMessages, suspensions, byStatus] = await Promise.all([
     supabase.from("healthcare_doctors").select("id", { count: "exact", head: true }),
     supabase.from("healthcare_appointments").select("patient_user_id"),
-    supabase.from("healthcare_appointments").select("id,status"),
+    supabase.from("healthcare_appointments").select("id,status,doctor_id,created_at"),
     supabase.from("healthcare_blood_donor_chats").select("id", { count: "exact", head: true }),
     supabase.from("healthcare_appointment_messages").select("id", { count: "exact", head: true }),
     supabase.from("healthcare_user_suspensions").select("user_id", { count: "exact", head: true }).eq("is_suspended", true),
@@ -1492,6 +1496,29 @@ export async function getHealthCareAnalytics() {
     return acc;
   }, {});
 
+  const appointmentCountsByDay: Record<string, number> = {};
+  const appointmentCountsByMonth: Record<string, number> = {};
+  const appointmentCountsByYear: Record<string, number> = {};
+  const appointmentsByDoctor: Record<string, number> = {};
+
+  for (const row of appointments.data ?? []) {
+    const createdAt = row.created_at ? String(row.created_at) : "";
+    if (createdAt) {
+      const date = new Date(createdAt);
+      if (!Number.isNaN(date.getTime())) {
+        const isoDay = date.toISOString().slice(0, 10);
+        const isoMonth = isoDay.slice(0, 7);
+        const isoYear = isoDay.slice(0, 4);
+        appointmentCountsByDay[isoDay] = (appointmentCountsByDay[isoDay] ?? 0) + 1;
+        appointmentCountsByMonth[isoMonth] = (appointmentCountsByMonth[isoMonth] ?? 0) + 1;
+        appointmentCountsByYear[isoYear] = (appointmentCountsByYear[isoYear] ?? 0) + 1;
+      }
+    }
+
+    const doctorId = row.doctor_id ? String(row.doctor_id) : "unknown";
+    appointmentsByDoctor[doctorId] = (appointmentsByDoctor[doctorId] ?? 0) + 1;
+  }
+
   return {
     doctorsTotal: doctors.count ?? 0,
     activePatientsTotal: uniquePatients.size,
@@ -1500,6 +1527,10 @@ export async function getHealthCareAnalytics() {
     appointmentMessagesTotal: appointmentMessages.count ?? 0,
     suspendedUsersTotal: suspensions.count ?? 0,
     appointmentsByStatus,
+    appointmentCountsByDay,
+    appointmentCountsByMonth,
+    appointmentCountsByYear,
+    appointmentsByDoctor,
   };
 }
 

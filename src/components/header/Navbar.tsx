@@ -178,6 +178,9 @@ export function Navbar() {
           </div>
 
           <div className="nav-actions">
+            <Link href="/healthcare/doctor/sign-in" className="nav-doctor-btn">
+              Doctor Portal
+            </Link>
             <Link
               href={siteConfig.commonwealthUrl}
               target="_blank"
@@ -327,6 +330,13 @@ export function Navbar() {
           </div>
 
           <div className="mobile-menu__actions">
+            <Link
+              href="/healthcare/doctor/sign-in"
+              className="mobile-menu__doctor"
+              onClick={() => setMenuOpen(false)}
+            >
+              Doctor Portal
+            </Link>
             <a
               href={siteConfig.commonwealthUrl}
               target="_blank"

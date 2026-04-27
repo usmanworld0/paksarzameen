@@ -50,6 +50,7 @@ export async function GET() {
       users: false,
       user_profile: false,
       healthcare_doctors: false,
+      healthcare_doctor_signup_requests: false,
       profiles: false,
     },
     errors: [] as string[],
@@ -60,7 +61,7 @@ export async function GET() {
     checks.supabaseConnection = true;
 
     // Check if tables exist
-    const tableNames = ["users", "user_profile", "healthcare_doctors", "profiles"];
+    const tableNames = ["users", "user_profile", "healthcare_doctors", "healthcare_doctor_signup_requests", "profiles"];
 
     for (const tableName of tableNames) {
       try {

@@ -9,6 +9,7 @@ DROP TABLE IF EXISTS healthcare_appointments CASCADE;
 DROP TABLE IF EXISTS healthcare_appointment_messages CASCADE;
 DROP TABLE IF EXISTS healthcare_blood_donor_chats CASCADE;
 DROP TABLE IF EXISTS healthcare_doctor_slots CASCADE;
+DROP TABLE IF EXISTS healthcare_doctor_signup_requests CASCADE;
 DROP TABLE IF EXISTS healthcare_doctors CASCADE;
 DROP TABLE IF EXISTS healthcare_audit_logs CASCADE;
 DROP TABLE IF EXISTS healthcare_ai_logs CASCADE;
@@ -49,6 +50,24 @@ CREATE TABLE healthcare_doctors (
   consultation_fee numeric(10,2),
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE TABLE healthcare_doctor_signup_requests (
+  id text PRIMARY KEY,
+  user_id uuid NOT NULL UNIQUE REFERENCES profiles(id) ON DELETE CASCADE,
+  email text NOT NULL,
+  full_name text NOT NULL,
+  specialization text,
+  bio text,
+  experience_years integer,
+  consultation_fee numeric(10,2),
+  status text NOT NULL DEFAULT 'pending',
+  admin_note text,
+  reviewed_by text,
+  reviewed_at timestamptz,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now(),
+  CONSTRAINT healthcare_doctor_signup_requests_status_check CHECK (status IN ('pending', 'approved', 'declined'))
 );
 
 CREATE TABLE healthcare_doctor_slots (
@@ -137,6 +156,7 @@ CREATE TABLE healthcare_user_suspensions (
 
 -- Create indexes
 CREATE INDEX healthcare_doctors_user_id_idx ON healthcare_doctors (user_id);
+CREATE INDEX healthcare_doctor_signup_requests_status_idx ON healthcare_doctor_signup_requests (status, created_at DESC);
 CREATE INDEX healthcare_slots_doctor_id_idx ON healthcare_doctor_slots (doctor_id, slot_start DESC);
 CREATE INDEX healthcare_appointments_doctor_idx ON healthcare_appointments (doctor_id, created_at DESC);
 CREATE INDEX healthcare_appointments_patient_idx ON healthcare_appointments (patient_user_id, created_at DESC);
@@ -149,6 +169,7 @@ CREATE INDEX ai_logs_timestamp_idx ON ai_logs (timestamp DESC);
 
 -- Enable RLS on all healthcare tables
 ALTER TABLE healthcare_doctors ENABLE ROW LEVEL SECURITY;
+ALTER TABLE healthcare_doctor_signup_requests ENABLE ROW LEVEL SECURITY;
 ALTER TABLE healthcare_doctor_slots ENABLE ROW LEVEL SECURITY;
 ALTER TABLE healthcare_appointments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE healthcare_appointment_messages ENABLE ROW LEVEL SECURITY;
@@ -159,6 +180,7 @@ ALTER TABLE ai_logs ENABLE ROW LEVEL SECURITY;
 
 -- Allow service role full access to all healthcare tables
 CREATE POLICY healthcare_doctors_all ON healthcare_doctors FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY healthcare_doctor_signup_requests_all ON healthcare_doctor_signup_requests FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY healthcare_slots_all ON healthcare_doctor_slots FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY healthcare_appointments_all ON healthcare_appointments FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY healthcare_messages_all ON healthcare_appointment_messages FOR ALL USING (true) WITH CHECK (true);

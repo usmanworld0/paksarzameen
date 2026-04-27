@@ -46,6 +46,24 @@ CREATE TABLE IF NOT EXISTS healthcare_doctors (
   updated_at timestamptz NOT NULL DEFAULT now()
 );
 
+CREATE TABLE IF NOT EXISTS healthcare_doctor_signup_requests (
+  id text PRIMARY KEY,
+  user_id uuid NOT NULL UNIQUE REFERENCES profiles(id) ON DELETE CASCADE,
+  email text NOT NULL,
+  full_name text NOT NULL,
+  specialization text,
+  bio text,
+  experience_years integer,
+  consultation_fee numeric(10,2),
+  status text NOT NULL DEFAULT 'pending',
+  admin_note text,
+  reviewed_by text,
+  reviewed_at timestamptz,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now(),
+  CONSTRAINT healthcare_doctor_signup_requests_status_check CHECK (status IN ('pending', 'approved', 'declined'))
+);
+
 CREATE TABLE IF NOT EXISTS healthcare_doctor_slots (
   id text PRIMARY KEY,
   doctor_id text NOT NULL REFERENCES healthcare_doctors(id) ON DELETE CASCADE,
@@ -135,6 +153,9 @@ CREATE TABLE IF NOT EXISTS healthcare_user_suspensions (
 CREATE INDEX IF NOT EXISTS healthcare_doctors_user_id_idx
 ON healthcare_doctors (user_id);
 
+CREATE INDEX IF NOT EXISTS healthcare_doctor_signup_requests_status_idx
+ON healthcare_doctor_signup_requests (status, created_at DESC);
+
 CREATE INDEX IF NOT EXISTS healthcare_slots_doctor_id_idx
 ON healthcare_doctor_slots (doctor_id, slot_start DESC);
 
@@ -177,6 +198,7 @@ ON ai_logs (timestamp DESC);
 
 -- Enable RLS on healthcare tables
 ALTER TABLE healthcare_doctors ENABLE ROW LEVEL SECURITY;
+ALTER TABLE healthcare_doctor_signup_requests ENABLE ROW LEVEL SECURITY;
 ALTER TABLE healthcare_doctor_slots ENABLE ROW LEVEL SECURITY;
 ALTER TABLE healthcare_appointments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE healthcare_appointment_messages ENABLE ROW LEVEL SECURITY;
@@ -188,6 +210,7 @@ ALTER TABLE ai_logs ENABLE ROW LEVEL SECURITY;
 
 -- Allow service role to access all healthcare tables
 DROP POLICY IF EXISTS healthcare_service_role_access ON healthcare_doctors;
+DROP POLICY IF EXISTS healthcare_service_role_signup_requests ON healthcare_doctor_signup_requests;
 DROP POLICY IF EXISTS healthcare_service_role_slots ON healthcare_doctor_slots;
 DROP POLICY IF EXISTS healthcare_service_role_appointments ON healthcare_appointments;
 DROP POLICY IF EXISTS healthcare_service_role_messages ON healthcare_appointment_messages;
@@ -198,6 +221,9 @@ DROP POLICY IF EXISTS healthcare_service_role_ai_logs ON healthcare_ai_logs;
 DROP POLICY IF EXISTS ai_logs_service_role ON ai_logs;
 
 CREATE POLICY healthcare_service_role_access ON healthcare_doctors
+  AS PERMISSIVE FOR ALL USING (true) WITH CHECK (true);
+
+CREATE POLICY healthcare_service_role_signup_requests ON healthcare_doctor_signup_requests
   AS PERMISSIVE FOR ALL USING (true) WITH CHECK (true);
 
 CREATE POLICY healthcare_service_role_slots ON healthcare_doctor_slots

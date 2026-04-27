@@ -935,6 +935,23 @@ export function HomeClient() {
         </div>
       </section>
 
+      <section className="home-doctor-portal-banner" aria-labelledby="home-doctor-portal-heading">
+        <div className="home-doctor-portal-banner__inner">
+          <p className="home-doctor-portal-banner__eyebrow">Healthcare Professionals</p>
+          <h2 id="home-doctor-portal-heading">
+            Doctor Portal - Sign up, get admin approval, and manage appointments from your dashboard
+          </h2>
+          <div className="home-doctor-portal-banner__actions">
+            <Link href="/healthcare/doctor/sign-up" className="home-doctor-portal-banner__cta home-doctor-portal-banner__cta--primary">
+              Doctor Sign Up
+            </Link>
+            <Link href="/healthcare/doctor/sign-in" className="home-doctor-portal-banner__cta home-doctor-portal-banner__cta--secondary">
+              Doctor Sign In
+            </Link>
+          </div>
+        </div>
+      </section>
+
 
       {/* ════════════════════════════════════════════════ */}
       {/* PINNED VIDEO — Mission                          */}

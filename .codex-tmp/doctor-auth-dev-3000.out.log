@@ -1,0 +1,18 @@
+
+> psz_main_web@0.1.0 dev
+> next dev --port 3000 --port 3000
+
+   ▲ Next.js 15.5.12
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.1.54:3000
+   - Environments: .env.local
+   - Experiments (use with caution):
+     ✓ scrollRestoration
+
+ ✓ Starting...
+ ✓ Ready in 13.4s
+ ○ Compiling /healthcare/doctor/sign-in ...
+ ✓ Compiled /healthcare/doctor/sign-in in 39.7s (955 modules)
+ GET /api/healthcare/doctor/request 401 in 579ms
+ GET /healthcare/doctor/sign-in 200 in 2204ms
+ GET /healthcare/doctor/sign-up 200 in 2223ms

@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { adminFetch } from "@/features/auth/utils/admin-api";
 
 type Doctor = {
@@ -13,6 +13,21 @@ type Doctor = {
   consultationFee?: number | null;
 };
 
+type DoctorSignupRequest = {
+  requestId: string;
+  email: string;
+  fullName: string;
+  specialization: string | null;
+  bio: string | null;
+  experienceYears: number | null;
+  consultationFee: number | null;
+  status: "pending" | "approved" | "declined";
+  adminNote: string | null;
+  reviewedBy: string | null;
+  reviewedAt: string | null;
+  createdAt: string;
+};
+
 type Appointment = {
   appointmentId: string;
   patientName: string | null;
@@ -23,16 +38,11 @@ type Appointment = {
 };
 
 export function AdminHealthCarePanel() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
-  const [specialization, setSpecialization] = useState("");
-  const [bio, setBio] = useState("");
-  const [experienceYears, setExperienceYears] = useState("");
-  const [consultationFee, setConsultationFee] = useState("");
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [doctorRequests, setDoctorRequests] = useState<DoctorSignupRequest[]>([]);
+  const [requestNotes, setRequestNotes] = useState<Record<string, string>>({});
+  const [reviewingRequestId, setReviewingRequestId] = useState<string | null>(null);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [doctorSearch, setDoctorSearch] = useState("");
   const [doctorSpecialization, setDoctorSpecialization] = useState("");
@@ -54,6 +64,37 @@ export function AdminHealthCarePanel() {
   const [doctorAppointments, setDoctorAppointments] = useState<Record<string, Appointment[]>>({});
   const [managingDoctor, setManagingDoctor] = useState(false);
 
+  const requestCounts = useMemo(
+    () => ({
+      pending: doctorRequests.filter((request) => request.status === "pending").length,
+      approved: doctorRequests.filter((request) => request.status === "approved").length,
+      declined: doctorRequests.filter((request) => request.status === "declined").length,
+    }),
+    [doctorRequests]
+  );
+
+  async function loadDoctorRequests() {
+    const response = await adminFetch("/api/admin/healthcare/doctor-requests", { cache: "no-store" });
+    const payload = (await response.json()) as { data?: DoctorSignupRequest[]; error?: string };
+
+    if (!response.ok) {
+      setError(payload.error ?? "Unable to load doctor applications.");
+      return;
+    }
+
+    const requests = payload.data ?? [];
+    setDoctorRequests(requests);
+    setRequestNotes((current) => {
+      const next = { ...current };
+      requests.forEach((request) => {
+        if (next[request.requestId] === undefined) {
+          next[request.requestId] = request.adminNote ?? "";
+        }
+      });
+      return next;
+    });
+  }
+
   async function loadDoctors() {
     const params = new URLSearchParams();
     if (doctorSearch.trim()) params.set("search", doctorSearch.trim());
@@ -64,10 +105,39 @@ export function AdminHealthCarePanel() {
     params.set("sortOrder", doctorSortOrder);
 
     const response = await adminFetch(`/api/admin/healthcare/doctors?${params.toString()}`, { cache: "no-store" });
-    const payload = (await response.json()) as { data?: Doctor[] };
-    if (response.ok) {
-      setDoctors(payload.data ?? []);
+    const payload = (await response.json()) as { data?: Doctor[]; error?: string };
+    if (!response.ok) {
+      setError(payload.error ?? "Unable to load doctors.");
+      return;
     }
+
+    setDoctors(payload.data ?? []);
+  }
+
+  async function reviewDoctorRequest(requestId: string, status: "approved" | "declined") {
+    setReviewingRequestId(requestId);
+    setError(null);
+    setSuccess(null);
+
+    const response = await adminFetch(`/api/admin/healthcare/doctor-requests/${requestId}`, {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        status,
+        adminNote: requestNotes[requestId]?.trim() || null,
+      }),
+    });
+
+    const payload = (await response.json()) as { error?: string };
+    if (!response.ok) {
+      setError(payload.error ?? "Unable to review doctor request.");
+      setReviewingRequestId(null);
+      return;
+    }
+
+    setSuccess(status === "approved" ? "Doctor application approved." : "Doctor application declined.");
+    setReviewingRequestId(null);
+    await Promise.all([loadDoctorRequests(), loadDoctors()]);
   }
 
   async function loadDoctorAppointments(doctorId: string) {
@@ -173,7 +243,7 @@ export function AdminHealthCarePanel() {
   }
 
   useEffect(() => {
-    void loadDoctors();
+    void Promise.all([loadDoctorRequests(), loadDoctors()]);
   }, []);
 
   useEffect(() => {
@@ -186,72 +256,131 @@ export function AdminHealthCarePanel() {
     }
   }, [selectedDoctorId, appointmentStatus]);
 
-  async function onSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setLoading(true);
-    setError(null);
-    setSuccess(null);
-
-    try {
-      const response = await adminFetch("/api/admin/healthcare/doctors", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          email,
-          password,
-          fullName,
-          specialization,
-          bio,
-          experienceYears: experienceYears ? Number(experienceYears) : undefined,
-          consultationFee: consultationFee ? Number(consultationFee) : undefined,
-        }),
-      });
-
-      const payload = (await response.json()) as { error?: string };
-      if (!response.ok) {
-        setError(payload.error ?? "Failed to create doctor account.");
-        return;
-      }
-
-      setSuccess("Doctor account created.");
-      setEmail("");
-      setPassword("");
-      setFullName("");
-      setSpecialization("");
-      setBio("");
-      setExperienceYears("");
-      setConsultationFee("");
-      await loadDoctors();
-    } finally {
-      setLoading(false);
-    }
-  }
-
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,_#f7fcf7_0%,_#edf5ef_100%)] px-4 pb-20 pt-28 sm:px-6 lg:px-10">
       <section className="mx-auto max-w-6xl space-y-6">
         <header className="rounded-3xl border border-emerald-100 bg-white p-6 shadow-sm sm:p-8">
           <h1 className="text-3xl font-semibold text-slate-900">HealthCare Admin</h1>
-          <p className="mt-2 text-sm text-slate-600">Create doctor accounts and manage the healthcare operations layer.</p>
+          <p className="mt-2 text-sm text-slate-600">
+            Review doctor applications, approve portal access, and manage active doctor accounts.
+          </p>
         </header>
 
-        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="text-xl font-semibold text-slate-900">Create Doctor Account</h2>
-          <form onSubmit={onSubmit} className="mt-4 grid gap-3">
-            <input value={email} onChange={(event) => setEmail(event.target.value)} placeholder="Doctor email" required className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
-            <input value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Password" type="password" required minLength={8} className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
-            <input value={fullName} onChange={(event) => setFullName(event.target.value)} placeholder="Doctor full name" required className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
-            <input value={specialization} onChange={(event) => setSpecialization(event.target.value)} placeholder="Specialization" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
-            <input value={experienceYears} onChange={(event) => setExperienceYears(event.target.value)} placeholder="Experience years (optional)" type="number" min={0} className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
-            <input value={consultationFee} onChange={(event) => setConsultationFee(event.target.value)} placeholder="Consultation fee (optional)" type="number" min={0} step="0.01" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
-            <textarea value={bio} onChange={(event) => setBio(event.target.value)} placeholder="Bio" className="min-h-24 rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+        {error ? (
+          <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
+        ) : null}
+        {success ? (
+          <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{success}</div>
+        ) : null}
 
-            <button type="submit" disabled={loading} className="rounded-full bg-emerald-700 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60">
-              {loading ? "Creating..." : "Create Doctor"}
+        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h2 className="text-xl font-semibold text-slate-900">Doctor Applications</h2>
+              <p className="mt-1 text-sm text-slate-600">
+                Doctors sign up themselves now. Admin review decides whether they get dashboard access.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => void loadDoctorRequests()}
+              className="rounded-full border border-slate-300 px-4 py-2 text-xs font-semibold text-slate-700"
+            >
+              Refresh Requests
             </button>
-          </form>
-          {error ? <p className="mt-2 text-sm text-red-700">{error}</p> : null}
-          {success ? <p className="mt-2 text-sm text-emerald-700">{success}</p> : null}
+          </div>
+
+          <div className="mt-4 grid gap-3 sm:grid-cols-3">
+            <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-amber-800">Pending</p>
+              <p className="mt-2 text-2xl font-semibold text-slate-900">{requestCounts.pending}</p>
+            </div>
+            <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-emerald-800">Approved</p>
+              <p className="mt-2 text-2xl font-semibold text-slate-900">{requestCounts.approved}</p>
+            </div>
+            <div className="rounded-xl border border-rose-200 bg-rose-50 p-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-rose-800">Declined</p>
+              <p className="mt-2 text-2xl font-semibold text-slate-900">{requestCounts.declined}</p>
+            </div>
+          </div>
+
+          <div className="mt-5 space-y-3">
+            {doctorRequests.length === 0 ? (
+              <div className="rounded-xl border border-dashed border-slate-300 px-4 py-6 text-sm text-slate-500">
+                No doctor applications yet.
+              </div>
+            ) : (
+              doctorRequests.map((request) => (
+                <article key={request.requestId} className="rounded-xl border border-slate-200 p-4">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h3 className="text-lg font-semibold text-slate-900">{request.fullName}</h3>
+                        <span
+                          className={`rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide ${
+                            request.status === "approved"
+                              ? "bg-emerald-100 text-emerald-800"
+                              : request.status === "declined"
+                                ? "bg-rose-100 text-rose-800"
+                                : "bg-amber-100 text-amber-800"
+                          }`}
+                        >
+                          {request.status}
+                        </span>
+                      </div>
+                      <p className="mt-1 text-sm text-slate-600">{request.email}</p>
+                      <p className="mt-1 text-sm text-emerald-700">{request.specialization ?? "General Medicine"}</p>
+                      <p className="mt-1 text-xs text-slate-500">
+                        Submitted {new Date(request.createdAt).toLocaleString()}
+                        {request.reviewedAt ? ` | Reviewed ${new Date(request.reviewedAt).toLocaleString()}` : ""}
+                      </p>
+                    </div>
+
+                    <div className="text-right text-xs text-slate-500">
+                      <p>Experience: {request.experienceYears ?? 0} years</p>
+                      <p>Fee: {request.consultationFee ?? 0}</p>
+                    </div>
+                  </div>
+
+                  {request.bio ? <p className="mt-3 text-sm leading-6 text-slate-700">{request.bio}</p> : null}
+
+                  <div className="mt-4 space-y-2">
+                    <label className="block text-xs font-semibold uppercase tracking-wide text-slate-600">
+                      Admin note
+                    </label>
+                    <textarea
+                      value={requestNotes[request.requestId] ?? ""}
+                      onChange={(event) =>
+                        setRequestNotes((prev) => ({ ...prev, [request.requestId]: event.target.value }))
+                      }
+                      placeholder="Optional note for approval or decline."
+                      className="min-h-24 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                    />
+                  </div>
+
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      disabled={reviewingRequestId === request.requestId}
+                      onClick={() => void reviewDoctorRequest(request.requestId, "approved")}
+                      className="rounded-full bg-emerald-700 px-4 py-2 text-xs font-semibold text-white disabled:opacity-60"
+                    >
+                      {reviewingRequestId === request.requestId ? "Saving..." : "Approve Request"}
+                    </button>
+                    <button
+                      type="button"
+                      disabled={reviewingRequestId === request.requestId}
+                      onClick={() => void reviewDoctorRequest(request.requestId, "declined")}
+                      className="rounded-full border border-rose-300 px-4 py-2 text-xs font-semibold text-rose-700 disabled:opacity-60"
+                    >
+                      Decline Request
+                    </button>
+                  </div>
+                </article>
+              ))
+            )}
+          </div>
         </section>
 
         <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -437,7 +566,7 @@ export function AdminHealthCarePanel() {
                     <p className="text-xs text-slate-600">{doctor.email}</p>
                     <p className="text-xs text-emerald-700">{doctor.specialization ?? "General"}</p>
                     <p className="text-xs text-slate-500">
-                      {doctor.experienceYears ?? 0} years exp • Fee {doctor.consultationFee ?? 0}
+                      {doctor.experienceYears ?? 0} years exp | Fee {doctor.consultationFee ?? 0}
                     </p>
 
                     <div className="mt-2 flex flex-wrap gap-2">
@@ -477,7 +606,7 @@ export function AdminHealthCarePanel() {
                       {(doctorAppointments[doctor.doctorId] ?? []).map((appointment) => (
                         <div key={appointment.appointmentId} className="rounded-md border border-slate-200 bg-white p-2">
                           <p className="text-xs font-semibold text-slate-900">
-                            {appointment.patientName ?? "Patient"} • {appointment.status}
+                            {appointment.patientName ?? "Patient"} | {appointment.status}
                           </p>
                           <p className="text-xs text-slate-600">
                             {new Date(appointment.slotStart).toLocaleString()} - {new Date(appointment.slotEnd).toLocaleTimeString()}

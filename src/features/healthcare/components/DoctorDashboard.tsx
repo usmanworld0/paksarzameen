@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AppointmentChatBox } from "@/features/healthcare/components/AppointmentChatBox";
+import { DoctorPortalLogoutButton } from "@/features/healthcare/components/DoctorPortalLogoutButton";
 
 type DoctorProfile = {
   doctorId: string;
@@ -259,8 +260,13 @@ export function DoctorDashboard() {
     <main className="min-h-screen bg-[linear-gradient(180deg,_#f6fbf7_0%,_#edf5ef_100%)] px-[4%] pb-20 pt-28">
       <section className="mx-auto max-w-screen-2xl space-y-6">
         <header className="rounded-3xl border border-emerald-100 bg-white p-6 shadow-sm sm:p-8">
-          <h1 className="text-3xl font-semibold text-slate-900">Doctor Dashboard</h1>
-          <p className="mt-2 text-sm text-slate-600">Manage your profile, availability slots, and patient appointments from one place.</p>
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-semibold text-slate-900">Doctor Dashboard</h1>
+              <p className="mt-2 text-sm text-slate-600">Manage your profile, availability slots, and patient appointments from one place.</p>
+            </div>
+            <DoctorPortalLogoutButton className="inline-flex items-center justify-center rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700" />
+          </div>
         </header>
 
         <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">

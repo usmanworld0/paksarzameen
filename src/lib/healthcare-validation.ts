@@ -95,6 +95,21 @@ export const doctorCreateSchema = z.object({
   consultationFee: z.number().min(0).max(1_000_000).nullable().optional(),
 });
 
+export const doctorSignupSchema = doctorCreateSchema;
+
+export const doctorSignupRequestUpdateSchema = z.object({
+  fullName: z.string().trim().min(2).max(120),
+  specialization: z.string().trim().min(2).max(80).nullable().optional(),
+  bio: z.string().trim().max(1200).nullable().optional(),
+  experienceYears: z.number().int().min(0).max(70).nullable().optional(),
+  consultationFee: z.number().min(0).max(1_000_000).nullable().optional(),
+});
+
+export const doctorSignupRequestReviewSchema = z.object({
+  status: z.enum(["approved", "declined"]),
+  adminNote: z.string().trim().max(800).nullable().optional(),
+});
+
 export const suspensionSchema = z.object({
   userId: z.string().trim().min(1),
   isSuspended: z.boolean(),

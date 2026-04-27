@@ -20,6 +20,25 @@ export type DoctorRecord = {
   updatedAt: string;
 };
 
+export type DoctorSignupRequestStatus = "pending" | "approved" | "declined";
+
+export type DoctorSignupRequestRecord = {
+  requestId: string;
+  userId: string;
+  email: string;
+  fullName: string;
+  specialization: string | null;
+  bio: string | null;
+  experienceYears: number | null;
+  consultationFee: number | null;
+  status: DoctorSignupRequestStatus;
+  adminNote: string | null;
+  reviewedBy: string | null;
+  reviewedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type DoctorSlotRecord = {
   slotId: string;
   doctorId: string;
@@ -127,6 +146,23 @@ type HealthcareDoctorRow = {
   bio: string | null;
   experience_years: number | null;
   consultation_fee: number | null;
+  created_at: string;
+  updated_at: string;
+};
+
+type HealthcareDoctorSignupRequestRow = {
+  id: string;
+  user_id: string;
+  email: string;
+  full_name: string;
+  specialization: string | null;
+  bio: string | null;
+  experience_years: number | null;
+  consultation_fee: number | null;
+  status: DoctorSignupRequestStatus;
+  admin_note: string | null;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -251,6 +287,25 @@ function mapDoctorRow(row: HealthcareDoctorRow): DoctorRecord {
     bio: row.bio,
     experienceYears: row.experience_years ?? null,
     consultationFee: row.consultation_fee === null || row.consultation_fee === undefined ? null : Number(row.consultation_fee),
+    createdAt: new Date(row.created_at).toISOString(),
+    updatedAt: new Date(row.updated_at).toISOString(),
+  };
+}
+
+function mapDoctorSignupRequestRow(row: HealthcareDoctorSignupRequestRow): DoctorSignupRequestRecord {
+  return {
+    requestId: row.id,
+    userId: row.user_id,
+    email: row.email,
+    fullName: row.full_name,
+    specialization: row.specialization,
+    bio: row.bio,
+    experienceYears: row.experience_years ?? null,
+    consultationFee: row.consultation_fee === null || row.consultation_fee === undefined ? null : Number(row.consultation_fee),
+    status: row.status,
+    adminNote: row.admin_note,
+    reviewedBy: row.reviewed_by,
+    reviewedAt: row.reviewed_at ? new Date(row.reviewed_at).toISOString() : null,
     createdAt: new Date(row.created_at).toISOString(),
     updatedAt: new Date(row.updated_at).toISOString(),
   };
@@ -530,6 +585,178 @@ export async function createDoctor(input: {
 
   if (error) throw new Error(error.message);
   return mapDoctorRow(data as HealthcareDoctorRow);
+}
+
+export async function listDoctorSignupRequests() {
+  const supabase = getSupabase();
+  const { data, error } = await supabase
+    .from("healthcare_doctor_signup_requests")
+    .select(
+      "id,user_id,email,full_name,specialization,bio,experience_years,consultation_fee,status,admin_note,reviewed_by,reviewed_at,created_at,updated_at"
+    )
+    .order("created_at", { ascending: false });
+
+  if (error) throw new Error(error.message);
+  return (data ?? []).map((row) => mapDoctorSignupRequestRow(row as HealthcareDoctorSignupRequestRow));
+}
+
+export async function getDoctorSignupRequestByUserId(userId: string) {
+  const normalizedUserId = normalizedText(userId);
+  if (!normalizedUserId) {
+    throw new Error("Doctor signup request user id is required.");
+  }
+
+  const supabase = getSupabase();
+  const { data, error } = await supabase
+    .from("healthcare_doctor_signup_requests")
+    .select(
+      "id,user_id,email,full_name,specialization,bio,experience_years,consultation_fee,status,admin_note,reviewed_by,reviewed_at,created_at,updated_at"
+    )
+    .eq("user_id", normalizedUserId)
+    .maybeSingle();
+
+  if (error) throw new Error(error.message);
+  if (!data) return null;
+  return mapDoctorSignupRequestRow(data as HealthcareDoctorSignupRequestRow);
+}
+
+export async function createOrUpdateDoctorSignupRequest(input: {
+  userId: string;
+  email: string;
+  fullName: string;
+  specialization?: string | null;
+  bio?: string | null;
+  experienceYears?: number | null;
+  consultationFee?: number | null;
+}) {
+  const userId = normalizedText(input.userId);
+  const email = normalizedText(input.email).toLowerCase();
+  const fullName = normalizedText(input.fullName);
+
+  if (!userId) throw new Error("Doctor signup request user id is required.");
+  if (!email) throw new Error("Doctor signup request email is required.");
+  if (!fullName) throw new Error("Doctor full name is required.");
+
+  const supabase = getSupabase();
+  const existing = await getDoctorSignupRequestByUserId(userId);
+
+  const basePayload = {
+    user_id: userId,
+    email,
+    full_name: fullName,
+    specialization: normalizedNullableText(input.specialization),
+    bio: normalizedNullableText(input.bio),
+    experience_years: normalizedNumber(input.experienceYears),
+    consultation_fee: normalizedNumber(input.consultationFee),
+    status: "pending" as DoctorSignupRequestStatus,
+    admin_note: null,
+    reviewed_by: null,
+    reviewed_at: null,
+    updated_at: new Date().toISOString(),
+  };
+
+  if (existing) {
+    if (existing.status === "approved") {
+      throw new Error("Doctor account is already approved.");
+    }
+
+    const { data, error } = await supabase
+      .from("healthcare_doctor_signup_requests")
+      .update(basePayload)
+      .eq("id", existing.requestId)
+      .select(
+        "id,user_id,email,full_name,specialization,bio,experience_years,consultation_fee,status,admin_note,reviewed_by,reviewed_at,created_at,updated_at"
+      )
+      .maybeSingle();
+
+    if (error) throw new Error(error.message);
+    if (!data) throw new Error("Doctor signup request not found.");
+    return mapDoctorSignupRequestRow(data as HealthcareDoctorSignupRequestRow);
+  }
+
+  const { data, error } = await supabase
+    .from("healthcare_doctor_signup_requests")
+    .insert({
+      id: randomUUID(),
+      ...basePayload,
+    })
+    .select(
+      "id,user_id,email,full_name,specialization,bio,experience_years,consultation_fee,status,admin_note,reviewed_by,reviewed_at,created_at,updated_at"
+    )
+    .single();
+
+  if (error) throw new Error(error.message);
+  return mapDoctorSignupRequestRow(data as HealthcareDoctorSignupRequestRow);
+}
+
+export async function reviewDoctorSignupRequest(input: {
+  requestId: string;
+  status: Exclude<DoctorSignupRequestStatus, "pending">;
+  reviewedBy?: string | null;
+  adminNote?: string | null;
+}) {
+  const requestId = normalizedText(input.requestId);
+  if (!requestId) throw new Error("Doctor signup request id is required.");
+
+  const status = input.status;
+  if (status !== "approved" && status !== "declined") {
+    throw new Error("Invalid doctor signup request status.");
+  }
+
+  const supabase = getSupabase();
+  const { data: requestRow, error: requestError } = await supabase
+    .from("healthcare_doctor_signup_requests")
+    .select(
+      "id,user_id,email,full_name,specialization,bio,experience_years,consultation_fee,status,admin_note,reviewed_by,reviewed_at,created_at,updated_at"
+    )
+    .eq("id", requestId)
+    .maybeSingle();
+
+  if (requestError) throw new Error(requestError.message);
+  if (!requestRow) throw new Error("Doctor signup request not found.");
+
+  const existingRequest = mapDoctorSignupRequestRow(requestRow as HealthcareDoctorSignupRequestRow);
+  let approvedDoctor: DoctorRecord | null = null;
+
+  if (status === "approved") {
+    const existingDoctor = await getDoctorByUserId(existingRequest.userId);
+    if (existingDoctor) {
+      approvedDoctor = existingDoctor;
+    } else {
+      approvedDoctor = await createDoctor({
+        userId: existingRequest.userId,
+        email: existingRequest.email,
+        fullName: existingRequest.fullName,
+        specialization: existingRequest.specialization,
+        bio: existingRequest.bio,
+        experienceYears: existingRequest.experienceYears,
+        consultationFee: existingRequest.consultationFee,
+      });
+    }
+  }
+
+  const { data, error } = await supabase
+    .from("healthcare_doctor_signup_requests")
+    .update({
+      status,
+      admin_note: normalizedNullableText(input.adminNote),
+      reviewed_by: normalizedNullableText(input.reviewedBy),
+      reviewed_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", requestId)
+    .select(
+      "id,user_id,email,full_name,specialization,bio,experience_years,consultation_fee,status,admin_note,reviewed_by,reviewed_at,created_at,updated_at"
+    )
+    .maybeSingle();
+
+  if (error) throw new Error(error.message);
+  if (!data) throw new Error("Doctor signup request not found.");
+
+  return {
+    request: mapDoctorSignupRequestRow(data as HealthcareDoctorSignupRequestRow),
+    doctor: approvedDoctor,
+  };
 }
 
 export async function updateDoctor(input: {

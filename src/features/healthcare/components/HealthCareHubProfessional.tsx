@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useEffect } from "react";
 import { MessageCircle, Calendar, Users, Heart, AlertCircle } from "lucide-react";
 import { HealthcareProfileManager } from "./HealthcareProfileManager";
@@ -266,9 +267,23 @@ export function HealthCareHubProfessional() {
               <h1 className="text-2xl font-bold text-slate-900">HealthCare Platform</h1>
               <p className="text-sm text-slate-600">Your personalized medical companion</p>
             </div>
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-100">
-              <Heart className="h-4 w-4 text-emerald-600" />
-              <span className="text-sm font-medium text-emerald-700">Active</span>
+            <div className="flex items-center gap-2">
+              <Link
+                href="/healthcare/doctor/sign-in"
+                className="rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-50"
+              >
+                Doctor Sign In
+              </Link>
+              <Link
+                href="/healthcare/doctor/sign-up"
+                className="rounded-full bg-emerald-700 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-emerald-800"
+              >
+                Doctor Sign Up
+              </Link>
+              <div className="flex items-center gap-2 rounded-full bg-emerald-100 px-3 py-1.5">
+                <Heart className="h-4 w-4 text-emerald-600" />
+                <span className="text-sm font-medium text-emerald-700">Active</span>
+              </div>
             </div>
           </div>
         </div>

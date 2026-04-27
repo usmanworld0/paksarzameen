@@ -85,6 +85,7 @@ export function DogMarketplace({ dogs }: { dogs: DogRecord[] }) {
     const searchableText = [
       dog.name,
       dog.breed,
+      dog.color,
       dog.age,
       dog.gender,
       dog.description,
@@ -342,7 +343,7 @@ export function DogMarketplace({ dogs }: { dogs: DogRecord[] }) {
                             {dog.name}
                           </h3>
                           <p className="mt-2 text-sm text-slate-600">
-                            {dog.breed} | {dog.age} | {toTitleCase(dog.gender)}
+                            {dog.breed} | {dog.color} | {dog.age} | {toTitleCase(dog.gender)}
                           </p>
                         </div>
 

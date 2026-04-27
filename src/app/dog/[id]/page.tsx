@@ -75,8 +75,10 @@ export default async function DogDetailPage({ params }: PageProps) {
               Dog Profile
             </p>
             <h1 className="text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">{dog.name}</h1>
+            <p className="text-xs uppercase tracking-wide text-slate-500">Rescue Name: {dog.rescueName}</p>
+            {dog.petName ? <p className="text-sm font-semibold text-indigo-700">Pet Name: {dog.petName}</p> : null}
             <p className="text-sm text-slate-600 sm:text-base">
-              {dog.breed} • {dog.age} • {dog.gender}
+              {dog.breed} • {dog.color} • {dog.age} • {dog.gender}
             </p>
             <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${statusClass(normalizedStatus)}`}>
               {STATUS_LABELS[normalizedStatus]}

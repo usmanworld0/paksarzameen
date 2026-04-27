@@ -78,7 +78,8 @@ export default async function MyAdoptionsPage() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <h2 className="truncate text-lg font-semibold text-slate-900">{request.dogName}</h2>
-                  <p className="text-sm text-slate-600">{request.dogBreed}</p>
+                  <p className="text-sm text-slate-600">{request.dogBreed} • {request.dogColor}</p>
+                  {request.petName ? <p className="text-xs font-semibold text-indigo-700">Pet Name: {request.petName}</p> : null}
                   <p className="mt-1 text-xs text-slate-500">
                     Requested on {new Date(request.requestedAt).toLocaleString()}
                   </p>

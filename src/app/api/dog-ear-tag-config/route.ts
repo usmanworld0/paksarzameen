@@ -1,25 +1,20 @@
 import { NextResponse } from "next/server";
-import { listMyAdoptionRequests } from "@/lib/dog-adoption";
+
+import { getEarTagGlobalConfig } from "@/lib/dog-adoption";
 import { hasDatabaseConnection } from "@/lib/db";
-import { getRequiredModuleApiUser } from "@/server/route-auth";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const user = await getRequiredModuleApiUser("dog_adoption", "view");
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
   try {
     if (!hasDatabaseConnection()) {
       return NextResponse.json({ error: "DATABASE_URL is not configured." }, { status: 500 });
     }
 
-    const data = await listMyAdoptionRequests(user.id);
+    const data = await getEarTagGlobalConfig();
     return NextResponse.json({ data });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to load adoption requests.";
+    const message = error instanceof Error ? error.message : "Failed to load ear tag configuration.";
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

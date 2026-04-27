@@ -4539,6 +4539,15 @@ html {
   .hero-section .hero-content {
     width: 90%;
     top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+
+  .hero-section .hero-desc {
+    margin-inline: auto;
+    max-width: min(40rem, 92vw);
+    text-align: center;
   }
 
   /* Split section — tighter on tablets */
@@ -4651,6 +4660,9 @@ html {
   .hero-section .hero-content {
     width: 92%;
     top: 42%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
   }
   .hero-section .hero-label {
     font-size: var(--fs-vs);

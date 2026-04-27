@@ -73,6 +73,38 @@ Added `src/lib/dog-adoption.ts` with:
 - Approval marks dog as `adopted`
 - Pending requests are unique per dog
 
+## 2026-04 Enhancement Pack
+
+### 1) Pet Naming After Adoption (Owner-Only, One-Time)
+- Admin can no longer assign/edit dog names from the Add/Edit Dog form.
+- Dogs now keep a generated `rescue_name` at creation.
+- After approval, only the adopting user can assign `pet_name`.
+- Pet naming is strict one-time assignment; once `pet_name` is saved, it cannot be reassigned.
+
+### 2) Dog Color Attribute
+- Added required `color` field in admin Add/Edit Dog flow.
+- Dog color is now surfaced on listing/details and request/my-adoptions experiences.
+
+### 3) Adopted Dogs Subsection
+- Added `Adopted Dogs` subsection under `/dog-adoption`.
+- Displays dog details plus owner name and assigned pet name.
+
+### 4) Global Ear Tag Customization
+- Added admin section `Customize Your Ear Tag` inside dog admin management.
+- Configuration is global (single reusable store), not per dog:
+  - Ear tag style images
+  - Color options
+  - Reflective boundary design images
+- User-side `/my-pets/[id]` now includes personalization panel:
+  - One-time pet naming action
+  - Ear tag style/color/boundary selection
+  - Selections validated against global admin-configured options
+
+### 5) Data Consistency & Validation
+- Server-side ownership enforcement for pet naming and ear-tag customization.
+- API rejects attempts to rename already-named pets or non-owner requests.
+- Ear-tag selections must exist in global config; invalid selections are blocked.
+
 ## Additional Integration
 - Added quick links to new admin routes from existing blood bank admin dashboard
 - Added `/dog-adoption` and `/my-adoptions` to sitemap static paths

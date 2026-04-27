@@ -352,19 +352,59 @@ ON gallery_manual_sessions (expires_at);
 CREATE TABLE IF NOT EXISTS dogs (
 	id text PRIMARY KEY,
 	name text NOT NULL,
+	rescue_name text,
+	pet_name text,
+	pet_named_by_user_id uuid,
+	pet_named_at timestamptz,
 	breed text NOT NULL,
+	color text,
 	age text NOT NULL,
 	gender text NOT NULL,
 	description text NOT NULL,
 	image_url text NOT NULL,
+	adopted_by_user_id uuid,
+	ear_tag_style_image_url text,
+	ear_tag_color text,
+	ear_tag_boundary_image_url text,
+	ear_tag_customized_at timestamptz,
 	status text NOT NULL DEFAULT 'available',
 	created_at timestamptz NOT NULL DEFAULT now(),
 	updated_at timestamptz NOT NULL DEFAULT now(),
 	CONSTRAINT dogs_status_check CHECK (status IN ('available', 'pending', 'adopted'))
 );
 
+ALTER TABLE dogs ADD COLUMN IF NOT EXISTS rescue_name text;
+ALTER TABLE dogs ADD COLUMN IF NOT EXISTS pet_name text;
+ALTER TABLE dogs ADD COLUMN IF NOT EXISTS pet_named_by_user_id uuid;
+ALTER TABLE dogs ADD COLUMN IF NOT EXISTS pet_named_at timestamptz;
+ALTER TABLE dogs ADD COLUMN IF NOT EXISTS color text;
+ALTER TABLE dogs ADD COLUMN IF NOT EXISTS adopted_by_user_id uuid;
+ALTER TABLE dogs ADD COLUMN IF NOT EXISTS ear_tag_style_image_url text;
+ALTER TABLE dogs ADD COLUMN IF NOT EXISTS ear_tag_color text;
+ALTER TABLE dogs ADD COLUMN IF NOT EXISTS ear_tag_boundary_image_url text;
+ALTER TABLE dogs ADD COLUMN IF NOT EXISTS ear_tag_customized_at timestamptz;
+
+UPDATE dogs SET rescue_name = name WHERE rescue_name IS NULL OR rescue_name = '';
+UPDATE dogs SET color = 'Unknown' WHERE color IS NULL OR color = '';
+
+CREATE TABLE IF NOT EXISTS dog_ear_tag_global_config (
+	id text PRIMARY KEY,
+	style_images jsonb NOT NULL DEFAULT '[]'::jsonb,
+	color_options jsonb NOT NULL DEFAULT '[]'::jsonb,
+	boundary_images jsonb NOT NULL DEFAULT '[]'::jsonb,
+	updated_by text,
+	updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+INSERT INTO dog_ear_tag_global_config (id, style_images, color_options, boundary_images)
+VALUES ('global', '[]'::jsonb, '[]'::jsonb, '[]'::jsonb)
+ON CONFLICT (id) DO NOTHING;
+
 CREATE INDEX IF NOT EXISTS dogs_status_idx
 ON dogs (status);
+
+CREATE INDEX IF NOT EXISTS dogs_adopted_owner_idx
+ON dogs (adopted_by_user_id, status);
 
 CREATE TABLE IF NOT EXISTS adoption_requests (
 	id text PRIMARY KEY,

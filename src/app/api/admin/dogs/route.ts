@@ -72,8 +72,8 @@ export async function POST(request: Request) {
       }
 
       const payload = parseCreateDogPayload({
-        name: formData.get("name"),
         breed: formData.get("breed"),
+        color: formData.get("color"),
         age: formData.get("age"),
         gender: formData.get("gender"),
         description: formData.get("description"),

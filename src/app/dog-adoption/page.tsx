@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import Image from "next/image";
+import Link from "next/link";
 
 import { DogMarketplace } from "@/features/dog-adoption/components/DogMarketplace";
 import { hasDatabaseConnection } from "@/lib/db";
-import { listDogs } from "@/lib/dog-adoption";
+import { listAdoptedDogsWithOwners, listDogs } from "@/lib/dog-adoption";
 
 export const dynamic = "force-dynamic";
 
@@ -14,11 +16,13 @@ export const metadata: Metadata = {
 
 export default async function DogAdoptionPage() {
   let dogs = [] as Awaited<ReturnType<typeof listDogs>>;
+  let adoptedDogs = [] as Awaited<ReturnType<typeof listAdoptedDogsWithOwners>>;
   let error: string | null = null;
 
   try {
     if (hasDatabaseConnection()) {
       dogs = await listDogs(["available", "adopted"]);
+      adoptedDogs = await listAdoptedDogsWithOwners();
     }
   } catch (loadError) {
     error = loadError instanceof Error ? loadError.message : "Failed to load dogs.";
@@ -55,6 +59,45 @@ export default async function DogAdoptionPage() {
         ) : null}
 
         {!error && dogs.length ? <DogMarketplace dogs={dogs} /> : null}
+
+        {!error ? (
+          <section className="space-y-4 rounded-3xl border border-slate-200 bg-white/95 p-6 shadow-sm sm:p-8">
+            <div className="flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Adopted Dogs</p>
+                <h2 className="mt-1 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+                  Dogs settled into loving homes
+                </h2>
+              </div>
+            </div>
+
+            {!adoptedDogs.length ? (
+              <p className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+                No adopted dog records available yet.
+              </p>
+            ) : (
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                {adoptedDogs.map((dog) => (
+                  <article key={dog.dogId} className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+                    <div className="relative aspect-[4/3] bg-slate-100">
+                      <Image src={dog.imageUrl} alt={dog.dogName} fill sizes="(max-width: 1280px) 50vw, 33vw" className="object-cover" />
+                    </div>
+                    <div className="space-y-2 p-4">
+                      <h3 className="text-lg font-semibold text-slate-900">{dog.dogName}</h3>
+                      <p className="text-xs text-slate-500">Rescue name: {dog.rescueName}</p>
+                      <p className="text-sm text-slate-600">{dog.breed} • {dog.color} • {dog.age} • {dog.gender}</p>
+                      <p className="text-sm text-slate-700">Owner: {dog.ownerName ?? "Owner details unavailable"}</p>
+                      <p className="text-sm text-indigo-700">Pet name: {dog.petName ?? "Not assigned yet"}</p>
+                      <Link href={`/dog/${dog.dogId}`} className="inline-flex text-sm font-semibold text-emerald-700 hover:text-emerald-600">
+                        View profile →
+                      </Link>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            )}
+          </section>
+        ) : null}
       </section>
     </main>
   );

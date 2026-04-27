@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import type { DogRecord, DogStatus } from "@/lib/dog-adoption";
+import type { DogRecord, DogStatus, EarTagGlobalConfigRecord } from "@/lib/dog-adoption";
 import { adminFetch } from "@/features/auth/utils/admin-api";
 import { canAccessAdminRoute, useAdminClientSession } from "@/features/auth/utils/admin-session-client";
 
 type DogFormState = {
-  name: string;
   breed: string;
+  color: string;
   age: string;
   gender: string;
   city: string;
@@ -19,8 +19,8 @@ type DogFormState = {
 };
 
 const INITIAL_FORM: DogFormState = {
-  name: "",
   breed: "",
+  color: "",
   age: "",
   gender: "",
   city: "",
@@ -39,6 +39,12 @@ export function AdminDogsPanel() {
   const [saving, setSaving] = useState(false);
   const [editingDogId, setEditingDogId] = useState<string | null>(null);
   const [form, setForm] = useState<DogFormState>(INITIAL_FORM);
+  const [earTagStyleImages, setEarTagStyleImages] = useState<string[]>([]);
+  const [earTagColorOptions, setEarTagColorOptions] = useState<string[]>([]);
+  const [earTagBoundaryImages, setEarTagBoundaryImages] = useState<string[]>([]);
+  const [earTagStyleFiles, setEarTagStyleFiles] = useState<File[]>([]);
+  const [earTagBoundaryFiles, setEarTagBoundaryFiles] = useState<File[]>([]);
+  const [earTagSaving, setEarTagSaving] = useState(false);
 
   async function loadDogs() {
     setLoading(true);
@@ -59,9 +65,64 @@ export function AdminDogsPanel() {
     }
   }
 
+  async function loadEarTagConfig() {
+    try {
+      const response = await adminFetch("/api/admin/dog-ear-tag-config", { cache: "no-store" });
+      const payload = (await response.json()) as { data?: EarTagGlobalConfigRecord; error?: string };
+      if (!response.ok) {
+        throw new Error(payload.error ?? "Failed to load ear tag configuration.");
+      }
+
+      setEarTagStyleImages(payload.data?.styleImages ?? []);
+      setEarTagColorOptions(payload.data?.colorOptions ?? []);
+      setEarTagBoundaryImages(payload.data?.boundaryImages ?? []);
+    } catch (configError) {
+      setError(configError instanceof Error ? configError.message : "Failed to load ear tag configuration.");
+    }
+  }
+
   useEffect(() => {
     void loadDogs();
+    void loadEarTagConfig();
   }, []);
+
+  async function saveEarTagConfig() {
+    setEarTagSaving(true);
+    setError(null);
+
+    try {
+      const formData = new FormData();
+      formData.set("styleImages", JSON.stringify(earTagStyleImages));
+      formData.set("colorOptions", JSON.stringify(earTagColorOptions));
+      formData.set("boundaryImages", JSON.stringify(earTagBoundaryImages));
+
+      for (const file of earTagStyleFiles) {
+        formData.append("styleImageFiles", file);
+      }
+      for (const file of earTagBoundaryFiles) {
+        formData.append("boundaryImageFiles", file);
+      }
+
+      const response = await adminFetch("/api/admin/dog-ear-tag-config", {
+        method: "PUT",
+        body: formData,
+      });
+      const payload = (await response.json()) as { data?: EarTagGlobalConfigRecord; error?: string };
+      if (!response.ok) {
+        throw new Error(payload.error ?? "Failed to update ear tag configuration.");
+      }
+
+      setEarTagStyleImages(payload.data?.styleImages ?? []);
+      setEarTagColorOptions(payload.data?.colorOptions ?? []);
+      setEarTagBoundaryImages(payload.data?.boundaryImages ?? []);
+      setEarTagStyleFiles([]);
+      setEarTagBoundaryFiles([]);
+    } catch (configError) {
+      setError(configError instanceof Error ? configError.message : "Failed to update ear tag configuration.");
+    } finally {
+      setEarTagSaving(false);
+    }
+  }
 
   const quickLinks = useMemo(
     () =>
@@ -82,8 +143,8 @@ export function AdminDogsPanel() {
   useEffect(() => {
     if (!editingDog) return;
     setForm({
-      name: editingDog.name,
       breed: editingDog.breed,
+      color: editingDog.color,
       age: editingDog.age,
       gender: editingDog.gender,
       description: editingDog.description,
@@ -106,8 +167,8 @@ export function AdminDogsPanel() {
 
     try {
       const formData = new FormData();
-      formData.set("name", form.name);
       formData.set("breed", form.breed);
+      formData.set("color", form.color);
       formData.set("age", form.age);
       formData.set("gender", form.gender);
       formData.set("description", form.description);
@@ -172,7 +233,7 @@ export function AdminDogsPanel() {
         <header className="rounded-3xl border border-emerald-100 bg-white p-6 shadow-lg shadow-emerald-900/10 sm:p-8">
           <h1 className="text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">Admin · Manage Dogs</h1>
           <p className="mt-2 text-sm text-slate-600 sm:text-base">
-            Add, edit, delete dog profiles, upload images, and keep adoption status current.
+            Add, edit, delete dog profiles, upload images, set dog color, and keep adoption status current.
           </p>
           <div className="mt-4 flex flex-wrap gap-3">
             {quickLinks.map((item) => (
@@ -192,18 +253,21 @@ export function AdminDogsPanel() {
         <section className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <h2 className="text-xl font-semibold text-slate-900">{editingDogId ? "Edit Dog" : "Add New Dog"}</h2>
+            <p className="mt-2 text-xs text-slate-500">
+              Rescue names are generated automatically. Pet naming is available to adopters only after approval.
+            </p>
             <div className="mt-4 grid gap-3">
-              <input
-                className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                placeholder="Name"
-                value={form.name}
-                onChange={(event) => setForm((prev) => ({ ...prev, name: event.target.value }))}
-              />
               <input
                 className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
                 placeholder="Breed"
                 value={form.breed}
                 onChange={(event) => setForm((prev) => ({ ...prev, breed: event.target.value }))}
+              />
+              <input
+                className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                placeholder="Color"
+                value={form.color}
+                onChange={(event) => setForm((prev) => ({ ...prev, color: event.target.value }))}
               />
               <div className="grid grid-cols-2 gap-3">
                 <input
@@ -300,8 +364,10 @@ export function AdminDogsPanel() {
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <h3 className="text-base font-semibold text-slate-900">{dog.name}</h3>
-                      <p className="text-xs text-slate-600">{dog.breed} • {dog.age} • {dog.gender}</p>
+                      <p className="text-xs text-slate-500">Rescue: {dog.rescueName}</p>
+                      <p className="text-xs text-slate-600">{dog.breed} • {dog.color} • {dog.age} • {dog.gender}</p>
                       <p className="text-xs text-slate-600">{dog.city ?? ""}{dog.city && dog.area ? ", " : ""}{dog.area ?? ""}</p>
+                      {dog.petName ? <p className="text-xs text-indigo-700">Pet name: {dog.petName}</p> : null}
                       <p className="mt-1 text-xs uppercase tracking-wide text-emerald-700">{dog.status}</p>
                     </div>
                     <div className="flex gap-2">
@@ -324,6 +390,101 @@ export function AdminDogsPanel() {
                 </article>
               ))}
             </div>
+          </div>
+        </section>
+
+        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <h2 className="text-xl font-semibold text-slate-900">Customize Your Ear Tag</h2>
+          <p className="mt-2 text-sm text-slate-600">
+            Global settings used for every adopted dog. Admin-defined options are reused in all adopter workflows.
+          </p>
+
+          <div className="mt-5 grid gap-4 lg:grid-cols-2">
+            <label className="space-y-2">
+              <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Ear Tag Style Images (URLs)</span>
+              <textarea
+                className="min-h-28 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                value={earTagStyleImages.join("\n")}
+                onChange={(event) =>
+                  setEarTagStyleImages(
+                    event.target.value
+                      .split("\n")
+                      .map((item) => item.trim())
+                      .filter(Boolean)
+                  )
+                }
+                placeholder="One image URL per line"
+              />
+            </label>
+
+            <label className="space-y-2">
+              <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Reflective Boundary Images (URLs)</span>
+              <textarea
+                className="min-h-28 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                value={earTagBoundaryImages.join("\n")}
+                onChange={(event) =>
+                  setEarTagBoundaryImages(
+                    event.target.value
+                      .split("\n")
+                      .map((item) => item.trim())
+                      .filter(Boolean)
+                  )
+                }
+                placeholder="One image URL per line"
+              />
+            </label>
+
+            <label className="space-y-2">
+              <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Color Options</span>
+              <textarea
+                className="min-h-24 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                value={earTagColorOptions.join("\n")}
+                onChange={(event) =>
+                  setEarTagColorOptions(
+                    event.target.value
+                      .split("\n")
+                      .map((item) => item.trim())
+                      .filter(Boolean)
+                  )
+                }
+                placeholder="One color per line"
+              />
+            </label>
+
+            <div className="space-y-3">
+              <label className="block space-y-2">
+                <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Upload Ear Tag Style Images</span>
+                <input
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={(event) => setEarTagStyleFiles(Array.from(event.target.files ?? []))}
+                />
+              </label>
+
+              <label className="block space-y-2">
+                <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Upload Reflective Boundaries</span>
+                <input
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={(event) => setEarTagBoundaryFiles(Array.from(event.target.files ?? []))}
+                />
+              </label>
+            </div>
+          </div>
+
+          <div className="mt-4">
+            <button
+              type="button"
+              disabled={earTagSaving}
+              onClick={() => void saveEarTagConfig()}
+              className="rounded-full bg-emerald-700 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-600 disabled:opacity-70"
+            >
+              {earTagSaving ? "Saving..." : "Save Ear Tag Configuration"}
+            </button>
           </div>
         </section>
       </section>

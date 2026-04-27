@@ -6,14 +6,22 @@ export type AdoptionRequestStatus = "pending" | "approved" | "rejected";
 
 export type DogRecord = {
   dogId: string;
+  rescueName: string;
+  petName: string | null;
   name: string;
   breed: string;
+  color: string;
   age: string;
   gender: string;
   city: string | null;
   area: string | null;
   description: string;
   imageUrl: string;
+  adoptedByUserId: string | null;
+  petNamedByUserId: string | null;
+  earTagStyleImageUrl: string | null;
+  earTagColor: string | null;
+  earTagBoundaryImageUrl: string | null;
   status: DogStatus;
   createdBy?: string | null;
   createdAt: string;
@@ -24,7 +32,9 @@ export type AdoptionRequestRecord = {
   requestId: string;
   dogId: string;
   dogName: string;
+  petName: string | null;
   dogBreed: string;
+  dogColor: string;
   dogImageUrl: string;
   userId: string;
   userName: string | null;
@@ -46,8 +56,9 @@ export type DogPostAdoptionUpdateRecord = {
 };
 
 export type CreateDogInput = {
-  name: string;
+  name?: string;
   breed: string;
+  color: string;
   age: string;
   gender: string;
   city?: string | null;
@@ -60,6 +71,44 @@ export type CreateDogInput = {
 
 export type UpdateDogInput = Partial<CreateDogInput>;
 
+export type EarTagGlobalConfigRecord = {
+  styleImages: string[];
+  colorOptions: string[];
+  boundaryImages: string[];
+  updatedAt: string;
+  updatedBy: string | null;
+};
+
+export type UpdateEarTagGlobalConfigInput = {
+  styleImages: string[];
+  colorOptions: string[];
+  boundaryImages: string[];
+  updatedBy: string | null;
+};
+
+export type UpdateDogEarTagCustomizationInput = {
+  styleImageUrl: string;
+  color: string;
+  boundaryImageUrl: string;
+};
+
+export type AdoptedDogRecord = {
+  dogId: string;
+  dogName: string;
+  rescueName: string;
+  petName: string | null;
+  breed: string;
+  color: string;
+  age: string;
+  gender: string;
+  city: string | null;
+  area: string | null;
+  imageUrl: string;
+  ownerName: string | null;
+  ownerEmail: string | null;
+  adoptedAt: string;
+};
+
 export type CreateDogUpdateInput = {
   dogId: string;
   imageUrl: string;
@@ -71,6 +120,7 @@ export type CreateDogUpdateInput = {
 const DOG_STATUSES: DogStatus[] = ["available", "pending", "adopted"];
 const REQUEST_STATUSES: AdoptionRequestStatus[] = ["pending", "approved", "rejected"];
 const DEFAULT_DOG_IMAGE_URL = "/images/placeholders/10.png";
+const EAR_TAG_CONFIG_ID = "global";
 
 let didEnsureDogAdoptionSchema = false;
 
@@ -98,8 +148,8 @@ export function normalizeAdoptionRequestStatus(value: unknown): AdoptionRequestS
 export function parseCreateDogPayload(payload: unknown): CreateDogInput {
   const data = (payload ?? {}) as Record<string, unknown>;
 
-  const name = normalizedText(data.name);
   const breed = normalizedText(data.breed);
+  const color = normalizedText(data.color);
   const age = normalizedText(data.age);
   const gender = normalizedText(data.gender);
   const description = normalizedText(data.description);
@@ -108,14 +158,15 @@ export function parseCreateDogPayload(payload: unknown): CreateDogInput {
   const city = normalizedText(data.city) || null;
   const area = normalizedText(data.area) || null;
 
-  if (!name) throw new Error("Dog name is required.");
   if (!breed) throw new Error("Breed is required.");
+  if (!color) throw new Error("Color is required.");
   if (!age) throw new Error("Age is required.");
   if (!gender) throw new Error("Gender is required.");
   if (!description) throw new Error("Description is required.");
   return {
-    name,
+    name: normalizedText(data.name) || undefined,
     breed,
+    color,
     age,
     gender,
     city,
@@ -131,9 +182,7 @@ export function parseUpdateDogPayload(payload: unknown): UpdateDogInput {
   const next: UpdateDogInput = {};
 
   if ("name" in data) {
-    const name = normalizedText(data.name);
-    if (!name) throw new Error("Dog name cannot be empty.");
-    next.name = name;
+    throw new Error("Dog naming is adopter-managed and cannot be edited by admin.");
   }
   if ("breed" in data) {
     const breed = normalizedText(data.breed);
@@ -144,6 +193,11 @@ export function parseUpdateDogPayload(payload: unknown): UpdateDogInput {
     const age = normalizedText(data.age);
     if (!age) throw new Error("Age cannot be empty.");
     next.age = age;
+  }
+  if ("color" in data) {
+    const color = normalizedText(data.color);
+    if (!color) throw new Error("Color cannot be empty.");
+    next.color = color;
   }
   if ("gender" in data) {
     const gender = normalizedText(data.gender);
@@ -188,7 +242,12 @@ export async function ensureDogAdoptionSchema() {
     CREATE TABLE IF NOT EXISTS dogs (
       id text PRIMARY KEY,
       name text NOT NULL,
+      rescue_name text,
+      pet_name text,
+      pet_named_by_user_id uuid,
+      pet_named_at timestamptz,
       breed text NOT NULL,
+      color text,
       age text NOT NULL,
       gender text NOT NULL,
       city text,
@@ -196,6 +255,11 @@ export async function ensureDogAdoptionSchema() {
       description text NOT NULL,
       image_url text NOT NULL,
       created_by text,
+      adopted_by_user_id uuid,
+      ear_tag_style_image_url text,
+      ear_tag_color text,
+      ear_tag_boundary_image_url text,
+      ear_tag_customized_at timestamptz,
       status text NOT NULL DEFAULT 'available',
       created_at timestamptz NOT NULL DEFAULT now(),
       updated_at timestamptz NOT NULL DEFAULT now(),
@@ -207,6 +271,38 @@ export async function ensureDogAdoptionSchema() {
   await pool.query(`ALTER TABLE dogs ADD COLUMN IF NOT EXISTS city text;`);
   await pool.query(`ALTER TABLE dogs ADD COLUMN IF NOT EXISTS area text;`);
   await pool.query(`ALTER TABLE dogs ADD COLUMN IF NOT EXISTS created_by text;`);
+  await pool.query(`ALTER TABLE dogs ADD COLUMN IF NOT EXISTS rescue_name text;`);
+  await pool.query(`ALTER TABLE dogs ADD COLUMN IF NOT EXISTS pet_name text;`);
+  await pool.query(`ALTER TABLE dogs ADD COLUMN IF NOT EXISTS pet_named_by_user_id uuid;`);
+  await pool.query(`ALTER TABLE dogs ADD COLUMN IF NOT EXISTS pet_named_at timestamptz;`);
+  await pool.query(`ALTER TABLE dogs ADD COLUMN IF NOT EXISTS color text;`);
+  await pool.query(`ALTER TABLE dogs ADD COLUMN IF NOT EXISTS adopted_by_user_id uuid;`);
+  await pool.query(`ALTER TABLE dogs ADD COLUMN IF NOT EXISTS ear_tag_style_image_url text;`);
+  await pool.query(`ALTER TABLE dogs ADD COLUMN IF NOT EXISTS ear_tag_color text;`);
+  await pool.query(`ALTER TABLE dogs ADD COLUMN IF NOT EXISTS ear_tag_boundary_image_url text;`);
+  await pool.query(`ALTER TABLE dogs ADD COLUMN IF NOT EXISTS ear_tag_customized_at timestamptz;`);
+  await pool.query(`UPDATE dogs SET rescue_name = name WHERE rescue_name IS NULL OR rescue_name = '';`);
+  await pool.query(`UPDATE dogs SET color = 'Unknown' WHERE color IS NULL OR color = '';`);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS dog_ear_tag_global_config (
+      id text PRIMARY KEY,
+      style_images jsonb NOT NULL DEFAULT '[]'::jsonb,
+      color_options jsonb NOT NULL DEFAULT '[]'::jsonb,
+      boundary_images jsonb NOT NULL DEFAULT '[]'::jsonb,
+      updated_by text,
+      updated_at timestamptz NOT NULL DEFAULT now()
+    );
+  `);
+
+  await pool.query(
+    `
+      INSERT INTO dog_ear_tag_global_config (id, style_images, color_options, boundary_images)
+      VALUES ($1, '[]'::jsonb, '[]'::jsonb, '[]'::jsonb)
+      ON CONFLICT (id) DO NOTHING;
+    `,
+    [EAR_TAG_CONFIG_ID]
+  );
 
   await pool.query(`
     CREATE TABLE IF NOT EXISTS adoption_requests (
@@ -293,7 +389,28 @@ export async function listDogsWithFilters(statuses?: DogStatus[], city?: string 
 
   const result = await pool.query(
     `
-    SELECT id, name, breed, age, gender, city, area, description, image_url, created_by, status, created_at, updated_at
+    SELECT
+      id,
+      name,
+      rescue_name,
+      pet_name,
+      pet_named_by_user_id,
+      breed,
+      color,
+      age,
+      gender,
+      city,
+      area,
+      description,
+      image_url,
+      adopted_by_user_id,
+      ear_tag_style_image_url,
+      ear_tag_color,
+      ear_tag_boundary_image_url,
+      created_by,
+      status,
+      created_at,
+      updated_at
     FROM dogs
     ${whereClause}
     ORDER BY created_at DESC;
@@ -310,7 +427,27 @@ export async function getDogById(dogId: string) {
 
   const result = await pool.query(
     `
-    SELECT id, name, breed, age, gender, description, image_url, status, created_at, updated_at
+    SELECT
+      id,
+      name,
+      rescue_name,
+      pet_name,
+      pet_named_by_user_id,
+      breed,
+      color,
+      age,
+      gender,
+      city,
+      area,
+      description,
+      image_url,
+      adopted_by_user_id,
+      ear_tag_style_image_url,
+      ear_tag_color,
+      ear_tag_boundary_image_url,
+      status,
+      created_at,
+      updated_at
     FROM dogs
     WHERE id = $1
     LIMIT 1;
@@ -325,19 +462,25 @@ export async function getDogById(dogId: string) {
 export async function createDog(input: CreateDogInput) {
   await ensureDogAdoptionSchema();
   const pool = getDbPool();
+  const rescueName = input.name ?? `Rescue-${randomUUID().slice(0, 8).toUpperCase()}`;
 
   const result = await pool.query(
     `
     INSERT INTO dogs (
-      id, name, breed, age, gender, city, area, description, image_url, created_by, status
+      id, name, rescue_name, breed, color, age, gender, city, area, description, image_url, created_by, status
     )
-    VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
-    RETURNING id, name, breed, age, gender, city, area, description, image_url, created_by, status, created_at, updated_at;
+    VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
+    RETURNING
+      id, name, rescue_name, pet_name, pet_named_by_user_id, breed, color, age, gender, city, area, description,
+      image_url, adopted_by_user_id, ear_tag_style_image_url, ear_tag_color, ear_tag_boundary_image_url,
+      created_by, status, created_at, updated_at;
     `,
     [
       randomUUID(),
-      input.name,
+      rescueName,
+      rescueName,
       input.breed,
+      input.color,
       input.age,
       input.gender,
       input.city ?? null,
@@ -359,13 +502,13 @@ export async function updateDog(dogId: string, input: UpdateDogInput) {
   const updates: string[] = [];
   const params: unknown[] = [dogId];
 
-  if (input.name) {
-    params.push(input.name);
-    updates.push(`name = $${params.length}`);
-  }
   if (input.breed) {
     params.push(input.breed);
     updates.push(`breed = $${params.length}`);
+  }
+  if (input.color) {
+    params.push(input.color);
+    updates.push(`color = $${params.length}`);
   }
   if (input.age) {
     params.push(input.age);
@@ -406,7 +549,10 @@ export async function updateDog(dogId: string, input: UpdateDogInput) {
     SET ${updates.join(", ")},
         updated_at = now()
     WHERE id = $1
-    RETURNING id, name, breed, age, gender, description, image_url, status, created_at, updated_at;
+    RETURNING
+      id, name, rescue_name, pet_name, pet_named_by_user_id, breed, color, age, gender, city, area, description,
+      image_url, adopted_by_user_id, ear_tag_style_image_url, ear_tag_color, ear_tag_boundary_image_url,
+      status, created_at, updated_at;
     `,
     params
   );
@@ -518,8 +664,10 @@ export async function listAdoptionRequests() {
       ar.status,
       ar.requested_at,
       ar.whatsapp_number,
-      d.name AS dog_name,
+      COALESCE(d.pet_name, d.rescue_name, d.name) AS dog_name,
+      d.pet_name AS pet_name,
       d.breed AS dog_breed,
+      d.color AS dog_color,
       d.image_url AS dog_image_url,
       u.name AS user_name,
       u.email AS user_email
@@ -545,8 +693,10 @@ export async function listMyAdoptionRequests(userId: string) {
       ar.status,
       ar.requested_at,
       ar.whatsapp_number,
-      d.name AS dog_name,
+      COALESCE(d.pet_name, d.rescue_name, d.name) AS dog_name,
+      d.pet_name AS pet_name,
       d.breed AS dog_breed,
+      d.color AS dog_color,
       d.image_url AS dog_image_url,
       u.name AS user_name,
       u.email AS user_email
@@ -579,7 +729,7 @@ export async function reviewAdoptionRequest(
 
     const requestResult = await client.query(
       `
-      SELECT id, dog_id, status
+      SELECT id, dog_id, user_id, status
       FROM adoption_requests
       WHERE id = $1
       LIMIT 1
@@ -594,6 +744,7 @@ export async function reviewAdoptionRequest(
     }
 
     const dogId = String(current.dog_id);
+    const requestUserId = String(current.user_id);
 
     await client.query(
       `
@@ -609,10 +760,11 @@ export async function reviewAdoptionRequest(
         `
         UPDATE dogs
         SET status = 'adopted',
+            adopted_by_user_id = $2,
             updated_at = now()
         WHERE id = $1;
         `,
-        [dogId]
+        [dogId, requestUserId]
       );
 
       await client.query(
@@ -641,6 +793,7 @@ export async function reviewAdoptionRequest(
           `
           UPDATE dogs
           SET status = 'available',
+              adopted_by_user_id = NULL,
               updated_at = now()
           WHERE id = $1 AND status <> 'adopted';
           `,
@@ -667,7 +820,7 @@ export async function listDogPostAdoptionUpdates(dogId: string) {
     SELECT
       dpu.id,
       dpu.dog_id,
-      d.name AS dog_name,
+      COALESCE(d.pet_name, d.rescue_name, d.name) AS dog_name,
       dpu.image_url,
       dpu.caption,
       dpu.collar_tag,
@@ -692,7 +845,7 @@ export async function listAllDogPostAdoptionUpdates() {
     SELECT
       dpu.id,
       dpu.dog_id,
-      d.name AS dog_name,
+      COALESCE(d.pet_name, d.rescue_name, d.name) AS dog_name,
       dpu.image_url,
       dpu.caption,
       dpu.collar_tag,
@@ -767,7 +920,7 @@ export async function createDogPostAdoptionUpdate(input: CreateDogUpdateInput) {
     SELECT
       dpu.id,
       dpu.dog_id,
-      d.name AS dog_name,
+      COALESCE(d.pet_name, d.rescue_name, d.name) AS dog_name,
       dpu.image_url,
       dpu.caption,
       dpu.collar_tag,
@@ -802,17 +955,287 @@ export async function deleteDogPostAdoptionUpdate(updateId: string) {
   }
 }
 
+function uniqueNonEmpty(values: unknown[]): string[] {
+  const seen = new Set<string>();
+  const result: string[] = [];
+
+  for (const value of values) {
+    const item = normalizedText(value);
+    if (!item) continue;
+    const key = item.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    result.push(item);
+  }
+
+  return result;
+}
+
+function parseJsonArray(value: unknown): string[] {
+  if (Array.isArray(value)) return uniqueNonEmpty(value);
+  if (typeof value === "string") {
+    try {
+      const parsed = JSON.parse(value) as unknown;
+      return Array.isArray(parsed) ? uniqueNonEmpty(parsed) : [];
+    } catch {
+      return [];
+    }
+  }
+  return [];
+}
+
+export async function getEarTagGlobalConfig(): Promise<EarTagGlobalConfigRecord> {
+  await ensureDogAdoptionSchema();
+  const pool = getDbPool();
+
+  const result = await pool.query(
+    `
+      SELECT style_images, color_options, boundary_images, updated_at, updated_by
+      FROM dog_ear_tag_global_config
+      WHERE id = $1
+      LIMIT 1;
+    `,
+    [EAR_TAG_CONFIG_ID]
+  );
+
+  const row = result.rows[0] ?? {
+    style_images: [],
+    color_options: [],
+    boundary_images: [],
+    updated_at: new Date().toISOString(),
+    updated_by: null,
+  };
+
+  return {
+    styleImages: parseJsonArray(row.style_images),
+    colorOptions: parseJsonArray(row.color_options),
+    boundaryImages: parseJsonArray(row.boundary_images),
+    updatedAt: new Date(String(row.updated_at)).toISOString(),
+    updatedBy: row.updated_by ? String(row.updated_by) : null,
+  };
+}
+
+export async function updateEarTagGlobalConfig(input: UpdateEarTagGlobalConfigInput) {
+  await ensureDogAdoptionSchema();
+  const pool = getDbPool();
+
+  const styleImages = uniqueNonEmpty(input.styleImages);
+  const colorOptions = uniqueNonEmpty(input.colorOptions);
+  const boundaryImages = uniqueNonEmpty(input.boundaryImages);
+
+  const result = await pool.query(
+    `
+      UPDATE dog_ear_tag_global_config
+      SET
+        style_images = $2::jsonb,
+        color_options = $3::jsonb,
+        boundary_images = $4::jsonb,
+        updated_by = $5,
+        updated_at = now()
+      WHERE id = $1
+      RETURNING style_images, color_options, boundary_images, updated_at, updated_by;
+    `,
+    [
+      EAR_TAG_CONFIG_ID,
+      JSON.stringify(styleImages),
+      JSON.stringify(colorOptions),
+      JSON.stringify(boundaryImages),
+      input.updatedBy,
+    ]
+  );
+
+  return {
+    styleImages: parseJsonArray(result.rows[0]?.style_images),
+    colorOptions: parseJsonArray(result.rows[0]?.color_options),
+    boundaryImages: parseJsonArray(result.rows[0]?.boundary_images),
+    updatedAt: new Date(String(result.rows[0]?.updated_at)).toISOString(),
+    updatedBy: result.rows[0]?.updated_by ? String(result.rows[0]?.updated_by) : null,
+  } satisfies EarTagGlobalConfigRecord;
+}
+
+export async function assignPetNameForAdoptedDog(dogId: string, userId: string, petNameRaw: string) {
+  await ensureDogAdoptionSchema();
+  const pool = getDbPool();
+
+  const petName = normalizedText(petNameRaw);
+  if (!petName) {
+    throw new Error("Pet name is required.");
+  }
+
+  const result = await pool.query(
+    `
+      UPDATE dogs
+      SET
+        pet_name = $3,
+        pet_named_by_user_id = $2,
+        pet_named_at = now(),
+        updated_at = now()
+      WHERE id = $1
+        AND status = 'adopted'
+        AND adopted_by_user_id = $2
+        AND (pet_name IS NULL OR pet_name = '')
+      RETURNING
+        id, name, rescue_name, pet_name, pet_named_by_user_id, breed, color, age, gender, city, area, description,
+        image_url, adopted_by_user_id, ear_tag_style_image_url, ear_tag_color, ear_tag_boundary_image_url,
+        status, created_at, updated_at;
+    `,
+    [dogId, userId, petName]
+  );
+
+  if (!result.rows[0]) {
+    const check = await pool.query(
+      `
+        SELECT id, adopted_by_user_id, status, pet_name
+        FROM dogs
+        WHERE id = $1
+        LIMIT 1;
+      `,
+      [dogId]
+    );
+
+    if (!check.rows[0]) {
+      throw new Error("Dog not found.");
+    }
+
+    if (String(check.rows[0].status) !== "adopted") {
+      throw new Error("Pet naming is available only after adoption is approved.");
+    }
+
+    if (!check.rows[0].adopted_by_user_id || String(check.rows[0].adopted_by_user_id) !== userId) {
+      throw new Error("Only the dog owner can set the pet name.");
+    }
+
+    throw new Error("Pet name is already assigned and cannot be changed.");
+  }
+
+  return mapDogRow(result.rows[0]);
+}
+
+export async function updateDogEarTagCustomization(
+  dogId: string,
+  userId: string,
+  input: UpdateDogEarTagCustomizationInput
+) {
+  await ensureDogAdoptionSchema();
+  const pool = getDbPool();
+
+  const styleImageUrl = normalizedText(input.styleImageUrl);
+  const color = normalizedText(input.color);
+  const boundaryImageUrl = normalizedText(input.boundaryImageUrl);
+
+  if (!styleImageUrl || !color || !boundaryImageUrl) {
+    throw new Error("Ear tag style, color, and reflective boundary are required.");
+  }
+
+  const config = await getEarTagGlobalConfig();
+  if (!config.styleImages.includes(styleImageUrl)) {
+    throw new Error("Selected ear tag style is not in global configuration.");
+  }
+  if (!config.colorOptions.includes(color)) {
+    throw new Error("Selected ear tag color is not in global configuration.");
+  }
+  if (!config.boundaryImages.includes(boundaryImageUrl)) {
+    throw new Error("Selected reflective boundary design is not in global configuration.");
+  }
+
+  const result = await pool.query(
+    `
+      UPDATE dogs
+      SET
+        ear_tag_style_image_url = $3,
+        ear_tag_color = $4,
+        ear_tag_boundary_image_url = $5,
+        ear_tag_customized_at = now(),
+        updated_at = now()
+      WHERE id = $1
+        AND status = 'adopted'
+        AND adopted_by_user_id = $2
+        AND pet_name IS NOT NULL
+        AND pet_name <> ''
+      RETURNING
+        id, name, rescue_name, pet_name, pet_named_by_user_id, breed, color, age, gender, city, area, description,
+        image_url, adopted_by_user_id, ear_tag_style_image_url, ear_tag_color, ear_tag_boundary_image_url,
+        status, created_at, updated_at;
+    `,
+    [dogId, userId, styleImageUrl, color, boundaryImageUrl]
+  );
+
+  if (!result.rows[0]) {
+    throw new Error("Only the adopted dog owner can customize ear tag after pet naming.");
+  }
+
+  return mapDogRow(result.rows[0]);
+}
+
+export async function listAdoptedDogsWithOwners() {
+  await ensureDogAdoptionSchema();
+  const pool = getDbPool();
+
+  const result = await pool.query(
+    `
+      SELECT
+        d.id,
+        COALESCE(d.pet_name, d.rescue_name, d.name) AS dog_name,
+        d.rescue_name,
+        d.pet_name,
+        d.breed,
+        d.color,
+        d.age,
+        d.gender,
+        d.city,
+        d.area,
+        d.image_url,
+        d.updated_at,
+        u.name AS owner_name,
+        u.email AS owner_email
+      FROM dogs d
+      LEFT JOIN users u ON u.id = d.adopted_by_user_id
+      WHERE d.status = 'adopted'
+      ORDER BY d.updated_at DESC;
+    `
+  );
+
+  return result.rows.map((row) => ({
+    dogId: String(row.id),
+    dogName: String(row.dog_name),
+    rescueName: row.rescue_name ? String(row.rescue_name) : String(row.dog_name),
+    petName: row.pet_name ? String(row.pet_name) : null,
+    breed: String(row.breed),
+    color: row.color ? String(row.color) : "Unknown",
+    age: String(row.age),
+    gender: String(row.gender),
+    city: row.city ? String(row.city) : null,
+    area: row.area ? String(row.area) : null,
+    imageUrl: String(row.image_url),
+    ownerName: row.owner_name ? String(row.owner_name) : null,
+    ownerEmail: row.owner_email ? String(row.owner_email) : null,
+    adoptedAt: new Date(String(row.updated_at)).toISOString(),
+  })) satisfies AdoptedDogRecord[];
+}
+
 function mapDogRow(row: Record<string, unknown>): DogRecord {
+  const rescueName = row.rescue_name ? String(row.rescue_name) : String(row.name);
+  const petName = row.pet_name ? String(row.pet_name) : null;
+  const displayName = petName ?? rescueName;
+
   return {
     dogId: String(row.id),
-    name: String(row.name),
+    rescueName,
+    petName,
+    name: displayName,
     breed: String(row.breed),
+    color: row.color ? String(row.color) : "Unknown",
     age: String(row.age),
     gender: String(row.gender),
     city: row.city ? String(row.city) : null,
     area: row.area ? String(row.area) : null,
     description: String(row.description),
     imageUrl: String(row.image_url),
+    adoptedByUserId: row.adopted_by_user_id ? String(row.adopted_by_user_id) : null,
+    petNamedByUserId: row.pet_named_by_user_id ? String(row.pet_named_by_user_id) : null,
+    earTagStyleImageUrl: row.ear_tag_style_image_url ? String(row.ear_tag_style_image_url) : null,
+    earTagColor: row.ear_tag_color ? String(row.ear_tag_color) : null,
+    earTagBoundaryImageUrl: row.ear_tag_boundary_image_url ? String(row.ear_tag_boundary_image_url) : null,
     status: String(row.status) as DogStatus,
     createdAt: new Date(String(row.created_at)).toISOString(),
     updatedAt: new Date(String(row.updated_at)).toISOString(),
@@ -824,7 +1247,9 @@ function mapAdoptionRequestRow(row: Record<string, unknown>): AdoptionRequestRec
     requestId: String(row.id),
     dogId: String(row.dog_id),
     dogName: String(row.dog_name),
+    petName: row.pet_name ? String(row.pet_name) : null,
     dogBreed: String(row.dog_breed),
+    dogColor: row.dog_color ? String(row.dog_color) : "Unknown",
     dogImageUrl: String(row.dog_image_url),
     userId: String(row.user_id),
     userName: row.user_name ? String(row.user_name) : null,

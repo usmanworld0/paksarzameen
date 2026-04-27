@@ -2,9 +2,15 @@ import type { Metadata } from "next";
 import Image from "next/image";
 
 import { requireAuthenticatedUser } from "@/lib/supabase/authorization";
-import { getDogById, listDogPostAdoptionUpdates } from "@/lib/dog-adoption";
+import {
+  getDogById,
+  getEarTagGlobalConfig,
+  listDogPostAdoptionUpdates,
+  listMyAdoptionRequests,
+} from "@/lib/dog-adoption";
 import { listDogMessages } from "@/lib/dog-messages";
 import ChatBox from "@/components/dog/ChatBox";
+import { MyPetPersonalizationPanel } from "@/features/dog-adoption/components/MyPetPersonalizationPanel";
 
 export const dynamic = "force-dynamic";
 
@@ -28,8 +34,22 @@ export default async function MyPetPage({ params }: { params: Promise<{ id: stri
     </main>
   );
 
+  const myRequests = await listMyAdoptionRequests(session.id);
+  const canAccessPet = myRequests.some((request) => request.dogId === id && request.status === "approved");
+
+  if (!canAccessPet) {
+    return (
+      <main className="min-h-screen px-4 pb-20 pt-28 sm:px-6 lg:px-10">
+        <div className="mx-auto max-w-4xl rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
+          You can only access pets that are officially approved and adopted by your account.
+        </div>
+      </main>
+    );
+  }
+
   const updates = await listDogPostAdoptionUpdates(id);
   const messages = await listDogMessages(id);
+  const earTagConfig = await getEarTagGlobalConfig();
 
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,_#f8fcf8_0%,_#edf5ef_100%)] px-4 pb-20 pt-28 sm:px-6 lg:px-10">
@@ -41,12 +61,16 @@ export default async function MyPetPage({ params }: { params: Promise<{ id: stri
             </div>
             <div>
               <h1 className="text-2xl font-semibold text-slate-900">{dog.name}</h1>
-              <p className="text-sm text-slate-600">{dog.breed} • {dog.age} • {dog.gender}</p>
+              <p className="text-xs uppercase tracking-wide text-slate-500">Rescue Name: {dog.rescueName}</p>
+              {dog.petName ? <p className="text-sm font-semibold text-indigo-700">Pet Name: {dog.petName}</p> : null}
+              <p className="text-sm text-slate-600">{dog.breed} • {dog.color} • {dog.age} • {dog.gender}</p>
               <p className="text-sm text-slate-600">{dog.city ?? ''}{dog.city && dog.area ? ', ' : ''}{dog.area ?? ''}</p>
               <p className="mt-2 text-sm text-slate-700">{dog.description}</p>
             </div>
           </div>
         </div>
+
+        <MyPetPersonalizationPanel dog={dog} earTagConfig={earTagConfig} />
 
         <div className="grid gap-6 lg:grid-cols-2">
           <div className="rounded-2xl border border-slate-200 bg-white p-5">

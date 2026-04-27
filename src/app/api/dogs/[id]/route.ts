@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getDogById, listDogPostAdoptionUpdates } from "@/lib/dog-adoption";
+import { hasDatabaseConnection } from "@/lib/db";
 
 type RouteContext = {
   params: Promise<{ id: string }>;
@@ -9,7 +10,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET(_: Request, context: RouteContext) {
   try {
-    if (!process.env.DATABASE_URL) {
+    if (!hasDatabaseConnection()) {
       return NextResponse.json({ error: "DATABASE_URL is not configured." }, { status: 500 });
     }
 

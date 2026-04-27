@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
 import { listDogsWithFilters, normalizeDogStatus, type DogStatus } from "@/lib/dog-adoption";
+import { hasDatabaseConnection } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
   try {
-    if (!process.env.DATABASE_URL) {
+    if (!hasDatabaseConnection()) {
       return NextResponse.json({ data: [] });
     }
 

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import {
+  type EarTagImageOption,
   getEarTagGlobalConfig,
   updateEarTagGlobalConfig,
 } from "@/lib/dog-adoption";
@@ -39,6 +40,66 @@ function unique(values: string[]) {
   return result;
 }
 
+function inferTitleFromUrl(imageUrl: string): string {
+  const raw = imageUrl.trim();
+  if (!raw) return "Untitled";
+
+  const withoutQuery = raw.split("?")[0]?.split("#")[0] ?? raw;
+  const lastSegment = withoutQuery.split("/").pop() ?? withoutQuery;
+  const withoutExt = lastSegment.replace(/\.[^.]+$/, "");
+  const normalized = withoutExt.replace(/[-_]+/g, " ").trim();
+
+  if (!normalized) return "Untitled";
+
+  return normalized
+    .split(/\s+/)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
+function parseImageOptions(value: string | null): EarTagImageOption[] {
+  if (!value) return [];
+
+  try {
+    const parsed = JSON.parse(value) as unknown;
+    if (!Array.isArray(parsed)) return [];
+
+    return parsed
+      .map((item) => {
+        if (!item || typeof item !== "object") return null;
+        const row = item as { title?: unknown; imageUrl?: unknown; url?: unknown };
+        const imageUrl = String(row.imageUrl ?? row.url ?? "").trim();
+        if (!imageUrl) return null;
+        const title = String(row.title ?? "").trim() || inferTitleFromUrl(imageUrl);
+        return { title, imageUrl } satisfies EarTagImageOption;
+      })
+      .filter((item): item is EarTagImageOption => Boolean(item));
+  } catch {
+    return [];
+  }
+}
+
+function uniqueImageOptions(values: EarTagImageOption[]) {
+  const seen = new Set<string>();
+  const result: EarTagImageOption[] = [];
+
+  for (const value of values) {
+    const imageUrl = value.imageUrl.trim();
+    if (!imageUrl) continue;
+
+    const key = imageUrl.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+
+    result.push({
+      title: value.title.trim() || inferTitleFromUrl(imageUrl),
+      imageUrl,
+    });
+  }
+
+  return result;
+}
+
 export async function GET() {
   const session = await getRequiredAdminOrModuleApiUser("dog_adoption", "view");
   if (!session) {
@@ -72,9 +133,13 @@ export async function PUT(request: Request) {
     const formData = await request.formData();
     const current = await getEarTagGlobalConfig();
 
+    const styleOptionsInput = parseImageOptions(String(formData.get("styleOptions") ?? ""));
+    const boundaryOptionsInput = parseImageOptions(String(formData.get("boundaryOptions") ?? ""));
     const styleImagesInput = parseStringArray(String(formData.get("styleImages") ?? ""));
     const colorOptionsInput = parseStringArray(String(formData.get("colorOptions") ?? ""));
     const boundaryImagesInput = parseStringArray(String(formData.get("boundaryImages") ?? ""));
+    const styleUploadTitles = parseStringArray(String(formData.get("styleUploadTitles") ?? ""));
+    const boundaryUploadTitles = parseStringArray(String(formData.get("boundaryUploadTitles") ?? ""));
 
     const styleUploads = formData.getAll("styleImageFiles").filter((item): item is File => item instanceof File && item.size > 0);
     const boundaryUploads = formData.getAll("boundaryImageFiles").filter((item): item is File => item instanceof File && item.size > 0);
@@ -89,22 +154,50 @@ export async function PUT(request: Request) {
       );
     }
 
-    const uploadedStyleImages: string[] = [];
-    for (const file of styleUploads) {
+    const uploadedStyleOptions: EarTagImageOption[] = [];
+    for (const [index, file] of styleUploads.entries()) {
       const uploaded = await uploadImageFile(file, "dog-ear-tags/styles");
-      uploadedStyleImages.push(uploaded.url);
+      const fallbackTitle = file.name.replace(/\.[^.]+$/, "");
+      uploadedStyleOptions.push({
+        title: styleUploadTitles[index] || fallbackTitle || inferTitleFromUrl(uploaded.url),
+        imageUrl: uploaded.url,
+      });
     }
 
-    const uploadedBoundaryImages: string[] = [];
-    for (const file of boundaryUploads) {
+    const uploadedBoundaryOptions: EarTagImageOption[] = [];
+    for (const [index, file] of boundaryUploads.entries()) {
       const uploaded = await uploadImageFile(file, "dog-ear-tags/boundaries");
-      uploadedBoundaryImages.push(uploaded.url);
+      const fallbackTitle = file.name.replace(/\.[^.]+$/, "");
+      uploadedBoundaryOptions.push({
+        title: boundaryUploadTitles[index] || fallbackTitle || inferTitleFromUrl(uploaded.url),
+        imageUrl: uploaded.url,
+      });
     }
+
+    const legacyStyleOptions = styleImagesInput.map((imageUrl) => ({
+      title: inferTitleFromUrl(imageUrl),
+      imageUrl,
+    }));
+
+    const legacyBoundaryOptions = boundaryImagesInput.map((imageUrl) => ({
+      title: inferTitleFromUrl(imageUrl),
+      imageUrl,
+    }));
 
     const data = await updateEarTagGlobalConfig({
-      styleImages: unique([...current.styleImages, ...styleImagesInput, ...uploadedStyleImages]),
+      styleOptions: uniqueImageOptions([
+        ...current.styleOptions,
+        ...legacyStyleOptions,
+        ...styleOptionsInput,
+        ...uploadedStyleOptions,
+      ]),
       colorOptions: unique([...colorOptionsInput]),
-      boundaryImages: unique([...current.boundaryImages, ...boundaryImagesInput, ...uploadedBoundaryImages]),
+      boundaryOptions: uniqueImageOptions([
+        ...current.boundaryOptions,
+        ...legacyBoundaryOptions,
+        ...boundaryOptionsInput,
+        ...uploadedBoundaryOptions,
+      ]),
       updatedBy: session.email,
     });
 

@@ -11,19 +11,35 @@ type MyPetPersonalizationPanelProps = {
 };
 
 export function MyPetPersonalizationPanel({ dog, earTagConfig }: MyPetPersonalizationPanelProps) {
+  const styleOptions = useMemo(
+    () =>
+      earTagConfig.styleOptions.length > 0
+        ? earTagConfig.styleOptions
+        : earTagConfig.styleImages.map((imageUrl) => ({ title: "Untitled", imageUrl })),
+    [earTagConfig.styleImages, earTagConfig.styleOptions]
+  );
+
+  const boundaryOptions = useMemo(
+    () =>
+      earTagConfig.boundaryOptions.length > 0
+        ? earTagConfig.boundaryOptions
+        : earTagConfig.boundaryImages.map((imageUrl) => ({ title: "Untitled", imageUrl })),
+    [earTagConfig.boundaryImages, earTagConfig.boundaryOptions]
+  );
+
   const [petName, setPetName] = useState("");
   const [petNameSaving, setPetNameSaving] = useState(false);
   const [earTagSaving, setEarTagSaving] = useState(false);
-  const [styleImageUrl, setStyleImageUrl] = useState(dog.earTagStyleImageUrl ?? earTagConfig.styleImages[0] ?? "");
+  const [styleImageUrl, setStyleImageUrl] = useState(dog.earTagStyleImageUrl ?? styleOptions[0]?.imageUrl ?? "");
   const [color, setColor] = useState(dog.earTagColor ?? earTagConfig.colorOptions[0] ?? "");
-  const [boundaryImageUrl, setBoundaryImageUrl] = useState(dog.earTagBoundaryImageUrl ?? earTagConfig.boundaryImages[0] ?? "");
+  const [boundaryImageUrl, setBoundaryImageUrl] = useState(dog.earTagBoundaryImageUrl ?? boundaryOptions[0]?.imageUrl ?? "");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [savedPetName, setSavedPetName] = useState<string | null>(dog.petName);
 
   const hasConfig = useMemo(
-    () => earTagConfig.styleImages.length > 0 && earTagConfig.colorOptions.length > 0 && earTagConfig.boundaryImages.length > 0,
-    [earTagConfig.boundaryImages.length, earTagConfig.colorOptions.length, earTagConfig.styleImages.length]
+    () => styleOptions.length > 0 && earTagConfig.colorOptions.length > 0 && boundaryOptions.length > 0,
+    [boundaryOptions.length, earTagConfig.colorOptions.length, styleOptions.length]
   );
 
   async function savePetName() {
@@ -124,16 +140,17 @@ export function MyPetPersonalizationPanel({ dog, earTagConfig }: MyPetPersonaliz
           <div className="space-y-2">
             <label className="block text-xs font-semibold uppercase tracking-wide text-slate-500">Ear Tag Style</label>
             <div className="grid grid-cols-2 gap-2">
-              {earTagConfig.styleImages.map((item) => (
+              {styleOptions.map((item) => (
                 <button
-                  key={item}
+                  key={item.imageUrl}
                   type="button"
-                  onClick={() => setStyleImageUrl(item)}
-                  className={`relative overflow-hidden rounded-xl border ${styleImageUrl === item ? "border-emerald-500" : "border-slate-200"}`}
+                  onClick={() => setStyleImageUrl(item.imageUrl)}
+                  className={`relative overflow-hidden rounded-xl border ${styleImageUrl === item.imageUrl ? "border-emerald-500" : "border-slate-200"}`}
                 >
                   <div className="relative h-24 w-full bg-slate-100">
-                    <Image src={item} alt="Ear tag style" fill sizes="120px" className="object-cover" />
+                    <Image src={item.imageUrl} alt={item.title || "Ear tag style"} fill sizes="120px" className="object-cover" />
                   </div>
+                  <p className="border-t border-slate-200 bg-white px-2 py-1 text-left text-[11px] font-medium text-slate-700">{item.title}</p>
                 </button>
               ))}
             </div>
@@ -155,16 +172,17 @@ export function MyPetPersonalizationPanel({ dog, earTagConfig }: MyPetPersonaliz
           <div className="space-y-2">
             <label className="block text-xs font-semibold uppercase tracking-wide text-slate-500">Reflective Boundary</label>
             <div className="grid grid-cols-2 gap-2">
-              {earTagConfig.boundaryImages.map((item) => (
+              {boundaryOptions.map((item) => (
                 <button
-                  key={item}
+                  key={item.imageUrl}
                   type="button"
-                  onClick={() => setBoundaryImageUrl(item)}
-                  className={`relative overflow-hidden rounded-xl border ${boundaryImageUrl === item ? "border-emerald-500" : "border-slate-200"}`}
+                  onClick={() => setBoundaryImageUrl(item.imageUrl)}
+                  className={`relative overflow-hidden rounded-xl border ${boundaryImageUrl === item.imageUrl ? "border-emerald-500" : "border-slate-200"}`}
                 >
                   <div className="relative h-24 w-full bg-slate-100">
-                    <Image src={item} alt="Reflective boundary" fill sizes="120px" className="object-cover" />
+                    <Image src={item.imageUrl} alt={item.title || "Reflective boundary"} fill sizes="120px" className="object-cover" />
                   </div>
+                  <p className="border-t border-slate-200 bg-white px-2 py-1 text-left text-[11px] font-medium text-slate-700">{item.title}</p>
                 </button>
               ))}
             </div>

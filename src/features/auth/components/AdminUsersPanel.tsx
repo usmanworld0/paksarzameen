@@ -100,6 +100,7 @@ export function AdminUsersPanel() {
   const [editor, setEditor] = useState<UserEditorState>(() => createEditorState(null));
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -271,6 +272,44 @@ export function AdminUsersPanel() {
       setError(updateError instanceof Error ? updateError.message : "Unable to update user.");
     } finally {
       setIsSaving(false);
+    }
+  }
+
+  async function handleDeleteUser() {
+    if (!selectedUser) {
+      return;
+    }
+
+    const shouldDelete = window.confirm(
+      `Delete user ${selectedUser.email}? This action cannot be undone.`
+    );
+
+    if (!shouldDelete) {
+      return;
+    }
+
+    setError(null);
+    setSuccess(null);
+    setIsDeleting(true);
+
+    try {
+      const response = await fetch(`/api/admin/users/${selectedUser.id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+
+      const payload = (await response.json()) as { error?: string; message?: string };
+
+      if (!response.ok) {
+        throw new Error(payload.error ?? "Unable to delete user.");
+      }
+
+      setSuccess(payload.message ?? "User deleted successfully.");
+      await loadUsers();
+    } catch (deleteError) {
+      setError(deleteError instanceof Error ? deleteError.message : "Unable to delete user.");
+    } finally {
+      setIsDeleting(false);
     }
   }
 
@@ -608,9 +647,18 @@ export function AdminUsersPanel() {
                     <button
                       type="button"
                       onClick={() => setEditor(createEditorState(selectedUser))}
+                      disabled={isDeleting}
                       className="rounded-xl border border-emerald-200 bg-white px-5 py-3 text-sm font-semibold text-emerald-700 hover:bg-emerald-50"
                     >
                       Reset edits
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => void handleDeleteUser()}
+                      disabled={isDeleting || isSaving}
+                      className="rounded-xl border border-red-200 bg-white px-5 py-3 text-sm font-semibold text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      {isDeleting ? "Deleting..." : "Delete user"}
                     </button>
                   </div>
                 </form>

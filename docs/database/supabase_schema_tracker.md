@@ -396,6 +396,12 @@ CREATE TABLE IF NOT EXISTS dog_ear_tag_global_config (
 	updated_at timestamptz NOT NULL DEFAULT now()
 );
 
+-- Ear-tag image option JSON format:
+-- style_images and boundary_images can contain either:
+-- 1) legacy string[] values: ["https://..."]
+-- 2) titled object[] values: [{"title":"Classic Stripe","imageUrl":"https://..."}]
+-- Application layer supports both formats during read/write for backward compatibility.
+
 INSERT INTO dog_ear_tag_global_config (id, style_images, color_options, boundary_images)
 VALUES ('global', '[]'::jsonb, '[]'::jsonb, '[]'::jsonb)
 ON CONFLICT (id) DO NOTHING;

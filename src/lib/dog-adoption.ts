@@ -72,17 +72,26 @@ export type CreateDogInput = {
 export type UpdateDogInput = Partial<CreateDogInput>;
 
 export type EarTagGlobalConfigRecord = {
+  styleOptions: EarTagImageOption[];
   styleImages: string[];
   colorOptions: string[];
+  boundaryOptions: EarTagImageOption[];
   boundaryImages: string[];
   updatedAt: string;
   updatedBy: string | null;
 };
 
+export type EarTagImageOption = {
+  title: string;
+  imageUrl: string;
+};
+
 export type UpdateEarTagGlobalConfigInput = {
-  styleImages: string[];
+  styleOptions?: EarTagImageOption[];
+  styleImages?: string[];
   colorOptions: string[];
-  boundaryImages: string[];
+  boundaryOptions?: EarTagImageOption[];
+  boundaryImages?: string[];
   updatedBy: string | null;
 };
 
@@ -984,6 +993,101 @@ function parseJsonArray(value: unknown): string[] {
   return [];
 }
 
+function inferEarTagTitleFromUrl(imageUrl: string): string {
+  const raw = normalizedText(imageUrl);
+  if (!raw) return "Untitled";
+
+  const withoutQuery = raw.split("?")[0]?.split("#")[0] ?? raw;
+  const lastSegment = withoutQuery.split("/").pop() ?? withoutQuery;
+  const withoutExt = lastSegment.replace(/\.[^.]+$/, "");
+  const normalized = withoutExt.replace(/[-_]+/g, " ").trim();
+
+  if (!normalized) return "Untitled";
+
+  return normalized
+    .split(/\s+/)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
+function parseJsonImageOptions(value: unknown): EarTagImageOption[] {
+  const items: unknown[] =
+    Array.isArray(value)
+      ? value
+      : typeof value === "string"
+        ? (() => {
+            try {
+              const parsed = JSON.parse(value) as unknown;
+              return Array.isArray(parsed) ? parsed : [];
+            } catch {
+              return [];
+            }
+          })()
+        : [];
+
+  const seen = new Set<string>();
+  const result: EarTagImageOption[] = [];
+
+  for (const item of items) {
+    if (typeof item === "string") {
+      const imageUrl = normalizedText(item);
+      if (!imageUrl) continue;
+      const key = imageUrl.toLowerCase();
+      if (seen.has(key)) continue;
+      seen.add(key);
+      result.push({
+        title: inferEarTagTitleFromUrl(imageUrl),
+        imageUrl,
+      });
+      continue;
+    }
+
+    if (!item || typeof item !== "object") continue;
+
+    const record = item as { title?: unknown; imageUrl?: unknown; url?: unknown };
+    const imageUrl = normalizedText(record.imageUrl ?? record.url);
+    if (!imageUrl) continue;
+
+    const key = imageUrl.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+
+    const title = normalizedText(record.title) || inferEarTagTitleFromUrl(imageUrl);
+    result.push({ title, imageUrl });
+  }
+
+  return result;
+}
+
+function normalizeEarTagImageOptions(options: EarTagImageOption[] | undefined, fallbackUrls: string[] = []) {
+  const optionsInput = (options ?? []).map((option) => ({
+    title: normalizedText(option.title),
+    imageUrl: normalizedText(option.imageUrl),
+  }));
+
+  const fallbackInput = fallbackUrls.map((url) => ({
+    title: inferEarTagTitleFromUrl(url),
+    imageUrl: normalizedText(url),
+  }));
+
+  const seen = new Set<string>();
+  const result: EarTagImageOption[] = [];
+
+  for (const option of [...optionsInput, ...fallbackInput]) {
+    if (!option.imageUrl) continue;
+    const key = option.imageUrl.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+
+    result.push({
+      title: option.title || inferEarTagTitleFromUrl(option.imageUrl),
+      imageUrl: option.imageUrl,
+    });
+  }
+
+  return result;
+}
+
 export async function getEarTagGlobalConfig(): Promise<EarTagGlobalConfigRecord> {
   await ensureDogAdoptionSchema();
   const pool = getDbPool();
@@ -1006,10 +1110,15 @@ export async function getEarTagGlobalConfig(): Promise<EarTagGlobalConfigRecord>
     updated_by: null,
   };
 
+  const styleOptions = parseJsonImageOptions(row.style_images);
+  const boundaryOptions = parseJsonImageOptions(row.boundary_images);
+
   return {
-    styleImages: parseJsonArray(row.style_images),
+    styleOptions,
+    styleImages: styleOptions.map((option) => option.imageUrl),
     colorOptions: parseJsonArray(row.color_options),
-    boundaryImages: parseJsonArray(row.boundary_images),
+    boundaryOptions,
+    boundaryImages: boundaryOptions.map((option) => option.imageUrl),
     updatedAt: new Date(String(row.updated_at)).toISOString(),
     updatedBy: row.updated_by ? String(row.updated_by) : null,
   };
@@ -1019,9 +1128,9 @@ export async function updateEarTagGlobalConfig(input: UpdateEarTagGlobalConfigIn
   await ensureDogAdoptionSchema();
   const pool = getDbPool();
 
-  const styleImages = uniqueNonEmpty(input.styleImages);
+  const styleOptions = normalizeEarTagImageOptions(input.styleOptions, input.styleImages ?? []);
   const colorOptions = uniqueNonEmpty(input.colorOptions);
-  const boundaryImages = uniqueNonEmpty(input.boundaryImages);
+  const boundaryOptions = normalizeEarTagImageOptions(input.boundaryOptions, input.boundaryImages ?? []);
 
   const result = await pool.query(
     `
@@ -1037,17 +1146,22 @@ export async function updateEarTagGlobalConfig(input: UpdateEarTagGlobalConfigIn
     `,
     [
       EAR_TAG_CONFIG_ID,
-      JSON.stringify(styleImages),
+      JSON.stringify(styleOptions),
       JSON.stringify(colorOptions),
-      JSON.stringify(boundaryImages),
+      JSON.stringify(boundaryOptions),
       input.updatedBy,
     ]
   );
 
+  const savedStyleOptions = parseJsonImageOptions(result.rows[0]?.style_images);
+  const savedBoundaryOptions = parseJsonImageOptions(result.rows[0]?.boundary_images);
+
   return {
-    styleImages: parseJsonArray(result.rows[0]?.style_images),
+    styleOptions: savedStyleOptions,
+    styleImages: savedStyleOptions.map((option) => option.imageUrl),
     colorOptions: parseJsonArray(result.rows[0]?.color_options),
-    boundaryImages: parseJsonArray(result.rows[0]?.boundary_images),
+    boundaryOptions: savedBoundaryOptions,
+    boundaryImages: savedBoundaryOptions.map((option) => option.imageUrl),
     updatedAt: new Date(String(result.rows[0]?.updated_at)).toISOString(),
     updatedBy: result.rows[0]?.updated_by ? String(result.rows[0]?.updated_by) : null,
   } satisfies EarTagGlobalConfigRecord;
@@ -1128,13 +1242,13 @@ export async function updateDogEarTagCustomization(
   }
 
   const config = await getEarTagGlobalConfig();
-  if (!config.styleImages.includes(styleImageUrl)) {
+  if (!config.styleOptions.some((option) => option.imageUrl === styleImageUrl)) {
     throw new Error("Selected ear tag style is not in global configuration.");
   }
   if (!config.colorOptions.includes(color)) {
     throw new Error("Selected ear tag color is not in global configuration.");
   }
-  if (!config.boundaryImages.includes(boundaryImageUrl)) {
+  if (!config.boundaryOptions.some((option) => option.imageUrl === boundaryImageUrl)) {
     throw new Error("Selected reflective boundary design is not in global configuration.");
   }
 

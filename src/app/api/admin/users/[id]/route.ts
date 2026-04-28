@@ -164,3 +164,60 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
+
+export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const admin = await getRequiredAdminApiUser();
+  if (!admin) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (!hasSupabaseServiceRoleKey()) {
+    return NextResponse.json(
+      { error: "SUPABASE_SERVICE_ROLE_KEY is not configured on the server." },
+      { status: 503 }
+    );
+  }
+
+  try {
+    const { id } = await params;
+
+    if (!id) {
+      return NextResponse.json({ error: "User id is required." }, { status: 400 });
+    }
+
+    if (admin.id === id) {
+      return NextResponse.json({ error: "You cannot delete your own admin account." }, { status: 400 });
+    }
+
+    const supabaseAdmin = getSupabaseAdminClient();
+
+    const [{ error: permissionsDeleteError }, { error: userProfileDeleteError }, { error: profileDeleteError }] =
+      await Promise.all([
+        supabaseAdmin.from("tenant_permissions").delete().eq("user_id", id),
+        supabaseAdmin.from("user_profile").delete().eq("user_id", id),
+        supabaseAdmin.from("profiles").delete().eq("id", id),
+      ]);
+
+    if (permissionsDeleteError) {
+      return NextResponse.json({ error: permissionsDeleteError.message }, { status: 500 });
+    }
+
+    if (userProfileDeleteError) {
+      return NextResponse.json({ error: userProfileDeleteError.message }, { status: 500 });
+    }
+
+    if (profileDeleteError) {
+      return NextResponse.json({ error: profileDeleteError.message }, { status: 500 });
+    }
+
+    const { error: authDeleteError } = await supabaseAdmin.auth.admin.deleteUser(id);
+    if (authDeleteError) {
+      return NextResponse.json({ error: authDeleteError.message }, { status: 500 });
+    }
+
+    return NextResponse.json({ message: "User deleted successfully." });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to delete user.";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}

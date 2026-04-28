@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import type { DogRecord, DogStatus, EarTagGlobalConfigRecord } from "@/lib/dog-adoption";
+import type { DogRecord, DogStatus, EarTagGlobalConfigRecord, EarTagImageOption } from "@/lib/dog-adoption";
 import { adminFetch } from "@/features/auth/utils/admin-api";
 import { canAccessAdminRoute, useAdminClientSession } from "@/features/auth/utils/admin-session-client";
 
@@ -31,6 +31,37 @@ const INITIAL_FORM: DogFormState = {
   imageFile: null,
 };
 
+function parseOptionLines(value: string): EarTagImageOption[] {
+  return value
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const [titlePart, ...urlParts] = line.split("|");
+      const imageUrl = urlParts.join("|").trim();
+      const title = titlePart.trim();
+
+      if (!imageUrl) {
+        return null;
+      }
+
+      return {
+        title: title || "Untitled",
+        imageUrl,
+      } satisfies EarTagImageOption;
+    })
+    .filter((item): item is EarTagImageOption => Boolean(item));
+}
+
+function formatOptionLines(values: EarTagImageOption[]) {
+  return values.map((item) => `${item.title} | ${item.imageUrl}`).join("\n");
+}
+
+function inferTitleFromFilename(file: File) {
+  const value = file.name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ").trim();
+  return value || "Untitled";
+}
+
 export function AdminDogsPanel() {
   const { session } = useAdminClientSession();
   const [dogs, setDogs] = useState<DogRecord[]>([]);
@@ -39,11 +70,13 @@ export function AdminDogsPanel() {
   const [saving, setSaving] = useState(false);
   const [editingDogId, setEditingDogId] = useState<string | null>(null);
   const [form, setForm] = useState<DogFormState>(INITIAL_FORM);
-  const [earTagStyleImages, setEarTagStyleImages] = useState<string[]>([]);
+  const [earTagStyleOptions, setEarTagStyleOptions] = useState<EarTagImageOption[]>([]);
   const [earTagColorOptions, setEarTagColorOptions] = useState<string[]>([]);
-  const [earTagBoundaryImages, setEarTagBoundaryImages] = useState<string[]>([]);
+  const [earTagBoundaryOptions, setEarTagBoundaryOptions] = useState<EarTagImageOption[]>([]);
   const [earTagStyleFiles, setEarTagStyleFiles] = useState<File[]>([]);
+  const [earTagStyleUploadTitles, setEarTagStyleUploadTitles] = useState<string[]>([]);
   const [earTagBoundaryFiles, setEarTagBoundaryFiles] = useState<File[]>([]);
+  const [earTagBoundaryUploadTitles, setEarTagBoundaryUploadTitles] = useState<string[]>([]);
   const [earTagSaving, setEarTagSaving] = useState(false);
 
   async function loadDogs() {
@@ -73,9 +106,9 @@ export function AdminDogsPanel() {
         throw new Error(payload.error ?? "Failed to load ear tag configuration.");
       }
 
-      setEarTagStyleImages(payload.data?.styleImages ?? []);
+      setEarTagStyleOptions(payload.data?.styleOptions ?? []);
       setEarTagColorOptions(payload.data?.colorOptions ?? []);
-      setEarTagBoundaryImages(payload.data?.boundaryImages ?? []);
+      setEarTagBoundaryOptions(payload.data?.boundaryOptions ?? []);
     } catch (configError) {
       setError(configError instanceof Error ? configError.message : "Failed to load ear tag configuration.");
     }
@@ -92,9 +125,11 @@ export function AdminDogsPanel() {
 
     try {
       const formData = new FormData();
-      formData.set("styleImages", JSON.stringify(earTagStyleImages));
+      formData.set("styleOptions", JSON.stringify(earTagStyleOptions));
       formData.set("colorOptions", JSON.stringify(earTagColorOptions));
-      formData.set("boundaryImages", JSON.stringify(earTagBoundaryImages));
+      formData.set("boundaryOptions", JSON.stringify(earTagBoundaryOptions));
+      formData.set("styleUploadTitles", JSON.stringify(earTagStyleUploadTitles));
+      formData.set("boundaryUploadTitles", JSON.stringify(earTagBoundaryUploadTitles));
 
       for (const file of earTagStyleFiles) {
         formData.append("styleImageFiles", file);
@@ -112,11 +147,13 @@ export function AdminDogsPanel() {
         throw new Error(payload.error ?? "Failed to update ear tag configuration.");
       }
 
-      setEarTagStyleImages(payload.data?.styleImages ?? []);
+      setEarTagStyleOptions(payload.data?.styleOptions ?? []);
       setEarTagColorOptions(payload.data?.colorOptions ?? []);
-      setEarTagBoundaryImages(payload.data?.boundaryImages ?? []);
+      setEarTagBoundaryOptions(payload.data?.boundaryOptions ?? []);
       setEarTagStyleFiles([]);
+      setEarTagStyleUploadTitles([]);
       setEarTagBoundaryFiles([]);
+      setEarTagBoundaryUploadTitles([]);
     } catch (configError) {
       setError(configError instanceof Error ? configError.message : "Failed to update ear tag configuration.");
     } finally {
@@ -404,16 +441,9 @@ export function AdminDogsPanel() {
               <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Ear Tag Style Images (URLs)</span>
               <textarea
                 className="min-h-28 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                value={earTagStyleImages.join("\n")}
-                onChange={(event) =>
-                  setEarTagStyleImages(
-                    event.target.value
-                      .split("\n")
-                      .map((item) => item.trim())
-                      .filter(Boolean)
-                  )
-                }
-                placeholder="One image URL per line"
+                value={formatOptionLines(earTagStyleOptions)}
+                onChange={(event) => setEarTagStyleOptions(parseOptionLines(event.target.value))}
+                placeholder="One option per line: Title | https://..."
               />
             </label>
 
@@ -421,16 +451,9 @@ export function AdminDogsPanel() {
               <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Reflective Boundary Images (URLs)</span>
               <textarea
                 className="min-h-28 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                value={earTagBoundaryImages.join("\n")}
-                onChange={(event) =>
-                  setEarTagBoundaryImages(
-                    event.target.value
-                      .split("\n")
-                      .map((item) => item.trim())
-                      .filter(Boolean)
-                  )
-                }
-                placeholder="One image URL per line"
+                value={formatOptionLines(earTagBoundaryOptions)}
+                onChange={(event) => setEarTagBoundaryOptions(parseOptionLines(event.target.value))}
+                placeholder="One option per line: Title | https://..."
               />
             </label>
 
@@ -459,9 +482,36 @@ export function AdminDogsPanel() {
                   type="file"
                   accept="image/*"
                   multiple
-                  onChange={(event) => setEarTagStyleFiles(Array.from(event.target.files ?? []))}
+                  onChange={(event) => {
+                    const files = Array.from(event.target.files ?? []);
+                    setEarTagStyleFiles(files);
+                    setEarTagStyleUploadTitles(files.map((file) => inferTitleFromFilename(file)));
+                  }}
                 />
               </label>
+
+              {earTagStyleFiles.length > 0 ? (
+                <div className="space-y-2 rounded-lg border border-slate-200 bg-slate-50 p-3">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Style upload titles</p>
+                  {earTagStyleFiles.map((file, index) => (
+                    <label key={`${file.name}-${index}`} className="block space-y-1">
+                      <span className="text-xs text-slate-500">{file.name}</span>
+                      <input
+                        className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                        value={earTagStyleUploadTitles[index] ?? ""}
+                        onChange={(event) =>
+                          setEarTagStyleUploadTitles((prev) => {
+                            const next = [...prev];
+                            next[index] = event.target.value;
+                            return next;
+                          })
+                        }
+                        placeholder="Option title"
+                      />
+                    </label>
+                  ))}
+                </div>
+              ) : null}
 
               <label className="block space-y-2">
                 <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Upload Reflective Boundaries</span>
@@ -470,9 +520,36 @@ export function AdminDogsPanel() {
                   type="file"
                   accept="image/*"
                   multiple
-                  onChange={(event) => setEarTagBoundaryFiles(Array.from(event.target.files ?? []))}
+                  onChange={(event) => {
+                    const files = Array.from(event.target.files ?? []);
+                    setEarTagBoundaryFiles(files);
+                    setEarTagBoundaryUploadTitles(files.map((file) => inferTitleFromFilename(file)));
+                  }}
                 />
               </label>
+
+              {earTagBoundaryFiles.length > 0 ? (
+                <div className="space-y-2 rounded-lg border border-slate-200 bg-slate-50 p-3">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Boundary upload titles</p>
+                  {earTagBoundaryFiles.map((file, index) => (
+                    <label key={`${file.name}-${index}`} className="block space-y-1">
+                      <span className="text-xs text-slate-500">{file.name}</span>
+                      <input
+                        className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                        value={earTagBoundaryUploadTitles[index] ?? ""}
+                        onChange={(event) =>
+                          setEarTagBoundaryUploadTitles((prev) => {
+                            const next = [...prev];
+                            next[index] = event.target.value;
+                            return next;
+                          })
+                        }
+                        placeholder="Option title"
+                      />
+                    </label>
+                  ))}
+                </div>
+              ) : null}
             </div>
           </div>
 

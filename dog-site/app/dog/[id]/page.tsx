@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { apiUrl } from "@/lib/api";
-import { AdoptDogButton } from "@/features/dog-adoption/components/AdoptDogButton";
+import { apiUrl } from "../../../lib/api";
+import { AdoptDogButton } from "../../../features/dog-adoption/components/AdoptDogButton";
 import Image from "next/image";
 import Link from "next/link";
 

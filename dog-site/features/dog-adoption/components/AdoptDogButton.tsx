@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { apiUrl } from "@/lib/api";
+import { apiUrl } from "../../../lib/api";
 
 type AdoptDogButtonProps = { dogId: string };
 

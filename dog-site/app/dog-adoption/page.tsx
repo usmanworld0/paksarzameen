@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { DogMarketplace } from "@/features/dog-adoption/components/DogMarketplace";
-import { apiUrl } from "@/lib/api";
+import { DogMarketplace } from "../../features/dog-adoption/components/DogMarketplace";
+import { apiUrl } from "../../lib/api";
 
 type DogRecord = {
   dogId: string;

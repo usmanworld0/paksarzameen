@@ -1,5 +1,5 @@
 {
   "/_not-found/page": "/_not-found",
-  "/dog-adoption/page": "/dog-adoption",
-  "/dog/[id]/page": "/dog/[id]"
+  "/dog/[id]/page": "/dog/[id]",
+  "/dog-adoption/page": "/dog-adoption"
 }

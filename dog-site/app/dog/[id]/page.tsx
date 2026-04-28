@@ -1,15 +1,44 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 import { apiUrl } from "@/lib/api";
 import { AdoptDogButton } from "@/features/dog-adoption/components/AdoptDogButton";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function DogDetailClient({ params }: { params: { id: string } }) {
-  const { id } = params;
-  const [dog, setDog] = useState<any | null>(null);
-  const [updates, setUpdates] = useState<any[]>([]);
+type DogDetail = {
+  dogId: string;
+  name: string;
+  rescueName: string;
+  petName: string | null;
+  breed: string;
+  color: string;
+  age: string;
+  gender: string;
+  description: string;
+  imageUrl: string;
+  status: "available" | "pending" | "adopted";
+};
+
+type DogUpdate = {
+  updateId: string;
+  imageUrl: string;
+  caption: string;
+  collarTag: string | null;
+};
+
+function isWrappedDogPayload(
+  data: unknown
+): data is { dog?: DogDetail; updates?: DogUpdate[] } {
+  return typeof data === "object" && data !== null && ("dog" in data || "updates" in data);
+}
+
+export default function DogDetailClient() {
+  const params = useParams<{ id: string }>();
+  const id = params?.id ?? "";
+  const [dog, setDog] = useState<DogDetail | null>(null);
+  const [updates, setUpdates] = useState<DogUpdate[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -17,11 +46,20 @@ export default function DogDetailClient({ params }: { params: { id: string } }) 
     async function load() {
       try {
         const res = await fetch(apiUrl(`/api/dogs/${id}`));
-        const payload = await res.json();
+        const payload = (await res.json()) as {
+          data?: { dog?: DogDetail; updates?: DogUpdate[] } | DogDetail;
+          error?: string;
+        };
         if (!res.ok) throw new Error(payload?.error || "Failed to load dog.");
         if (mounted) {
-          setDog(payload.data?.dog ?? payload.data ?? null);
-          setUpdates(payload.data?.updates ?? []);
+          const data = payload.data;
+          if (isWrappedDogPayload(data)) {
+            setDog(data.dog ?? null);
+            setUpdates(data.updates ?? []);
+          } else {
+            setDog(data ?? null);
+            setUpdates([]);
+          }
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : String(err));
@@ -42,7 +80,13 @@ export default function DogDetailClient({ params }: { params: { id: string } }) 
       <section className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1.12fr_0.88fr]">
         <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-lg shadow-slate-900/5">
           <div className="relative aspect-[4/3] bg-slate-100">
-            <img src={dog.imageUrl} alt={dog.name} className="object-cover w-full h-full" />
+            <Image
+              src={dog.imageUrl}
+              alt={dog.name}
+              fill
+              sizes="(max-width: 1024px) 100vw, 60vw"
+              className="object-cover"
+            />
           </div>
         </div>
 
@@ -80,7 +124,13 @@ export default function DogDetailClient({ params }: { params: { id: string } }) 
             {updates.map((item) => (
               <article key={item.updateId} className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
                 <div className="relative aspect-[4/3] bg-slate-100">
-                  <img src={item.imageUrl} alt={item.caption} className="object-cover w-full h-full" />
+                  <Image
+                    src={item.imageUrl}
+                    alt={item.caption}
+                    fill
+                    sizes="(max-width: 1024px) 50vw, 33vw"
+                    className="object-cover"
+                  />
                 </div>
                 <div className="space-y-2 p-4">
                   <p className="text-sm leading-relaxed text-slate-700">{item.caption}</p>

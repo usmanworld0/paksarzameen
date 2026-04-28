@@ -4,9 +4,37 @@ import { useEffect, useState } from "react";
 import { DogMarketplace } from "@/features/dog-adoption/components/DogMarketplace";
 import { apiUrl } from "@/lib/api";
 
+type DogRecord = {
+  dogId: string;
+  name: string;
+  breed: string;
+  color: string;
+  age: string;
+  gender: string;
+  city: string | null;
+  area: string | null;
+  description: string;
+  imageUrl: string;
+  status: "available" | "pending" | "adopted";
+  createdAt: string;
+};
+
+type AdoptedDogRecord = {
+  dogId: string;
+  dogName: string;
+  rescueName: string;
+  petName: string | null;
+  breed: string;
+  color: string;
+  age: string;
+  gender: string;
+  imageUrl: string;
+  ownerName: string | null;
+};
+
 export default function DogAdoptionPageClient() {
-  const [dogs, setDogs] = useState<any[]>([]);
-  const [adopted, setAdopted] = useState<any[]>([]);
+  const [dogs, setDogs] = useState<DogRecord[]>([]);
+  const [adopted, setAdopted] = useState<AdoptedDogRecord[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -15,12 +43,12 @@ export default function DogAdoptionPageClient() {
     async function load() {
       try {
         const res = await fetch(apiUrl("/api/dogs?status=available&status=adopted"));
-        const payload = await res.json();
+        const payload = (await res.json()) as { data?: DogRecord[]; error?: string };
         if (!res.ok) throw new Error(payload?.error || "Failed to load dogs.");
         if (mounted) setDogs(payload.data ?? []);
 
         const res2 = await fetch(apiUrl("/api/dogs/adopted"));
-        const payload2 = await res2.json();
+        const payload2 = (await res2.json()) as { data?: AdoptedDogRecord[]; error?: string };
         if (res2.ok) {
           if (mounted) setAdopted(payload2.data ?? []);
         }

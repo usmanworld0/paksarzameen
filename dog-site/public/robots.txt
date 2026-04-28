@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://dogs.paksarzameenwfo.com/sitemap.xml

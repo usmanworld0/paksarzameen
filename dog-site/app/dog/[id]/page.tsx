@@ -2,10 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { apiUrl } from "../../../lib/api";
-import { AdoptDogButton } from "../../../features/dog-adoption/components/AdoptDogButton";
 import Image from "next/image";
 import Link from "next/link";
+
+import { AdoptDogButton } from "../../../features/dog-adoption/components/AdoptDogButton";
+import { DogLikeButton } from "../../../components/DogLikeButton";
+import { apiUrl } from "../../../lib/api";
+import { parseJsonResponse } from "../../../lib/fetchHelpers";
 
 type DogDetail = {
   dogId: string;
@@ -28,9 +31,7 @@ type DogUpdate = {
   collarTag: string | null;
 };
 
-function isWrappedDogPayload(
-  data: unknown
-): data is { dog?: DogDetail; updates?: DogUpdate[] } {
+function isWrappedDogPayload(data: unknown): data is { dog?: DogDetail; updates?: DogUpdate[] } {
   return typeof data === "object" && data !== null && ("dog" in data || "updates" in data);
 }
 
@@ -43,14 +44,19 @@ export default function DogDetailClient() {
 
   useEffect(() => {
     let mounted = true;
+
     async function load() {
       try {
         const res = await fetch(apiUrl(`/api/dogs/${id}`));
-        const payload = (await res.json()) as {
+        const payload = (await parseJsonResponse(res)) as {
           data?: { dog?: DogDetail; updates?: DogUpdate[] } | DogDetail;
           error?: string;
         };
-        if (!res.ok) throw new Error(payload?.error || "Failed to load dog.");
+
+        if (!res.ok) {
+          throw new Error(payload?.error || `Failed to load dog. (status ${res.status})`);
+        }
+
         if (mounted) {
           const data = payload.data;
           if (isWrappedDogPayload(data)) {
@@ -72,74 +78,133 @@ export default function DogDetailClient() {
     };
   }, [id]);
 
-  if (error) return <div className="p-6 text-red-700">{error}</div>;
-  if (!dog) return <div className="p-6">Loading…</div>;
+  if (error) {
+    return (
+      <main className="dog-shell px-5 py-10 sm:px-8 lg:px-12">
+        <div className="mx-auto max-w-5xl border border-black/8 bg-white p-6 text-neutral-700">
+          {error}
+        </div>
+      </main>
+    );
+  }
+
+  if (!dog) {
+    return (
+      <main className="dog-shell px-5 py-10 sm:px-8 lg:px-12">
+        <div className="mx-auto max-w-5xl border border-black/8 bg-white p-6 text-neutral-700">
+          Loading…
+        </div>
+      </main>
+    );
+  }
 
   return (
-    <main className="min-h-screen bg-[linear-gradient(180deg,_#f8fcf8_0%,_#edf5ef_100%)] px-4 pb-20 pt-28 sm:px-6 lg:px-10">
-      <section className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1.12fr_0.88fr]">
-        <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-lg shadow-slate-900/5">
-          <div className="relative aspect-[4/3] bg-slate-100">
-            <Image
-              src={dog.imageUrl}
-              alt={dog.name}
-              fill
-              sizes="(max-width: 1024px) 100vw, 60vw"
-              className="object-cover"
-            />
+    <main className="dog-shell px-5 pb-20 pt-10 sm:px-8 lg:px-12">
+      <section className="mx-auto max-w-[1380px] space-y-8">
+        <div className="flex flex-col gap-4 border-b border-black/8 pb-5 sm:flex-row sm:items-end sm:justify-between">
+          <div className="space-y-3">
+            <p className="dog-kicker">Dog profile</p>
+            <h1 className="text-4xl font-normal uppercase tracking-[-0.06em] text-neutral-950 sm:text-6xl">{dog.name}</h1>
+            <p className="text-sm uppercase tracking-[0.22em] text-neutral-500">Rescue name: {dog.rescueName}</p>
+          </div>
+
+          <Link href="/dog-adoption" className="rounded-full border border-black px-5 py-3 text-[11px] font-medium uppercase tracking-[0.22em] text-neutral-950 transition hover:bg-black hover:text-white">
+            Back to adoption
+          </Link>
+        </div>
+
+        <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+          <div className="border border-black/8 bg-white">
+            <div className="relative aspect-[4/5] bg-neutral-100 lg:aspect-[4/3]">
+              <Image
+                src={dog.imageUrl}
+                alt={dog.name}
+                fill
+                sizes="(max-width: 1024px) 100vw, 60vw"
+                className="object-cover"
+                priority
+              />
+            </div>
+          </div>
+
+          <div className="space-y-6 border border-black/8 bg-white p-6 sm:p-8 lg:sticky lg:top-28 lg:self-start">
+            <div className="flex flex-wrap gap-2">
+              <span className="rounded-full bg-black px-3 py-1 text-[10px] font-medium uppercase tracking-[0.22em] text-white">
+                {dog.status}
+              </span>
+              <span className="rounded-full border border-black/10 px-3 py-1 text-[10px] font-medium uppercase tracking-[0.22em] text-neutral-600">
+                {dog.gender}
+              </span>
+              <span className="rounded-full border border-black/10 px-3 py-1 text-[10px] font-medium uppercase tracking-[0.22em] text-neutral-600">
+                {dog.age}
+              </span>
+            </div>
+
+            <div className="space-y-2">
+              <p className="text-[10px] uppercase tracking-[0.24em] text-neutral-500">Breed and color</p>
+              <p className="text-xl font-normal tracking-[-0.03em] text-neutral-950">{dog.breed}</p>
+              <p className="text-sm uppercase tracking-[0.2em] text-neutral-500">{dog.color}</p>
+              {dog.petName ? <p className="text-sm text-neutral-950">Pet name: {dog.petName}</p> : null}
+            </div>
+
+            <p className="max-w-xl text-sm leading-7 text-neutral-600">{dog.description}</p>
+
+            <div className="flex flex-wrap gap-3">
+              {dog.status === "available" ? (
+                <AdoptDogButton dogId={dog.dogId} />
+              ) : (
+                <div className="border border-black/8 bg-neutral-50 px-4 py-3 text-sm text-neutral-700">
+                  This dog is currently marked as {dog.status}.
+                </div>
+              )}
+              <DogLikeButton dogId={dog.dogId} />
+            </div>
+
+            <div className="border-t border-black/8 pt-4">
+              <p className="text-[10px] uppercase tracking-[0.24em] text-neutral-500">Profile reference</p>
+              <p className="mt-2 text-sm text-neutral-700">{dog.dogId}</p>
+            </div>
           </div>
         </div>
 
-        <div className="space-y-5 rounded-3xl border border-emerald-100 bg-white/95 p-6 shadow-xl shadow-emerald-900/10 sm:p-8">
-          <div className="space-y-2">
-            <p className="inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700">Dog Profile</p>
-            <h1 className="text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">{dog.name}</h1>
-            <p className="text-xs uppercase tracking-wide text-slate-500">Rescue Name: {dog.rescueName}</p>
-            {dog.petName ? <p className="text-sm font-semibold text-indigo-700">Pet Name: {dog.petName}</p> : null}
-            <p className="text-sm text-slate-600 sm:text-base">{dog.breed} • {dog.color} • {dog.age} • {dog.gender}</p>
+        <section className="space-y-5 border-t border-black/8 pt-8">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="dog-kicker">Life after adoption</p>
+              <h2 className="mt-2 text-3xl font-normal tracking-[-0.05em] text-neutral-950">Post-adoption updates</h2>
+            </div>
+            <p className="text-sm text-neutral-500">Shared by the admin team</p>
           </div>
 
-          <p className="text-base leading-relaxed text-slate-700">{dog.description}</p>
-
-          {dog.status === "available" ? (
-            <AdoptDogButton dogId={dog.dogId} />
+          {!updates.length ? (
+            <div className="border border-dashed border-black/10 bg-white p-6 text-sm text-neutral-600">
+              No post-adoption updates uploaded yet.
+            </div>
           ) : (
-            <p className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">This dog is currently marked as {dog.status}.</p>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {updates.map((item, index) => (
+                <article key={item.updateId} className="border border-black/8 bg-white">
+                  <div className="relative aspect-[4/3] bg-neutral-100">
+                    <Image
+                      src={item.imageUrl}
+                      alt={item.caption}
+                      fill
+                      sizes="(max-width: 1024px) 50vw, 33vw"
+                      className="object-cover"
+                    />
+                    <div className="absolute left-4 top-4 rounded-full bg-black px-3 py-1 text-[10px] font-medium uppercase tracking-[0.22em] text-white">
+                      Update {String(index + 1).padStart(2, "0")}
+                    </div>
+                  </div>
+                  <div className="space-y-2 p-4">
+                    <p className="text-sm leading-7 text-neutral-700">{item.caption}</p>
+                    {item.collarTag ? <p className="text-[10px] uppercase tracking-[0.22em] text-neutral-500">Collar tag: {item.collarTag}</p> : null}
+                  </div>
+                </article>
+              ))}
+            </div>
           )}
-
-          <Link href="/dog-adoption" className="inline-flex text-sm font-semibold text-emerald-700 hover:text-emerald-600">← Back to Browse Dogs</Link>
-        </div>
-      </section>
-
-      <section className="mx-auto mt-10 max-w-6xl space-y-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-        <div>
-          <h2 className="text-2xl font-semibold text-slate-900">Life After Adoption</h2>
-          <p className="mt-1 text-sm text-slate-600 sm:text-base">Post-adoption moments shared by the admin team for adopted dogs.</p>
-        </div>
-
-        {!updates.length ? (
-          <p className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">No post-adoption updates uploaded yet.</p>
-        ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {updates.map((item) => (
-              <article key={item.updateId} className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
-                <div className="relative aspect-[4/3] bg-slate-100">
-                  <Image
-                    src={item.imageUrl}
-                    alt={item.caption}
-                    fill
-                    sizes="(max-width: 1024px) 50vw, 33vw"
-                    className="object-cover"
-                  />
-                </div>
-                <div className="space-y-2 p-4">
-                  <p className="text-sm leading-relaxed text-slate-700">{item.caption}</p>
-                  {item.collarTag ? <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700">Collar Tag: {item.collarTag}</p> : null}
-                </div>
-              </article>
-            ))}
-          </div>
-        )}
+        </section>
       </section>
     </main>
   );

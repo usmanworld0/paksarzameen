@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { apiUrl } from "../../../lib/api";
+import { parseJsonResponse } from "../../../lib/fetchHelpers";
 
 type AdoptDogButtonProps = { dogId: string };
 
@@ -31,7 +32,7 @@ export function AdoptDogButton({ dogId }: AdoptDogButtonProps) {
         body: JSON.stringify({ dogId, whatsappNumber: normalizedWhatsapp }),
       });
 
-      const payload = await response.json();
+      const payload = await parseJsonResponse(response);
 
       if (response.status === 401) {
         const callbackUrl = encodeURIComponent(`/dog/${dogId}`);

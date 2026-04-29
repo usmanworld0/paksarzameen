@@ -2,10 +2,137 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  :root {
+    --background: 255 255 255;
+    --foreground: 17 17 17;
+    --muted: 248 247 244;
+    --muted-foreground: 111 111 111;
+    --border: 229 227 222;
+    --ring: 17 17 17;
+    --radius: 1rem;
+    --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+
+  * {
+    @apply border-[rgb(var(--border))];
+  }
+
+  html {
+    background: rgb(var(--background));
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply antialiased;
+    background: linear-gradient(180deg, #ffffff 0%, #fcfbf8 56%, #f7f4ef 100%);
+    color: rgb(var(--foreground));
+    font-family: var(--font-sans);
+    min-height: 100vh;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-weight: 400;
+    letter-spacing: -0.03em;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background: rgba(17, 17, 17, 0.12);
+    color: rgb(var(--foreground));
+  }
+
+  a,
+  button,
+  input,
+  textarea,
+  select {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+@layer components {
+  .dog-shell {
+    background: linear-gradient(180deg, #ffffff 0%, #fcfbf8 56%, #f7f4ef 100%);
+  }
+
+  .dog-container {
+    @apply mx-auto w-full max-w-[1380px] px-5 sm:px-8 lg:px-12;
+  }
+
+  .dog-kicker {
+    @apply text-[9px] font-normal uppercase tracking-[0.28em];
+    color: rgba(17, 17, 17, 0.48);
+  }
+
+  .dog-heading {
+    font-size: clamp(1.4rem, 3vw, 2.6rem);
+    line-height: 1.02;
+    letter-spacing: -0.04em;
+    color: #111111;
+    font-weight: 400;
+  }
+
+  .dog-subheading {
+    @apply text-[14px] leading-7 text-neutral-600 sm:text-[15px];
+  }
+
+  .dog-surface {
+    border: 1px solid rgba(17, 17, 17, 0.08);
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: 0 18px 48px rgba(17, 17, 17, 0.045);
+  }
+
+  .dog-pill {
+    @apply inline-flex items-center rounded-full border px-3 py-1.5 text-[10px] font-normal uppercase tracking-[0.28em];
+    border-color: rgba(17, 17, 17, 0.08);
+    color: rgba(17, 17, 17, 0.54);
+    background: rgba(255, 255, 255, 0.86);
+  }
+
+  .dog-button {
+    @apply inline-flex items-center justify-center rounded-full px-5 py-3 text-[10px] font-normal uppercase tracking-[0.22em] transition-all duration-500;
+  }
+
+  .dog-button-primary {
+    @apply dog-button text-white;
+    background: #111111;
+    box-shadow: 0 18px 38px rgba(17, 17, 17, 0.08);
+  }
+
+  .dog-button-primary:hover {
+    transform: translateY(-1px);
+    background: #262626;
+    box-shadow: 0 22px 42px rgba(17, 17, 17, 0.11);
+  }
+
+  .dog-button-secondary {
+    @apply dog-button border text-neutral-800;
+    border-color: rgba(17, 17, 17, 0.12);
+    background: rgba(255, 255, 255, 0.92);
+  }
+
+  .dog-button-secondary:hover {
+    transform: translateY(-1px);
+    border-color: rgba(17, 17, 17, 0.26);
+    background: rgba(248, 247, 244, 0.95);
+  }
+}
+
 html, body, #__next {
   height: 100%;
 }
 
-body {
-  @apply bg-white text-slate-900;
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }

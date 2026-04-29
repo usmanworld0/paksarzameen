@@ -1,5 +1,5 @@
 import "./globals.css";
-import type { PropsWithChildren } from "react";
+import type { ReactNode } from "react";
 
 export const metadata = {
   title: "HealthCare — PakSarZameen",
@@ -13,7 +13,7 @@ export const metadata = {
 
 // Small client-side fetch proxy will be installed in useEffect inside layout to prepend API base for relative /api calls.
 
-export default function RootLayout({ children }: PropsWithChildren<{}>) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body>

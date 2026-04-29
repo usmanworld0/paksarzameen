@@ -2,15 +2,10 @@
 
 import dynamic from "next/dynamic";
 import { useEffect } from "react";
-import { installClientFetchProxy } from "@/lib/api";
+import { installClientFetchProxy } from "../../../lib/api";
 
 const DoctorDashboard = dynamic(
-  () => import("../../../../../src/features/healthcare/components/DoctorDashboard").then((m) => m.DoctorDashboard),
-  { ssr: false }
-);
-
-const DoctorAccessStatusCard = dynamic(
-  () => import("../../../../../src/features/healthcare/components/DoctorAccessStatusCard").then((m) => m.DoctorAccessStatusCard),
+  () => import("../../../features/healthcare/components/DoctorDashboard").then((m) => m.DoctorDashboard),
   { ssr: false }
 );
 

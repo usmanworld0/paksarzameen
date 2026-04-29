@@ -12,8 +12,9 @@ export function installClientFetchProxy() {
   if (!base) return;
   const originalFetch = window.fetch;
   // avoid installing twice
-  if ((window as any).__apiProxyInstalled) return;
-  (window as any).__apiProxyInstalled = true;
+  const globalWindow = window as Window & { __apiProxyInstalled?: boolean };
+  if (globalWindow.__apiProxyInstalled) return;
+  globalWindow.__apiProxyInstalled = true;
 
   window.fetch = function (input: RequestInfo | URL, init?: RequestInit) {
     try {
@@ -21,9 +22,9 @@ export function installClientFetchProxy() {
       if (url.startsWith("/api/")) {
         url = `${base.replace(/\/$/, "")}${url}`;
       }
-      return originalFetch.call(this, url, init);
-    } catch (err) {
-      return originalFetch.call(this, input as any, init);
+      return originalFetch(url, init);
+    } catch {
+      return originalFetch(input as RequestInfo | URL, init);
     }
   } as typeof window.fetch;
 }

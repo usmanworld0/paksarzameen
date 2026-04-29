@@ -2,9 +2,9 @@
 
 import dynamic from "next/dynamic";
 import { useEffect } from "react";
-import { installClientFetchProxy } from "@/lib/api";
+import { installClientFetchProxy } from "../../lib/api";
 
-const HealthCareHubProfessional = dynamic(() => import("@/features/healthcare/components/HealthCareHubProfessional").then((m) => m.HealthCareHubProfessional), { ssr: false });
+const HealthCareHubProfessional = dynamic(() => import("../../features/healthcare/components/HealthCareHubProfessional").then((m) => m.HealthCareHubProfessional), { ssr: false });
 
 export default function HealthCarePageClient() {
   useEffect(() => {

@@ -2,15 +2,15 @@
 
 import dynamic from "next/dynamic";
 import { useEffect } from "react";
-import { installClientFetchProxy } from "@/lib/api";
+import { installClientFetchProxy } from "../../../lib/api";
 
 const BloodBankRequestForm = dynamic(
-  () => import("../../../../../src/features/blood-bank/components/BloodBankRequestForm").then((m) => m.BloodBankRequestForm),
+  () => import("../../../features/blood-bank/components/BloodBankRequestForm").then((m) => m.BloodBankRequestForm),
   { ssr: false }
 );
 
 const EmergencyBloodRequest = dynamic(
-  () => import("../../../../../src/features/blood-bank/components/EmergencyBloodRequest").then((m) => m.EmergencyBloodRequest),
+  () => import("../../../features/blood-bank/components/EmergencyBloodRequest").then((m) => m.EmergencyBloodRequest),
   { ssr: false }
 );
 

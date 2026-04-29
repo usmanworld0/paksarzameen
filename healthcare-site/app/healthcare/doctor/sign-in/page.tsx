@@ -2,10 +2,10 @@
 
 import dynamic from "next/dynamic";
 import { useEffect } from "react";
-import { installClientFetchProxy } from "@/lib/api";
+import { installClientFetchProxy } from "../../../../lib/api";
 
 const DoctorPortalSignInForm = dynamic(
-  () => import("../../../../../src/features/healthcare/components/DoctorPortalSignInForm").then((m) => m.DoctorPortalSignInForm),
+  () => import("../../../../features/healthcare/components/DoctorPortalSignInForm").then((m) => m.DoctorPortalSignInForm),
   { ssr: false }
 );
 

@@ -90,21 +90,21 @@ export function GetInvolvedForm() {
 
   if (submitted) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-[1.45rem] border border-[#bfdccc] bg-[linear-gradient(160deg,rgba(237,252,246,0.95),rgba(255,255,255,0.96))] p-8 text-center sm:p-12">
-        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[#1f8f63] text-white shadow-[0_10px_22px_rgba(32,127,92,0.3)]">
+      <div className="flex flex-col items-center justify-center rounded-[1.6rem] border border-[#e5e5e5] bg-[#fafafa] p-8 text-center sm:p-12">
+        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[#111111] text-white">
           <CheckCircle2 className="h-7 w-7" />
         </span>
-        <h2 className="mt-6 font-heading text-3xl font-bold text-[#1e2a33]">
+        <h2 className="mt-6 font-['Arial_Narrow'] text-[3.4rem] font-bold uppercase tracking-[-0.06em] text-[#111111]">
           Thank You!
         </h2>
-        <p className="mt-3 max-w-md text-base leading-relaxed text-[#4c5f5a]">
+        <p className="mt-3 max-w-md text-[1.5rem] leading-[1.8] text-[#707072]">
           We have received your request and will be in touch within 3-5 working
           days. Welcome to the PakSarZameen community.
         </p>
         <button
           type="button"
           onClick={() => setSubmitted(false)}
-          className="mt-8 rounded-full border border-[#1f8f63] px-6 py-2.5 text-sm font-semibold text-[#1f8f63] transition-colors hover:bg-[#1f8f63] hover:text-white"
+          className="site-button-secondary mt-8"
         >
           Submit Another Response
         </button>
@@ -115,10 +115,10 @@ export function GetInvolvedForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-[1.3rem] border border-[#d0e1d8] bg-[linear-gradient(165deg,rgba(255,255,255,0.97),rgba(245,251,247,0.94))] p-5 shadow-[0_14px_34px_rgba(35,98,72,0.12)] sm:p-7"
+      className="rounded-[1.6rem] border border-[#e5e5e5] bg-white p-5 sm:p-7"
       noValidate
     >
-      <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#1f8f63]">
+      <p className="site-form-label site-form-label--caps">
         Your Details
       </p>
 
@@ -127,9 +127,9 @@ export function GetInvolvedForm() {
         <div>
           <label
             htmlFor="fullName"
-            className="block text-sm font-semibold uppercase tracking-[0.12em] text-[#4d665a]"
+            className="site-form-label site-form-label--caps"
           >
-            Full Name <span className="text-[#1f8f63]">*</span>
+            Full Name <span className="text-[#111111]">*</span>
           </label>
           <input
             id="fullName"
@@ -139,15 +139,15 @@ export function GetInvolvedForm() {
             value={values.fullName}
             onChange={handleChange}
             placeholder="e.g. Abdullah Tanseer"
-            className="mt-2 w-full rounded-xl border border-[#d0e1d8] bg-white px-4 py-3.5 text-base text-[#1f3a2d] outline-none transition-all duration-200 placeholder:text-[#91a99d] focus:border-[#1f8f63]/65 focus:shadow-[0_0_0_3px_rgba(31,143,99,0.13)]"
+            className="site-input mt-2"
           />
         </div>
         <div>
           <label
             htmlFor="email"
-            className="block text-sm font-semibold uppercase tracking-[0.12em] text-[#4d665a]"
+            className="site-form-label site-form-label--caps"
           >
-            Email Address <span className="text-[#1f8f63]">*</span>
+            Email Address <span className="text-[#111111]">*</span>
           </label>
           <input
             id="email"
@@ -157,7 +157,7 @@ export function GetInvolvedForm() {
             value={values.email}
             onChange={handleChange}
             placeholder="you@example.com"
-            className="mt-2 w-full rounded-xl border border-[#d0e1d8] bg-white px-4 py-3.5 text-base text-[#1f3a2d] outline-none transition-all duration-200 placeholder:text-[#91a99d] focus:border-[#1f8f63]/65 focus:shadow-[0_0_0_3px_rgba(31,143,99,0.13)]"
+            className="site-input mt-2"
           />
         </div>
       </div>
@@ -167,7 +167,7 @@ export function GetInvolvedForm() {
         <div>
           <label
             htmlFor="phone"
-            className="block text-sm font-semibold uppercase tracking-[0.12em] text-[#4d665a]"
+            className="site-form-label site-form-label--caps"
           >
             Phone Number
           </label>
@@ -178,13 +178,13 @@ export function GetInvolvedForm() {
             value={values.phone}
             onChange={handleChange}
             placeholder="+92 303 5763435"
-            className="mt-2 w-full rounded-xl border border-[#d0e1d8] bg-white px-4 py-3.5 text-base text-[#1f3a2d] outline-none transition-all duration-200 placeholder:text-[#91a99d] focus:border-[#1f8f63]/65 focus:shadow-[0_0_0_3px_rgba(31,143,99,0.13)]"
+            className="site-input mt-2"
           />
         </div>
         <div>
           <label
             htmlFor="city"
-            className="block text-sm font-semibold uppercase tracking-[0.12em] text-[#4d665a]"
+            className="site-form-label site-form-label--caps"
           >
             City / Region
           </label>
@@ -195,7 +195,7 @@ export function GetInvolvedForm() {
             value={values.city}
             onChange={handleChange}
             placeholder="e.g. Bahawalpur"
-            className="mt-2 w-full rounded-xl border border-[#d0e1d8] bg-white px-4 py-3.5 text-base text-[#1f3a2d] outline-none transition-all duration-200 placeholder:text-[#91a99d] focus:border-[#1f8f63]/65 focus:shadow-[0_0_0_3px_rgba(31,143,99,0.13)]"
+            className="site-input mt-2"
           />
         </div>
       </div>
@@ -204,9 +204,9 @@ export function GetInvolvedForm() {
       <div className="mt-4">
         <label
           htmlFor="role"
-          className="block text-sm font-semibold uppercase tracking-[0.12em] text-[#4d665a]"
+          className="site-form-label site-form-label--caps"
         >
-          I Want To <span className="text-[#1f8f63]">*</span>
+          I Want To <span className="text-[#111111]">*</span>
         </label>
         <select
           id="role"
@@ -214,7 +214,7 @@ export function GetInvolvedForm() {
           required
           value={values.role}
           onChange={handleChange}
-          className="mt-2 w-full rounded-xl border border-[#d0e1d8] bg-white px-4 py-3.5 text-base text-[#1f3a2d] outline-none transition-all duration-200 focus:border-[#1f8f63]/65 focus:shadow-[0_0_0_3px_rgba(31,143,99,0.13)]"
+          className="site-select mt-2"
         >
           <option value="" disabled>
             Select your role
@@ -229,7 +229,7 @@ export function GetInvolvedForm() {
 
       {/* Row 4 - Program interest (multi-select chips) */}
       <div className="mt-6">
-        <p className="text-sm font-semibold uppercase tracking-[0.12em] text-[#4d665a]">
+        <p className="site-form-label site-form-label--caps">
           Programs of Interest
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
@@ -240,10 +240,10 @@ export function GetInvolvedForm() {
                 key={program}
                 type="button"
                 onClick={() => handleProgramToggle(program)}
-                className={`rounded-full border px-4 py-2.5 text-sm font-semibold uppercase tracking-[0.04em] transition-all duration-300 ${
+                className={`rounded-full border px-4 py-2.5 text-[1.2rem] font-medium uppercase tracking-[0.08em] transition-colors ${
                   active
-                    ? "border-transparent bg-[linear-gradient(120deg,#1f8f63_0%,#2ea874_58%,#58b88a_100%)] text-white shadow-[0_8px_18px_rgba(31,116,78,0.3)]"
-                    : "border-[#d0e1d8] bg-white text-[#4e665a] hover:-translate-y-0.5 hover:border-[#afceb8] hover:bg-[#f4fbf7]"
+                    ? "border-[#111111] bg-[#111111] text-white"
+                    : "border-[#cacacb] bg-white text-[#111111] hover:border-[#111111] hover:bg-[#f5f5f5]"
                 }`}
               >
                 {program}
@@ -257,7 +257,7 @@ export function GetInvolvedForm() {
       <div className="mt-6">
         <label
           htmlFor="howHeard"
-          className="block text-sm font-semibold uppercase tracking-[0.12em] text-[#4d665a]"
+          className="site-form-label site-form-label--caps"
         >
           How Did You Hear About Us?
         </label>
@@ -266,7 +266,7 @@ export function GetInvolvedForm() {
           name="howHeard"
           value={values.howHeard}
           onChange={handleChange}
-          className="mt-2 w-full rounded-xl border border-[#d0e1d8] bg-white px-4 py-3.5 text-base text-[#1f3a2d] outline-none transition-all duration-200 focus:border-[#1f8f63]/65 focus:shadow-[0_0_0_3px_rgba(31,143,99,0.13)]"
+          className="site-select mt-2"
         >
           <option value="" disabled>
             Select an option
@@ -283,7 +283,7 @@ export function GetInvolvedForm() {
       <div className="mt-6">
         <label
           htmlFor="message"
-          className="block text-sm font-semibold uppercase tracking-[0.12em] text-[#4d665a]"
+          className="site-form-label site-form-label--caps"
         >
           Message / Additional Context
         </label>
@@ -294,19 +294,19 @@ export function GetInvolvedForm() {
           value={values.message}
           onChange={handleChange}
           placeholder="Tell us a bit about yourself, your skills, or what you hope to contribute..."
-          className="mt-2 min-h-36 w-full resize-y rounded-xl border border-[#d0e1d8] bg-white px-4 py-3.5 text-base text-[#1f3a2d] outline-none transition-all duration-200 placeholder:text-[#91a99d] focus:border-[#1f8f63]/65 focus:shadow-[0_0_0_3px_rgba(31,143,99,0.13)]"
+          className="site-textarea mt-2"
         />
       </div>
 
       {/* Submit */}
       <div className="mt-8 flex flex-col items-stretch gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm text-[#62776d]">
-          <span className="text-[#1f8f63]">*</span> Required fields
+        <p className="text-[1.25rem] text-[#707072]">
+          <span className="text-[#111111]">*</span> Required fields
         </p>
         <button
           type="submit"
           disabled={loading}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[linear-gradient(120deg,#1f8f63_0%,#2ea874_55%,#58b88a_100%)] px-8 py-3.5 text-base font-semibold text-white shadow-[0_12px_26px_rgba(31,116,78,0.3)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_16px_30px_rgba(31,116,78,0.36)] disabled:opacity-60 sm:w-auto"
+          className="site-button inline-flex w-full items-center gap-2 disabled:opacity-60 sm:w-auto"
         >
           {loading ? "Submitting..." : "Submit Application"}
           {!loading && <ArrowRight className="h-4 w-4" />}

@@ -52,10 +52,10 @@ export function AdoptDogButton({ dogId }: AdoptDogButtonProps) {
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <div className="space-y-2">
-        <label htmlFor={`adopt-whatsapp-${dogId}`} className="block text-sm font-medium text-slate-700">
-          WhatsApp Number
+        <label htmlFor={`adopt-whatsapp-${dogId}`} className="block text-[10px] font-black uppercase tracking-widest text-[#111111]">
+          WHATSAPP NUMBER
         </label>
         <input
           id={`adopt-whatsapp-${dogId}`}
@@ -65,22 +65,34 @@ export function AdoptDogButton({ dogId }: AdoptDogButtonProps) {
           value={whatsappNumber}
           onChange={(event) => setWhatsappNumber(event.target.value)}
           placeholder="03XX1234567"
-          className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+          className="w-full border border-[#E5E5E5] bg-white px-4 py-3 text-sm font-bold text-[#111111] uppercase tracking-widest placeholder:text-[#A0A0A0] outline-none transition focus:border-[#111111] disabled:opacity-50"
           disabled={submitting}
         />
-        <p className="text-xs text-slate-500">Our admin will contact you on this WhatsApp number.</p>
+        <p className="text-[10px] font-bold uppercase tracking-widest text-[#707072]">
+          OUR ADMIN WILL CONTACT YOU.
+        </p>
       </div>
 
       <button
         type="button"
         onClick={() => void handleAdopt()}
         disabled={submitting}
-        className="inline-flex items-center rounded-full bg-emerald-700 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-800/25 transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-70"
+        className="block w-full border border-[#111111] bg-[#111111] px-6 py-4 text-center text-sm font-black tracking-widest uppercase text-white transition hover:bg-white hover:text-[#111111] disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {submitting ? "Submitting..." : "Adopt This Dog"}
+        {submitting ? "SUBMITTING..." : "ADOPT THIS DOG"}
       </button>
-      {success ? <p className="text-sm text-emerald-700">{success}</p> : null}
-      {error ? <p className="text-sm text-red-700">{error}</p> : null}
+
+      {success ? (
+        <div className="border border-[#111111] bg-[#F5F5F5] p-4 text-[10px] font-black uppercase tracking-widest text-[#111111] text-center">
+          {success}
+        </div>
+      ) : null}
+      
+      {error ? (
+        <div className="border border-[#D30005] bg-[#F5F5F5] p-4 text-[10px] font-black uppercase tracking-widest text-[#D30005] text-center">
+          {error}
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -153,3 +153,28 @@ model PasswordResetToken {
   @@index([userId, used, expiresAt])
   @@map("password_reset_tokens")
 }
+
+model EarTagCategory {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  options   EarTagOption[]
+
+  @@map("ear_tag_categories")
+}
+
+model EarTagOption {
+  id         String   @id @default(uuid()) @db.Uuid
+  categoryId String   @map("category_id") @db.Uuid
+  title      String
+  imageUrl   String   @map("image_url")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  category   EarTagCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@index([categoryId])
+  @@map("ear_tag_options")
+}

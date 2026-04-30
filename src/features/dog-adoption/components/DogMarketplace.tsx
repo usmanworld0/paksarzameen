@@ -2,14 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { type ReactNode, useDeferredValue, useState } from "react";
-import {
-  ArrowUpDown,
-  CalendarDays,
-  FilterX,
-  MapPin,
-  Search,
-} from "lucide-react";
+import { useDeferredValue, useState } from "react";
+import { Search } from "lucide-react";
 
 import type { DogRecord, DogStatus } from "@/lib/dog-adoption";
 
@@ -21,17 +15,6 @@ type FilterOption = {
 };
 
 const ADOPTION_FEE_LABEL = "PKR 3,500";
-const LISTING_DATE_FORMATTER = new Intl.DateTimeFormat("en-PK", {
-  day: "numeric",
-  month: "short",
-  year: "numeric",
-});
-
-const STATUS_LABELS: Record<DogStatus, string> = {
-  available: "Available",
-  pending: "Pending",
-  adopted: "Adopted",
-};
 
 const STATUS_PRIORITY: Record<DogStatus, number> = {
   available: 0,
@@ -40,10 +23,10 @@ const STATUS_PRIORITY: Record<DogStatus, number> = {
 };
 
 const SORT_OPTIONS: Array<{ label: string; value: SortOption }> = [
-  { label: "Newest first", value: "newest" },
-  { label: "Oldest first", value: "oldest" },
-  { label: "Name A-Z", value: "name" },
-  { label: "Available first", value: "available-first" },
+  { label: "NEWEST FIRST", value: "newest" },
+  { label: "OLDEST FIRST", value: "oldest" },
+  { label: "NAME A-Z", value: "name" },
+  { label: "AVAILABLE FIRST", value: "available-first" },
 ];
 
 export function DogMarketplace({ dogs }: { dogs: DogRecord[] }) {
@@ -62,25 +45,12 @@ export function DogMarketplace({ dogs }: { dogs: DogRecord[] }) {
   const cityOptions = collectOptions(dogs.map((dog) => dog.city));
 
   const filteredDogs = dogs.filter((dog) => {
-    if (statusFilter !== "all" && dog.status !== statusFilter) {
-      return false;
-    }
+    if (statusFilter !== "all" && dog.status !== statusFilter) return false;
+    if (breedFilter !== "all" && normalizeValue(dog.breed) !== breedFilter) return false;
+    if (genderFilter !== "all" && normalizeValue(dog.gender) !== genderFilter) return false;
+    if (cityFilter !== "all" && normalizeValue(dog.city) !== cityFilter) return false;
 
-    if (breedFilter !== "all" && normalizeValue(dog.breed) !== breedFilter) {
-      return false;
-    }
-
-    if (genderFilter !== "all" && normalizeValue(dog.gender) !== genderFilter) {
-      return false;
-    }
-
-    if (cityFilter !== "all" && normalizeValue(dog.city) !== cityFilter) {
-      return false;
-    }
-
-    if (!normalizedQuery) {
-      return true;
-    }
+    if (!normalizedQuery) return true;
 
     const searchableText = [
       dog.name,
@@ -99,32 +69,17 @@ export function DogMarketplace({ dogs }: { dogs: DogRecord[] }) {
   });
 
   filteredDogs.sort((left, right) => {
-    if (sortBy === "oldest") {
-      return Date.parse(left.createdAt) - Date.parse(right.createdAt);
-    }
-
-    if (sortBy === "name") {
-      return left.name.localeCompare(right.name);
-    }
-
+    if (sortBy === "oldest") return Date.parse(left.createdAt) - Date.parse(right.createdAt);
+    if (sortBy === "name") return left.name.localeCompare(right.name);
     if (sortBy === "available-first") {
       const priorityDelta = STATUS_PRIORITY[left.status] - STATUS_PRIORITY[right.status];
-      if (priorityDelta !== 0) {
-        return priorityDelta;
-      }
+      if (priorityDelta !== 0) return priorityDelta;
     }
-
     return Date.parse(right.createdAt) - Date.parse(left.createdAt);
   });
 
   const availableCount = dogs.filter((dog) => dog.status === "available").length;
   const adoptedCount = dogs.filter((dog) => dog.status === "adopted").length;
-  const activeFilterCount =
-    (query.trim() ? 1 : 0) +
-    (statusFilter !== "all" ? 1 : 0) +
-    (breedFilter !== "all" ? 1 : 0) +
-    (genderFilter !== "all" ? 1 : 0) +
-    (cityFilter !== "all" ? 1 : 0);
 
   function resetFilters() {
     setQuery("");
@@ -136,402 +91,213 @@ export function DogMarketplace({ dogs }: { dogs: DogRecord[] }) {
   }
 
   return (
-    <div className="space-y-6">
-      <section className="grid gap-6 xl:grid-cols-[320px_minmax(0,1fr)] 2xl:grid-cols-[340px_minmax(0,1fr)]">
-        <aside className="space-y-4 xl:sticky xl:top-28 xl:self-start">
-          <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-[0_22px_70px_-55px_rgba(15,23,42,0.65)] sm:p-6">
-            <div className="flex items-start justify-between gap-3">
-              <p className="pt-2 text-xs font-semibold uppercase tracking-[0.26em] text-slate-500">
-                Filters
-              </p>
-
-              <button
-                type="button"
-                onClick={resetFilters}
-                className="inline-flex h-10 items-center gap-2 rounded-full border border-slate-200 px-4 text-sm font-semibold text-slate-700 transition hover:border-slate-900 hover:text-slate-950"
-              >
-                <FilterX className="h-4 w-4" />
-                Clear
-              </button>
+    <div className="space-y-8">
+      {/* FILTER SECTION */}
+      <section className="bg-[#F5F5F5] border border-[#E5E5E5] p-6 lg:p-8">
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Text Summary & Top filters */}
+          <div className="flex-1 space-y-4">
+            <h2 className="text-xl font-bold uppercase tracking-tight text-[#111111]">
+              FILTER DIRECTORY
+            </h2>
+            <div className="flex flex-wrap gap-2 mb-4">
+               <button
+                 onClick={() => setStatusFilter("all")}
+                 className={`border px-4 py-2 text-xs font-bold uppercase tracking-widest transition ${statusFilter === "all" ? "bg-[#111111] text-white border-[#111111]" : "bg-white text-[#111111] border-[#CACACB] hover:border-[#111111]"}`}
+               >
+                 ALL ({dogs.length})
+               </button>
+               <button
+                 onClick={() => setStatusFilter("available")}
+                 className={`border px-4 py-2 text-xs font-bold uppercase tracking-widest transition ${statusFilter === "available" ? "bg-[#111111] text-white border-[#111111]" : "bg-white text-[#111111] border-[#CACACB] hover:border-[#111111]"}`}
+               >
+                 AVAILABLE ({availableCount})
+               </button>
+               <button
+                 onClick={() => setStatusFilter("adopted")}
+                 className={`border px-4 py-2 text-xs font-bold uppercase tracking-widest transition ${statusFilter === "adopted" ? "bg-[#111111] text-white border-[#111111]" : "bg-white text-[#111111] border-[#CACACB] hover:border-[#111111]"}`}
+               >
+                 ADOPTED ({adoptedCount})
+               </button>
             </div>
-
-            <div className="mt-5 space-y-4">
-              <label className="block space-y-2">
-                <span className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
-                  Search
-                </span>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="relative">
-                  <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                  <Search className="absolute left-3 top-3.5 h-4 w-4 text-[#707072]" />
                   <input
                     type="search"
                     value={query}
                     onChange={(event) => setQuery(event.target.value)}
-                    placeholder="Name, breed, city, age..."
-                    className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-11 pr-4 text-sm text-slate-900 outline-none transition focus:border-emerald-500 focus:bg-white"
-                    aria-label="Search rescue dogs"
+                    placeholder="NAME, BREED..."
+                    className="h-12 w-full bg-white border border-[#CACACB] pl-10 pr-4 text-xs font-medium text-[#111111] uppercase tracking-wide focus:border-[#111111] outline-none rounded-none"
                   />
                 </div>
-              </label>
-
-              <label className="block space-y-2">
-                <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
-                  <ArrowUpDown className="h-4 w-4" />
-                  Sort by
-                </span>
-                <select
-                  value={sortBy}
-                  onChange={(event) => setSortBy(event.target.value as SortOption)}
-                  className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm text-slate-900 outline-none transition focus:border-emerald-500 focus:bg-white"
-                  aria-label="Sort dogs"
-                >
-                  {SORT_OPTIONS.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              <label className="block space-y-2">
-                <span className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
-                  Breed
-                </span>
+                
                 <select
                   value={breedFilter}
                   onChange={(event) => setBreedFilter(event.target.value)}
-                  className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm text-slate-900 outline-none transition focus:border-emerald-500 focus:bg-white"
-                  aria-label="Filter by breed"
+                  className="h-12 w-full bg-white border border-[#CACACB] px-4 text-xs font-medium text-[#111111] uppercase tracking-wide focus:border-[#111111] outline-none rounded-none"
                 >
-                  <option value="all">All breeds</option>
-                  {breedOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
+                  <option value="all">ALL BREEDS</option>
+                  {breedOptions.map((o) => <option key={o.value} value={o.value}>{o.label.toUpperCase()}</option>)}
                 </select>
-              </label>
 
-              <label className="block space-y-2">
-                <span className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
-                  City
-                </span>
                 <select
                   value={cityFilter}
                   onChange={(event) => setCityFilter(event.target.value)}
-                  className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm text-slate-900 outline-none transition focus:border-emerald-500 focus:bg-white"
-                  aria-label="Filter by city"
+                  className="h-12 w-full bg-white border border-[#CACACB] px-4 text-xs font-medium text-[#111111] uppercase tracking-wide focus:border-[#111111] outline-none rounded-none"
                 >
-                  <option value="all">All cities</option>
-                  {cityOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
+                  <option value="all">ALL CITIES</option>
+                  {cityOptions.map((o) => <option key={o.value} value={o.value}>{o.label.toUpperCase()}</option>)}
                 </select>
-              </label>
 
-              <label className="block space-y-2">
-                <span className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
-                  Gender
-                </span>
                 <select
                   value={genderFilter}
                   onChange={(event) => setGenderFilter(event.target.value)}
-                  className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm text-slate-900 outline-none transition focus:border-emerald-500 focus:bg-white"
-                  aria-label="Filter by gender"
+                  className="h-12 w-full bg-white border border-[#CACACB] px-4 text-xs font-medium text-[#111111] uppercase tracking-wide focus:border-[#111111] outline-none rounded-none"
                 >
-                  <option value="all">All genders</option>
-                  {genderOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
+                  <option value="all">ALL GENDERS</option>
+                  {genderOptions.map((o) => <option key={o.value} value={o.value}>{o.label.toUpperCase()}</option>)}
                 </select>
-              </label>
+            </div>
+            
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-6 pt-6 border-t border-[#CACACB]">
+               <div className="text-xs font-bold text-[#707072] uppercase tracking-widest mb-4 sm:mb-0">
+                  {filteredDogs.length} MATCH{filteredDogs.length === 1 ? "" : "ES"}
+               </div>
+               <div className="flex items-center gap-4 w-full sm:w-auto">
+                 <select
+                    value={sortBy}
+                    onChange={(event) => setSortBy(event.target.value as SortOption)}
+                    className="h-10 bg-transparent border-b border-[#CACACB] px-0 text-xs font-bold text-[#111111] uppercase tracking-widest focus:border-[#111111] outline-none"
+                  >
+                    {SORT_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+                 </select>
+                 <button
+                    onClick={resetFilters}
+                    className="h-10 border border-[#111111] bg-white px-6 text-xs font-bold text-[#111111] uppercase tracking-widest transition hover:bg-[#111111] hover:text-white"
+                 >
+                    CLEAR
+                 </button>
+               </div>
             </div>
           </div>
-        </aside>
-
-        <div className="space-y-4">
-          <div className="rounded-[28px] border border-slate-200 bg-white p-4 shadow-[0_20px_70px_-55px_rgba(15,23,42,0.6)] sm:p-5">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
-                Listings
-              </p>
-
-              <div className="flex flex-wrap gap-2">
-                <StatusChip
-                  active={statusFilter === "all"}
-                  label={`All (${dogs.length})`}
-                  onClick={() => setStatusFilter("all")}
-                />
-                <StatusChip
-                  active={statusFilter === "available"}
-                  label={`Available (${availableCount})`}
-                  onClick={() => setStatusFilter("available")}
-                />
-                <StatusChip
-                  active={statusFilter === "adopted"}
-                  label={`Adopted (${adoptedCount})`}
-                  onClick={() => setStatusFilter("adopted")}
-                />
-              </div>
-            </div>
-
-            <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-slate-600">
-              <span className="rounded-full bg-slate-100 px-3 py-1 font-semibold text-slate-700">
-                {filteredDogs.length} match{filteredDogs.length === 1 ? "" : "es"}
-              </span>
-              <span>Active filters: {activeFilterCount}</span>
-              {query.trim() ? (
-                <span>
-                  Searching for <span className="font-medium text-slate-800">{`"${query.trim()}"`}</span>
-                </span>
-              ) : null}
-            </div>
-          </div>
-
-          {filteredDogs.length === 0 ? (
-            <div className="rounded-[28px] border border-dashed border-slate-300 bg-white p-10 text-center shadow-[0_20px_70px_-60px_rgba(15,23,42,0.6)]">
-              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-500">
-                No matches
-              </p>
-              <h3 className="mt-3 text-2xl font-semibold text-slate-950">
-                No dogs fit the current filters
-              </h3>
-              <p className="mt-3 text-sm leading-6 text-slate-600">
-                Try clearing one or two filters or searching with a broader keyword like a city or breed.
-              </p>
-              <button
-                type="button"
-                onClick={resetFilters}
-                className="mt-6 inline-flex items-center rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
-              >
-                Reset marketplace filters
-              </button>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {filteredDogs.map((dog) => (
-                <article
-                  key={dog.dogId}
-                  className="overflow-hidden rounded-[30px] border border-slate-200 bg-white shadow-[0_22px_80px_-58px_rgba(15,23,42,0.75)] transition hover:border-emerald-200 hover:shadow-[0_28px_90px_-60px_rgba(16,185,129,0.5)]"
-                >
-                  <div className="grid lg:grid-cols-[260px_minmax(0,1fr)_220px]">
-                    <Link
-                      href={`/dog/${dog.dogId}`}
-                      className="relative block min-h-[230px] overflow-hidden bg-slate-100"
-                    >
-                      <Image
-                        src={dog.imageUrl}
-                        alt={dog.name}
-                        fill
-                        sizes="(max-width: 1024px) 100vw, 260px"
-                        className="object-cover transition duration-500 hover:scale-[1.03]"
-                      />
-                      <div className="absolute left-4 top-4 flex flex-wrap gap-2">
-                        <span className={`rounded-full px-3 py-1 text-xs font-semibold ${statusClass(dog.status)}`}>
-                          {STATUS_LABELS[dog.status]}
-                        </span>
-                      </div>
-                    </Link>
-
-                    <div className="flex flex-col justify-between gap-5 p-5 sm:p-6">
-                      <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
-                        <div>
-                          <h3 className="text-2xl font-semibold tracking-tight text-slate-950">
-                            {dog.name}
-                          </h3>
-                          <p className="mt-2 text-sm text-slate-600">
-                            {dog.breed} | {dog.color} | {dog.age} | {toTitleCase(dog.gender)}
-                          </p>
-                        </div>
-
-                        <div className="w-full max-w-[180px] rounded-[24px] bg-slate-950 px-4 py-4 text-white">
-                          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-300">
-                            Adoption fee
-                          </p>
-                          <p className="mt-2 text-2xl font-semibold tracking-tight">{ADOPTION_FEE_LABEL}</p>
-                        </div>
-                      </div>
-
-                      <p className="max-w-3xl text-sm leading-7 text-slate-600">
-                        {truncateText(dog.description, 220)}
-                      </p>
-
-                      <div className="grid gap-3 sm:grid-cols-3">
-                        <ListingFact
-                          icon={<MapPin className="h-4 w-4 text-emerald-700" />}
-                          label="Location"
-                          value={getLocationLabel(dog)}
-                        />
-                        <ListingFact
-                          icon={<CalendarDays className="h-4 w-4 text-emerald-700" />}
-                          label="Listed"
-                          value={LISTING_DATE_FORMATTER.format(new Date(dog.createdAt))}
-                        />
-                        <ListingFact
-                          icon={<CalendarDays className="h-4 w-4 text-emerald-700" />}
-                          label="Status"
-                          value={getStatusMessage(dog.status)}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col justify-between gap-5 border-t border-slate-200 bg-slate-50/80 p-5 sm:p-6 lg:border-l lg:border-t-0">
-                      <div>
-                        <p className="mt-2 text-lg font-semibold text-slate-950">
-                          {dog.status === "available" ? "Ready for adoption" : "See full profile"}
-                        </p>
-                        <p className="mt-2 text-sm leading-6 text-slate-600">
-                          {dog.status === "available"
-                            ? "Open the profile to review details and send your adoption request."
-                            : "Open the profile to read the full story and latest adoption status."}
-                        </p>
-                      </div>
-
-                      <div className="space-y-3">
-                        <Link
-                          href={`/dog/${dog.dogId}`}
-                          className="inline-flex w-full items-center justify-center rounded-full bg-emerald-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-500"
-                        >
-                          {dog.status === "available" ? "View and adopt" : "View details"}
-                        </Link>
-                        <p className="text-xs font-medium uppercase tracking-[0.18em] text-slate-500">
-                          Ref: {dog.dogId.slice(0, 8).toUpperCase()}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </article>
-              ))}
-            </div>
-          )}
         </div>
       </section>
+
+      {/* RESULTS SECTION */}
+      {filteredDogs.length === 0 ? (
+        <div className="border border-[#E5E5E5] p-12 text-center">
+             <h3 className="text-2xl font-bold uppercase tracking-tight text-[#111111] mb-2">
+               NO DOGS FIT THE CRITERIA
+             </h3>
+             <p className="text-sm font-medium text-[#707072] uppercase tracking-wide mb-6">
+               Adjust your filters to see more results.
+             </p>
+             <button
+                onClick={resetFilters}
+                className="bg-[#111111] text-white px-8 py-3 text-xs font-bold uppercase tracking-widest transition hover:bg-[#707072]"
+             >
+                RESET FILTERS
+             </button>
+        </div>
+      ) : (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {filteredDogs.map((dog) => (
+            <article
+              key={dog.dogId}
+              className="group flex flex-col justify-between border border-[#E5E5E5] bg-white transition hover:border-[#111111]"
+            >
+              <div>
+                 <div className="relative aspect-square w-full bg-[#F5F5F5] overflow-hidden">
+                    <Image
+                      src={dog.imageUrl}
+                      alt={dog.name}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    {dog.status !== "available" && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-[#111111]/80 backdrop-blur-sm">
+                        <span className="text-2xl font-black uppercase text-white tracking-widest rotate-[-10deg]">
+                          {dog.status}
+                        </span>
+                      </div>
+                    )}
+                 </div>
+                 <div className="p-5">
+                    <div className="flex justify-between items-start mb-1">
+                      <h3 className="text-xl font-bold uppercase tracking-tight text-[#111111]">
+                        {dog.name}
+                      </h3>
+                      {dog.status === "available" && (
+                         <span className="bg-[#E5E5E5] text-[#111111] text-[10px] font-bold px-2 py-1 tracking-widest uppercase">
+                           AVAILABLE
+                         </span>
+                      )}
+                    </div>
+                    <p className="text-xs font-semibold uppercase tracking-widest text-[#707072] mb-3">
+                      {dog.breed} / {dog.age} / {dog.gender}
+                    </p>
+                    {dog.city && (
+                      <p className="text-sm font-medium text-[#111111] uppercase tracking-wide">
+                        {dog.city}{dog.area ? `, ${dog.area}` : ""}
+                      </p>
+                    )}
+                    <p className="text-xs font-medium text-[#707072] mt-4 line-clamp-2">
+                       {dog.description}
+                    </p>
+                 </div>
+              </div>
+              
+              <div className="p-5 pt-0 mt-4 border-t border-[#E5E5E5] flex justify-between items-center bg-white">
+                 <div className="pt-4">
+                    <p className="text-[10px] uppercase font-bold text-[#707072] tracking-widest">FEE</p>
+                     <p className="text-sm font-bold text-[#111111] uppercase">{ADOPTION_FEE_LABEL}</p>
+                 </div>
+                 <div className="pt-4">
+                    <Link
+                      href={`/dog/${dog.dogId}`}
+                      className="inline-block rounded-full bg-[#111111] px-5 py-2 text-xs font-bold text-white uppercase tracking-widest transition hover:bg-[#707072]"
+                    >
+                      DETAILS
+                    </Link>
+                 </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
 
-function StatusChip({
-  active,
-  label,
-  onClick,
-}: {
-  active: boolean;
-  label: string;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-        active
-          ? "bg-slate-950 text-white"
-          : "border border-slate-200 bg-slate-50 text-slate-700 hover:border-slate-900 hover:text-slate-950"
-      }`}
-    >
-      {label}
-    </button>
-  );
-}
-
-function ListingFact({
-  icon,
-  label,
-  value,
-}: {
-  icon: ReactNode;
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className="rounded-[22px] border border-slate-200 bg-slate-50 px-4 py-3">
-      <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
-        {icon}
-        <span>{label}</span>
-      </div>
-      <p className="mt-2 text-sm font-semibold text-slate-900">{value}</p>
-    </div>
-  );
-}
-
-function statusClass(status: DogStatus) {
-  if (status === "available") {
-    return "bg-emerald-100 text-emerald-800";
-  }
-
-  if (status === "adopted") {
-    return "bg-indigo-100 text-indigo-700";
-  }
-
-  return "bg-amber-100 text-amber-700";
-}
-
-function getStatusMessage(status: DogStatus) {
-  if (status === "available") {
-    return "Open for requests";
-  }
-
-  if (status === "adopted") {
-    return "Already placed";
-  }
-
-  return "Review in progress";
-}
-
-function getLocationLabel(dog: DogRecord) {
-  if (dog.city && dog.area) {
-    return `${dog.area}, ${dog.city}`;
-  }
-
-  if (dog.city) {
-    return dog.city;
-  }
-
-  if (dog.area) {
-    return dog.area;
-  }
-
-  return "Location to be confirmed";
-}
-
-function truncateText(value: string, maxLength: number) {
-  if (value.length <= maxLength) {
-    return value;
-  }
-
-  return `${value.slice(0, maxLength).trimEnd()}...`;
+function normalizeValue(value: string | null | undefined): string {
+  if (!value) return "unknown";
+  return value.trim().toLowerCase();
 }
 
 function collectOptions(
   values: Array<string | null | undefined>,
-  formatLabel: (value: string) => string = (value) => value
+  formatter: (val: string) => string = (val) => val
 ): FilterOption[] {
-  const options = new Map<string, string>();
+  const unique = new Set<string>();
 
-  for (const value of values) {
-    const trimmed = value?.trim();
-    if (!trimmed) {
-      continue;
-    }
-
-    const normalized = trimmed.toLowerCase();
-    if (!options.has(normalized)) {
-      options.set(normalized, formatLabel(trimmed));
+  for (const val of values) {
+    if (val) {
+      unique.add(normalizeValue(val));
     }
   }
 
-  return Array.from(options.entries())
-    .map(([value, label]) => ({ value, label }))
-    .sort((left, right) => left.label.localeCompare(right.label));
+  return Array.from(unique)
+    .sort()
+    .map((val) => ({
+      value: val,
+      label: val === "unknown" ? "Unknown" : formatter(val),
+    }));
 }
 
-function normalizeValue(value: string | null | undefined) {
-  return value?.trim().toLowerCase() ?? "";
-}
-
-function toTitleCase(value: string) {
-  return value.replace(/\b\w/g, (character) => character.toUpperCase());
+function toTitleCase(value: string): string {
+  if (!value) return value;
+  return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
 }

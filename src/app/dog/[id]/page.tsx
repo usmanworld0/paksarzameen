@@ -16,16 +16,10 @@ type PageProps = {
 };
 
 const STATUS_LABELS: Record<DogStatus, string> = {
-  available: "Available",
-  pending: "Pending",
-  adopted: "Adopted",
+  available: "AVAILABLE",
+  pending: "PENDING",
+  adopted: "ADOPTED",
 };
-
-function statusClass(status: DogStatus) {
-  if (status === "available") return "bg-emerald-100 text-emerald-800";
-  if (status === "adopted") return "bg-indigo-100 text-indigo-700";
-  return "bg-amber-100 text-amber-700";
-}
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
@@ -55,90 +49,121 @@ export default async function DogDetailPage({ params }: PageProps) {
   const normalizedStatus = normalizeDogStatus(dog.status);
 
   return (
-    <main className="min-h-screen bg-[linear-gradient(180deg,_#f8fcf8_0%,_#edf5ef_100%)] px-4 pb-20 pt-28 sm:px-6 lg:px-10">
-      <section className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1.12fr_0.88fr]">
-        <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-lg shadow-slate-900/5">
-          <div className="relative aspect-[4/3] bg-slate-100">
+    <main className="min-h-screen bg-white pb-24 pt-28 sm:pt-32 text-[#111111]">
+      <div className="mx-auto max-w-screen-2xl px-[5%]">
+        
+        {/* Navigation Breadcrumb */}
+        <div className="mb-8 border-b border-[#E5E5E5] pb-4">
+          <Link href="/dog-adoption" className="text-xs font-bold uppercase tracking-widest text-[#707072] hover:text-[#111111] transition flex items-center gap-2">
+            ← BACK TO BROWSE DOGS
+          </Link>
+        </div>
+
+        <section className="grid gap-12 lg:grid-cols-[1.12fr_0.88fr] items-start">
+          <div className="border border-[#E5E5E5] bg-[#F5F5F5] relative overflow-hidden group w-full aspect-[4/3] lg:aspect-square">
             <Image
               src={dog.imageUrl}
               alt={dog.name}
               fill
               sizes="(max-width: 1024px) 100vw, 60vw"
-              className="object-cover"
+              className="object-cover transition-transform duration-700 group-hover:scale-105"
             />
           </div>
-        </div>
 
-        <div className="space-y-5 rounded-3xl border border-emerald-100 bg-white/95 p-6 shadow-xl shadow-emerald-900/10 sm:p-8">
-          <div className="space-y-2">
-            <p className="inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700">
-              Dog Profile
+          <div className="bg-[#FAFAFA] border border-[#E5E5E5] p-8 md:p-12 space-y-8">
+            <div className="space-y-4 border-b border-[#E5E5E5] pb-6">
+              <div className="flex justify-between items-start gap-4">
+                 <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tight text-[#111111] leading-none">{dog.name}</h1>
+                 <span className={`inline-flex px-3 py-1.5 text-[10px] font-black tracking-widest uppercase text-white bg-[#111111]`}>
+                   {STATUS_LABELS[normalizedStatus]}
+                 </span>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4 mt-6">
+                 <div>
+                    <p className="text-[10px] uppercase font-bold text-[#707072] tracking-widest">Rescue Name</p>
+                    <p className="text-sm font-bold uppercase text-[#111111]">{dog.rescueName}</p>
+                 </div>
+                 {dog.petName && (
+                   <div>
+                      <p className="text-[10px] uppercase font-bold text-[#1151FF] tracking-widest">Pet Name</p>
+                      <p className="text-sm font-bold uppercase text-[#111111]">{dog.petName}</p>
+                   </div>
+                 )}
+              </div>
+              
+              <div className="pt-4 flex gap-4 text-sm font-bold uppercase tracking-widest text-[#707072]">
+                <span>{dog.breed}</span>
+                <span>/</span>
+                <span>{dog.color}</span>
+                <span>/</span>
+                <span>{dog.age}</span>
+                <span>/</span>
+                <span>{dog.gender}</span>
+              </div>
+            </div>
+
+            <div className="prose prose-slate max-w-none">
+              <p className="text-base leading-relaxed text-[#111111] font-medium">{dog.description}</p>
+            </div>
+
+            <div className="pt-6">
+              {normalizedStatus === "available" ? (
+                <AdoptDogButton dogId={dog.dogId} />
+              ) : (
+                <div className="border border-[#111111] bg-[#111111] px-6 py-4 text-center text-sm font-bold tracking-widest uppercase text-white">
+                  STATUS: {STATUS_LABELS[normalizedStatus]} (UNAVAILABLE)
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+
+        {/* Life After Adoption */}
+        <section className="mt-20 pt-16 border-t border-[#E5E5E5]">
+          <div className="mb-10 flex flex-col gap-2">
+            <h2 className="text-[3rem] font-black uppercase tracking-tighter text-[#111111] leading-none">
+              AFTER ADOPTION.
+            </h2>
+            <p className="text-sm font-bold uppercase tracking-widest text-[#707072]">
+              POST-ADOPTION MOMENTS
             </p>
-            <h1 className="text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">{dog.name}</h1>
-            <p className="text-xs uppercase tracking-wide text-slate-500">Rescue Name: {dog.rescueName}</p>
-            {dog.petName ? <p className="text-sm font-semibold text-indigo-700">Pet Name: {dog.petName}</p> : null}
-            <p className="text-sm text-slate-600 sm:text-base">
-              {dog.breed} • {dog.color} • {dog.age} • {dog.gender}
-            </p>
-            <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${statusClass(normalizedStatus)}`}>
-              {STATUS_LABELS[normalizedStatus]}
-            </span>
           </div>
 
-          <p className="text-base leading-relaxed text-slate-700">{dog.description}</p>
-
-          {normalizedStatus === "available" ? (
-            <AdoptDogButton dogId={dog.dogId} />
+          {!updates.length ? (
+             <div className="border border-[#E5E5E5] bg-[#F5F5F5] p-10 text-center text-sm font-bold uppercase tracking-widest text-[#707072]">
+               No post-adoption updates yet.
+             </div>
           ) : (
-            <p className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
-              This dog is currently marked as {STATUS_LABELS[normalizedStatus]}.
-            </p>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {updates.map((item) => (
+                <article key={item.updateId} className="group border border-[#E5E5E5] bg-white transition hover:border-[#111111] flex flex-col">
+                  <div className="relative aspect-[4/3] bg-[#F5F5F5] overflow-hidden">
+                    <Image
+                      src={item.imageUrl}
+                      alt={item.caption}
+                      fill
+                      sizes="(max-width: 1024px) 50vw, 33vw"
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </div>
+                  <div className="p-6 flex-1 flex flex-col justify-between">
+                     <p className="text-sm font-medium leading-relaxed text-[#111111] mb-6">{item.caption}</p>
+                     
+                     {item.collarTag && (
+                        <div className="pt-4 border-t border-[#E5E5E5]">
+                          <p className="text-[10px] font-black uppercase tracking-widest text-[#111111]">
+                            COLLAR TAG: {item.collarTag}
+                          </p>
+                        </div>
+                     )}
+                  </div>
+                </article>
+              ))}
+            </div>
           )}
-
-          <Link href="/dog-adoption" className="inline-flex text-sm font-semibold text-emerald-700 hover:text-emerald-600">
-            ← Back to Browse Dogs
-          </Link>
-        </div>
-      </section>
-
-      <section className="mx-auto mt-10 max-w-6xl space-y-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-        <div>
-          <h2 className="text-2xl font-semibold text-slate-900">Life After Adoption</h2>
-          <p className="mt-1 text-sm text-slate-600 sm:text-base">
-            Post-adoption moments shared by the admin team for adopted dogs.
-          </p>
-        </div>
-
-        {!updates.length ? (
-          <p className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
-            No post-adoption updates uploaded yet.
-          </p>
-        ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {updates.map((item) => (
-              <article key={item.updateId} className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
-                <div className="relative aspect-[4/3] bg-slate-100">
-                  <Image
-                    src={item.imageUrl}
-                    alt={item.caption}
-                    fill
-                    sizes="(max-width: 1024px) 50vw, 33vw"
-                    className="object-cover"
-                  />
-                </div>
-                <div className="space-y-2 p-4">
-                  <p className="text-sm leading-relaxed text-slate-700">{item.caption}</p>
-                  {item.collarTag ? (
-                    <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700">
-                      Collar Tag: {item.collarTag}
-                    </p>
-                  ) : null}
-                </div>
-              </article>
-            ))}
-          </div>
-        )}
-      </section>
+        </section>
+      </div>
     </main>
   );
 }

@@ -60,33 +60,34 @@ export function ForgotPasswordForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="w-full max-w-md space-y-4 rounded-3xl border border-emerald-100 bg-white p-7 shadow-[0_24px_90px_rgba(7,41,25,0.12)] sm:p-8">
-      <div className="space-y-1 text-center">
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-700">Password Recovery</p>
-        <h1 className="text-3xl font-semibold text-emerald-950">Reset password</h1>
-        <p className="text-sm text-emerald-900/70">Confirm your email and CNIC, then choose a new password.</p>
+    <div className="site-auth-form-wrap">
+    <form onSubmit={onSubmit} className="site-auth-form space-y-4">
+      <div className="site-auth-form__intro">
+        <p className="site-auth-form__eyebrow">Password Recovery</p>
+        <h1 className="site-auth-form__heading">Reset password</h1>
+        <p className="site-auth-form__copy">Confirm your email and CNIC, then choose a new password.</p>
       </div>
 
       <label className="block space-y-2">
-        <span className="text-sm font-medium text-emerald-950">Email</span>
+        <span className="site-form-label">Email</span>
         <input
           type="email"
           required
           value={email}
           onChange={(event) => setEmail(event.target.value)}
-          className="w-full rounded-xl border border-emerald-200 px-4 py-3 text-sm text-emerald-950 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+          className="site-input"
           placeholder="you@example.com"
         />
       </label>
 
       <label className="block space-y-2">
-        <span className="text-sm font-medium text-emerald-950">CNIC</span>
+        <span className="site-form-label">CNIC</span>
         <input
           type="text"
           required
           value={cnic}
           onChange={(event) => setCnic(formatCnicInput(event.target.value))}
-          className="w-full rounded-xl border border-emerald-200 px-4 py-3 text-sm text-emerald-950 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+          className="site-input"
           placeholder="12345-1234567-1"
           inputMode="numeric"
           maxLength={15}
@@ -96,25 +97,25 @@ export function ForgotPasswordForm() {
       </label>
 
       <label className="block space-y-2">
-        <span className="text-sm font-medium text-emerald-950">New password</span>
+        <span className="site-form-label">New password</span>
         <input
           type="password"
           required
           value={password}
           onChange={(event) => setPassword(event.target.value)}
-          className="w-full rounded-xl border border-emerald-200 px-4 py-3 text-sm text-emerald-950 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+          className="site-input"
           placeholder="Strong password"
         />
       </label>
 
       <label className="block space-y-2">
-        <span className="text-sm font-medium text-emerald-950">Confirm password</span>
+        <span className="site-form-label">Confirm password</span>
         <input
           type="password"
           required
           value={confirmPassword}
           onChange={(event) => setConfirmPassword(event.target.value)}
-          className="w-full rounded-xl border border-emerald-200 px-4 py-3 text-sm text-emerald-950 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+          className="site-input"
           placeholder="Repeat password"
         />
       </label>
@@ -122,20 +123,21 @@ export function ForgotPasswordForm() {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full rounded-xl bg-emerald-700 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-60"
+        className="site-button w-full disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isSubmitting ? "Updating..." : "Update password"}
       </button>
 
-      {message ? <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">{message}</p> : null}
-      {error ? <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p> : null}
+      {message ? <p className="site-status--success">{message}</p> : null}
+      {error ? <p className="site-status--error">{error}</p> : null}
 
-      <div className="text-center text-sm text-emerald-900/80">
+      <div className="text-center text-[1.3rem] text-[#707072]">
         Back to{" "}
-        <Link href="/login" className="font-semibold text-emerald-700 hover:text-emerald-800">
+        <Link href="/login" className="font-medium text-[#111111] hover:text-[#707072]">
           login
         </Link>
       </div>
     </form>
+    </div>
   );
 }

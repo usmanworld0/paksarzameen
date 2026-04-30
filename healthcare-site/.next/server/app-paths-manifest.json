@@ -1,8 +1,0 @@
-{
-  "/_not-found/page": "app/_not-found/page.js",
-  "/healthcare/doctor/page": "app/healthcare/doctor/page.js",
-  "/healthcare/doctor/sign-up/page": "app/healthcare/doctor/sign-up/page.js",
-  "/healthcare/doctor/sign-in/page": "app/healthcare/doctor/sign-in/page.js",
-  "/healthcare/blood-bank/page": "app/healthcare/blood-bank/page.js",
-  "/healthcare/page": "app/healthcare/page.js"
-}

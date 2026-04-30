@@ -43,100 +43,93 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <>
-      <section className="relative overflow-hidden bg-[linear-gradient(130deg,#e9f7ef_0%,#f9fcfa_42%,#e2f3e9_100%)]">
-        <div className="pointer-events-none absolute -left-24 top-0 h-72 w-72 rounded-full bg-[#1f8f63]/20 blur-3xl" />
-        <div className="pointer-events-none absolute right-[-5rem] top-10 h-80 w-80 rounded-full bg-[#2ea874]/18 blur-3xl" />
-        <div className="pointer-events-none absolute bottom-[-5.5rem] left-[30%] h-72 w-72 rounded-full bg-[#74c498]/16 blur-3xl" />
+    <main className="site-page">
+      <section className="site-hero">
+        <div className="site-hero__noise" aria-hidden="true" />
+        <div className="site-hero__orb site-hero__orb--left" aria-hidden="true" />
+        <div className="site-hero__orb site-hero__orb--right" aria-hidden="true" />
 
-        <header className="relative z-10 mx-auto w-full max-w-screen-xl px-[5%] pb-10 pt-22 sm:pb-16 sm:pt-32 lg:pt-36">
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#1f8f63] sm:text-sm sm:tracking-[0.24em]">
-            Contact
-          </p>
-          <h1 className="mt-3 max-w-4xl font-heading text-3xl font-bold tracking-tight text-[#173429] sm:text-5xl lg:text-6xl">
-            Contact PakSarZameen
-          </h1>
-          <p className="mt-4 max-w-3xl text-[1.45rem] leading-relaxed text-[#496257] sm:text-lg">
+        <header className="site-hero__inner">
+          <p className="site-hero__eyebrow">Contact</p>
+          <h1 className="site-hero__title">Contact PakSarZameen</h1>
+          <p className="site-hero__body">
             Connect with our team in Bahawalpur for volunteering, partnerships,
             blood bank coordination, media inquiries, and community development
             initiatives across Pakistan.
           </p>
 
-          <div className="mt-5 flex flex-wrap gap-2 sm:mt-7 sm:gap-2.5">
-            <span className="inline-flex items-center rounded-full border border-white/75 bg-white/88 px-4 py-2 text-[1.1rem] font-semibold uppercase tracking-[0.08em] text-[#355246] shadow-[0_8px_20px_rgba(38,85,62,0.12)] sm:px-5 sm:py-2.5 sm:text-sm sm:tracking-[0.1em]">
-              Community Support
-            </span>
-            <span className="inline-flex items-center rounded-full border border-white/75 bg-white/88 px-4 py-2 text-[1.1rem] font-semibold uppercase tracking-[0.08em] text-[#355246] shadow-[0_8px_20px_rgba(38,85,62,0.12)] sm:px-5 sm:py-2.5 sm:text-sm sm:tracking-[0.1em]">
-              Partnership Desk
-            </span>
-            <span className="inline-flex items-center rounded-full border border-white/75 bg-white/88 px-4 py-2 text-[1.1rem] font-semibold uppercase tracking-[0.08em] text-[#355246] shadow-[0_8px_20px_rgba(38,85,62,0.12)] sm:px-5 sm:py-2.5 sm:text-sm sm:tracking-[0.1em]">
-              Emergency Coordination
-            </span>
+          <div className="site-hero__chips">
+            <span className="site-chip">Community Support</span>
+            <span className="site-chip">Partnership Desk</span>
+            <span className="site-chip">Emergency Coordination</span>
           </div>
         </header>
       </section>
 
-      <main className="mx-auto w-full max-w-screen-xl px-[5%] py-12 sm:py-20">
-      <section className="grid gap-6 lg:grid-cols-2">
-        <article className="rounded-3xl border border-[#d0e1d8] bg-[linear-gradient(165deg,rgba(255,255,255,0.98),rgba(245,251,247,0.94))] p-5 shadow-[0_14px_34px_rgba(35,98,72,0.12)] sm:p-7">
-          <h2 className="font-heading text-[1.55rem] font-semibold text-[#1a3a2e] sm:text-[1.75rem]">
+      <section className="site-section">
+      <div className="site-grid site-grid--two">
+        <article className="site-card site-card--rounded">
+          <div className="site-card__body">
+          <h2 className="site-card__title !mt-0 !text-[3rem]">
             Phone
           </h2>
-          <p className="mt-3 break-words text-base leading-relaxed text-[#4f665c]">
+          <p className="mt-3 break-words text-[1.5rem] leading-[1.8] text-[#707072]">
             <a
               href={`tel:${siteConfig.contact.phone.replace(/\s+/g, "")}`}
-              className="font-semibold text-[#1f8f63] hover:underline"
+              className="font-medium text-[#111111] hover:text-[#707072]"
             >
               {siteConfig.contact.phone}
             </a>
           </p>
 
-          <h2 className="mt-6 font-heading text-[1.55rem] font-semibold text-[#1a3a2e] sm:text-[1.75rem]">
+          <h2 className="site-card__title !text-[3rem]">
             Address
           </h2>
-          <address className="mt-3 not-italic text-base leading-relaxed text-[#4f665c]">
+          <address className="mt-3 not-italic text-[1.5rem] leading-[1.8] text-[#707072]">
             {siteConfig.contact.addressLines.map((line) => (
               <div key={line}>{line}</div>
             ))}
           </address>
 
-          <h2 className="mt-6 font-heading text-[1.55rem] font-semibold text-[#1a3a2e] sm:text-[1.75rem]">
+          <h2 className="site-card__title !text-[3rem]">
             Email
           </h2>
-          <p className="mt-3 break-words text-base leading-relaxed text-[#4f665c]">
+          <p className="mt-3 break-words text-[1.5rem] leading-[1.8] text-[#707072]">
             <a
               href={`mailto:${siteConfig.contact.email}`}
-              className="font-semibold text-[#1f8f63] hover:underline"
+              className="font-medium text-[#111111] hover:text-[#707072]"
             >
               {siteConfig.contact.email}
             </a>
           </p>
 
-          <h2 className="mt-6 font-heading text-[1.55rem] font-semibold text-[#1a3a2e] sm:text-[1.75rem]">
+          <h2 className="site-card__title !text-[3rem]">
             Emergency Contacts
           </h2>
-          <ul className="mt-3 space-y-2 text-base leading-relaxed text-[#4f665c]">
+          <ul className="mt-3 space-y-2 text-[1.5rem] leading-[1.8] text-[#707072]">
             {siteConfig.emergencyContacts.map((c) => (
               <li key={c.phone} className="break-words">
-                <a href={`tel:${c.phone}`} className="font-semibold text-[#1f8f63] hover:underline">
+                <a href={`tel:${c.phone}`} className="font-medium text-[#111111] hover:text-[#707072]">
                   {c.name}: {c.phone}
                 </a>
               </li>
             ))}
           </ul>
+          </div>
         </article>
 
-        <article className="rounded-3xl border border-[#d0e1d8] bg-[linear-gradient(165deg,rgba(255,255,255,0.98),rgba(245,251,247,0.94))] p-5 shadow-[0_14px_34px_rgba(35,98,72,0.12)] sm:p-7">
-          <h2 className="font-heading text-[1.55rem] font-semibold text-[#1a3a2e] sm:text-[1.75rem]">
+        <article className="site-card site-card--rounded">
+          <div className="site-card__body">
+          <h2 className="site-card__title !mt-0 !text-[3rem]">
             Social Profiles
           </h2>
-          <ul className="mt-4 space-y-3 text-base text-[#4f665c]">
+          <ul className="mt-4 space-y-3 text-[1.5rem] text-[#707072]">
             <li className="break-words">
               <a
                 href={siteConfig.social.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-semibold text-[#1f8f63] hover:underline"
+                className="font-medium text-[#111111] hover:text-[#707072]"
               >
                 Instagram - @paksarzameen.wfo
               </a>
@@ -146,7 +139,7 @@ export default function ContactPage() {
                 href={siteConfig.social.facebook}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-semibold text-[#1f8f63] hover:underline"
+                className="font-medium text-[#111111] hover:text-[#707072]"
               >
                 Facebook - PakSarzameen
               </a>
@@ -156,7 +149,7 @@ export default function ContactPage() {
                 href={siteConfig.social.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-semibold text-[#1f8f63] hover:underline"
+                className="font-medium text-[#111111] hover:text-[#707072]"
               >
                 LinkedIn - PakSarZameen
               </a>
@@ -166,58 +159,62 @@ export default function ContactPage() {
                 href={siteConfig.social.commonwealthInstagram}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-semibold text-[#1f8f63] hover:underline"
+                className="font-medium text-[#111111] hover:text-[#707072]"
               >
                 Paksarzameen Store Instagram - @commonwealthlab.psz
               </a>
             </li>
           </ul>
 
-          <h2 className="mt-6 font-heading text-[1.55rem] font-semibold text-[#1a3a2e] sm:text-[1.75rem]">
+          <h2 className="site-card__title !text-[3rem]">
             Quick Links
           </h2>
-          <p className="mt-3 flex flex-wrap gap-x-3 gap-y-2 text-base text-[#4f665c]">
-            <Link href="/" className="font-semibold text-[#1f8f63] hover:underline">
+          <p className="mt-3 flex flex-wrap gap-x-3 gap-y-2 text-[1.4rem] text-[#707072]">
+            <Link href="/" className="font-medium text-[#111111] hover:text-[#707072]">
               Home
             </Link>
-            <Link href="/about" className="font-semibold text-[#1f8f63] hover:underline">
+            <Link href="/about" className="font-medium text-[#111111] hover:text-[#707072]">
               About
             </Link>
-            <Link href="/programs" className="font-semibold text-[#1f8f63] hover:underline">
+            <Link href="/programs" className="font-medium text-[#111111] hover:text-[#707072]">
               Programs
             </Link>
-            <Link href="/get-involved" className="font-semibold text-[#1f8f63] hover:underline">
+            <Link href="/get-involved" className="font-medium text-[#111111] hover:text-[#707072]">
               Get Involved
             </Link>
-            <Link href="/commonwealth-lab" className="font-semibold text-[#1f8f63] hover:underline">
+            <Link href="/commonwealth-lab" className="font-medium text-[#111111] hover:text-[#707072]">
               Paksarzameen Store
             </Link>
           </p>
+          </div>
         </article>
 
-        <article className="rounded-3xl border border-[#d0e1d8] bg-[linear-gradient(165deg,rgba(255,255,255,0.98),rgba(245,251,247,0.94))] p-5 shadow-[0_14px_34px_rgba(35,98,72,0.12)] sm:p-7 lg:col-span-2">
-          <h2 className="font-heading text-[1.55rem] font-semibold text-[#1a3a2e] sm:text-[1.75rem]">
+        <article className="site-card site-card--rounded lg:col-span-2">
+          <div className="site-card__body">
+          <h2 className="site-card__title !mt-0 !text-[3rem]">
             Send a Message
           </h2>
-          <p className="mt-3 text-base text-[#4f665c]">
+          <p className="mt-3 text-[1.5rem] text-[#707072]">
             Use the form to send us a message about volunteering, partnerships,
             campaigns, or general inquiries and we&apos;ll get back to you.
           </p>
-          <div className="mt-4 rounded-2xl border border-[#d0e1d8] bg-white/90 p-4 sm:p-5">
+          <div className="site-form-shell mt-4 rounded-[1.6rem] p-4 sm:p-5">
             <ContactForm />
           </div>
+          </div>
         </article>
-      </section>
+      </div>
 
       <section className="mt-10">
-        <div className="rounded-3xl border border-[#d0e1d8] bg-[linear-gradient(165deg,rgba(255,255,255,0.98),rgba(245,251,247,0.94))] p-5 shadow-[0_14px_34px_rgba(35,98,72,0.12)] sm:p-6">
-          <h3 className="font-heading text-2xl font-semibold text-[#1a3a2e]">
+        <div className="site-card site-card--rounded">
+          <div className="site-card__body">
+          <h3 className="site-card__title !mt-0 !text-[3rem]">
             Our Location
           </h3>
-          <p className="mt-2 text-base text-[#4f665c]">
+          <p className="mt-2 text-[1.5rem] text-[#707072]">
             {siteConfig.contact.address}
           </p>
-          <div className="mt-4 aspect-[4/3] w-full overflow-hidden rounded-xl border border-[#cfe2d6] sm:aspect-[16/8]">
+          <div className="mt-4 aspect-[4/3] w-full overflow-hidden border border-[#e5e5e5] sm:aspect-[16/8]">
             <iframe
               title="PakSarZameen Location"
               src={`https://www.google.com/maps?q=${encodeURIComponent(siteConfig.contact.address)}&output=embed`}
@@ -227,9 +224,10 @@ export default function ContactPage() {
               loading="lazy"
             />
           </div>
+          </div>
         </div>
       </section>
+    </section>
     </main>
-    </>
   );
 }

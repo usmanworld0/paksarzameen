@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { MessageCircle, Calendar, Users, Heart, AlertCircle } from "lucide-react";
+import { MessageCircle, Calendar, Users, Heart, AlertCircle, Search, X, Loader2 } from "lucide-react";
 import { HealthcareProfileManager } from "./HealthcareProfileManager";
 import { AppointmentChatBox } from "./AppointmentChatBox";
 
@@ -67,6 +67,7 @@ export function HealthCareHubProfessional() {
   const [appointmentSortBy, setAppointmentSortBy] = useState("createdAt");
   const [appointmentSortOrder, setAppointmentSortOrder] = useState("desc");
   const [cancellingAppointmentId, setCancellingAppointmentId] = useState<string | null>(null);
+  const [isAskingAI, setIsAskingAI] = useState(false);
 
   const filteredSlots = slots.filter((slot) => slot.doctorId === selectedDoctorId);
   const selectedDoctor = doctors.find((doctor) => doctor.doctorId === selectedDoctorId) ?? null;
@@ -80,6 +81,8 @@ export function HealthCareHubProfessional() {
     if (activeTab !== "doctors") {
       setActiveTab("doctors");
     }
+    // Scroll smoothly to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   function closeBookingPanel() {
@@ -90,7 +93,6 @@ export function HealthCareHubProfessional() {
 
   async function loadData() {
     try {
-      console.log("[loadData] Starting to load doctors and appointments...");
       const params = new URLSearchParams();
       if (doctorSearch.trim()) params.set("search", doctorSearch.trim());
       if (doctorSpecialization.trim()) params.set("specialization", doctorSpecialization.trim());
@@ -105,24 +107,19 @@ export function HealthCareHubProfessional() {
         error?: string;
       };
 
-      console.log("[loadData] Doctors response status:", doctorsResponse.status);
-      console.log("[loadData] Doctors payload:", doctorsPayload);
-
       if (!doctorsResponse.ok) {
         const errorMsg = doctorsPayload.error ?? "Unable to load doctors right now.";
-        console.error("[loadData] Doctors API error:", errorMsg);
         setDoctors([]);
         setSlots([]);
         setFeedback(errorMsg);
         return;
       }
 
-      const doctors = doctorsPayload.data?.doctors ?? [];
-      const slots = doctorsPayload.data?.slots ?? [];
-      console.log(`[loadData] Loaded ${doctors.length} doctors and ${slots.length} slots`);
+      const doctorsRes = doctorsPayload.data?.doctors ?? [];
+      const slotsRes = doctorsPayload.data?.slots ?? [];
       
-      setDoctors(doctors);
-      setSlots(slots);
+      setDoctors(doctorsRes);
+      setSlots(slotsRes);
 
       const appointmentParams = new URLSearchParams();
       if (appointmentSearch.trim()) appointmentParams.set("search", appointmentSearch.trim());
@@ -135,21 +132,14 @@ export function HealthCareHubProfessional() {
       });
       const appointmentsPayload = (await appointmentsResponse.json()) as { data?: Appointment[]; error?: string };
       
-      console.log("[loadData] Appointments response status:", appointmentsResponse.status);
-      
       if (appointmentsResponse.ok) {
-        const appointments = appointmentsPayload.data ?? [];
-        console.log(`[loadData] Loaded ${appointments.length} appointments`);
-        setAppointments(appointments);
+        setAppointments(appointmentsPayload.data ?? []);
       } else {
         const errorMsg = appointmentsPayload.error ?? "Unable to load appointments right now.";
-        console.error("[loadData] Appointments API error:", errorMsg);
         setAppointments([]);
         setFeedback(errorMsg);
       }
     } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : String(err);
-      console.error("[loadData] Exception:", errorMsg, err);
       setDoctors([]);
       setSlots([]);
       setAppointments([]);
@@ -158,29 +148,37 @@ export function HealthCareHubProfessional() {
   }
 
   async function askQuickAnswer() {
-    const response = await fetch("/api/ai", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ question }),
-    });
-    const payload = (await response.json()) as {
-      data?: {
-        answer?: string;
-        disclaimer?: string;
-        doctorSuggestions?: DoctorSuggestion[];
+    if (!question.trim() || isAskingAI) return;
+    setIsAskingAI(true);
+    setAnswer(null);
+    setDisclaimer(null);
+    setDoctorSuggestions([]);
+    
+    try {
+      const response = await fetch("/api/ai", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ question }),
+      });
+      const payload = (await response.json()) as {
+        data?: {
+          answer?: string;
+          disclaimer?: string;
+          doctorSuggestions?: DoctorSuggestion[];
+        };
+        error?: string;
       };
-      error?: string;
-    };
-    if (!response.ok) {
-      setAnswer(payload.error ?? "Unable to process question.");
-      setDisclaimer(null);
-      setDoctorSuggestions([]);
-      return;
-    }
+      if (!response.ok) {
+        setAnswer(payload.error ?? "Unable to process question.");
+        return;
+      }
 
-    setAnswer(payload.data?.answer ?? "No response available.");
-    setDisclaimer(payload.data?.disclaimer ?? null);
-    setDoctorSuggestions(payload.data?.doctorSuggestions ?? []);
+      setAnswer(payload.data?.answer ?? "No response available.");
+      setDisclaimer(payload.data?.disclaimer ?? null);
+      setDoctorSuggestions(payload.data?.doctorSuggestions ?? []);
+    } finally {
+      setIsAskingAI(false);
+    }
   }
 
   async function book() {
@@ -209,9 +207,10 @@ export function HealthCareHubProfessional() {
         return;
       }
 
-      setFeedback("✓ Appointment booked successfully!");
+      setFeedback("Appointment booked successfully.");
       setReason("");
       setSelectedSlotId("");
+      setSelectedDoctorId("");
       await loadData();
     } finally {
       setBooking(false);
@@ -238,7 +237,7 @@ export function HealthCareHubProfessional() {
         return;
       }
 
-      setFeedback("Appointment cancelled successfully.");
+      setFeedback("Appointment cancelled.");
       await loadData();
     } finally {
       setCancellingAppointmentId(null);
@@ -247,371 +246,320 @@ export function HealthCareHubProfessional() {
 
   useEffect(() => {
     void loadData();
-  }, []);
+  }, [
+    doctorSortBy,
+    doctorSortOrder,
+    appointmentStatus,
+    appointmentSortBy,
+    appointmentSortOrder
+  ]);
 
+  // Temporary feedback clearing
   useEffect(() => {
-    void loadData();
-  }, [doctorSortBy, doctorSortOrder]);
-
-  useEffect(() => {
-    void loadData();
-  }, [appointmentStatus, appointmentSortBy, appointmentSortOrder]);
+    if (feedback) {
+      const timer = setTimeout(() => setFeedback(null), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [feedback]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-emerald-50">
-      {/* Header */}
-      <div className="sticky top-[6.5rem] z-40 border-b border-slate-200 bg-white shadow-sm sm:top-28">
-        <div className="mx-auto max-w-screen-2xl px-[4%] py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-slate-900">HealthCare Platform</h1>
-              <p className="text-sm text-slate-600">Your personalized medical companion</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <Link
-                href="/healthcare/doctor/sign-in"
-                className="rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-50"
-              >
-                Doctor Sign In
-              </Link>
-              <Link
-                href="/healthcare/doctor/sign-up"
-                className="rounded-full bg-emerald-700 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-emerald-800"
-              >
-                Doctor Sign Up
-              </Link>
-              <div className="flex items-center gap-2 rounded-full bg-emerald-100 px-3 py-1.5">
-                <Heart className="h-4 w-4 text-emerald-600" />
-                <span className="text-sm font-medium text-emerald-700">Active</span>
-              </div>
-            </div>
-          </div>
+    <div className="min-h-screen bg-white text-[#111111] font-sans pb-24 selection:bg-[#111111] selection:text-white">
+      {/* HEADER PAGE SECTION */}
+      <header className="px-[5%] pt-12 pb-8 md:pt-16 md:pb-12 border-b border-[#E5E5E5] flex flex-col gap-6 md:flex-row md:items-end justify-between">
+        <div>
+          <h1 className="text-[10vw] md:text-[6rem] leading-[0.9] font-black uppercase tracking-tighter">
+            CLINIC.
+          </h1>
+          <p className="mt-2 text-[#707072] text-sm md:text-base tracking-wide font-medium">
+            YOUR DIGITAL MEDICAL COMPANION
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/healthcare/doctor/sign-in"
+            className="rounded-full border border-[#CACACB] bg-white px-6 py-2.5 text-sm font-medium transition hover:border-[#111111] hover:text-[#111111]"
+          >
+            Sign In
+          </Link>
+          <Link
+            href="/healthcare/doctor/sign-up"
+            className="rounded-full bg-[#111111] px-6 py-2.5 text-sm font-medium text-white transition hover:bg-[#707072]"
+          >
+            Become a Doctor
+          </Link>
+        </div>
+      </header>
+
+      {/* TABS OVERVIEW */}
+      <div className="px-[5%] border-b border-[#E5E5E5] sticky top-[4rem] sm:top-[7rem] bg-white z-40">
+        <div className="flex gap-8 overflow-x-auto py-5 whitespace-nowrap scrollbar-hide">
+          {[
+            { id: "dashboard", label: "ASSISTANT" },
+            { id: "doctors", label: "FIND DOCTORS" },
+            { id: "appointments", label: "APPOINTMENTS" },
+            { id: "profile", label: "PROFILE" },
+          ].map(({ id, label }) => (
+            <button
+              key={id}
+              onClick={() => setActiveTab(id as typeof activeTab)}
+              className={`text-sm md:text-base pb-1 font-medium tracking-wide uppercase transition-all duration-200 border-b-2 ${
+                activeTab === id
+                  ? "border-[#111111] text-[#111111]"
+                  : "border-transparent text-[#707072] hover:text-[#111111]"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Tab Navigation */}
-      <div className="border-b border-slate-200 bg-white">
-        <div className="mx-auto max-w-screen-2xl px-[4%]">
-          <div className="flex gap-1 overflow-x-auto">
-            {[
-              { id: "dashboard", label: "Dashboard", icon: MessageCircle },
-              { id: "doctors", label: "Find Doctors", icon: Users },
-              { id: "appointments", label: "Appointments", icon: Calendar },
-              { id: "profile", label: "My Profile", icon: Heart },
-            ].map(({ id, label, icon: Icon }) => (
-              <button
-                key={id}
-                onClick={() => setActiveTab(id as typeof activeTab)}
-                className={`flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-medium transition ${
-                  activeTab === id
-                    ? "border-emerald-600 text-emerald-600"
-                    : "border-transparent text-slate-600 hover:text-slate-900"
-                }`}
-              >
-                <Icon className="h-4 w-4" />
-                {label}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="mx-auto max-w-screen-2xl px-[4%] py-8">
-        {/* Dashboard Tab */}
+      <div className="px-[5%] py-10 md:py-16">
+        
+        {/* TAB 1: DASHBOARD / AI */}
         {activeTab === "dashboard" && (
-          <div className="space-y-6">
-            {/* AI Assistant Card */}
-            <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-              <div className="mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100">
-                    <MessageCircle className="h-5 w-5 text-emerald-600" />
-                  </div>
-                  <div>
-                    <h2 className="text-xl font-semibold text-slate-900">Medical AI Assistant</h2>
-                    <p className="text-sm text-slate-600">Get instant answers to your health questions</p>
-                  </div>
-                </div>
+          <div className="grid gap-12 lg:grid-cols-[1fr_300px]">
+            {/* AI Assistant */}
+            <div>
+              <h2 className="text-3xl font-medium tracking-tight mb-8">Medical AI Assistant</h2>
+              
+              <div className="flex flex-col md:flex-row gap-4 mb-8">
+                <input
+                  value={question}
+                  onChange={(event) => setQuestion(event.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && void askQuickAnswer()}
+                  placeholder="Ask about symptoms, health concerns, etc..."
+                  className="flex-1 rounded-lg border border-[#CACACB] bg-[#F5F5F5] px-5 py-4 text-base focus:bg-white focus:border-[#111111] focus:ring-1 focus:ring-[#111111] outline-none transition"
+                />
+                <button
+                  type="button"
+                  disabled={isAskingAI || !question.trim()}
+                  onClick={() => void askQuickAnswer()}
+                  className="rounded-full bg-[#111111] px-8 py-4 text-sm font-medium text-white transition hover:bg-[#707072] disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap flex items-center justify-center min-w-[120px]"
+                >
+                  {isAskingAI ? <Loader2 className="animate-spin h-5 w-5" /> : "ASK AI"}
+                </button>
               </div>
 
-              <div className="space-y-4">
-                <div className="flex flex-col gap-3 sm:flex-row">
-                  <input
-                    value={question}
-                    onChange={(event) => setQuestion(event.target.value)}
-                    placeholder="Ask about fever, blood donation, symptoms, health concerns..."
-                    className="flex-1 rounded-lg border border-slate-300 px-4 py-3 text-sm transition focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-100"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => void askQuickAnswer()}
-                    className="rounded-lg bg-emerald-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-emerald-700 active:scale-95"
-                  >
-                    Ask AI
-                  </button>
+              {answer && (
+                <div className="bg-[#FAFAFA] border border-[#E5E5E5] p-6 md:p-8 rounded-none">
+                  <h3 className="text-sm font-bold uppercase tracking-widest text-[#707072] mb-4">Diagnostic Context</h3>
+                  <div className="prose prose-sm md:prose-base prose-slate max-w-none text-[#111111] leading-relaxed">
+                    {answer}
+                  </div>
                 </div>
+              )}
 
-                {answer && (
-                  <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4">
-                    <p className="text-sm leading-relaxed text-emerald-900">{answer}</p>
-                  </div>
-                )}
+              {disclaimer && (
+                <div className="mt-4 flex items-start gap-3 border-l-4 border-[#D30005] bg-[#FFF0F0] p-4 text-[#D30005]">
+                  <AlertCircle className="h-5 w-5 mt-0.5 flex-shrink-0" />
+                  <p className="text-sm font-medium">{disclaimer}</p>
+                </div>
+              )}
 
-                {disclaimer && (
-                  <div className="flex gap-3 rounded-lg border border-amber-200 bg-amber-50 p-4">
-                    <AlertCircle className="h-5 w-5 flex-shrink-0 text-amber-600 mt-0.5" />
-                    <p className="text-xs text-amber-800">{disclaimer}</p>
+              {doctorSuggestions.length > 0 && (
+                <div className="mt-12">
+                  <h3 className="text-xl font-medium tracking-tight mb-6">Suggested Specialists</h3>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    {doctorSuggestions.map((suggestion) => (
+                      <div key={suggestion.doctorId} className="border border-[#E5E5E5] bg-white p-5 cursor-pointer hover:border-[#111111] transition group" onClick={() => openBookingPanel(suggestion.doctorId)}>
+                        <p className="text-lg font-semibold text-[#111111]">{suggestion.fullName}</p>
+                        <p className="text-sm text-[#707072] mb-3">{suggestion.specialization ?? "General Medicine"}</p>
+                        <p className="text-sm font-medium text-[#1151FF] bg-[#F5F5F5] p-3 inline-block w-full">{suggestion.matchReason}</p>
+                      </div>
+                    ))}
                   </div>
-                )}
-
-                {doctorSuggestions.length > 0 && (
-                  <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
-                    <p className="text-sm font-semibold text-blue-900">Suggested Doctors (System Logic)</p>
-                    <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                      {doctorSuggestions.map((suggestion) => (
-                        <div key={suggestion.doctorId} className="rounded-md border border-blue-100 bg-white p-3">
-                          <p className="text-sm font-semibold text-slate-900">{suggestion.fullName}</p>
-                          <p className="text-xs text-slate-600">{suggestion.specialization ?? "General Medicine"}</p>
-                          <p className="mt-1 text-xs text-blue-800">{suggestion.matchReason}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
 
-            {/* Quick Stats */}
-            <div className="grid gap-4 sm:grid-cols-3">
-              <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-slate-600">Total Appointments</p>
-                    <p className="mt-1 text-2xl font-bold text-slate-900">{appointments.length}</p>
-                  </div>
-                  <Calendar className="h-8 w-8 text-emerald-100" />
-                </div>
+            {/* Quick Stats sidebar */}
+            <div className="space-y-4">
+              <div className="bg-[#F5F5F5] p-6 border border-[#E5E5E5]">
+                <p className="text-xs font-bold uppercase tracking-widest text-[#707072]">Total Doctors</p>
+                <p className="mt-2 text-4xl font-medium tracking-tight">{doctors.length}</p>
               </div>
-              <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-slate-600">Doctors Available</p>
-                    <p className="mt-1 text-2xl font-bold text-slate-900">{doctors.length}</p>
-                  </div>
-                  <Users className="h-8 w-8 text-blue-100" />
-                </div>
+              <div className="bg-[#111111] p-6 text-white border border-[#111111]">
+                <p className="text-xs font-bold uppercase tracking-widest text-[#9E9EA0]">Your Appointments</p>
+                <p className="mt-2 text-4xl font-medium tracking-tight">{appointments.length}</p>
               </div>
-              <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-slate-600">Available Slots</p>
-                    <p className="mt-1 text-2xl font-bold text-slate-900">{slots.length}</p>
-                  </div>
-                  <Heart className="h-8 w-8 text-red-100" />
-                </div>
+              <div className="bg-[#F5F5F5] p-6 border border-[#E5E5E5]">
+                <p className="text-xs font-bold uppercase tracking-widest text-[#707072]">Available Slots</p>
+                <p className="mt-2 text-4xl font-medium tracking-tight">{slots.length}</p>
               </div>
             </div>
           </div>
         )}
 
-        {/* Doctors Tab */}
+        {/* TAB 2: DOCTORS */}
         {activeTab === "doctors" && (
-          <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-slate-900">Find & Book a Doctor</h2>
-
-              {selectedDoctor ? (
-                <div className="rounded-2xl border border-emerald-200 bg-white p-5 shadow-sm">
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-700">Booking Panel</p>
-                      <h3 className="mt-1 text-xl font-semibold text-slate-900">Dr. {selectedDoctor.fullName}</h3>
-                      <p className="text-sm text-slate-600">
-                        {selectedDoctor.specialization ?? "General Medicine"}
-                        {selectedDoctor.experienceYears ? ` • ${selectedDoctor.experienceYears}+ years` : ""}
-                      </p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={closeBookingPanel}
-                      className="rounded-full border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"
-                    >
-                      Close
-                    </button>
+          <div>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-6">
+              <h2 className="text-3xl font-medium tracking-tight">Our Specialists</h2>
+            </div>
+            
+            {/* Booking Panel Overlay when doctor is selected */}
+            {selectedDoctor && (
+              <div className="mb-10 bg-[#111111] text-white p-6 md:p-8 animate-in fade-in slide-in-from-top-4 duration-300">
+                <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-widest text-[#9E9EA0] mb-2">Selected for booking</p>
+                    <h3 className="text-3xl font-medium leading-none">Dr. {selectedDoctor.fullName}</h3>
+                    <p className="text-sm text-[#CACACB] mt-2">
+                       {selectedDoctor.specialization ?? "General Medicine"}
+                       {selectedDoctor.experienceYears ? ` / ${selectedDoctor.experienceYears}+ YRS EXP` : ""}
+                    </p>
                   </div>
-
-                  <div className="mt-4 space-y-3">
-                    {filteredSlots.length > 0 ? (
-                      <>
-                        <label className="block space-y-2">
-                          <span className="text-sm font-medium text-slate-700">Choose a slot</span>
-                          <select
-                            value={selectedSlotId}
-                            onChange={(event) => setSelectedSlotId(event.target.value)}
-                            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                          >
-                            <option value="">Choose slot</option>
-                            {filteredSlots.map((slot) => (
-                              <option key={slot.slotId} value={slot.slotId}>
-                                {new Date(slot.slotStart).toLocaleString()} - {new Date(slot.slotEnd).toLocaleTimeString()}
-                              </option>
-                            ))}
-                          </select>
-                        </label>
-
-                        <label className="block space-y-2">
-                          <span className="text-sm font-medium text-slate-700">Reason for visit</span>
-                          <textarea
-                            value={reason}
-                            onChange={(event) => setReason(event.target.value)}
-                            placeholder="Describe your symptoms or concern"
-                            rows={3}
-                            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                          />
-                        </label>
-
-                        <div className="flex flex-wrap gap-2">
-                          <button
-                            type="button"
-                            onClick={() => void book()}
-                            disabled={booking || !selectedSlotId || !reason.trim()}
-                            className="rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
-                          >
-                            {booking ? "Booking..." : "Confirm Appointment"}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={closeBookingPanel}
-                            className="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      </>
-                    ) : (
-                      <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
-                        No available slots for this doctor right now. You can still keep the doctor selected and try again once slots are published.
-                      </div>
-                    )}
-                  </div>
+                  <button
+                    onClick={closeBookingPanel}
+                    className="flex h-10 w-10 items-center justify-center rounded-full bg-[#28282A] text-white hover:bg-white hover:text-black transition"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
                 </div>
-              ) : null}
 
-            <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                <input
-                  value={doctorSearch}
-                  onChange={(event) => setDoctorSearch(event.target.value)}
-                  placeholder="Search doctor, specialization, bio"
-                  className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                />
+                <div className="max-w-2xl space-y-6">
+                  {filteredSlots.length > 0 ? (
+                    <>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium uppercase tracking-wide text-[#CACACB]">Time Slot</label>
+                        <select
+                          value={selectedSlotId}
+                          onChange={(e) => setSelectedSlotId(e.target.value)}
+                          className="w-full rounded-none bg-white text-black px-4 py-3 text-base border-none outline-none focus:ring-2 focus:ring-[#1151FF]"
+                        >
+                          <option value="" disabled>Select available time</option>
+                          {filteredSlots.map((slot) => (
+                            <option key={slot.slotId} value={slot.slotId}>
+                              {new Date(slot.slotStart).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium uppercase tracking-wide text-[#CACACB]">Reason</label>
+                        <input
+                          value={reason}
+                          onChange={(e) => setReason(e.target.value)}
+                          placeholder="Brief description of your concern"
+                          className="w-full bg-[#28282A] border border-[#4B4B4D] px-4 py-3 text-base text-white placeholder-[#707072] focus:bg-[#1f1f21] focus:border-white focus:ring-0 outline-none transition rounded-none"
+                        />
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => void book()}
+                        disabled={booking || !selectedSlotId || !reason.trim()}
+                        className="rounded-full bg-white text-black px-8 py-3.5 text-sm font-bold uppercase tracking-wide transition hover:bg-[#E5E5E5] disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {booking ? "CONFIRMING..." : "CONFIRM APPOINTMENT"}
+                      </button>
+                    </>
+                  ) : (
+                    <div className="bg-[#28282A] p-4 text-[#CACACB] text-sm">
+                      Dr. {selectedDoctor.fullName} currently has no open slots. Check back later.
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Filters */}
+            <div className="mb-10 p-5 bg-[#F5F5F5] border border-[#E5E5E5] rounded-none space-y-4">
+              <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-3.5 h-4 w-4 text-[#707072]" />
+                  <input
+                    value={doctorSearch}
+                    onChange={(e) => setDoctorSearch(e.target.value)}
+                    placeholder="Search doctor name..."
+                    className="w-full bg-white border border-[#CACACB] pl-10 pr-4 py-3 text-sm focus:border-[#111111] outline-none"
+                  />
+                </div>
                 <input
                   value={doctorSpecialization}
-                  onChange={(event) => setDoctorSpecialization(event.target.value)}
-                  placeholder="Filter specialization"
-                  className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                />
-                <input
-                  value={doctorMinExperience}
-                  onChange={(event) => setDoctorMinExperience(event.target.value)}
-                  placeholder="Min experience (years)"
-                  type="number"
-                  min={0}
-                  className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                />
-                <input
-                  value={doctorMaxFee}
-                  onChange={(event) => setDoctorMaxFee(event.target.value)}
-                  placeholder="Max fee"
-                  type="number"
-                  min={0}
-                  className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                  onChange={(e) => setDoctorSpecialization(e.target.value)}
+                  placeholder="Specialization"
+                  className="w-full bg-white border border-[#CACACB] px-4 py-3 text-sm focus:border-[#111111] outline-none"
                 />
                 <select
                   value={doctorSortBy}
-                  onChange={(event) => setDoctorSortBy(event.target.value)}
-                  className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                  onChange={(e) => setDoctorSortBy(e.target.value)}
+                  className="w-full bg-white border border-[#CACACB] px-4 py-3 text-sm focus:border-[#111111] outline-none"
                 >
-                  <option value="recent">Sort by newest</option>
-                  <option value="experience">Sort by experience</option>
-                  <option value="fee">Sort by fee</option>
-                  <option value="name">Sort by name</option>
+                  <option value="recent">Sort: Newest</option>
+                  <option value="experience">Sort: Experience</option>
+                  <option value="fee">Sort: Fee</option>
+                  <option value="name">Sort: Name</option>
                 </select>
-                <select
-                  value={doctorSortOrder}
-                  onChange={(event) => setDoctorSortOrder(event.target.value)}
-                  className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                >
-                  <option value="desc">Descending</option>
-                  <option value="asc">Ascending</option>
-                </select>
-              </div>
-
-              <div className="mt-3 flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  onClick={() => void loadData()}
-                  className="rounded-lg bg-slate-900 px-4 py-2 text-xs font-semibold text-white"
-                >
-                  Apply Search/Filters
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setDoctorSearch("");
-                    setDoctorSpecialization("");
-                    setDoctorMinExperience("");
-                    setDoctorMaxFee("");
-                    setDoctorSortBy("recent");
-                    setDoctorSortOrder("desc");
-                  }}
-                  className="rounded-lg border border-slate-300 px-4 py-2 text-xs font-semibold text-slate-700"
-                >
-                  Reset
-                </button>
+                <div className="flex gap-2">
+                  <select
+                    value={doctorSortOrder}
+                    onChange={(e) => setDoctorSortOrder(e.target.value)}
+                    className="flex-1 bg-white border border-[#CACACB] px-4 py-3 text-sm focus:border-[#111111] outline-none"
+                  >
+                    <option value="desc">Desc</option>
+                    <option value="asc">Asc</option>
+                  </select>
+                  <button
+                    onClick={() => void loadData()}
+                    className="bg-[#111111] text-white px-5 rounded-none font-medium hover:bg-[#707072] transition"
+                  >
+                    APPLY
+                  </button>
+                </div>
               </div>
             </div>
 
             {doctors.length === 0 ? (
-              <div className="rounded-xl border border-slate-200 bg-white p-8 text-center">
-                <Users className="mx-auto h-12 w-12 text-slate-300" />
-                <p className="mt-2 text-slate-600">No doctors available at the moment</p>
+              <div className="py-20 text-center border border-[#E5E5E5]">
+                <p className="text-xl text-[#707072] font-medium tracking-tight">No doctors match your criteria.</p>
+                <button 
+                  onClick={() => {
+                    setDoctorSearch("");
+                    setDoctorSpecialization("");
+                    setDoctorSortBy("recent");
+                    setDoctorSortOrder("desc");
+                    void loadData();
+                  }}
+                  className="mt-4 text-[#111111] underline font-medium"
+                >
+                  Clear filters
+                </button>
               </div>
             ) : (
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {doctors.map((doctor) => (
-                  <div
-                    key={doctor.doctorId}
-                    className="rounded-xl border border-slate-200 bg-white shadow-sm transition hover:shadow-md overflow-hidden"
-                  >
-                    <div className="bg-gradient-to-r from-emerald-500 to-blue-500 h-2"></div>
-                    <div className="p-6 space-y-4">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <h3 className="text-lg font-semibold text-slate-900">{doctor.fullName}</h3>
-                          {doctor.specialization && (
-                            <p className="text-sm text-emerald-600 font-medium">{doctor.specialization}</p>
-                          )}
-                        </div>
+                  <div key={doctor.doctorId} className="group relative flex flex-col justify-between border border-[#E5E5E5] bg-white p-6 transition-all hover:border-[#111111]">
+                    <div className="mb-8">
+                      <div className="flex justify-between items-start mb-2">
+                        <h3 className="text-xl font-bold uppercase tracking-tight text-[#111111]">{doctor.fullName}</h3>
                         {doctor.experienceYears && (
-                          <span className="text-xs font-semibold text-white bg-emerald-600 px-3 py-1 rounded-full">
-                            {doctor.experienceYears}+ years
+                          <span className="bg-[#F5F5F5] text-[#111111] text-xs font-bold px-2 py-1 tracking-widest uppercase">
+                            {doctor.experienceYears}+ YR
                           </span>
                         )}
                       </div>
-
-                      {doctor.bio && <p className="text-sm text-slate-600">{doctor.bio}</p>}
-
-                      {doctor.consultationFee && (
-                        <div className="text-sm font-semibold text-slate-900">
-                          Fee: <span className="text-emerald-600">Rs. {doctor.consultationFee}</span>
+                      <p className="font-medium text-[#707072] mb-4">
+                        {doctor.specialization || "General Medicine"}
+                      </p>
+                      
+                      {doctor.bio && (
+                         <p className="text-sm text-[#707072] line-clamp-3 leading-relaxed">{doctor.bio}</p>
+                      )}
+                    </div>
+                    
+                    <div className="mt-auto space-y-4 border-t border-[#E5E5E5] pt-4">
+                      {doctor.consultationFee !== null && (
+                        <div className="flex justify-between items-center text-sm font-medium">
+                          <span className="text-[#707072]">CONSULTATION</span>
+                          <span className="text-[#111111]">RS. {doctor.consultationFee}</span>
                         </div>
                       )}
-
                       <button
-                        type="button"
                         onClick={() => openBookingPanel(doctor.doctorId)}
-                        className="w-full rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700"
+                        className="w-full rounded-full border border-[#111111] bg-white px-4 py-3 text-sm font-bold uppercase tracking-wide text-[#111111] transition hover:bg-[#111111] hover:text-white"
                       >
                         Book Appointment
                       </button>
@@ -623,120 +571,104 @@ export function HealthCareHubProfessional() {
           </div>
         )}
 
-        {/* Appointments Tab */}
+        {/* TAB 3: APPOINTMENTS */}
         {activeTab === "appointments" && (
-          <div className="space-y-4">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <h2 className="text-2xl font-bold text-slate-900">Your Appointments</h2>
+          <div>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-6">
+              <h2 className="text-3xl font-medium tracking-tight">Your Schedule</h2>
               <button
-                type="button"
                 onClick={() => void loadData()}
-                className="rounded-lg border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700"
+                className="text-sm font-bold uppercase tracking-wide underline decoration-2 underline-offset-4 hover:text-[#707072]"
               >
-                Refresh
+                REFRESH
               </button>
             </div>
 
-            <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                <input
-                  value={appointmentSearch}
-                  onChange={(event) => setAppointmentSearch(event.target.value)}
-                  placeholder="Search reason"
-                  className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                />
-                <select
-                  value={appointmentStatus}
-                  onChange={(event) => setAppointmentStatus(event.target.value)}
-                  className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                >
-                  <option value="all">All statuses</option>
-                  <option value="pending">pending</option>
-                  <option value="confirmed">confirmed</option>
-                  <option value="completed">completed</option>
-                  <option value="cancelled">cancelled</option>
-                </select>
-                <select
-                  value={appointmentSortBy}
-                  onChange={(event) => setAppointmentSortBy(event.target.value)}
-                  className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                >
-                  <option value="createdAt">Sort by created time</option>
-                  <option value="slotStart">Sort by appointment time</option>
-                </select>
-                <select
-                  value={appointmentSortOrder}
-                  onChange={(event) => setAppointmentSortOrder(event.target.value)}
-                  className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                >
-                  <option value="desc">Descending</option>
-                  <option value="asc">Ascending</option>
-                </select>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => void loadData()}
-                className="mt-3 rounded-lg bg-slate-900 px-4 py-2 text-xs font-semibold text-white"
+            <div className="mb-8 flex flex-col md:flex-row gap-4 border-y border-[#E5E5E5] py-4">
+              <select
+                value={appointmentStatus}
+                onChange={(e) => setAppointmentStatus(e.target.value)}
+                className="bg-transparent text-sm font-medium outline-none cursor-pointer"
               >
-                Apply Search/Filters
-              </button>
+                <option value="all">ALL STATUSES</option>
+                <option value="pending">PENDING</option>
+                <option value="confirmed">CONFIRMED</option>
+                <option value="completed">COMPLETED</option>
+                <option value="cancelled">CANCELLED</option>
+              </select>
+              <span className="hidden md:inline text-[#CACACB]">|</span>
+              <select
+                value={appointmentSortBy}
+                onChange={(e) => setAppointmentSortBy(e.target.value)}
+                className="bg-transparent text-sm font-medium outline-none cursor-pointer"
+              >
+                <option value="createdAt">SORT BY CREATED</option>
+                <option value="slotStart">SORT BY TIME</option>
+              </select>
+              <span className="hidden md:inline text-[#CACACB]">|</span>
+              <select
+                value={appointmentSortOrder}
+                onChange={(e) => setAppointmentSortOrder(e.target.value)}
+                className="bg-transparent text-sm font-medium outline-none cursor-pointer"
+              >
+                <option value="desc">DESCENDING</option>
+                <option value="asc">ASCENDING</option>
+              </select>
             </div>
 
             {appointments.length === 0 ? (
-              <div className="rounded-xl border border-slate-200 bg-white p-8 text-center">
-                <Calendar className="mx-auto h-12 w-12 text-slate-300" />
-                <p className="mt-2 text-slate-600">No appointments scheduled yet</p>
+              <div className="py-20 text-center border border-[#E5E5E5]">
+                <p className="text-xl text-[#707072] font-medium tracking-tight">You have no recorded appointments.</p>
               </div>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {appointments.map((appointment) => (
-                  <div
-                    key={appointment.appointmentId}
-                    className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm hover:shadow-md transition"
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-slate-900">Dr. {appointment.doctorName}</h3>
-                        <div className="mt-2 space-y-2">
-                          <p className="flex items-center gap-2 text-sm text-slate-600">
-                            <Calendar className="h-4 w-4 text-emerald-600" />
-                            {new Date(appointment.slotStart).toLocaleString()}
-                          </p>
-                          <p className="text-sm text-slate-600">
-                            <span className="font-medium">Reason:</span> {appointment.reason}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <span
-                          className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
-                            appointment.status === "confirmed"
-                              ? "bg-green-100 text-green-700"
-                              : appointment.status === "pending"
-                                ? "bg-yellow-100 text-yellow-700"
-                                : "bg-slate-100 text-slate-700"
-                          }`}
-                        >
-                          {appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}
-                        </span>
-                      </div>
+                  <div key={appointment.appointmentId} className="border border-[#E5E5E5] bg-white p-6 md:p-8 flex flex-col lg:flex-row gap-8 lg:items-start group">
+                    <div className="flex-1 space-y-4">
+                       <div className="flex flex-wrap items-center gap-3 mb-2">
+                         <span
+                           className={`px-3 py-1 text-xs font-bold uppercase tracking-widest ${
+                             appointment.status === "confirmed" ? "bg-[#007D48] text-white" :
+                             appointment.status === "pending" ? "bg-[#FEDF35] text-black" :
+                             appointment.status === "cancelled" ? "bg-[#E5E5E5] text-[#9E9EA0]" :
+                             "bg-[#E5E5E5] text-[#111111]"
+                           }`}
+                         >
+                           {appointment.status}
+                         </span>
+                         <span className="text-sm font-medium text-[#707072]">
+                           {new Date(appointment.slotStart).toLocaleString('en-US', { 
+                             weekday: 'long', month: 'short', day: 'numeric', 
+                             hour: 'numeric', minute: '2-digit' 
+                           })}
+                         </span>
+                       </div>
+                       
+                       <h3 className="text-2xl font-bold uppercase tracking-tight text-[#111111]">
+                         Dr. {appointment.doctorName}
+                       </h3>
+                       
+                       <div className="text-base text-[#111111] bg-[#FAFAFA] p-4 border-l-2 border-[#CACACB]">
+                         <span className="text-[#707072] text-xs font-bold uppercase block mb-1">Reason:</span> 
+                         {appointment.reason}
+                       </div>
                     </div>
 
-                    <div className="mt-4 border-t pt-4">
+                    <div className="w-full lg:w-96 flex flex-col gap-4">
                       {(appointment.status === "pending" || appointment.status === "confirmed") && (
                         <button
-                          type="button"
                           disabled={cancellingAppointmentId === appointment.appointmentId}
                           onClick={() => void cancelAppointment(appointment.appointmentId)}
-                          className="mb-3 rounded-lg border border-red-300 px-3 py-2 text-xs font-semibold text-red-700 disabled:opacity-60"
+                          className="w-full rounded-full border border-[#D30005] bg-white px-4 py-2.5 text-xs font-bold uppercase tracking-wide text-[#D30005] transition hover:bg-[#FFF0F0] disabled:opacity-50"
                         >
-                          {cancellingAppointmentId === appointment.appointmentId
-                            ? "Cancelling..."
-                            : "Cancel Appointment"}
+                          {cancellingAppointmentId === appointment.appointmentId ? "CANCELLING..." : "CANCEL APPOINTMENT"}
                         </button>
                       )}
-                      <AppointmentChatBox appointmentId={appointment.appointmentId} />
+                      
+                      {/* Chat integrated */}
+                      <div className="w-full">
+                        <AppointmentChatBox appointmentId={appointment.appointmentId} />
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -745,12 +677,18 @@ export function HealthCareHubProfessional() {
           </div>
         )}
 
-        {/* Profile Tab */}
-        {activeTab === "profile" && <HealthcareProfileManager />}
+        {/* TAB 4: PROFILE */}
+        {activeTab === "profile" && (
+          <div className="max-w-4xl">
+            <h2 className="text-3xl font-medium tracking-tight mb-8">Personal Profile</h2>
+            <HealthcareProfileManager />
+          </div>
+        )}
+
       </div>
 
       {feedback && (
-        <div className="fixed bottom-6 right-6 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700 shadow-lg">
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 rounded-full border-2 border-[#111111] bg-[#111111] px-6 py-3 shadow-2xl text-white font-medium animate-in slide-in-from-bottom-5">
           {feedback}
         </div>
       )}

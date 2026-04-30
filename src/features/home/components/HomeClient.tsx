@@ -839,7 +839,7 @@ export function HomeClient() {
   }, [setupGSAPAnimations, playIntro, revealHeroImmediately, startMobileLiteFallbackAnimations]);
 
   return (
-    <div ref={containerRef}>
+    <div ref={containerRef} className="home-page-redesign">
       {/* ════════════════════════════════════════════════ */}
       {/* INTRO SPLASH — Black screen with text reveal    */}
       {/* ════════════════════════════════════════════════ */}

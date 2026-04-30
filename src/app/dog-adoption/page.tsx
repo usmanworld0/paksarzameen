@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 
 export default async function DogAdoptionPage() {
   let dogs = [] as Awaited<ReturnType<typeof listDogs>>;
-  let adoptedDogs = [] as Awaited<ReturnType<typeof listAdoptedDogsWithOwners>>;
+  let adoptedDogs = [] as Awaited<ReturnType<typeof listAdoptedDogsWithOwners>>; 
   let error: string | null = null;
 
   try {
@@ -29,68 +29,81 @@ export default async function DogAdoptionPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[linear-gradient(180deg,_#f8fcf8_0%,_#eef6ef_100%)] px-[4%] pb-20 pt-28">
-      <section className="mx-auto max-w-screen-2xl space-y-8">
-        <div className="rounded-2xl border border-rose-200 bg-[linear-gradient(135deg,_#fff1f2_0%,_#ffe4e6_100%)] px-5 py-4 text-center shadow-sm sm:px-6">
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-rose-700">Adoption Drive</p>
-          <p className="mt-1 text-lg font-semibold text-rose-900 sm:text-xl">Adopt a dog, save a life for 3500 only</p>
-        </div>
-
-        <div className="overflow-hidden rounded-3xl border border-emerald-100 bg-white/95 p-8 shadow-xl shadow-emerald-900/10 sm:p-10">
-          <p className="mb-3 inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700">
-            Dog Adoption
-          </p>
-          <h1 className="text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">
-            Adopt a Stray, Save a Soul
-          </h1>
-          <p className="mt-3 max-w-3xl text-base leading-relaxed text-slate-600 sm:text-lg">
-            Browse rescue dogs in a marketplace-style layout, compare profiles quickly, and open any listing to adopt when you are ready.
-          </p>
-        </div>
+    <main className="min-h-screen bg-white pb-24 pt-28 sm:pt-32 text-[#111111]">
+      <section className="mx-auto max-w-screen-2xl space-y-12 px-[5%]">
+        
+        {/* HERO HEADER */}
+        <header className="border-b border-[#E5E5E5] pb-8 md:pb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div>
+            <h1 className="text-[10vw] md:text-[6rem] leading-[0.9] font-black uppercase tracking-tighter">
+              ADOPT.
+            </h1>
+            <p className="mt-2 text-[#707072] text-sm md:text-base tracking-wide font-medium">
+              EVERY DOG DESERVES A HOME.
+            </p>
+          </div>
+          <div className="flex flex-col items-start gap-1 p-4 bg-[#F5F5F5] border border-[#E5E5E5]">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-[#707072]">
+              ADOPTION DRIVE
+            </p>
+            <p className="text-sm font-bold text-[#D30005]">
+              ADOPT A DOG FOR PKR 3,500
+            </p>
+          </div>
+        </header>
 
         {error ? (
-          <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-red-700">{error}</div>
+          <div className="border-l-4 border-[#D30005] bg-[#FAFAFA] p-4 text-[#D30005] font-medium text-sm">
+            {error}
+          </div>
         ) : null}
 
         {!error && !dogs.length ? (
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 text-slate-600">
-            No dogs listed yet. Please check back soon.
+          <div className="border border-[#E5E5E5] bg-[#F5F5F5] p-6 text-center text-sm font-medium tracking-wide uppercase text-[#707072]">
+            NO DOGS LISTED YET. PLEASE CHECK BACK SOON.
           </div>
         ) : null}
 
         {!error && dogs.length ? <DogMarketplace dogs={dogs} /> : null}
 
         {!error ? (
-          <section className="space-y-4 rounded-3xl border border-slate-200 bg-white/95 p-6 shadow-sm sm:p-8">
-            <div className="flex flex-wrap items-end justify-between gap-3">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Adopted Dogs</p>
-                <h2 className="mt-1 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
-                  Dogs settled into loving homes
-                </h2>
-              </div>
+          <section className="pt-12 md:pt-16 border-t border-[#E5E5E5]">
+            <div className="mb-8">
+              <p className="text-xs font-bold uppercase tracking-widest text-[#707072] mb-1">Success Stories</p>
+              <h2 className="text-3xl font-medium tracking-tight text-[#111111]">
+                SETTLED IN LOVING HOMES
+              </h2>
             </div>
 
             {!adoptedDogs.length ? (
-              <p className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
-                No adopted dog records available yet.
+              <p className="border border-[#E5E5E5] bg-[#F5F5F5] px-6 py-4 text-sm font-medium tracking-wide uppercase text-[#707072]">
+                NO ADOPTED DOG RECORDS AVAILABLE YET.
               </p>
             ) : (
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                 {adoptedDogs.map((dog) => (
-                  <article key={dog.dogId} className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
-                    <div className="relative aspect-[4/3] bg-slate-100">
-                      <Image src={dog.imageUrl} alt={dog.dogName} fill sizes="(max-width: 1280px) 50vw, 33vw" className="object-cover" />
+                  <article key={dog.dogId} className="group border border-[#E5E5E5] bg-white transition hover:border-[#111111]">
+                    <div className="relative aspect-[4/3] bg-[#F5F5F5]">
+                      <Image src={dog.imageUrl} alt={dog.dogName} fill sizes="(max-width: 1280px) 50vw, 33vw" className="object-cover transition-opacity duration-300 group-hover:opacity-90" />
                     </div>
-                    <div className="space-y-2 p-4">
-                      <h3 className="text-lg font-semibold text-slate-900">{dog.dogName}</h3>
-                      <p className="text-xs text-slate-500">Rescue name: {dog.rescueName}</p>
-                      <p className="text-sm text-slate-600">{dog.breed} • {dog.color} • {dog.age} • {dog.gender}</p>
-                      <p className="text-sm text-slate-700">Owner: {dog.ownerName ?? "Owner details unavailable"}</p>
-                      <p className="text-sm text-indigo-700">Pet name: {dog.petName ?? "Not assigned yet"}</p>
-                      <Link href={`/dog/${dog.dogId}`} className="inline-flex text-sm font-semibold text-emerald-700 hover:text-emerald-600">
-                        View profile →
-                      </Link>
+                    <div className="p-6 flex flex-col justify-between h-[200px]">
+                      <div>
+                        <div className="flex justify-between items-start mb-2">
+                           <h3 className="text-xl font-bold uppercase tracking-tight text-[#111111]">{dog.dogName}</h3>
+                           <span className="bg-[#111111] text-white text-[10px] font-bold px-2 py-1 tracking-widest uppercase">ADOPTED</span>
+                        </div>
+                        <p className="text-xs font-medium uppercase tracking-widest text-[#707072] mb-3">Rescue Name: {dog.rescueName}</p>
+                        <p className="text-sm font-medium text-[#111111]">{dog.breed} / {dog.age} / {dog.gender}</p>
+                      </div>
+                      <div className="flex justify-between items-end mt-4">
+                        <div>
+                           <p className="text-[10px] uppercase text-[#707072] font-semibold">OWNER: {dog.ownerName ?? "N/A"}</p>
+                           <p className="text-[10px] uppercase text-[#1151FF] font-semibold">PET NAME: {dog.petName ?? "N/A"}</p>
+                        </div>
+                        <Link href={`/dog/${dog.dogId}`} className="text-xs font-bold uppercase tracking-wide text-[#111111] hover:text-[#707072] underline underline-offset-4 decoration-2 transition">
+                          View profile
+                        </Link>
+                      </div>
                     </div>
                   </article>
                 ))}

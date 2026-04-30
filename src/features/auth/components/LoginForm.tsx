@@ -40,35 +40,35 @@ export function LoginForm({ callbackUrl }: Props) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="w-full max-w-md space-y-4 rounded-3xl border border-emerald-100 bg-white/90 p-6 shadow-[0_22px_80px_rgba(6,50,30,0.12)] backdrop-blur-xl sm:p-8">
-      <div className="space-y-1 text-center">
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-700">Welcome Back</p>
-        <h2 className="text-3xl font-semibold text-emerald-950">Sign in</h2>
-        <p className="text-sm text-emerald-900/70">Use your email and password to access your donor dashboard.</p>
+    <form onSubmit={onSubmit} className="site-auth-form space-y-4">
+      <div className="site-auth-form__intro">
+        <p className="site-auth-form__eyebrow">Welcome Back</p>
+        <h2 className="site-auth-form__heading">Sign in</h2>
+        <p className="site-auth-form__copy">Use your email and password to access your donor dashboard.</p>
       </div>
 
       <label className="block space-y-2">
-        <span className="text-sm font-medium text-emerald-950">Email</span>
+        <span className="site-form-label">Email</span>
         <input
           type="email"
           required
           autoComplete="email"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
-          className="w-full rounded-xl border border-emerald-200 bg-white px-4 py-3 text-sm text-emerald-950 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+          className="site-input"
           placeholder="you@example.com"
         />
       </label>
 
       <label className="block space-y-2">
-        <span className="text-sm font-medium text-emerald-950">Password</span>
+        <span className="site-form-label">Password</span>
         <input
           type="password"
           required
           autoComplete="current-password"
           value={password}
           onChange={(event) => setPassword(event.target.value)}
-          className="w-full rounded-xl border border-emerald-200 bg-white px-4 py-3 text-sm text-emerald-950 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+          className="site-input"
           placeholder="Enter your password"
         />
       </label>
@@ -76,21 +76,21 @@ export function LoginForm({ callbackUrl }: Props) {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full rounded-xl bg-emerald-700 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-60"
+        className="site-button w-full disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isSubmitting ? "Signing in..." : "Sign in"}
       </button>
 
-      <div className="flex items-center justify-between text-sm">
-        <Link href="/signup" className="font-medium text-emerald-700 hover:text-emerald-800">
+      <div className="site-inline-links text-[1.3rem]">
+        <Link href="/signup" className="font-medium text-[#111111] hover:text-[#707072]">
           Create account
         </Link>
-        <Link href="/forgot-password" className="font-medium text-emerald-700 hover:text-emerald-800">
+        <Link href="/forgot-password" className="font-medium text-[#111111] hover:text-[#707072]">
           Forgot password?
         </Link>
       </div>
 
-      {error ? <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p> : null}
+      {error ? <p className="site-status--error">{error}</p> : null}
     </form>
   );
 }

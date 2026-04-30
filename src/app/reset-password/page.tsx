@@ -23,8 +23,8 @@ export default async function ResetPasswordPage({ searchParams }: Props) {
   const params = await searchParams;
 
   return (
-    <main className="min-h-screen bg-[linear-gradient(180deg,_#f8fcf8_0%,_#edf5ef_100%)] px-4 py-14 sm:px-6 lg:px-8">
-      <section className="mx-auto flex min-h-[calc(100vh-7rem)] max-w-4xl items-center justify-center">
+    <main className="site-auth">
+      <section className="site-auth-shell">
         <ResetPasswordForm token={params.token} />
       </section>
     </main>

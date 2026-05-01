@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { AdoptDogButton } from "@/features/dog-adoption/components/AdoptDogButton";
 import {
   getDogById,
+  getEarTagGlobalConfig,
   listDogPostAdoptionUpdates,
   normalizeDogStatus,
   type DogStatus,
@@ -53,6 +54,7 @@ export default async function DogDetailPage({ params }: PageProps) {
 
   const updates = await listDogPostAdoptionUpdates(dog.dogId);
   const normalizedStatus = normalizeDogStatus(dog.status);
+  const earTagConfig = await getEarTagGlobalConfig();
 
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,_#f8fcf8_0%,_#edf5ef_100%)] px-4 pb-20 pt-28 sm:px-6 lg:px-10">
@@ -88,7 +90,7 @@ export default async function DogDetailPage({ params }: PageProps) {
           <p className="text-base leading-relaxed text-slate-700">{dog.description}</p>
 
           {normalizedStatus === "available" ? (
-            <AdoptDogButton dogId={dog.dogId} />
+            <AdoptDogButton dogId={dog.dogId} earTagConfig={earTagConfig} />
           ) : (
             <p className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
               This dog is currently marked as {STATUS_LABELS[normalizedStatus]}.

@@ -9,7 +9,7 @@ import type { DogRecord, DogStatus } from "@/lib/dog-adoption";
 
 type StatusFilter = "all" | DogStatus;
 
-const ADOPTION_FEE_LABEL = "PKR 3,500";
+const ADOPTION_FEE_LABEL = "PKR 5,000";
 
 const STATUS_LABELS: Record<DogStatus, string> = {
   available: "Available",

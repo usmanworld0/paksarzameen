@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { CompactPageHeader } from "@/components/layout/CompactPageHeader";
 import { BloodBankRequestForm } from "@/features/blood-bank/components/BloodBankRequestForm";
 import { EmergencyBloodRequest } from "@/features/blood-bank/components/EmergencyBloodRequest";
 
@@ -14,18 +15,10 @@ export const metadata: Metadata = {
 export default function HealthCareBloodBankPage() {
   return (
     <main className="site-page">
-      <section className="site-hero">
-        <div className="site-hero__noise" aria-hidden="true" />
-        <div className="site-hero__orb site-hero__orb--left" aria-hidden="true" />
-        <div className="site-hero__orb site-hero__orb--right" aria-hidden="true" />
-
-        <header className="site-hero__inner">
-          <h1 className="site-hero__title">Blood Support.</h1>
-          <p className="site-hero__body">
-            Register requests, match donors, and coordinate quickly.
-          </p>
-        </header>
-      </section>
+      <CompactPageHeader
+        title="Blood Support."
+        description="Register requests, match donors, and coordinate quickly."
+      />
 
       <section className="site-section">
         <div className="site-shell">

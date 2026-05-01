@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
+import { CompactPageHeader } from "@/components/layout/CompactPageHeader";
 import { DogMarketplace } from "@/features/dog-adoption/components/DogMarketplace";
 import { hasDatabaseConnection } from "@/lib/db";
 import { listAdoptedDogsWithOwners, listDogs } from "@/lib/dog-adoption";
@@ -30,18 +31,10 @@ export default async function DogAdoptionPage() {
 
   return (
     <main className="site-page">
-      <section className="site-hero">
-        <div className="site-hero__noise" aria-hidden="true" />
-        <div className="site-hero__orb site-hero__orb--left" aria-hidden="true" />
-        <div className="site-hero__orb site-hero__orb--right" aria-hidden="true" />
-
-        <header className="site-hero__inner">
-          <h1 className="site-hero__title">Adopt A Dog.</h1>
-          <p className="site-hero__body">
-            Browse rescue dogs and submit an adoption request.
-          </p>
-        </header>
-      </section>
+      <CompactPageHeader
+        title="Adopt A Dog."
+        description="Browse rescue dogs and submit an adoption request."
+      />
 
       <section className="site-section">
         <div className="site-shell">

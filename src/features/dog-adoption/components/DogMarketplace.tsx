@@ -3,9 +3,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Search } from "lucide-react";
-import { useDeferredValue, useState } from "react";
+import { useDeferredValue, useMemo, useState } from "react";
 
 import { DogDistributionMap } from "@/features/dog-adoption/components/DogDistributionMap";
+import { findDogLocationOption } from "@/features/dog-adoption/location-catalog";
 import type { DogRecord, DogStatus } from "@/lib/dog-adoption";
 
 type SortOption = "newest" | "oldest" | "name" | "available-first";
@@ -14,8 +15,17 @@ type FilterOption = {
   label: string;
   value: string;
 };
+type ApprovedDogRecord = DogRecord & {
+  locationKey: string;
+  locationLabel: string;
+  province: string;
+  city: string;
+  area: string;
+  latitude: number;
+  longitude: number;
+};
 
-const ADOPTION_FEE_LABEL = "PKR 3,500";
+const ADOPTION_FEE_LABEL = "PKR 5,000";
 
 const STATUS_PRIORITY: Record<DogStatus, number> = {
   available: 0,
@@ -42,12 +52,42 @@ export function DogMarketplace({ dogs }: { dogs: DogRecord[] }) {
   const deferredQuery = useDeferredValue(query);
   const normalizedQuery = deferredQuery.trim().toLowerCase();
 
-  const breedOptions = collectOptions(dogs.map((dog) => dog.breed));
-  const genderOptions = collectOptions(dogs.map((dog) => dog.gender), toTitleCase);
-  const cityOptions = collectOptions(dogs.map((dog) => dog.city));
-  const areaOptions = collectOptions(dogs.map((dog) => dog.area));
+  const approvedDogs = useMemo<ApprovedDogRecord[]>(() => {
+    const next: ApprovedDogRecord[] = [];
 
-  const filteredDogs = dogs.filter((dog) => {
+    for (const dog of dogs) {
+      const location = findDogLocationOption({
+        locationKey: dog.locationKey,
+        city: dog.city,
+        area: dog.area,
+        locationLabel: dog.locationLabel,
+        latitude: dog.latitude,
+        longitude: dog.longitude,
+      });
+
+      if (!location) continue;
+
+      next.push({
+        ...dog,
+        locationKey: location.key,
+        locationLabel: location.label,
+        province: location.province,
+        city: location.city,
+        area: location.area,
+        latitude: location.latitude,
+        longitude: location.longitude,
+      });
+    }
+
+    return next;
+  }, [dogs]);
+
+  const breedOptions = collectOptions(approvedDogs.map((dog) => dog.breed));
+  const genderOptions = collectOptions(approvedDogs.map((dog) => dog.gender), toTitleCase);
+  const cityOptions = collectOptions(approvedDogs.map((dog) => dog.city));
+  const areaOptions = collectOptions(approvedDogs.map((dog) => dog.area));
+
+  const filteredDogs = approvedDogs.filter((dog) => {
     if (statusFilter !== "all" && dog.status !== statusFilter) return false;
     if (breedFilter !== "all" && normalizeValue(dog.breed) !== breedFilter) return false;
     if (genderFilter !== "all" && normalizeValue(dog.gender) !== genderFilter) return false;
@@ -82,8 +122,8 @@ export function DogMarketplace({ dogs }: { dogs: DogRecord[] }) {
     return Date.parse(right.createdAt) - Date.parse(left.createdAt);
   });
 
-  const availableCount = dogs.filter((dog) => dog.status === "available").length;
-  const adoptedCount = dogs.filter((dog) => dog.status === "adopted").length;
+  const availableCount = approvedDogs.filter((dog) => dog.status === "available").length;
+  const adoptedCount = approvedDogs.filter((dog) => dog.status === "adopted").length;
 
   function resetFilters() {
     setQuery("");
@@ -114,7 +154,7 @@ export function DogMarketplace({ dogs }: { dogs: DogRecord[] }) {
             onClick={() => setStatusFilter("all")}
             className={`site-pill-button ${statusFilter === "all" ? "site-pill-button--active" : ""}`}
           >
-            All ({dogs.length})
+            All ({approvedDogs.length})
           </button>
           <button
             type="button"
@@ -141,7 +181,7 @@ export function DogMarketplace({ dogs }: { dogs: DogRecord[] }) {
               type="search"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search by name, breed, or city"
+              placeholder="Search by name, hotspot, or tehsil"
               className="site-input"
             />
           </div>
@@ -164,7 +204,7 @@ export function DogMarketplace({ dogs }: { dogs: DogRecord[] }) {
             onChange={(event) => setCityFilter(event.target.value)}
             className="site-select"
           >
-            <option value="all">All Cities</option>
+            <option value="all">All Tehsils</option>
             {cityOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
@@ -177,7 +217,7 @@ export function DogMarketplace({ dogs }: { dogs: DogRecord[] }) {
             onChange={(event) => setAreaFilter(event.target.value)}
             className="site-select"
           >
-            <option value="all">All Areas</option>
+            <option value="all">All Hotspots</option>
             {areaOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { CompactPageHeader } from "@/components/layout/CompactPageHeader";
 import { siteConfig } from "@/config/site";
 import { ProgramsHubClient } from "@/features/programs/components/ProgramsHubClient";
 import { getPrograms } from "@/lib/services/getPrograms";
@@ -46,18 +47,10 @@ export default async function ProgramsPage() {
 
   return (
     <main className="site-page">
-      <section className="site-hero">
-        <div className="site-hero__noise" aria-hidden="true" />
-        <div className="site-hero__orb site-hero__orb--left" aria-hidden="true" />
-        <div className="site-hero__orb site-hero__orb--right" aria-hidden="true" />
-
-        <header className="site-hero__inner">
-          <h1 className="site-hero__title">Programs.</h1>
-          <p className="site-hero__body">
-            Explore PSZ work across education, health, welfare, and climate action.
-          </p>
-        </header>
-      </section>
+      <CompactPageHeader
+        title="Programs."
+        description="Explore PSZ work across education, health, welfare, and climate action."
+      />
 
       <ProgramsHubClient programs={programs} />
     </main>

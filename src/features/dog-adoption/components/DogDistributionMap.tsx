@@ -7,7 +7,7 @@ import {
   findDogLocationOption,
   type DogLocationOption,
 } from "@/features/dog-adoption/location-catalog";
-import { PakistanLocationMap } from "@/features/dog-adoption/components/PakistanLocationMap";
+import { DogHotspotMapEmbed } from "@/features/dog-adoption/components/DogHotspotMapEmbed";
 
 type GroupedDogLocation = {
   key: string;
@@ -59,24 +59,13 @@ export function DogDistributionMap({ dogs }: { dogs: DogRecord[] }) {
   const selectedKey = activeKey ?? groups[0]?.key ?? null;
   const selectedGroup = groups.find((group) => group.key === selectedKey) ?? null;
 
-  const markers = groups.map((group) => ({
-    id: group.key,
-    label: group.location.city,
-    sublabel: group.location.area,
-    x: group.location.mapX,
-    y: group.location.mapY,
-    count: group.dogs.length,
-    active: selectedKey === group.key,
-    onSelect: () => setActiveKey(group.key),
-  }));
-
   return (
     <section className="site-panel site-panel--rounded">
       <div className="site-panel__body">
         <div className="site-toolbar__row">
           <div>
-            <p className="site-eyebrow">Live map</p>
-            <h3 className="site-heading site-heading--sm mt-3">Dogs Across Rescue Areas</h3>
+            <p className="site-eyebrow">Live hotspot map</p>
+            <h3 className="site-heading site-heading--sm mt-3">Dogs Across Approved Rescue Areas</h3>
           </div>
           <div className="site-meta-row">
             <span>{groups.length} mapped areas</span>
@@ -86,10 +75,12 @@ export function DogDistributionMap({ dogs }: { dogs: DogRecord[] }) {
         </div>
 
         <div className="mt-6 grid gap-5 xl:grid-cols-[minmax(0,1.05fr)_minmax(22rem,0.95fr)]">
-          <PakistanLocationMap
-            markers={markers}
-            footer={
-              selectedGroup ? (
+          {selectedGroup ? (
+            <DogHotspotMapEmbed
+              location={selectedGroup.location}
+              title="Selected hotspot"
+              description="This live map is centered on the same admin-approved rescue hotspot used when dogs are created or edited."
+              footer={
                 <div className="space-y-3">
                   <div className="site-toolbar__row">
                     <div>
@@ -103,22 +94,20 @@ export function DogDistributionMap({ dogs }: { dogs: DogRecord[] }) {
                     </span>
                   </div>
                   <p className="site-copy site-copy--sm">
-                    Map markers react to the same search and filter controls as the directory below.
+                    Search and filter controls update this map and the hotspot counts together.
                   </p>
                 </div>
-              ) : (
-                <p className="site-copy site-copy--sm">
-                  Select a rescue point to inspect the dogs listed in that area.
-                </p>
-              )
-            }
-          />
+              }
+            />
+          ) : (
+            <div className="site-empty">No mapped dogs match the current filters.</div>
+          )}
 
           <div className="rounded-[2rem] border border-[#e5e5e5] bg-[#fafafa] p-5">
             <div className="border-b border-[#e5e5e5] pb-4">
               <p className="site-eyebrow">Area snapshot</p>
               <p className="site-copy mt-3">
-                Rescue areas are ordered by how many dogs currently match your active filters.
+                Approved hotspots are ordered by how many dogs currently match your active filters.
               </p>
             </div>
 

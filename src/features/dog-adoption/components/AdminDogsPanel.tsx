@@ -314,7 +314,7 @@ export function AdminDogsPanel() {
               <div>
                 <h1 className="site-display">Map-First Dog Intake</h1>
                 <p className="site-copy mt-4 max-w-[72rem]">
-                  Rescue areas are now assigned from a Pakistan map so the public marketplace and internal admin workflow share the same geography.
+                  Rescue areas are now locked to the approved Bahawalpur hotspot library so the public marketplace and internal admin workflow share the same real map locations.
                 </p>
               </div>
               <div className="site-meta-row">
@@ -347,7 +347,7 @@ export function AdminDogsPanel() {
                   {editingDogId ? "Update Rescue Profile" : "Create Rescue Profile"}
                 </h2>
                 <p className="site-copy site-copy--sm mt-3">
-                  Rescue names remain automatic. The public-facing location is generated from the selected map pin.
+                  Rescue names remain automatic. The public-facing location is generated from the selected hotspot.
                 </p>
               </div>
 

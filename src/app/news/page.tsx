@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { CompactPageHeader } from "@/components/layout/CompactPageHeader";
 import { siteConfig } from "@/config/site";
 import { NewsHubClient } from "@/features/news/components/NewsHubClient";
 import { getArticles } from "@/lib/services/getArticles";
@@ -46,18 +47,10 @@ export default async function NewsPage() {
 
   return (
     <main className="site-page">
-      <section className="site-hero">
-        <div className="site-hero__noise" aria-hidden="true" />
-        <div className="site-hero__orb site-hero__orb--left" aria-hidden="true" />
-        <div className="site-hero__orb site-hero__orb--right" aria-hidden="true" />
-
-        <header className="site-hero__inner">
-          <h1 className="site-hero__title">News & Resources.</h1>
-          <p className="site-hero__body">
-            Field updates, impact stories, and key announcements from PSZ.
-          </p>
-        </header>
-      </section>
+      <CompactPageHeader
+        title="News & Resources."
+        description="Field updates, impact stories, and key announcements from PSZ."
+      />
       <NewsHubClient articles={articles} />
     </main>
   );

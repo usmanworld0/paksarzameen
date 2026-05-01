@@ -117,11 +117,11 @@ export function DoctorDashboard() {
 
   useEffect(() => {
     void load();
-  }, []);
+  }, [load]);
 
   useEffect(() => {
     void loadAppointments();
-  }, [appointmentStatus, appointmentSortBy, appointmentSortOrder]);
+  }, [appointmentStatus, appointmentSortBy, appointmentSortOrder, loadAppointments]);
 
   async function addSlot() {
     setFeedback(null);

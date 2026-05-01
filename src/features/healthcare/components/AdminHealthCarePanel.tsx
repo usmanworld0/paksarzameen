@@ -244,17 +244,17 @@ export function AdminHealthCarePanel() {
 
   useEffect(() => {
     void Promise.all([loadDoctorRequests(), loadDoctors()]);
-  }, []);
+  }, [loadDoctorRequests, loadDoctors]);
 
   useEffect(() => {
     void loadDoctors();
-  }, [doctorSortBy, doctorSortOrder]);
+  }, [loadDoctors, doctorSortBy, doctorSortOrder]);
 
   useEffect(() => {
     if (selectedDoctorId) {
       void loadDoctorAppointments(selectedDoctorId);
     }
-  }, [selectedDoctorId, appointmentStatus]);
+  }, [selectedDoctorId, appointmentStatus, loadDoctorAppointments]);
 
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,_#f7fcf7_0%,_#edf5ef_100%)] px-4 pb-20 pt-28 sm:px-6 lg:px-10">

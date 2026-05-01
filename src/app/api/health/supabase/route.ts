@@ -65,7 +65,7 @@ export async function GET() {
 
     for (const tableName of tableNames) {
       try {
-        const { data, error, status } = await supabase
+        const { error, status } = await supabase
           .from(tableName)
           .select("count()", { count: "exact", head: true });
 
@@ -85,7 +85,7 @@ export async function GET() {
     // If tables exist, try a sample query
     if (checks.tablesExist.user_profile) {
       try {
-        const { data, error } = await supabase
+        const { error } = await supabase
           .from("user_profile")
           .select("*")
           .limit(1);

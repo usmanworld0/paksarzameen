@@ -17,11 +17,7 @@ const STATUS_LABELS: Record<DogStatus, string> = {
   adopted: "Adopted",
 };
 
-const STATUS_PRIORITY: Record<DogStatus, number> = {
-  available: 0,
-  pending: 1,
-  adopted: 2,
-};
+
 
 export function DogMarketplace({ dogs }: { dogs: DogRecord[] }) {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("available");

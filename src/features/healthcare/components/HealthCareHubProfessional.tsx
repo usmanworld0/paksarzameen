@@ -247,15 +247,15 @@ export function HealthCareHubProfessional() {
 
   useEffect(() => {
     void loadData();
-  }, []);
+  }, [loadData]);
 
   useEffect(() => {
     void loadData();
-  }, [doctorSortBy, doctorSortOrder]);
+  }, [doctorSortBy, doctorSortOrder, loadData]);
 
   useEffect(() => {
     void loadData();
-  }, [appointmentStatus, appointmentSortBy, appointmentSortOrder]);
+  }, [appointmentStatus, appointmentSortBy, appointmentSortOrder, loadData]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-emerald-50">

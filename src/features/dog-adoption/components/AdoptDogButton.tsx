@@ -125,7 +125,7 @@ export function AdoptDogButton({ dogId, earTagConfig }: AdoptDogButtonProps) {
   return (
     <div className="space-y-4">
       <h3 className="text-base font-semibold text-slate-900">Select Your Ear Tag Style</h3>
-      <p className="text-sm text-slate-600">Choose how you'd like to customize your dog's ear tag after adoption</p>
+      <p className="text-sm text-slate-600">Choose how you&apos;d like to customize your dog&apos;s ear tag after adoption</p>
 
       {hasConfig && (
         <div className="space-y-4">

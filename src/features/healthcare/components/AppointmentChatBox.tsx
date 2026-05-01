@@ -53,7 +53,7 @@ export function AppointmentChatBox({ appointmentId }: { appointmentId: string })
       controller.abort();
       window.clearInterval(intervalId);
     };
-  }, [appointmentId]);
+  }, [appointmentId, loadMessages]);
 
   async function sendMessage() {
     if (!value.trim()) return;

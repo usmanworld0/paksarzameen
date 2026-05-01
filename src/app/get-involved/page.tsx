@@ -77,21 +77,10 @@ export default function GetInvolvedPage() {
         <div className="site-hero__orb site-hero__orb--right" aria-hidden="true" />
 
         <header className="site-hero__inner">
-          <p className="site-hero__eyebrow">Get Involved</p>
           <h1 className="site-hero__title">Get Involved.</h1>
           <p className="site-hero__body">
             Volunteer, partner, or support a program and the team will follow up.
           </p>
-
-          <div className="site-hero__chips">
-            {[
-              "Community action",
-              "Institutional partnerships",
-              "Skill-based support",
-            ].map((chip) => (
-              <span key={chip} className="site-chip">{chip}</span>
-            ))}
-          </div>
         </header>
       </section>
 

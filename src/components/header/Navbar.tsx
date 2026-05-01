@@ -57,9 +57,9 @@ export function Navbar() {
       const isScrollingDown = currentY > lastScrollYRef.current;
 
       if (isScrollingUp && currentY > 80) {
-        setIsHidden(true);
-      } else if (isScrollingDown) {
         setIsHidden(false);
+      } else if (isScrollingDown) {
+        setIsHidden(true);
       }
 
       lastScrollYRef.current = currentY;
@@ -169,16 +169,16 @@ export function Navbar() {
                   priority
                 />
               </span>
-              <span className="hidden min-w-0 flex-col sm:flex">
+              <span className="min-w-0 flex flex-col">
                 <span
                   style={bodyFont}
-                  className="text-[1rem] font-medium uppercase tracking-[0.22em] text-[#707072]"
+                  className="hidden text-[1rem] font-medium uppercase tracking-[0.22em] text-[#707072] sm:block"
                 >
                   Community Development
                 </span>
                 <span
                   style={displayFont}
-                  className="text-[2.2rem] font-semibold uppercase leading-none tracking-[0.04em] text-[#111111]"
+                  className="text-[1.9rem] font-semibold uppercase leading-none tracking-[0.04em] text-[#111111] sm:text-[2.2rem]"
                 >
                   PakSarZameen
                 </span>

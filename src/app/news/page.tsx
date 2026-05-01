@@ -43,7 +43,6 @@ export const metadata: Metadata = {
 
 export default async function NewsPage() {
   const articles = await getArticles();
-  const categoriesCount = new Set(articles.map((article) => article.category)).size;
 
   return (
     <main className="site-page">
@@ -53,20 +52,10 @@ export default async function NewsPage() {
         <div className="site-hero__orb site-hero__orb--right" aria-hidden="true" />
 
         <header className="site-hero__inner">
-          <p className="site-hero__eyebrow">News Hub</p>
           <h1 className="site-hero__title">News & Resources.</h1>
           <p className="site-hero__body">
             Field updates, impact stories, and key announcements from PSZ.
           </p>
-
-          <div className="site-hero__chips">
-            <span className="site-chip">
-              {articles.length} Total updates
-            </span>
-            <span className="site-chip">
-              {categoriesCount} Focus areas
-            </span>
-          </div>
         </header>
       </section>
       <NewsHubClient articles={articles} />

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Search } from "lucide-react";
 import { useDeferredValue, useState } from "react";
 
+import { DogDistributionMap } from "@/features/dog-adoption/components/DogDistributionMap";
 import type { DogRecord, DogStatus } from "@/lib/dog-adoption";
 
 type SortOption = "newest" | "oldest" | "name" | "available-first";
@@ -35,6 +36,7 @@ export function DogMarketplace({ dogs }: { dogs: DogRecord[] }) {
   const [breedFilter, setBreedFilter] = useState("all");
   const [genderFilter, setGenderFilter] = useState("all");
   const [cityFilter, setCityFilter] = useState("all");
+  const [areaFilter, setAreaFilter] = useState("all");
   const [sortBy, setSortBy] = useState<SortOption>("newest");
 
   const deferredQuery = useDeferredValue(query);
@@ -43,12 +45,14 @@ export function DogMarketplace({ dogs }: { dogs: DogRecord[] }) {
   const breedOptions = collectOptions(dogs.map((dog) => dog.breed));
   const genderOptions = collectOptions(dogs.map((dog) => dog.gender), toTitleCase);
   const cityOptions = collectOptions(dogs.map((dog) => dog.city));
+  const areaOptions = collectOptions(dogs.map((dog) => dog.area));
 
   const filteredDogs = dogs.filter((dog) => {
     if (statusFilter !== "all" && dog.status !== statusFilter) return false;
     if (breedFilter !== "all" && normalizeValue(dog.breed) !== breedFilter) return false;
     if (genderFilter !== "all" && normalizeValue(dog.gender) !== genderFilter) return false;
     if (cityFilter !== "all" && normalizeValue(dog.city) !== cityFilter) return false;
+    if (areaFilter !== "all" && normalizeValue(dog.area) !== areaFilter) return false;
 
     if (!normalizedQuery) return true;
 
@@ -87,6 +91,7 @@ export function DogMarketplace({ dogs }: { dogs: DogRecord[] }) {
     setBreedFilter("all");
     setGenderFilter("all");
     setCityFilter("all");
+    setAreaFilter("all");
     setSortBy("newest");
   }
 
@@ -127,7 +132,9 @@ export function DogMarketplace({ dogs }: { dogs: DogRecord[] }) {
           </button>
         </div>
 
-        <div className="site-toolbar__grid md:grid-cols-2 xl:grid-cols-5">
+        <DogDistributionMap dogs={filteredDogs} />
+
+        <div className="site-toolbar__grid md:grid-cols-2 xl:grid-cols-6">
           <div className="site-toolbar__search xl:col-span-2">
             <Search className="site-toolbar__icon" />
             <input
@@ -159,6 +166,19 @@ export function DogMarketplace({ dogs }: { dogs: DogRecord[] }) {
           >
             <option value="all">All Cities</option>
             {cityOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+
+          <select
+            value={areaFilter}
+            onChange={(event) => setAreaFilter(event.target.value)}
+            className="site-select"
+          >
+            <option value="all">All Areas</option>
+            {areaOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>
@@ -225,7 +245,7 @@ export function DogMarketplace({ dogs }: { dogs: DogRecord[] }) {
               <div className="site-card__body">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="site-card__eyebrow">{dog.city ?? "Pakistan"}</p>
+                    <p className="site-card__eyebrow">{dog.locationLabel ?? dog.city ?? "Pakistan"}</p>
                     <h3 className="site-card__title">{dog.name}</h3>
                   </div>
                   <span
@@ -240,9 +260,10 @@ export function DogMarketplace({ dogs }: { dogs: DogRecord[] }) {
                 <p className="site-card__text mt-4">
                   {dog.breed} / {dog.age} / {dog.gender}
                 </p>
-                {dog.area || dog.color ? (
+                {dog.area || dog.color || dog.province ? (
                   <div className="site-meta-row mt-4">
                     {dog.area ? <span>{dog.area}</span> : null}
+                    {dog.province ? <span>{dog.province}</span> : null}
                     {dog.color ? <span>{dog.color}</span> : null}
                   </div>
                 ) : null}
@@ -275,19 +296,23 @@ function collectOptions(
   values: Array<string | null | undefined>,
   formatter: (val: string) => string = (val) => val,
 ): FilterOption[] {
-  const unique = new Set<string>();
+  const unique = new Map<string, string>();
 
   for (const value of values) {
-    if (value) {
-      unique.add(normalizeValue(value));
+    const trimmed = value?.trim();
+    if (!trimmed) continue;
+
+    const normalized = normalizeValue(trimmed);
+    if (!unique.has(normalized)) {
+      unique.set(normalized, trimmed);
     }
   }
 
-  return Array.from(unique)
-    .sort()
-    .map((value) => ({
+  return Array.from(unique.entries())
+    .sort(([left], [right]) => left.localeCompare(right))
+    .map(([value, label]) => ({
       value,
-      label: value === "unknown" ? "Unknown" : formatter(value),
+      label: value === "unknown" ? "Unknown" : formatter(label),
     }));
 }
 

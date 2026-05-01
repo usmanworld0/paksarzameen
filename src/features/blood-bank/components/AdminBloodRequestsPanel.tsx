@@ -1,10 +1,10 @@
 "use client";
 
-import { type CSSProperties, useEffect, useMemo, useState } from "react";
-import type { BloodRequestStatus } from "@/lib/blood-bank";
-import { createClient } from "@/utils/supabase/client";
+import { useEffect, useMemo, useState } from "react";
+
 import { adminFetch } from "@/features/auth/utils/admin-api";
 import { canAccessAdminRoute, useAdminClientSession } from "@/features/auth/utils/admin-session-client";
+import type { BloodRequestStatus } from "@/lib/blood-bank";
 
 type BloodRequestRecord = {
   id: string;
@@ -36,7 +36,6 @@ const STATUS_OPTIONS: BloodRequestStatus[] = [
 ];
 
 export function AdminBloodRequestsPanel() {
-  const supabase = createClient();
   const { session } = useAdminClientSession();
   const [rows, setRows] = useState<BloodRequestRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -102,203 +101,116 @@ export function AdminBloodRequestsPanel() {
     }
   }
 
-  async function logout() {
-    await fetch("/api/admin/logout", {
-      method: "POST",
-      credentials: "include",
-    });
-
-    await supabase.auth.signOut();
-    window.location.href = "/admin/login";
-  }
-
   const filteredRows = useMemo(() => {
     if (statusFilter === "all") return rows;
     return rows.filter((row) => row.status === statusFilter);
   }, [rows, statusFilter]);
 
+  const quickLinks = [
+    { href: "/admin", label: "Control Center" },
+    { href: "/admin/dogs", label: "Manage Dogs" },
+    { href: "/admin/adoption-requests", label: "Adoption Requests" },
+    { href: "/admin/dog-updates", label: "Dog Updates" },
+    { href: "/admin/users", label: "User Management" },
+  ].filter((item) => canAccessAdminRoute(session, item.href));
+
   return (
-    <section style={containerStyle}>
-      <div style={headerRowStyle}>
-        <div>
-          <h1 style={{ margin: 0, fontSize: "2.5rem", color: "#111827" }}>
-            Blood Bank Dashboard
-          </h1>
-          <p style={{ marginTop: "0.5rem", color: "#4b5563", fontSize: "1.35rem" }}>
-            Review emergency blood requests, track status changes, and keep response details organized.
-          </p>
-          <div style={{ marginTop: "0.75rem", display: "flex", gap: "1rem", flexWrap: "wrap" }}>
-            {[
-              { href: "/admin", label: "Control Center" },
-              { href: "/admin/dogs", label: "Manage Dogs" },
-              { href: "/admin/adoption-requests", label: "Adoption Requests" },
-              { href: "/admin/dog-updates", label: "Dog Updates" },
-              { href: "/admin/users", label: "User Management" },
-            ]
-              .filter((item) => canAccessAdminRoute(session, item.href))
-              .map((item) => (
-                <a
-                  key={item.href}
-                  href={item.href}
-                  style={{ color: "#0f7a47", fontSize: "1.1rem", fontWeight: 700 }}
+    <main className="admin-page">
+      <section className="site-shell site-stack--xl pb-20 pt-32">
+        <header className="site-panel site-panel--rounded">
+          <div className="site-panel__body">
+            <p className="site-eyebrow">Blood operations</p>
+            <div className="site-toolbar__row mt-3">
+              <div>
+                <h1 className="site-display">Emergency Request Desk</h1>
+                <p className="site-copy mt-4 max-w-[72rem]">
+                  Review active blood requests, track urgency, and move each case through response stages without leaving the admin system.
+                </p>
+              </div>
+              <div className="site-form-actions">
+                <select
+                  value={statusFilter}
+                  onChange={(event) => setStatusFilter(event.target.value as BloodRequestStatus | "all")}
+                  className="site-select min-w-[18rem]"
                 >
-                  {item.label} →
-                </a>
-              ))}
+                  <option value="all">All statuses</option>
+                  {STATUS_OPTIONS.map((status) => (
+                    <option key={status} value={status}>
+                      {STATUS_LABELS[status]}
+                    </option>
+                  ))}
+                </select>
+                <button onClick={() => void load()} className="site-button-secondary">
+                  Refresh
+                </button>
+              </div>
+            </div>
+            {quickLinks.length ? (
+              <div className="site-form-actions mt-6">
+                {quickLinks.map((item) => (
+                  <a key={item.href} href={item.href} className="site-link">
+                    {item.label}
+                  </a>
+                ))}
+              </div>
+            ) : null}
           </div>
-        </div>
+        </header>
 
-        <div style={{ display: "flex", gap: "0.7rem", alignItems: "center" }}>
-          <select
-            value={statusFilter}
-            onChange={(event) => setStatusFilter(event.target.value as BloodRequestStatus | "all")}
-            style={selectStyle}
-          >
-            <option value="all">All statuses</option>
-            {STATUS_OPTIONS.map((status) => (
-              <option key={status} value={status}>
-                {STATUS_LABELS[status]}
-              </option>
-            ))}
-          </select>
+        {loading ? <p className="site-copy">Loading requests...</p> : null}
+        {error ? <div className="site-callout site-callout--error">{error}</div> : null}
+        {!loading && filteredRows.length === 0 ? <div className="site-empty">No blood requests found for this filter.</div> : null}
 
-          <button onClick={() => void load()} style={secondaryButtonStyle}>
-            Refresh
-          </button>
-          <button onClick={() => void logout()} style={secondaryButtonStyle}>
-            Logout
-          </button>
-        </div>
-      </div>
-
-      {loading ? <p style={messageStyle}>Loading requests...</p> : null}
-      {error ? <p style={{ ...messageStyle, color: "#b91c1c" }}>{error}</p> : null}
-
-      {!loading && filteredRows.length === 0 ? (
-        <p style={messageStyle}>No blood requests found for this status.</p>
-      ) : null}
-
-      {!loading && filteredRows.length > 0 ? (
-        <div style={{ overflowX: "auto" }}>
-          <table style={tableStyle}>
-            <thead>
-              <tr>
-                <th style={thStyle}>Name</th>
-                <th style={thStyle}>Needed At</th>
-                <th style={thStyle}>CNIC</th>
-                <th style={thStyle}>Location</th>
-                <th style={thStyle}>Volume</th>
-                <th style={thStyle}>Contact</th>
-                <th style={thStyle}>Status</th>
-                <th style={thStyle}>Notes</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredRows.map((row, index) => (
-                <tr key={row.id} style={index % 2 === 0 ? rowEvenStyle : rowOddStyle}>
-                  <td style={tdStyle}>{row.name}</td>
-                  <td style={tdStyle}>{new Date(row.neededAt).toLocaleString()}</td>
-                  <td style={tdStyle}>{row.cnic}</td>
-                  <td style={tdStyle}>{row.location}</td>
-                  <td style={tdStyle}>{row.volumeMl} ml</td>
-                  <td style={tdStyle}>{row.contactNumber}</td>
-                  <td style={tdStyle}>
-                    <select
-                      value={row.status}
-                      disabled={savingId === row.id}
-                      onChange={(event) =>
-                        void updateStatus(row.id, event.target.value as BloodRequestStatus)
-                      }
-                      style={selectStyle}
-                    >
-                      {STATUS_OPTIONS.map((status) => (
-                        <option key={status} value={status}>
-                          {STATUS_LABELS[status]}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td style={tdStyle}>{row.notes || "-"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      ) : null}
-    </section>
+        {!loading && filteredRows.length > 0 ? (
+          <section className="site-panel site-panel--rounded">
+            <div className="site-panel__body">
+              <div className="overflow-x-auto">
+                <table className="min-w-[1120px] w-full text-left text-[1.25rem]">
+                  <thead className="border-b border-[#e5e5e5] text-[1rem] uppercase tracking-[0.16em] text-[#707072]">
+                    <tr>
+                      <th className="px-3 py-3 font-medium">Name</th>
+                      <th className="px-3 py-3 font-medium">Needed at</th>
+                      <th className="px-3 py-3 font-medium">CNIC</th>
+                      <th className="px-3 py-3 font-medium">Location</th>
+                      <th className="px-3 py-3 font-medium">Volume</th>
+                      <th className="px-3 py-3 font-medium">Contact</th>
+                      <th className="px-3 py-3 font-medium">Status</th>
+                      <th className="px-3 py-3 font-medium">Notes</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredRows.map((row) => (
+                      <tr key={row.id} className="border-b border-[#f1f1f1] align-top">
+                        <td className="px-3 py-4 text-[#111111]">{row.name}</td>
+                        <td className="px-3 py-4 text-[#707072]">{new Date(row.neededAt).toLocaleString()}</td>
+                        <td className="px-3 py-4 text-[#111111]">{row.cnic}</td>
+                        <td className="px-3 py-4 text-[#111111]">{row.location}</td>
+                        <td className="px-3 py-4 text-[#111111]">{row.volumeMl} ml</td>
+                        <td className="px-3 py-4 text-[#111111]">{row.contactNumber}</td>
+                        <td className="px-3 py-4">
+                          <select
+                            value={row.status}
+                            disabled={savingId === row.id}
+                            onChange={(event) => void updateStatus(row.id, event.target.value as BloodRequestStatus)}
+                            className="site-select min-w-[18rem]"
+                          >
+                            {STATUS_OPTIONS.map((status) => (
+                              <option key={status} value={status}>
+                                {STATUS_LABELS[status]}
+                              </option>
+                            ))}
+                          </select>
+                        </td>
+                        <td className="px-3 py-4 text-[#707072]">{row.notes || "-"}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+        ) : null}
+      </section>
+    </main>
   );
 }
-
-const containerStyle: CSSProperties = {
-  width: "min(1240px, 94vw)",
-  margin: "10rem auto 4rem",
-  padding: "2rem",
-  borderRadius: "1.8rem",
-  background: "linear-gradient(180deg, rgba(255,255,255,0.99) 0%, rgba(247,250,248,0.99) 100%)",
-  boxShadow: "0 24px 60px rgba(17, 24, 39, 0.1)",
-  border: "1px solid rgba(15, 122, 71, 0.12)",
-};
-
-const headerRowStyle: CSSProperties = {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  gap: "1rem",
-  flexWrap: "wrap",
-  marginBottom: "1.2rem",
-};
-
-const messageStyle: CSSProperties = {
-  fontSize: "1.3rem",
-  color: "#374151",
-};
-
-const tableStyle: CSSProperties = {
-  width: "100%",
-  borderCollapse: "collapse",
-  minWidth: "980px",
-};
-
-const thStyle: CSSProperties = {
-  textAlign: "left",
-  borderBottom: "1px solid #d1d5db",
-  padding: "0.9rem 0.65rem",
-  fontSize: "1.15rem",
-  color: "#111827",
-  background: "rgba(247, 250, 248, 0.98)",
-};
-
-const tdStyle: CSSProperties = {
-  borderBottom: "1px solid #e5e7eb",
-  padding: "0.8rem 0.65rem",
-  color: "#111827",
-  fontSize: "1.2rem",
-  verticalAlign: "top",
-};
-
-const rowEvenStyle: CSSProperties = {
-  background: "rgba(255, 255, 255, 0.72)",
-};
-
-const rowOddStyle: CSSProperties = {
-  background: "rgba(247, 250, 248, 0.78)",
-};
-
-const secondaryButtonStyle: CSSProperties = {
-  border: "1px solid #cbd5e1",
-  background: "#f8fafc",
-  padding: "0.65rem 0.95rem",
-  borderRadius: "0.8rem",
-  cursor: "pointer",
-  color: "#111827",
-  fontWeight: 600,
-};
-
-const selectStyle: CSSProperties = {
-  borderRadius: "0.8rem",
-  border: "1px solid #d1d5db",
-  background: "#fff",
-  color: "#111827",
-  padding: "0.62rem 0.8rem",
-  fontSize: "1.1rem",
-};

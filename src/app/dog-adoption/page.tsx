@@ -28,8 +28,6 @@ export default async function DogAdoptionPage() {
     error = loadError instanceof Error ? loadError.message : "Failed to load dogs.";
   }
 
-  const availableCount = dogs.filter((dog) => dog.status === "available").length;
-
   return (
     <main className="site-page">
       <section className="site-hero">
@@ -38,16 +36,10 @@ export default async function DogAdoptionPage() {
         <div className="site-hero__orb site-hero__orb--right" aria-hidden="true" />
 
         <header className="site-hero__inner">
-          <p className="site-hero__eyebrow">Adopt A Dog</p>
           <h1 className="site-hero__title">Adopt A Dog.</h1>
           <p className="site-hero__body">
             Browse rescue dogs and submit an adoption request.
           </p>
-
-          <div className="site-hero__chips">
-            <span className="site-chip">{availableCount} available now</span>
-            <span className="site-chip">PKR 3,500 adoption fee</span>
-          </div>
         </header>
       </section>
 

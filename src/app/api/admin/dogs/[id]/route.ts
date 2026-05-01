@@ -82,10 +82,15 @@ export async function PATCH(request: Request, context: RouteContext) {
         color: formData.get("color"),
         age: formData.get("age"),
         gender: formData.get("gender"),
+        locationKey: formData.get("locationKey"),
+        locationLabel: formData.get("locationLabel"),
+        province: formData.get("province"),
         description: formData.get("description"),
         status: formData.get("status"),
         city: formData.get("city"),
         area: formData.get("area"),
+        latitude: formData.get("latitude"),
+        longitude: formData.get("longitude"),
         imageUrl: imageUrl || undefined,
       });
 

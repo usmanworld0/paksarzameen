@@ -50,16 +50,10 @@ export default function ContactPage() {
         <div className="site-hero__orb site-hero__orb--right" aria-hidden="true" />
 
         <header className="site-hero__inner">
-          <p className="site-hero__eyebrow">Contact</p>
           <h1 className="site-hero__title">Contact.</h1>
           <p className="site-hero__body">
             Reach the team for support, partnerships, or coordination.
           </p>
-
-          <div className="site-hero__chips">
-            <span className="site-chip">Community Support</span>
-            <span className="site-chip">Partnership Desk</span>
-          </div>
         </header>
       </section>
 

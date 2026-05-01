@@ -90,6 +90,12 @@ export default async function DogDetailPage({ params }: PageProps) {
                   <span>{dog.gender}</span>
                 </div>
 
+                {dog.locationLabel || dog.city || dog.area ? (
+                  <div className="site-callout mt-5">
+                    Rescue area: {dog.locationLabel ?? [dog.city, dog.area].filter(Boolean).join(", ")}
+                  </div>
+                ) : null}
+
                 {dog.petName ? (
                   <div className="site-callout mt-5">
                     Pet name: {dog.petName}

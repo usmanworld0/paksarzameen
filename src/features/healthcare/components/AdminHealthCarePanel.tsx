@@ -257,8 +257,8 @@ export function AdminHealthCarePanel() {
   }, [selectedDoctorId, appointmentStatus]);
 
   return (
-    <main className="min-h-screen bg-[linear-gradient(180deg,_#f7fcf7_0%,_#edf5ef_100%)] px-4 pb-20 pt-28 sm:px-6 lg:px-10">
-      <section className="mx-auto max-w-6xl space-y-6">
+    <main className="admin-page">
+      <section className="site-shell site-stack--xl pb-20 pt-32">
         <header className="rounded-3xl border border-emerald-100 bg-white p-6 shadow-sm sm:p-8">
           <h1 className="text-3xl font-semibold text-slate-900">HealthCare Admin</h1>
           <p className="mt-2 text-sm text-slate-600">

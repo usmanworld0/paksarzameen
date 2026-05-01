@@ -13,8 +13,13 @@ export type DogRecord = {
   color: string;
   age: string;
   gender: string;
+  locationKey: string | null;
+  locationLabel: string | null;
+  province: string | null;
   city: string | null;
   area: string | null;
+  latitude: number | null;
+  longitude: number | null;
   description: string;
   imageUrl: string;
   adoptedByUserId: string | null;
@@ -61,8 +66,13 @@ export type CreateDogInput = {
   color: string;
   age: string;
   gender: string;
+  locationKey?: string | null;
+  locationLabel?: string | null;
+  province?: string | null;
   city?: string | null;
   area?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
   description: string;
   imageUrl: string;
   createdBy?: string | null;
@@ -110,8 +120,13 @@ export type AdoptedDogRecord = {
   color: string;
   age: string;
   gender: string;
+  locationKey: string | null;
+  locationLabel: string | null;
+  province: string | null;
   city: string | null;
   area: string | null;
+  latitude: number | null;
+  longitude: number | null;
   imageUrl: string;
   ownerName: string | null;
   ownerEmail: string | null;
@@ -135,6 +150,19 @@ let didEnsureDogAdoptionSchema = false;
 
 function normalizedText(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
+}
+
+function normalizedNumber(value: unknown) {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value;
+  }
+
+  if (typeof value === "string") {
+    const parsed = Number(value.trim());
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  return null;
 }
 
 export function normalizeDogStatus(value: unknown, fallback: DogStatus = "available"): DogStatus {
@@ -164,8 +192,13 @@ export function parseCreateDogPayload(payload: unknown): CreateDogInput {
   const description = normalizedText(data.description);
   const imageUrl = normalizedText(data.imageUrl) || DEFAULT_DOG_IMAGE_URL;
   const status = normalizeDogStatus(data.status, "available");
+  const locationKey = normalizedText(data.locationKey) || null;
+  const locationLabel = normalizedText(data.locationLabel) || null;
+  const province = normalizedText(data.province) || null;
   const city = normalizedText(data.city) || null;
   const area = normalizedText(data.area) || null;
+  const latitude = normalizedNumber(data.latitude);
+  const longitude = normalizedNumber(data.longitude);
 
   if (!breed) throw new Error("Breed is required.");
   if (!color) throw new Error("Color is required.");
@@ -178,8 +211,13 @@ export function parseCreateDogPayload(payload: unknown): CreateDogInput {
     color,
     age,
     gender,
+    locationKey,
+    locationLabel,
+    province,
     city,
     area,
+    latitude,
+    longitude,
     description,
     imageUrl,
     status,
@@ -218,6 +256,15 @@ export function parseUpdateDogPayload(payload: unknown): UpdateDogInput {
     if (!description) throw new Error("Description cannot be empty.");
     next.description = description;
   }
+  if ("locationKey" in data) {
+    next.locationKey = normalizedText(data.locationKey) || null;
+  }
+  if ("locationLabel" in data) {
+    next.locationLabel = normalizedText(data.locationLabel) || null;
+  }
+  if ("province" in data) {
+    next.province = normalizedText(data.province) || null;
+  }
   if ("city" in data) {
     const city = normalizedText(data.city) || null;
     next.city = city;
@@ -225,6 +272,12 @@ export function parseUpdateDogPayload(payload: unknown): UpdateDogInput {
   if ("area" in data) {
     const area = normalizedText(data.area) || null;
     next.area = area;
+  }
+  if ("latitude" in data) {
+    next.latitude = normalizedNumber(data.latitude);
+  }
+  if ("longitude" in data) {
+    next.longitude = normalizedNumber(data.longitude);
   }
   if ("imageUrl" in data) {
     const imageUrl = normalizedText(data.imageUrl);
@@ -259,8 +312,13 @@ export async function ensureDogAdoptionSchema() {
       color text,
       age text NOT NULL,
       gender text NOT NULL,
+      location_key text,
+      location_label text,
+      province text,
       city text,
       area text,
+      latitude double precision,
+      longitude double precision,
       description text NOT NULL,
       image_url text NOT NULL,
       created_by text,
@@ -277,8 +335,13 @@ export async function ensureDogAdoptionSchema() {
   `);
 
   // Ensure columns exist for older deployments
+  await pool.query(`ALTER TABLE dogs ADD COLUMN IF NOT EXISTS location_key text;`);
+  await pool.query(`ALTER TABLE dogs ADD COLUMN IF NOT EXISTS location_label text;`);
+  await pool.query(`ALTER TABLE dogs ADD COLUMN IF NOT EXISTS province text;`);
   await pool.query(`ALTER TABLE dogs ADD COLUMN IF NOT EXISTS city text;`);
   await pool.query(`ALTER TABLE dogs ADD COLUMN IF NOT EXISTS area text;`);
+  await pool.query(`ALTER TABLE dogs ADD COLUMN IF NOT EXISTS latitude double precision;`);
+  await pool.query(`ALTER TABLE dogs ADD COLUMN IF NOT EXISTS longitude double precision;`);
   await pool.query(`ALTER TABLE dogs ADD COLUMN IF NOT EXISTS created_by text;`);
   await pool.query(`ALTER TABLE dogs ADD COLUMN IF NOT EXISTS rescue_name text;`);
   await pool.query(`ALTER TABLE dogs ADD COLUMN IF NOT EXISTS pet_name text;`);
@@ -408,8 +471,13 @@ export async function listDogsWithFilters(statuses?: DogStatus[], city?: string 
       color,
       age,
       gender,
+      location_key,
+      location_label,
+      province,
       city,
       area,
+      latitude,
+      longitude,
       description,
       image_url,
       adopted_by_user_id,
@@ -446,8 +514,13 @@ export async function getDogById(dogId: string) {
       color,
       age,
       gender,
+      location_key,
+      location_label,
+      province,
       city,
       area,
+      latitude,
+      longitude,
       description,
       image_url,
       adopted_by_user_id,
@@ -476,11 +549,11 @@ export async function createDog(input: CreateDogInput) {
   const result = await pool.query(
     `
     INSERT INTO dogs (
-      id, name, rescue_name, breed, color, age, gender, city, area, description, image_url, created_by, status
+      id, name, rescue_name, breed, color, age, gender, location_key, location_label, province, city, area, latitude, longitude, description, image_url, created_by, status
     )
-    VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
+    VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18)
     RETURNING
-      id, name, rescue_name, pet_name, pet_named_by_user_id, breed, color, age, gender, city, area, description,
+      id, name, rescue_name, pet_name, pet_named_by_user_id, breed, color, age, gender, location_key, location_label, province, city, area, latitude, longitude, description,
       image_url, adopted_by_user_id, ear_tag_style_image_url, ear_tag_color, ear_tag_boundary_image_url,
       created_by, status, created_at, updated_at;
     `,
@@ -492,8 +565,13 @@ export async function createDog(input: CreateDogInput) {
       input.color,
       input.age,
       input.gender,
+      input.locationKey ?? null,
+      input.locationLabel ?? null,
+      input.province ?? null,
       input.city ?? null,
       input.area ?? null,
+      input.latitude ?? null,
+      input.longitude ?? null,
       input.description,
       input.imageUrl,
       input.createdBy ?? null,
@@ -543,6 +621,26 @@ export async function updateDog(dogId: string, input: UpdateDogInput) {
     params.push(input.area ?? null);
     updates.push(`area = $${params.length}`);
   }
+  if (Object.prototype.hasOwnProperty.call(input, "locationKey")) {
+    params.push(input.locationKey ?? null);
+    updates.push(`location_key = $${params.length}`);
+  }
+  if (Object.prototype.hasOwnProperty.call(input, "locationLabel")) {
+    params.push(input.locationLabel ?? null);
+    updates.push(`location_label = $${params.length}`);
+  }
+  if (Object.prototype.hasOwnProperty.call(input, "province")) {
+    params.push(input.province ?? null);
+    updates.push(`province = $${params.length}`);
+  }
+  if (Object.prototype.hasOwnProperty.call(input, "latitude")) {
+    params.push(input.latitude ?? null);
+    updates.push(`latitude = $${params.length}`);
+  }
+  if (Object.prototype.hasOwnProperty.call(input, "longitude")) {
+    params.push(input.longitude ?? null);
+    updates.push(`longitude = $${params.length}`);
+  }
   if (input.status) {
     params.push(input.status);
     updates.push(`status = $${params.length}`);
@@ -559,7 +657,7 @@ export async function updateDog(dogId: string, input: UpdateDogInput) {
         updated_at = now()
     WHERE id = $1
     RETURNING
-      id, name, rescue_name, pet_name, pet_named_by_user_id, breed, color, age, gender, city, area, description,
+      id, name, rescue_name, pet_name, pet_named_by_user_id, breed, color, age, gender, location_key, location_label, province, city, area, latitude, longitude, description,
       image_url, adopted_by_user_id, ear_tag_style_image_url, ear_tag_color, ear_tag_boundary_image_url,
       status, created_at, updated_at;
     `,
@@ -1189,7 +1287,7 @@ export async function assignPetNameForAdoptedDog(dogId: string, userId: string, 
         AND adopted_by_user_id = $2
         AND (pet_name IS NULL OR pet_name = '')
       RETURNING
-        id, name, rescue_name, pet_name, pet_named_by_user_id, breed, color, age, gender, city, area, description,
+        id, name, rescue_name, pet_name, pet_named_by_user_id, breed, color, age, gender, location_key, location_label, province, city, area, latitude, longitude, description,
         image_url, adopted_by_user_id, ear_tag_style_image_url, ear_tag_color, ear_tag_boundary_image_url,
         status, created_at, updated_at;
     `,
@@ -1267,7 +1365,7 @@ export async function updateDogEarTagCustomization(
         AND pet_name IS NOT NULL
         AND pet_name <> ''
       RETURNING
-        id, name, rescue_name, pet_name, pet_named_by_user_id, breed, color, age, gender, city, area, description,
+        id, name, rescue_name, pet_name, pet_named_by_user_id, breed, color, age, gender, location_key, location_label, province, city, area, latitude, longitude, description,
         image_url, adopted_by_user_id, ear_tag_style_image_url, ear_tag_color, ear_tag_boundary_image_url,
         status, created_at, updated_at;
     `,
@@ -1296,8 +1394,13 @@ export async function listAdoptedDogsWithOwners() {
         d.color,
         d.age,
         d.gender,
+        d.location_key,
+        d.location_label,
+        d.province,
         d.city,
         d.area,
+        d.latitude,
+        d.longitude,
         d.image_url,
         d.updated_at,
         u.name AS owner_name,
@@ -1318,8 +1421,13 @@ export async function listAdoptedDogsWithOwners() {
     color: row.color ? String(row.color) : "Unknown",
     age: String(row.age),
     gender: String(row.gender),
+    locationKey: row.location_key ? String(row.location_key) : null,
+    locationLabel: row.location_label ? String(row.location_label) : null,
+    province: row.province ? String(row.province) : null,
     city: row.city ? String(row.city) : null,
     area: row.area ? String(row.area) : null,
+    latitude: typeof row.latitude === "number" ? row.latitude : normalizedNumber(row.latitude),
+    longitude: typeof row.longitude === "number" ? row.longitude : normalizedNumber(row.longitude),
     imageUrl: String(row.image_url),
     ownerName: row.owner_name ? String(row.owner_name) : null,
     ownerEmail: row.owner_email ? String(row.owner_email) : null,
@@ -1341,8 +1449,13 @@ function mapDogRow(row: Record<string, unknown>): DogRecord {
     color: row.color ? String(row.color) : "Unknown",
     age: String(row.age),
     gender: String(row.gender),
+    locationKey: row.location_key ? String(row.location_key) : null,
+    locationLabel: row.location_label ? String(row.location_label) : null,
+    province: row.province ? String(row.province) : null,
     city: row.city ? String(row.city) : null,
     area: row.area ? String(row.area) : null,
+    latitude: typeof row.latitude === "number" ? row.latitude : normalizedNumber(row.latitude),
+    longitude: typeof row.longitude === "number" ? row.longitude : normalizedNumber(row.longitude),
     description: String(row.description),
     imageUrl: String(row.image_url),
     adoptedByUserId: row.adopted_by_user_id ? String(row.adopted_by_user_id) : null,

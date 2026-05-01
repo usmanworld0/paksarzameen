@@ -64,15 +64,10 @@ export default function AboutPage() {
         <div className="site-hero__orb site-hero__orb--right" aria-hidden="true" />
 
         <header className="site-hero__inner">
-          <p className="site-hero__eyebrow">About PSZ</p>
           <h1 className="site-hero__title">About PakSarZameen.</h1>
           <p className="site-hero__body">
             Bahawalpur-rooted community work across education, healthcare, welfare, and environmental action.
           </p>
-          <div className="site-hero__chips">
-            <span className="site-chip">Bahawalpur rooted</span>
-            <span className="site-chip">Volunteer led</span>
-          </div>
         </header>
       </section>
 

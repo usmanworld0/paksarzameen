@@ -20,15 +20,10 @@ export default function HealthCareBloodBankPage() {
         <div className="site-hero__orb site-hero__orb--right" aria-hidden="true" />
 
         <header className="site-hero__inner">
-          <p className="site-hero__eyebrow">HealthCare / Blood Bank</p>
           <h1 className="site-hero__title">Blood Support.</h1>
           <p className="site-hero__body">
             Register requests, match donors, and coordinate quickly.
           </p>
-          <div className="site-hero__chips">
-            <span className="site-chip">Request support</span>
-            <span className="site-chip">Donor matching</span>
-          </div>
         </header>
       </section>
 

@@ -61,38 +61,38 @@ export function MainAdminSidebar({ open, onClose }: MainAdminSidebarProps) {
       ) : null}
 
       <aside
-        className={`admin-sidebar fixed inset-y-0 left-0 z-50 flex w-[260px] flex-col overflow-hidden transform transition-transform duration-300 ease-out md:z-40 md:translate-x-0 ${
+        className={`admin-sidebar fixed inset-y-0 left-0 z-50 flex w-[280px] flex-col overflow-hidden transform transition-transform duration-300 ease-out md:z-40 md:translate-x-0 ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="flex h-[72px] items-center justify-between px-5">
+        <div className="flex h-[84px] items-center justify-between px-6">
           <Link href="/admin" className="flex items-center gap-3" onClick={onClose}>
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/15 ring-1 ring-emerald-400/25">
-              <ShieldCheck className="h-[18px] w-[18px] text-emerald-400" />
+            <span className="flex h-10 w-10 items-center justify-center rounded-full border border-white/12 bg-white/6">
+              <ShieldCheck className="h-[18px] w-[18px] text-white" />
             </span>
             <span className="leading-tight">
-              <span className="block text-[9px] font-semibold uppercase tracking-[0.25em] text-white/55">
-                Admin
+              <span className="block text-[9px] font-semibold uppercase tracking-[0.28em] text-white/45">
+                PakSarZameen
               </span>
-              <span className="block text-[14px] font-semibold text-white/90">PakSarZameen</span>
+              <span className="block text-[16px] font-semibold uppercase tracking-[-0.04em] text-white">Admin Panel</span>
             </span>
           </Link>
 
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-1.5 text-white/30 transition-colors hover:bg-white/5 hover:text-white/60 md:hidden"
+            className="rounded-full p-2 text-white/30 transition-colors hover:bg-white/5 hover:text-white/60 md:hidden"
             aria-label="Close sidebar"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
-        <div className="mx-5 h-px bg-white/[0.06]" />
+        <div className="mx-6 h-px bg-white/[0.08]" />
 
-        <nav className="flex-1 overflow-y-auto scrollbar-thin px-3 py-5">
-          <p className="mb-3 px-3 text-[9px] font-bold uppercase tracking-[0.3em] text-white/20">
-            Navigation
+        <nav className="flex-1 overflow-y-auto scrollbar-thin px-4 py-6">
+          <p className="mb-3 px-3 text-[9px] font-bold uppercase tracking-[0.3em] text-white/22">
+            Operations
           </p>
 
           <ul className="space-y-1">
@@ -109,11 +109,11 @@ export function MainAdminSidebar({ open, onClose }: MainAdminSidebarProps) {
                   >
                     <Icon
                       className={`h-[18px] w-[18px] flex-shrink-0 transition-colors ${
-                        isActive ? "text-emerald-400" : "text-white/25"
+                        isActive ? "text-[#111111]" : "text-white/25"
                       }`}
                     />
                     <span className="flex-1">{label}</span>
-                    {isActive ? <ChevronRight className="h-3 w-3 text-white/30" /> : null}
+                    {isActive ? <ChevronRight className="h-3 w-3 text-[#111111]/50" /> : null}
                   </Link>
                 </li>
               );
@@ -124,11 +124,11 @@ export function MainAdminSidebar({ open, onClose }: MainAdminSidebarProps) {
           </ul>
         </nav>
 
-        <div className="border-t border-white/[0.06] p-3">
+        <div className="border-t border-white/[0.08] p-4">
           <button
             type="button"
             onClick={() => void logout()}
-            className="admin-sidebar-link admin-sidebar-link--inactive w-full hover:bg-red-500/10 hover:text-red-400"
+            className="admin-sidebar-link admin-sidebar-link--inactive w-full hover:bg-white/6 hover:text-white"
           >
             <LogOut className="h-[18px] w-[18px] flex-shrink-0" />
             <span className="flex-1 text-left">Sign Out</span>

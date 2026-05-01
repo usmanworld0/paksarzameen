@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { AdoptionRequestRecord, AdoptionRequestStatus } from "@/lib/dog-adoption";
+
 import { adminFetch } from "@/features/auth/utils/admin-api";
 import { canAccessAdminRoute, useAdminClientSession } from "@/features/auth/utils/admin-session-client";
+import type { AdoptionRequestRecord, AdoptionRequestStatus } from "@/lib/dog-adoption";
 
 const STATUS_LABELS: Record<AdoptionRequestStatus, string> = {
   pending: "Pending",
@@ -67,100 +68,108 @@ export function AdminAdoptionRequestsPanel() {
     }
   }
 
+  const quickLinks = [
+    { href: "/admin", label: "Control Center" },
+    { href: "/admin/dogs", label: "Manage Dogs" },
+    { href: "/admin/dog-updates", label: "Dog Updates" },
+    { href: "/admin/blood-requests", label: "Blood Requests" },
+  ].filter((item) => canAccessAdminRoute(session, item.href));
+
   return (
-    <main className="min-h-screen bg-[linear-gradient(180deg,_#f7fcf7_0%,_#eef6ef_100%)] px-4 pb-16 pt-28 sm:px-6 lg:px-10">
-      <section className="mx-auto max-w-6xl space-y-6">
-        <header className="rounded-3xl border border-emerald-100 bg-white p-6 shadow-lg shadow-emerald-900/10 sm:p-8">
-          <h1 className="text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">Admin · Adoption Requests</h1>
-          <p className="mt-2 text-sm text-slate-600 sm:text-base">
-            Review incoming requests and approve or reject applications.
-          </p>
-          <div className="mt-4 flex flex-wrap gap-3">
-            {[
-              { href: "/admin", label: "Control Center" },
-              { href: "/admin/dogs", label: "Manage Dogs" },
-              { href: "/admin/dog-updates", label: "Dog Updates" },
-              { href: "/admin/blood-requests", label: "Blood Requests" },
-            ]
-              .filter((item) => canAccessAdminRoute(session, item.href))
-              .map((item) => (
-                <a
-                  key={item.href}
-                  className="text-sm font-semibold text-emerald-700 hover:text-emerald-600"
-                  href={item.href}
-                >
-                  {item.label} →
-                </a>
-              ))}
+    <main className="admin-page">
+      <section className="site-shell site-stack--xl pb-20 pt-32">
+        <header className="site-panel site-panel--rounded">
+          <div className="site-panel__body">
+            <p className="site-eyebrow">Adoption queue</p>
+            <div className="site-toolbar__row mt-3">
+              <div>
+                <h1 className="site-display">Request Review Desk</h1>
+                <p className="site-copy mt-4 max-w-[70rem]">
+                  Review incoming applications, verify the adopter details, and decide whether the dog moves forward to a home.
+                </p>
+              </div>
+              <span className="site-badge site-badge--muted">{rows.length} requests</span>
+            </div>
+            {quickLinks.length ? (
+              <div className="site-form-actions mt-6">
+                {quickLinks.map((item) => (
+                  <a key={item.href} href={item.href} className="site-link">
+                    {item.label}
+                  </a>
+                ))}
+              </div>
+            ) : null}
           </div>
         </header>
 
-        {error ? <p className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</p> : null}
-        {loading ? <p className="text-sm text-slate-600">Loading requests...</p> : null}
+        {error ? <div className="site-callout site-callout--error">{error}</div> : null}
+        {loading ? <p className="site-copy">Loading requests...</p> : null}
 
-        {!loading && !rows.length ? (
-          <div className="rounded-xl border border-slate-200 bg-white p-5 text-sm text-slate-600">No adoption requests yet.</div>
-        ) : null}
+        {!loading && !rows.length ? <div className="site-empty">No adoption requests yet.</div> : null}
 
         {!loading && rows.length ? (
-          <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <div className="overflow-x-auto">
-              <table className="min-w-[860px] w-full border-collapse text-sm">
-                <thead>
-                  <tr className="bg-slate-50">
-                    <th className="px-3 py-2 text-left font-semibold text-slate-700">Dog</th>
-                    <th className="px-3 py-2 text-left font-semibold text-slate-700">User</th>
-                    <th className="px-3 py-2 text-left font-semibold text-slate-700">WhatsApp</th>
-                    <th className="px-3 py-2 text-left font-semibold text-slate-700">Requested At</th>
-                    <th className="px-3 py-2 text-left font-semibold text-slate-700">Status</th>
-                    <th className="px-3 py-2 text-left font-semibold text-slate-700">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {rows.map((row) => (
-                    <tr key={row.requestId} className="border-t border-slate-100">
-                      <td className="px-3 py-2">
-                        <p className="font-semibold text-slate-900">{row.dogName}</p>
-                        <p className="text-xs text-slate-500">{row.dogBreed} • {row.dogColor}</p>
-                        {row.petName ? <p className="text-xs text-indigo-700">Pet name: {row.petName}</p> : null}
-                      </td>
-                      <td className="px-3 py-2">
-                        <p className="text-slate-700">{row.userName ?? "Unknown user"}</p>
-                        <p className="text-xs text-slate-500">{row.userEmail ?? row.userId}</p>
-                      </td>
-                      <td className="px-3 py-2 text-slate-700">{row.whatsappNumber ?? "N/A"}</td>
-                      <td className="px-3 py-2 text-slate-600">{new Date(row.requestedAt).toLocaleString()}</td>
-                      <td className="px-3 py-2">
-                        <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700">
-                          {STATUS_LABELS[row.status]}
-                        </span>
-                      </td>
-                      <td className="px-3 py-2">
-                        <div className="flex gap-2">
-                          <button
-                            type="button"
-                            disabled={savingId === row.requestId || row.status !== "pending"}
-                            onClick={() => void reviewRequest(row.requestId, "approved")}
-                            className="rounded-md border border-emerald-200 px-2 py-1 text-xs font-semibold text-emerald-700 disabled:opacity-40"
-                          >
-                            Approve
-                          </button>
-                          <button
-                            type="button"
-                            disabled={savingId === row.requestId || row.status !== "pending"}
-                            onClick={() => void reviewRequest(row.requestId, "rejected")}
-                            className="rounded-md border border-rose-200 px-2 py-1 text-xs font-semibold text-rose-700 disabled:opacity-40"
-                          >
-                            Reject
-                          </button>
-                        </div>
-                      </td>
+          <section className="site-panel site-panel--rounded">
+            <div className="site-panel__body">
+              <div className="overflow-x-auto">
+                <table className="min-w-[980px] w-full text-left text-[1.3rem]">
+                  <thead className="border-b border-[#e5e5e5] text-[1rem] uppercase tracking-[0.16em] text-[#707072]">
+                    <tr>
+                      <th className="px-3 py-3 font-medium">Dog</th>
+                      <th className="px-3 py-3 font-medium">Applicant</th>
+                      <th className="px-3 py-3 font-medium">WhatsApp</th>
+                      <th className="px-3 py-3 font-medium">Requested</th>
+                      <th className="px-3 py-3 font-medium">Status</th>
+                      <th className="px-3 py-3 font-medium">Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {rows.map((row) => (
+                      <tr key={row.requestId} className="border-b border-[#f1f1f1] align-top">
+                        <td className="px-3 py-4">
+                          <p className="text-[1.45rem] font-medium uppercase tracking-[-0.03em] text-[#111111]">{row.dogName}</p>
+                          <p className="mt-2 text-[1.1rem] uppercase tracking-[0.14em] text-[#707072]">
+                            {row.dogBreed} / {row.dogColor}
+                          </p>
+                          {row.petName ? <p className="mt-2 text-[1.15rem] text-[#707072]">Pet name: {row.petName}</p> : null}
+                        </td>
+                        <td className="px-3 py-4">
+                          <p className="text-[1.2rem] text-[#111111]">{row.userName ?? "Unknown user"}</p>
+                          <p className="mt-2 text-[1.1rem] text-[#707072]">{row.userEmail ?? row.userId}</p>
+                        </td>
+                        <td className="px-3 py-4 text-[#111111]">{row.whatsappNumber ?? "N/A"}</td>
+                        <td className="px-3 py-4 text-[#707072]">{new Date(row.requestedAt).toLocaleString()}</td>
+                        <td className="px-3 py-4">
+                          <span className={`site-badge ${row.status === "pending" ? "site-badge--dark" : "site-badge--muted"}`}>
+                            {STATUS_LABELS[row.status]}
+                          </span>
+                        </td>
+                        <td className="px-3 py-4">
+                          <div className="site-form-actions">
+                            <button
+                              type="button"
+                              disabled={savingId === row.requestId || row.status !== "pending"}
+                              onClick={() => void reviewRequest(row.requestId, "approved")}
+                              className="site-button"
+                            >
+                              Approve
+                            </button>
+                            <button
+                              type="button"
+                              disabled={savingId === row.requestId || row.status !== "pending"}
+                              onClick={() => void reviewRequest(row.requestId, "rejected")}
+                              className="site-button-secondary"
+                            >
+                              Reject
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
+          </section>
         ) : null}
       </section>
     </main>

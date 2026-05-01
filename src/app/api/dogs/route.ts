@@ -47,8 +47,27 @@ export async function GET(request: Request) {
       color: row.color ? String(row.color) : "Unknown",
       age: String(row.age),
       gender: String(row.gender),
+      locationKey: row.location_key ? String(row.location_key) : null,
+      locationLabel: row.location_label ? String(row.location_label) : null,
+      province: row.province ? String(row.province) : null,
       city: row.city ? String(row.city) : null,
       area: row.area ? String(row.area) : null,
+      latitude:
+        typeof row.latitude === "number"
+          ? row.latitude
+          : row.latitude
+            ? Number.isFinite(Number(row.latitude))
+              ? Number(row.latitude)
+              : null
+            : null,
+      longitude:
+        typeof row.longitude === "number"
+          ? row.longitude
+          : row.longitude
+            ? Number.isFinite(Number(row.longitude))
+              ? Number(row.longitude)
+              : null
+            : null,
       description: String(row.description || ""),
       imageUrl: String(row.image_url),
       adoptedByUserId: row.adopted_by_user_id ? String(row.adopted_by_user_id) : null,

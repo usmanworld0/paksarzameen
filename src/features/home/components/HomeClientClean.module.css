@@ -61,13 +61,12 @@
 }
 
 .heroCenter,
+.mediaShowcaseSection,
 .metricBand,
 .editorialSection,
 .programSection,
 .featureSection,
-.chapterSection,
-.voiceSection,
-.ctaSection {
+.chapterSection {
   width: min(1440px, 100%);
   margin: 0 auto;
   padding-left: clamp(1.6rem, 3vw, 4.8rem);
@@ -92,12 +91,8 @@
 
 .heroEyebrow,
 .sectionEyebrow,
-.inverseEyebrow,
-.ctaLabel,
 .programCategory,
-.chapterIndex,
-.programIndex,
-.quoteMeta span {
+.chapterIndex {
   font-family: var(--font-psz-sans), "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 1.2rem;
   font-weight: 600;
@@ -125,13 +120,9 @@
 }
 
 .heroText,
-.sectionLead,
 .missionCard p,
 .programCard p,
-.chapterCard p,
-.quoteText,
-.inverseText,
-.contactLink span {
+.chapterCard p {
   font-family: var(--font-psz-sans), "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 1.6rem;
   line-height: 1.75;
@@ -143,8 +134,7 @@
   color: rgba(255, 255, 255, 0.9);
 }
 
-.heroActions,
-.ctaActions {
+.heroActions {
   display: flex;
   flex-wrap: wrap;
   gap: 1.2rem;
@@ -186,14 +176,15 @@
 .heroPrimaryButton,
 .heroSecondaryButton {
   display: inline-flex;
-  min-height: 4.8rem;
+  min-height: 4.2rem;
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  padding: 0 2.4rem;
+  padding: 0 1.8rem;
   font-family: var(--font-psz-sans), "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 1.6rem;
+  font-size: 1.35rem;
   font-weight: 600;
+  letter-spacing: 0.06em;
   transition:
     background-color 200ms ease,
     border-color 200ms ease,
@@ -250,8 +241,100 @@
   border-bottom: 1px solid var(--hover-gray);
 }
 
+.mediaShowcaseSection {
+  width: 100%;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  padding-top: 0;
+  padding-bottom: clamp(2.4rem, 4vw, 4rem);
+}
+
+.mediaPair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+}
+
+.mediaTile,
+.mediaVideoFrame {
+  position: relative;
+  overflow: hidden;
+  background: var(--light-gray);
+}
+
+.mediaTile {
+  min-height: clamp(36rem, 52vw, 62rem);
+}
+
+.mediaTileImage {
+  object-fit: cover;
+}
+
+.mediaCaption {
+  position: absolute;
+  inset: auto auto 0 0;
+  z-index: 1;
+  width: 100%;
+  padding: 2.4rem 2.4rem 2.8rem;
+  background: linear-gradient(180deg, rgba(17, 17, 17, 0) 0%, rgba(17, 17, 17, 0.82) 100%);
+}
+
+.mediaCaptionEyebrow,
+.mediaVideoEyebrow {
+  margin: 0;
+  font-family: var(--font-psz-sans), "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #707072;
+}
+
+.mediaCaptionEyebrow {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.mediaCaptionTitle {
+  margin: 0.8rem 0 0;
+  color: var(--nike-white);
+  font-family: var(--font-psz-sans), "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: clamp(2.8rem, 4vw, 4.2rem);
+  font-weight: 700;
+  line-height: 0.95;
+  text-transform: uppercase;
+}
+
+.mediaVideoIntro {
+  width: min(1440px, 100%);
+  margin: 0 auto;
+  padding: clamp(2.8rem, 4vw, 4.2rem) clamp(1.6rem, 3vw, 4.8rem) 1.2rem;
+  text-align: center;
+}
+
+.mediaVideoEyebrow {
+  color: var(--nike-black);
+  font-family: var(--font-psz-display), "Arial Narrow", Arial, sans-serif;
+  font-size: clamp(4.8rem, 9vw, 9.6rem);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 0.9;
+  text-transform: uppercase;
+}
+
+.mediaVideoFrame {
+  min-height: clamp(36rem, 56vw, 76rem);
+}
+
+.mediaVideo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+}
+
 .metricCard {
-  padding: 3.2rem 1.6rem;
+  padding: 2.8rem 1.6rem;
 }
 
 .metricCard + .metricCard {
@@ -278,19 +361,17 @@
 
 .editorialSection,
 .programSection,
-.chapterSection,
-.voiceSection {
-  padding-top: clamp(5.6rem, 8vw, 8rem);
+.chapterSection {
+  padding-top: clamp(4.8rem, 6vw, 6.8rem);
 }
 
-.featureSection,
-.ctaSection {
-  padding-top: clamp(5.6rem, 8vw, 8rem);
-  padding-bottom: clamp(5.6rem, 8vw, 8rem);
+.featureSection {
+  padding-top: clamp(4.8rem, 6vw, 6.8rem);
+  padding-bottom: clamp(4.8rem, 6vw, 6.8rem);
 }
 
 .sectionHeader {
-  max-width: 82rem;
+  max-width: 72rem;
 }
 
 .sectionEyebrow,
@@ -314,34 +395,28 @@
   font-size: clamp(3.2rem, 5vw, 4.8rem);
 }
 
-.sectionLead {
-  margin: 0;
-  color: var(--nike-black);
-}
-
 .editorialGrid,
-.featureSection,
-.ctaSection {
+.featureSection {
   display: grid;
-  gap: clamp(2.4rem, 4vw, 4.8rem);
+  gap: clamp(2rem, 3vw, 3.6rem);
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .editorialGrid,
 .featureSection {
-  margin-top: 3.2rem;
+  margin-top: 2.4rem;
   align-items: start;
 }
 
 .editorialCopy {
   display: grid;
-  gap: 3.2rem;
+  gap: 2.4rem;
 }
 
 .editorialMedia,
 .featureMedia {
   position: relative;
-  min-height: 56rem;
+  min-height: 50rem;
   background: var(--light-gray);
   overflow: hidden;
 }
@@ -349,7 +424,7 @@
 .missionGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1.2rem;
+  gap: 1rem;
 }
 
 .missionCard,
@@ -363,7 +438,7 @@
 .missionCard,
 .programCard,
 .chapterCard {
-  padding: 2.4rem;
+  padding: 2rem;
 }
 
 .missionCard h3,
@@ -372,20 +447,11 @@
   font-size: 2.2rem;
 }
 
-.missionCard p,
-.programCard p,
-.chapterCard p,
-.quoteText {
-  margin: 1.2rem 0 0;
-  color: var(--text-secondary);
-}
-
 .programGrid,
-.chapterGrid,
-.quoteGrid {
-  margin-top: 3.2rem;
+.chapterGrid {
+  margin-top: 2.4rem;
   display: grid;
-  gap: 1.2rem;
+  gap: 1rem;
 }
 
 .programGrid {
@@ -396,57 +462,42 @@
   display: flex;
   min-height: 100%;
   flex-direction: column;
+  gap: 1.4rem;
 }
 
-.programIndex {
-  color: var(--nike-black);
+.programLogoWrap {
+  display: inline-flex;
+  width: 8.8rem;
+  height: 8.8rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--hover-gray);
+  border-radius: 2rem;
+  background: var(--nike-white);
+}
+
+.programLogo {
+  width: auto;
+  height: auto;
+  max-width: 6rem;
+  max-height: 6rem;
+  object-fit: contain;
 }
 
 .programCategory {
-  margin-top: 2rem;
-}
-
-.textLink {
-  margin-top: auto;
-  padding-top: 2.4rem;
-  font-family: var(--font-psz-sans), "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--nike-black);
-  text-decoration: underline;
-  text-decoration-color: transparent;
-  text-underline-offset: 0.3rem;
-}
-
-.textLink:hover {
-  text-decoration-color: currentColor;
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 .featureCopy {
   display: flex;
   flex-direction: column;
   justify-content: center;
-}
-
-.noteList {
-  margin: 3.2rem 0 0;
-  padding: 0;
-  list-style: none;
-  border-top: 1px solid var(--hover-gray);
-}
-
-.noteList li {
-  padding: 1.6rem 0;
-  border-bottom: 1px solid var(--hover-gray);
-  font-family: var(--font-psz-sans), "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 1.6rem;
-  font-weight: 500;
-  line-height: 1.65;
-  color: var(--nike-black);
+  gap: 0.4rem;
 }
 
 .featureCopy .primaryButton {
-  margin-top: 3.2rem;
+  margin-top: 1.8rem;
   align-self: flex-start;
 }
 
@@ -455,41 +506,10 @@
 }
 
 .chapterCard {
-  min-height: 22rem;
+  min-height: 18rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-}
-
-.chapterIndex {
-  margin: 0;
-}
-
-.quoteGrid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.quoteCard {
-  padding: 2.4rem;
-}
-
-.quoteText {
-  margin: 0;
-  color: var(--nike-black);
-}
-
-.quoteMeta {
-  margin-top: 2.4rem;
-  display: grid;
-  gap: 0.8rem;
-}
-
-.quoteMeta span:first-child {
-  color: var(--nike-black);
-}
-
-.quoteMeta span:last-child {
-  color: var(--text-secondary);
 }
 
 .heroDots {
@@ -547,93 +567,6 @@
   background: var(--nike-white);
 }
 
-.ctaSection {
-  margin-top: clamp(5.6rem, 8vw, 8rem);
-  background: var(--nike-black);
-}
-
-.ctaCopy {
-  max-width: 64rem;
-}
-
-.inverseEyebrow {
-  color: rgba(255, 255, 255, 0.66);
-}
-
-.inverseTitle {
-  color: var(--nike-white);
-}
-
-.inverseText {
-  margin: 2rem 0 0;
-  color: rgba(255, 255, 255, 0.76);
-}
-
-.ctaPanel {
-  align-self: end;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: #1f1f21;
-  padding: 2.4rem;
-}
-
-.ctaLabel {
-  color: rgba(255, 255, 255, 0.66);
-}
-
-.ctaContacts {
-  display: grid;
-  gap: 1rem;
-  margin-top: 1.6rem;
-}
-
-.contactLink {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-  padding: 1.4rem 1.6rem;
-  border-radius: 2rem;
-  background: #28282a;
-}
-
-.contactLink:hover {
-  background: #39393b;
-}
-
-.contactLink span:first-child {
-  color: var(--nike-white);
-  font-size: 1.4rem;
-  font-weight: 600;
-  line-height: 1.5;
-}
-
-.contactLink span:last-child {
-  color: rgba(255, 255, 255, 0.72);
-  font-size: 1.5rem;
-}
-
-.ctaActions {
-  margin-top: 2rem;
-}
-
-.inversePrimaryButton {
-  background: var(--nike-white);
-  color: var(--nike-black);
-}
-
-.inversePrimaryButton:hover {
-  background: var(--border);
-}
-
-.inverseSecondaryButton {
-  border: 1.5px solid rgba(255, 255, 255, 0.28);
-  color: var(--nike-white);
-}
-
-.inverseSecondaryButton:hover {
-  border-color: rgba(255, 255, 255, 0.52);
-  background: rgba(255, 255, 255, 0.08);
-}
-
 @media (max-width: 1200px) {
   .chapterGrid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -642,8 +575,7 @@
 
 @media (max-width: 1024px) {
   .editorialGrid,
-  .featureSection,
-  .ctaSection {
+  .featureSection {
     grid-template-columns: 1fr;
   }
 
@@ -682,6 +614,15 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .mediaPair {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+  }
+
+  .mediaCaption {
+    padding: 2rem 2rem 2.2rem;
+  }
+
   .metricCard:nth-child(3),
   .metricCard:nth-child(4) {
     border-top: 1px solid var(--hover-gray);
@@ -693,7 +634,12 @@
 
   .editorialMedia,
   .featureMedia {
-    min-height: 38rem;
+    min-height: 36rem;
+  }
+
+  .mediaTile,
+  .mediaVideoFrame {
+    min-height: 34rem;
   }
 
   .missionGrid,
@@ -704,8 +650,7 @@
 }
 
 @media (max-width: 520px) {
-  .heroActions,
-  .ctaActions {
+  .heroActions {
     flex-direction: column;
   }
 

@@ -192,7 +192,7 @@ export function HealthcareProfileManager() {
         <div className="mt-5">
           <Link
             href="/login?callbackUrl=/healthcare"
-            className="inline-flex items-center justify-center rounded-xl bg-emerald-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-700"
+            className="inline-flex items-center justify-center rounded-xl bg-[#111111] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#707072]"
           >
             Go to login
           </Link>
@@ -217,7 +217,7 @@ export function HealthcareProfileManager() {
       )}
 
       {/* Profile Header Card */}
-      <div className="rounded-2xl border border-slate-200 bg-gradient-to-br from-emerald-50 to-blue-50 p-8 shadow-sm">
+      <div className="rounded-2xl border border-[#e5e5e5] bg-[#fafafa] p-8 shadow-sm">
         <div className="grid gap-6 sm:grid-cols-[auto_1fr_auto]">
           {/* Profile Photo */}
           <div className="relative">
@@ -231,14 +231,14 @@ export function HealthcareProfileManager() {
                   className="h-full w-full object-cover"
                 />
               ) : (
-                <div className="flex h-full w-full items-center justify-center bg-emerald-100">
-                  <Users className="h-10 w-10 text-emerald-600" />
+                <div className="flex h-full w-full items-center justify-center bg-[#f5f5f5]">
+                  <Users className="h-10 w-10 text-[#707072]" />
                 </div>
               )}
             </div>
             <button
               onClick={() => setPhotoUploadModal(true)}
-              className="absolute -bottom-2 -right-2 flex h-10 w-10 items-center justify-center rounded-full border-2 border-white bg-emerald-600 text-white shadow-lg transition hover:bg-emerald-700"
+              className="absolute -bottom-2 -right-2 flex h-10 w-10 items-center justify-center rounded-full border-2 border-white bg-[#111111] text-white shadow-lg transition hover:bg-[#707072]"
             >
               <Upload className="h-5 w-5" />
             </button>
@@ -262,7 +262,7 @@ export function HealthcareProfileManager() {
             {!isEditing ? (
               <button
                 onClick={() => setIsEditing(true)}
-                className="flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-700"
+                className="flex items-center gap-2 rounded-xl bg-[#111111] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#707072]"
               >
                 <Edit2 className="h-4 w-4" />
                 Edit Profile
@@ -298,7 +298,7 @@ export function HealthcareProfileManager() {
                   type="text"
                   value={formData.name || ""}
                   onChange={(e) => handleInputChange("name", e.target.value)}
-                  className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm transition focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-100"
+                  className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm transition focus:border-[#111111] focus:outline-none focus:ring-2 focus:ring-[rgba(39,93,197,1)]"
                 />
               </div>
               <div>
@@ -311,7 +311,7 @@ export function HealthcareProfileManager() {
                   type="date"
                   value={formData.dateOfBirth || ""}
                   onChange={(e) => handleInputChange("dateOfBirth", e.target.value)}
-                  className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm transition focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-100"
+                  className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm transition focus:border-[#111111] focus:outline-none focus:ring-2 focus:ring-[rgba(39,93,197,1)]"
                 />
               </div>
               <div>
@@ -319,7 +319,7 @@ export function HealthcareProfileManager() {
                 <select
                   value={formData.gender || ""}
                   onChange={(e) => handleInputChange("gender", e.target.value)}
-                  className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm transition focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-100"
+                  className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm transition focus:border-[#111111] focus:outline-none focus:ring-2 focus:ring-[rgba(39,93,197,1)]"
                 >
                   <option value="">Select gender</option>
                   <option value="male">Male</option>
@@ -334,7 +334,7 @@ export function HealthcareProfileManager() {
                   value={formData.occupation || ""}
                   onChange={(e) => handleInputChange("occupation", e.target.value)}
                   placeholder="e.g., Software Engineer"
-                  className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm transition focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-100"
+                  className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm transition focus:border-[#111111] focus:outline-none focus:ring-2 focus:ring-[rgba(39,93,197,1)]"
                 />
               </div>
               <div>
@@ -342,7 +342,7 @@ export function HealthcareProfileManager() {
                 <select
                   value={formData.maritalStatus || ""}
                   onChange={(e) => handleInputChange("maritalStatus", e.target.value)}
-                  className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm transition focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-100"
+                  className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm transition focus:border-[#111111] focus:outline-none focus:ring-2 focus:ring-[rgba(39,93,197,1)]"
                 >
                   <option value="">Select status</option>
                   <option value="single">Single</option>
@@ -357,7 +357,7 @@ export function HealthcareProfileManager() {
           {/* Contact Information */}
           <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-slate-900">
-              <Phone className="h-5 w-5 text-emerald-600" />
+              <Phone className="h-5 w-5 text-[#111111]" />
               Contact Information
             </h2>
             <div className="grid gap-4 sm:grid-cols-2">
@@ -368,7 +368,7 @@ export function HealthcareProfileManager() {
                   value={formData.phone || ""}
                   onChange={(e) => handleInputChange("phone", e.target.value)}
                   placeholder="+92..."
-                  className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm transition focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-100"
+                  className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm transition focus:border-[#111111] focus:outline-none focus:ring-2 focus:ring-[rgba(39,93,197,1)]"
                 />
               </div>
               <div>
@@ -378,7 +378,7 @@ export function HealthcareProfileManager() {
                   value={formData.emergencyContact || ""}
                   onChange={(e) => handleInputChange("emergencyContact", e.target.value)}
                   placeholder="Family member contact"
-                  className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm transition focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-100"
+                  className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm transition focus:border-[#111111] focus:outline-none focus:ring-2 focus:ring-[rgba(39,93,197,1)]"
                 />
               </div>
             </div>
@@ -389,7 +389,7 @@ export function HealthcareProfileManager() {
                 value={formData.address || ""}
                 onChange={(e) => handleInputChange("address", e.target.value)}
                 placeholder="Full address"
-                className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm transition focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-100"
+                className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm transition focus:border-[#111111] focus:outline-none focus:ring-2 focus:ring-[rgba(39,93,197,1)]"
               />
             </div>
           </div>
@@ -397,7 +397,7 @@ export function HealthcareProfileManager() {
           {/* Health Information */}
           <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-slate-900">
-              <Heart className="h-5 w-5 text-emerald-600" />
+              <Heart className="h-5 w-5 text-[#111111]" />
               Health Information
             </h2>
             <div className="grid gap-4 sm:grid-cols-2">
@@ -406,7 +406,7 @@ export function HealthcareProfileManager() {
                 <select
                   value={formData.bloodGroup || ""}
                   onChange={(e) => handleInputChange("bloodGroup", e.target.value)}
-                  className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm transition focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-100"
+                  className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm transition focus:border-[#111111] focus:outline-none focus:ring-2 focus:ring-[rgba(39,93,197,1)]"
                 >
                   <option value="">Select blood group</option>
                   <option value="O+">O+</option>
@@ -426,7 +426,7 @@ export function HealthcareProfileManager() {
                   value={formData.city || ""}
                   onChange={(e) => handleInputChange("city", e.target.value)}
                   placeholder="Your city"
-                  className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm transition focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-100"
+                  className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm transition focus:border-[#111111] focus:outline-none focus:ring-2 focus:ring-[rgba(39,93,197,1)]"
                 />
               </div>
             </div>
@@ -437,7 +437,7 @@ export function HealthcareProfileManager() {
                 onChange={(e) => handleInputChange("allergies", e.target.value)}
                 placeholder="List any allergies (comma-separated)"
                 rows={2}
-                className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm transition focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-100"
+                className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm transition focus:border-[#111111] focus:outline-none focus:ring-2 focus:ring-[rgba(39,93,197,1)]"
               />
             </div>
             <div>
@@ -447,7 +447,7 @@ export function HealthcareProfileManager() {
                 onChange={(e) => handleInputChange("medicalHistory", e.target.value)}
                 placeholder="Any past medical conditions or surgeries"
                 rows={3}
-                className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm transition focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-100"
+                className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm transition focus:border-[#111111] focus:outline-none focus:ring-2 focus:ring-[rgba(39,93,197,1)]"
               />
             </div>
           </div>
@@ -456,7 +456,7 @@ export function HealthcareProfileManager() {
           <button
             onClick={() => void handleSaveProfile()}
             disabled={isSaving}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:opacity-60"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#111111] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#707072] disabled:opacity-60"
           >
             <Save className="h-4 w-4" />
             {isSaving ? "Saving..." : "Save Profile"}
@@ -505,7 +505,7 @@ export function HealthcareProfileManager() {
                     const file = fileInputRef.current?.files?.[0];
                     if (file) void handlePhotoUpload(file);
                   }}
-                  className="w-full rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700"
+                  className="w-full rounded-lg bg-[#111111] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#707072]"
                 >
                   Upload Photo
                 </button>
@@ -519,7 +519,7 @@ export function HealthcareProfileManager() {
             ) : (
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className="flex w-full flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-300 py-8 transition hover:border-emerald-500"
+                className="flex w-full flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-300 py-8 transition hover:border-[#111111]"
               >
                 <Upload className="h-8 w-8 text-slate-400" />
                 <p className="mt-2 text-sm font-medium text-slate-600">Click to select photo</p>

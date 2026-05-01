@@ -37,33 +37,27 @@ export const metadata: Metadata = {
 const FAQ_ITEMS = [
   {
     question: "How long does order processing take?",
-    answer:
-      "Orders are typically processed within 5–10 business days after confirmation.",
+    answer: "Orders are usually processed within 5-10 business days.",
   },
   {
     question: "How long does delivery take?",
-    answer:
-      "Delivery time varies depending on location and logistical conditions. Most orders arrive within a few business days after dispatch.",
+    answer: "Delivery times vary by location after dispatch.",
   },
   {
     question: "Can I cancel my order?",
-    answer:
-      "Orders can only be cancelled before they are processed or dispatched.",
+    answer: "Orders can only be cancelled before processing or dispatch.",
   },
   {
     question: "Do you accept returns or refunds?",
-    answer:
-      "All sales are final. Returns or refunds are not accepted after delivery.",
+    answer: "No. All sales are final after delivery.",
   },
   {
     question: "What if my item arrives damaged?",
-    answer:
-      "If your item arrives damaged, report the issue within 48 hours and provide photo or video evidence so the claim can be reviewed.",
+    answer: "Report damage within 48 hours with photo or video proof.",
   },
   {
     question: "How can I contact support?",
-    answer:
-      "Customers can reach support using the contact details provided on the website.",
+    answer: "Use the contact details listed on the website.",
   },
 ] as const;
 
@@ -96,45 +90,47 @@ export default function PoliciesPage() {
           Paksarzameen Store Policies &amp; Terms
         </h1>
         <p className="mt-4 max-w-3xl text-base leading-relaxed text-neutral-500">
-          Please review our store policies carefully before placing an order.
-          These terms are designed to ensure transparency, customer clarity, and
-          a fair shopping experience.
+          Clear terms for shipping, returns, privacy, and support.
         </p>
       </header>
 
       <div className="mt-8 space-y-6">
         <section className="rounded-2xl border border-neutral-200 bg-white p-7 shadow-sm">
           <h2 className="font-heading text-2xl font-semibold text-neutral-900">Shipping Policy</h2>
-          <div className="mt-4 space-y-4 text-sm leading-relaxed text-neutral-600">
+          <div className="mt-4 space-y-3 text-sm leading-relaxed text-neutral-600">
             <div>
               <h3 className="font-semibold text-neutral-900">Order Processing</h3>
-              <p>Orders are processed within 5–10 business days after confirmation.</p>
+              <p>Orders are processed within 5-10 business days after confirmation.</p>
             </div>
             <div>
               <h3 className="font-semibold text-neutral-900">Shipping Time</h3>
-              <p>Delivery times may vary depending on location and logistical conditions.</p>
+              <p>Delivery times vary by location and logistics.</p>
             </div>
             <div>
               <h3 className="font-semibold text-neutral-900">Shipping Charges</h3>
-              <p>Any applicable shipping charges are shown during checkout before the order is finalized.</p>
+              <p>Shipping charges are shown at checkout.</p>
             </div>
             <div>
               <h3 className="font-semibold text-neutral-900">Tracking</h3>
-              <p>Tracking information may be provided once the order has been dispatched.</p>
+              <p>Tracking may be shared after dispatch.</p>
             </div>
             <div>
               <h3 className="font-semibold text-neutral-900">Delivery Responsibility</h3>
-              <p>Delivery timelines may vary due to factors outside our control.</p>
+              <p>Delays outside our control can affect delivery time.</p>
             </div>
           </div>
         </section>
 
         <section className="rounded-2xl border border-neutral-200 bg-white p-7 shadow-sm">
-          <h2 className="font-heading text-2xl font-semibold text-neutral-900">Return &amp; Replacement Policy</h2>
+          <h2 className="font-heading text-2xl font-semibold text-neutral-900">
+            Return &amp; Replacement Policy
+          </h2>
           <div className="mt-4 space-y-3 text-sm leading-relaxed text-neutral-600">
-            <p><strong className="text-neutral-900">All sales are final.</strong></p>
-            <p>Returns or refunds are not accepted once an order has been delivered and accepted.</p>
-            <p>Replacement may be considered only if the item arrives damaged during delivery.</p>
+            <p>
+              <strong className="text-neutral-900">All sales are final.</strong>
+            </p>
+            <p>No returns or refunds are accepted after delivery.</p>
+            <p>Replacement is only considered for delivery damage.</p>
             <div>
               <h3 className="font-semibold text-neutral-900">Conditions</h3>
               <ul className="mt-2 list-disc space-y-1 pl-5">
@@ -143,62 +139,72 @@ export default function PoliciesPage() {
                 <li>Product must remain unused and in original packaging.</li>
               </ul>
             </div>
-            <p>If the claim is verified, a replacement may be arranged where possible.</p>
+            <p>If verified, a replacement may be arranged where possible.</p>
           </div>
         </section>
 
-        <section className="rounded-2xl border border-neutral-200 bg-white p-7 shadow-sm">
-          <h2 className="font-heading text-2xl font-semibold text-neutral-900">Order Cancellation Policy</h2>
+        <section
+          id="terms-and-conditions"
+          className="rounded-2xl border border-neutral-200 bg-white p-7 shadow-sm"
+        >
+          <h2 className="font-heading text-2xl font-semibold text-neutral-900">
+            Order Cancellation Policy
+          </h2>
           <div className="mt-4 space-y-3 text-sm leading-relaxed text-neutral-600">
-            <p>Orders may only be cancelled before they are processed or dispatched.</p>
-            <p>Once an order enters processing or shipping stage, cancellation may not be possible.</p>
+            <p>Orders can only be cancelled before processing or dispatch.</p>
+            <p>Once processing or shipping starts, cancellation may not be possible.</p>
           </div>
         </section>
 
-        <section className="rounded-2xl border border-neutral-200 bg-white p-7 shadow-sm">
-          <h2 className="font-heading text-2xl font-semibold text-neutral-900">Terms &amp; Conditions</h2>
-          <div className="mt-4 space-y-4 text-sm leading-relaxed text-neutral-600">
+        <section
+          id="privacy-policy"
+          className="rounded-2xl border border-neutral-200 bg-white p-7 shadow-sm"
+        >
+          <h2 className="font-heading text-2xl font-semibold text-neutral-900">
+            Terms &amp; Conditions
+          </h2>
+          <div className="mt-4 space-y-3 text-sm leading-relaxed text-neutral-600">
             <div>
               <h3 className="font-semibold text-neutral-900">Acceptance of Terms</h3>
-              <p>By using this store, customers agree to these policies and conditions.</p>
+              <p>Using this store means you accept these terms.</p>
             </div>
             <div>
               <h3 className="font-semibold text-neutral-900">Product Information</h3>
-              <p>Product descriptions and images are provided as accurately as possible.</p>
+              <p>Product descriptions and images are shown as accurately as possible.</p>
             </div>
             <div>
               <h3 className="font-semibold text-neutral-900">Pricing and Availability</h3>
-              <p>Product availability and pricing may change without prior notice.</p>
+              <p>Pricing and availability may change without notice.</p>
             </div>
             <div>
               <h3 className="font-semibold text-neutral-900">Order Acceptance</h3>
-              <p>The store reserves the right to accept, reject, or cancel any order.</p>
+              <p>The store may accept, reject, or cancel any order.</p>
             </div>
             <div>
               <h3 className="font-semibold text-neutral-900">Intellectual Property</h3>
-              <p>All logos, graphics, images, text, and design elements belong to Paksarzameen Store.</p>
+              <p>All logos, text, graphics, and images belong to Paksarzameen Store.</p>
             </div>
             <div>
               <h3 className="font-semibold text-neutral-900">Limitation of Liability</h3>
-              <p>The store is not responsible for delays or delivery issues caused by circumstances beyond its control.</p>
+              <p>The store is not responsible for delays beyond its control.</p>
             </div>
             <div>
               <h3 className="font-semibold text-neutral-900">Policy Updates</h3>
-              <p>Policies may be updated at any time and will take effect immediately after publication.</p>
+              <p>Policies may change at any time after publication.</p>
             </div>
           </div>
         </section>
 
         <section className="rounded-2xl border border-neutral-200 bg-white p-7 shadow-sm">
           <h2 className="font-heading text-2xl font-semibold text-neutral-900">Privacy Policy</h2>
-          <div className="mt-4 space-y-4 text-sm leading-relaxed text-neutral-600">
+          <div className="mt-4 space-y-3 text-sm leading-relaxed text-neutral-600">
             <div>
               <h3 className="font-semibold text-neutral-900">Information Collection</h3>
-              <p>Customer information may be collected during checkout or when interacting with the website.</p>
+              <p>Customer information may be collected during checkout or site use.</p>
             </div>
             <div>
               <h3 className="font-semibold text-neutral-900">Use of Information</h3>
-              <p>Information is used to process orders and improve services.</p>
+              <p>Information is used to process orders and improve service.</p>
             </div>
             <div>
               <h3 className="font-semibold text-neutral-900">Data Protection</h3>
@@ -206,24 +212,28 @@ export default function PoliciesPage() {
             </div>
             <div>
               <h3 className="font-semibold text-neutral-900">Cookies</h3>
-              <p>The website may use cookies to improve browsing experience.</p>
+              <p>The website may use cookies to improve browsing.</p>
             </div>
             <div>
               <h3 className="font-semibold text-neutral-900">User Rights</h3>
-              <p>Customers may contact the store regarding questions about their personal data.</p>
+              <p>Customers may contact the store with questions about their data.</p>
             </div>
           </div>
         </section>
 
         <section className="rounded-2xl border border-neutral-200 bg-white p-7 shadow-sm">
-          <h2 className="font-heading text-2xl font-semibold text-neutral-900">Contact &amp; Support</h2>
+          <h2 className="font-heading text-2xl font-semibold text-neutral-900">
+            Contact &amp; Support
+          </h2>
           <p className="mt-4 text-sm leading-relaxed text-neutral-600">
-            Customers can contact support using the contact information available on this website for any questions related to orders or policies.
+            Use the contact details on this website for any order or policy question.
           </p>
         </section>
 
         <section className="rounded-2xl border border-neutral-200 bg-white p-7 shadow-sm">
-          <h2 className="font-heading text-2xl font-semibold text-neutral-900">Frequently Asked Questions (FAQ)</h2>
+          <h2 className="font-heading text-2xl font-semibold text-neutral-900">
+            Frequently Asked Questions (FAQ)
+          </h2>
           <div className="mt-5">
             <PoliciesFaqAccordion items={[...FAQ_ITEMS]} />
           </div>

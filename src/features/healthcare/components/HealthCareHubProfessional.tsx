@@ -271,7 +271,7 @@ export function HealthCareHubProfessional() {
             CLINIC.
           </h1>
           <p className="mt-2 text-[#707072] text-sm md:text-base tracking-wide font-medium">
-            YOUR DIGITAL MEDICAL COMPANION
+            CARE, BOOKING, AND BLOOD SUPPORT
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -328,7 +328,7 @@ export function HealthCareHubProfessional() {
                   value={question}
                   onChange={(event) => setQuestion(event.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && void askQuickAnswer()}
-                  placeholder="Ask about symptoms, health concerns, etc..."
+                  placeholder="Ask about symptoms or health concerns"
                   className="flex-1 rounded-lg border border-[#CACACB] bg-[#F5F5F5] px-5 py-4 text-base focus:bg-white focus:border-[#111111] focus:ring-1 focus:ring-[#111111] outline-none transition"
                 />
                 <button
@@ -343,7 +343,7 @@ export function HealthCareHubProfessional() {
 
               {answer && (
                 <div className="bg-[#FAFAFA] border border-[#E5E5E5] p-6 md:p-8 rounded-none">
-                  <h3 className="text-sm font-bold uppercase tracking-widest text-[#707072] mb-4">Diagnostic Context</h3>
+                  <h3 className="text-sm font-bold uppercase tracking-widest text-[#707072] mb-4">Quick Answer</h3>
                   <div className="prose prose-sm md:prose-base prose-slate max-w-none text-[#111111] leading-relaxed">
                     {answer}
                   </div>

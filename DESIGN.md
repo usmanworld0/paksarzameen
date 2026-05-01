@@ -361,3 +361,197 @@ When refining existing screens generated with this design system:
 5. If something feels too colorful in the UI, it probably is — Nike keeps UI greyscale
 6. Display type (Nike Futura) should ALWAYS be uppercase and never below 24px
 7. Body type (Helvetica Now) should almost always be weight 500 for interactive elements
+
+## 10. Footer Component
+
+The footer is a quiet, well-organized conclusion to the shopping experience. It trades the dynamic energy of the homepage for clarity and utility — a reference library rather than a showroom. The footer maintains Nike's monochromatic restraint while organizing critical information (customer service, legal, social) in a scannable, hierarchical structure. It feels like an extension of the product grid: dense, organized, and purposeful.
+
+### Structure & Layout
+
+The footer is composed of three distinct zones:
+
+1. **Link Section** (desktop: 4-column grid; mobile: stacked)
+2. **Newsletter/CTA Section** (optional brand engagement)
+3. **Legal Footer** (always present, minimal)
+
+### Link Section Design
+
+**Desktop (1024px+)**
+- 4-column grid layout with 48px horizontal padding
+- Each column is ~280px wide with 64px gap between columns
+- Column width: (100% - 48px padding × 2 - 64px gap × 3) / 4
+
+**Tablet (640-1024px)**
+- 2-column grid with 24px horizontal padding
+- 48px gap between columns
+- Column pairs stack vertically
+
+**Mobile (<640px)**
+- Single column stack
+- 16px horizontal padding
+- 32px vertical gap between sections
+- Full width, no max-width constraint
+
+### Column Content & Hierarchy
+
+**Column Heading (Optional)**
+- Font: Helvetica Now Text Medium, 14px/500, Nike Black (`#111111`)
+- Margin bottom: 12px
+- Use for grouping section (e.g., "Shop", "Help", "About")
+
+**Link Item**
+- Font: Helvetica Now Text, 14px/500, Secondary Text (`#707072`)
+- Line height: 1.86
+- Margin bottom: 12px
+- Color on hover: Nike Black (`#111111`), transition 200ms ease
+- No underline on normal state, underline on hover (text-decoration-thickness: 1px)
+
+### Divider
+
+- Full-width line between Link Section and Legal Footer
+- Color: Border Secondary (`#CACACB`)
+- Height: 1px
+- Margin: 48px 0 (desktop), 32px 0 (tablet), 24px 0 (mobile)
+
+### Newsletter/CTA Section (Optional)
+
+If included, appears above the divider:
+
+**Container**
+- Background: White (`#FFFFFF`) or Light Gray (`#F5F5F5`) for subtle lift
+- Padding: 48px horizontal, 32px vertical
+- Max width: content width (~1440px)
+- Centered on desktop, full-width on mobile
+
+**Heading**
+- Font: Helvetica Now Display Medium, 24px/500, Nike Black (`#111111`)
+- Margin bottom: 16px
+
+**Subtext**
+- Font: Helvetica Now Text, 16px/400, Secondary Text (`#707072`)
+- Margin bottom: 24px
+- Line height: 1.75
+
+**Input + Button**
+- Email input: 16px/400 Helvetica Now Text, Grey-100 background, Border Secondary border, 8px border-radius, 12px padding
+- Button: Primary pill-shaped (30px radius), Nike Black background, White text, 16px/500, with ripple hover effect
+- Layout: flex row with 8px gap on desktop, stacked on mobile with full-width input
+
+### Legal Footer
+
+Positioned at the very bottom of the page, persists across all breakpoints.
+
+**Container**
+- Background: White (`#FFFFFF`)
+- Padding: 24px 48px (desktop), 16px 24px (tablet), 16px 16px (mobile)
+- Border top: 1px solid Border Secondary (`#CACACB`)
+
+**Layout (Flex row, center-aligned, space-between)**
+- Left: Copyright text
+- Center: Legal links (Privacy, Terms, Accessibility)
+- Right: Language/Region selector (optional)
+
+**Typography**
+- Font: Helvetica Now Text, 12px/400, Secondary Text (`#707072`)
+- Line height: 1.50
+
+**Copyright Text**
+- Format: "© 2026 Brand Name. All rights reserved."
+- No special styling
+
+**Legal Links**
+- Font: 12px/500 Helvetica Now Text Medium
+- Color: Secondary Text (`#707072`)
+- Hover: Nike Black (`#111111`)
+- Separator: " · " (middle dot) between links, Secondary Text color
+- No underline on normal state, underline on hover
+
+**Responsive Stacking**
+- Desktop: single row, space-between alignment
+- Tablet: single row, space-between with reduced font
+- Mobile: stacked vertically, center-aligned, 12px gap between rows, copyright at top, links in middle, region selector at bottom
+
+### Color Variants
+
+**Default (Light Footer)**
+- Background: White (`#FFFFFF`)
+- Link text: Secondary Text (`#707072`)
+- Link hover: Nike Black (`#111111`)
+- Divider: Border Secondary (`#CACACB`)
+- Legal text: Secondary Text (`#707072`)
+
+**Dark Footer (Alternative)**
+- Background: Deep Charcoal (`#1F1F21`)
+- Link text: Grey-500 (`#9E9EA0`) [disabled text inverse alternative]
+- Link hover: White (`#FFFFFF`)
+- Divider: Grey-700 (`#39393B`)
+- Legal text: Secondary Text inverted (`#4B4B4D`)
+
+### Interactive States
+
+**Link Hover**
+- Color: transitions to Nike Black or White (depending on theme)
+- Underline: 1px solid, same color as text, text-decoration-offset 2px
+- Transition: all 200ms ease
+- Cursor: pointer
+
+**Link Focus (Keyboard)**
+- Outline: 2px solid Focus Ring (`rgba(39, 93, 197, 1)`)
+- Outline offset: 2px
+- No underline change on focus
+
+**Button Hover**
+- Background: Grey-500 (`#707072`)
+- Transition: background 200ms ease
+- Scale: 1.0 (no scaling effect)
+
+**Input Focus**
+- Border color: Nike Black (`#111111`)
+- Focus ring: 2px solid Focus Ring (`rgba(39, 93, 197, 1)`)
+- Background: White (`#FFFFFF`)
+
+### Spacing Breakdown
+
+| Element | Desktop | Tablet | Mobile |
+|---------|---------|--------|--------|
+| Column gap | 64px | 48px | — |
+| Section margin bottom | 48px | 32px | 24px |
+| Divider margin | 48px 0 | 32px 0 | 24px 0 |
+| Link item margin | 12px | 12px | 12px |
+| Heading margin | 12px | 12px | 12px |
+| Horizontal padding | 48px | 24px | 16px |
+| Newsletter container padding | 48px | 32px | 24px |
+| Legal section padding | 24px 48px | 16px 24px | 16px 16px |
+
+### Accessibility Requirements
+
+- All links must have a visible focus indicator (2px focus ring)
+- Footer links should have a minimum touch target of 44x44px (padding added if needed)
+- Semantic `<footer>` tag wraps entire footer
+- Section headings use `<h3>` or appropriate heading level
+- Links use semantic `<a>` elements with descriptive text
+- Color contrast ratio for all text: WCAG AA minimum (4.5:1 for normal text)
+- Language/region selector has proper `<label>` or `aria-label`
+
+### Do's and Don'ts
+
+**Do**
+- Organize links into logical columns (Shop, Help, About, Community, etc.)
+- Use Secondary Text (#707072) as the default footer link color
+- Keep link font weight at 500 (Medium) for consistent emphasis
+- Stack columns on mobile for readability
+- Include a clear legal footer with copyright and privacy/terms links
+- Use subtle borders (Border Secondary) to separate sections
+- Maintain 12px gap between link items for breathing room
+- Include focus indicators on all interactive elements
+
+**Don't**
+- Don't use font sizes smaller than 12px for legal text
+- Don't add shadows or complex elevation to footer
+- Don't use brand colors in the footer — stay monochromatic
+- Don't stack all columns on tablet — use 2-column layout
+- Don't make footer links pure black (#000000) — use #111111 or #707072
+- Don't add icons without proper spacing (minimum 12px from text)
+- Don't forget hover states — all links need clear feedback
+- Don't use Nike Futura ND in the footer
+- Don't create unequal column widths without justification

@@ -1,174 +1,183 @@
 import Image from "next/image";
 import Link from "next/link";
-import { navLinks, siteConfig } from "@/config/site";
+
+import { siteConfig } from "@/config/site";
+
+const primaryColumns = [
+  {
+    heading: "Explore",
+    links: [
+      { label: "About PSZ", href: "/about" },
+      { label: "Programs", href: "/programs" },
+      { label: "Impact", href: "/impact" },
+      { label: "Get Involved", href: "/get-involved" },
+    ],
+  },
+  {
+    heading: "Services",
+    links: [
+      { label: "HealthCare", href: "/healthcare" },
+      { label: "Adopt a Dog", href: "/dog-adoption" },
+      { label: "Blood Bank", href: "/blood-bank" },
+      { label: "News & Resources", href: "/news" },
+    ],
+  },
+  {
+    heading: "Visit",
+    links: [
+      { label: "Paksarzameen Store", href: "/commonwealth-lab" },
+      { label: "Contact", href: "/contact" },
+      { label: "Volunteer", href: "/volunteer" },
+      { label: "About the Foundation", href: "/about" },
+    ],
+  },
+] as const;
+
+const legalLinks = [
+  { label: "Privacy", href: "/policies#privacy-policy" },
+  { label: "Terms", href: "/policies#terms-and-conditions" },
+  { label: "Accessibility", href: "/contact" },
+] as const;
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
+  const callHref = `tel:${siteConfig.contact.phone.replace(/\s+/g, "")}`;
+  const mailHref = `mailto:${siteConfig.contact.email}`;
 
   return (
-    <footer className="border-t border-[#e5e5e5] bg-white text-[#111111]">
-      <div className="mx-auto grid w-full max-w-[1440px] gap-12 px-4 py-16 md:px-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:px-10 lg:py-20">
-        <div className="flex flex-col gap-6">
-          <div className="flex items-center gap-4">
-            <span className="relative h-14 w-14 overflow-hidden rounded-full border border-[#cacacb] bg-[#f5f5f5]">
-              <Image
-                src="/paksarzameen_logo.png"
-                alt="PakSarZameen"
-                fill
-                sizes="56px"
-                className="object-cover"
-              />
-            </span>
-            <span className="text-[1.2rem] font-medium uppercase tracking-[0.24em] text-[#707072]">
-              PakSarZameen
-            </span>
-          </div>
+    <footer className="psz-footer">
+      <div className="psz-footer__shell">
+        <div className="psz-footer__grid">
+          <section className="psz-footer__brand" aria-labelledby="footer-brand-heading">
+            <p className="psz-footer__eyebrow">Pakistan community development</p>
+            <div className="psz-footer__brand-row">
+              <span className="psz-footer__logo" aria-hidden="true">
+                <Image
+                  src="/paksarzameen_logo.png"
+                  alt=""
+                  fill
+                  sizes="64px"
+                  className="object-contain"
+                />
+              </span>
+              <div className="psz-footer__brand-copy">
+                <h2 id="footer-brand-heading" className="psz-footer__brand-title">
+                  PakSarZameen
+                </h2>
+                <p className="psz-footer__summary">
+                  Education, health, welfare, climate action, and animal care.
+                </p>
+              </div>
+            </div>
+          </section>
 
-          <h2 className="max-w-[7ch] text-[4rem] font-black uppercase leading-[0.9] tracking-[-0.08em] md:text-[6rem]">
-            PAKSAR
-            <br />
-            ZAMEEN.
-          </h2>
-
-          <p className="max-w-xl border-l-2 border-[#111111] pl-5 text-[1.55rem] font-medium leading-[1.7] text-[#707072]">
-            Building community wealth through grassroots progress across Pakistan.
-          </p>
-
-          <div className="flex flex-wrap gap-3 pt-2">
-            <a
-              href={`mailto:${siteConfig.contact.email}`}
-              className="inline-flex min-h-[4.8rem] items-center justify-center rounded-full bg-[#111111] px-6 text-[1.2rem] font-medium uppercase tracking-[0.16em] text-white transition-colors hover:bg-[#707072]"
+          {primaryColumns.map((column) => (
+            <nav
+              key={column.heading}
+              className="psz-footer__column"
+              aria-label={`${column.heading} footer links`}
             >
+              <h3 className="psz-footer__heading">{column.heading}</h3>
+              <ul className="psz-footer__list">
+                {column.links.map((link) => (
+                  <li key={link.href}>
+                    <Link className="psz-footer__link" href={link.href}>
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          ))}
+
+          <section className="psz-footer__column" aria-labelledby="footer-contact-heading">
+            <h3 id="footer-contact-heading" className="psz-footer__heading">
+              Contact
+            </h3>
+            <ul className="psz-footer__list psz-footer__list--contact">
+              <li>
+                <a className="psz-footer__link" href={mailHref}>
+                  {siteConfig.contact.email}
+                </a>
+              </li>
+              <li>
+                <a className="psz-footer__link" href={callHref}>
+                  {siteConfig.contact.phone}
+                </a>
+              </li>
+              <li>
+                <address className="psz-footer__address">
+                  {siteConfig.contact.addressLines.map((line) => (
+                    <span key={line}>{line}</span>
+                  ))}
+                </address>
+              </li>
+            </ul>
+          </section>
+        </div>
+
+        <section className="psz-footer__cta" aria-labelledby="footer-cta-heading">
+          <div>
+            <p className="psz-footer__heading-label">Take the next step</p>
+            <h3 id="footer-cta-heading" className="psz-footer__cta-title">
+              Join a program or reach the team.
+            </h3>
+            <p className="psz-footer__cta-copy">Volunteer, collaborate, or ask for help.</p>
+          </div>
+          <div className="psz-footer__cta-actions">
+            <Link className="psz-footer__button psz-footer__button--primary" href="/get-involved">
+              Get Involved
+            </Link>
+            <a className="psz-footer__button" href={mailHref}>
               Email Us
             </a>
-            <a
-              href={`tel:${siteConfig.contact.phone.replace(/\s+/g, "")}`}
-              className="inline-flex min-h-[4.8rem] items-center justify-center rounded-full border border-[#cacacb] px-6 text-[1.2rem] font-medium uppercase tracking-[0.16em] text-[#111111] transition-colors hover:border-[#111111] hover:bg-[#f5f5f5]"
-            >
-              Call Us
-            </a>
           </div>
-        </div>
+        </section>
 
-        <div className="grid gap-10 sm:grid-cols-3">
-          <div className="flex flex-col gap-4">
-            <h3 className="border-b border-[#e5e5e5] pb-3 text-[1.2rem] font-medium uppercase tracking-[0.2em] text-[#707072]">
-              Navigation
-            </h3>
-            <ul className="flex flex-col gap-3">
-              {navLinks.map((link) => (
-                <li key={link.label}>
-                  <Link
-                    href={link.href}
-                    className="text-[1.35rem] font-medium uppercase tracking-[0.08em] text-[#111111] transition-colors hover:text-[#707072]"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="flex flex-col gap-4">
-            <h3 className="border-b border-[#e5e5e5] pb-3 text-[1.2rem] font-medium uppercase tracking-[0.2em] text-[#707072]">
-              Support
-            </h3>
-            <ul className="flex flex-col gap-3">
-              <li>
-                <Link
-                  href="/contact"
-                  className="text-[1.35rem] font-medium uppercase tracking-[0.08em] text-[#111111] transition-colors hover:text-[#707072]"
-                >
-                  Contact
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/"
-                  className="text-[1.35rem] font-medium uppercase tracking-[0.08em] text-[#111111] transition-colors hover:text-[#707072]"
-                >
-                  FAQ
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/"
-                  className="text-[1.35rem] font-medium uppercase tracking-[0.08em] text-[#111111] transition-colors hover:text-[#707072]"
-                >
-                  Support
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          <div className="flex flex-col gap-4">
-            <h3 className="border-b border-[#e5e5e5] pb-3 text-[1.2rem] font-medium uppercase tracking-[0.2em] text-[#707072]">
-              Legal
-            </h3>
-            <ul className="flex flex-col gap-3">
-              <li>
-                <Link
-                  href="/"
-                  className="text-[1.35rem] font-medium uppercase tracking-[0.08em] text-[#111111] transition-colors hover:text-[#707072]"
-                >
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/"
-                  className="text-[1.35rem] font-medium uppercase tracking-[0.08em] text-[#111111] transition-colors hover:text-[#707072]"
-                >
-                  Terms of Service
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/"
-                  className="text-[1.35rem] font-medium uppercase tracking-[0.08em] text-[#111111] transition-colors hover:text-[#707072]"
-                >
-                  Cookie Policy
-                </Link>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <div className="border-t border-[#e5e5e5]">
-        <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-4 px-4 py-6 md:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-10">
-          <p className="text-[1.1rem] font-medium uppercase tracking-[0.18em] text-[#707072]">
-            Copyright {currentYear} Paksarzameen. All rights reserved.
+        <div className="psz-footer__legal">
+          <p className="psz-footer__legal-copy">
+            &copy; {currentYear} PakSarZameen. All rights reserved.
           </p>
 
-          <div className="flex flex-wrap items-center gap-5">
+          <div className="psz-footer__legal-links" aria-label="Legal links">
+            {legalLinks.map((link, index) => (
+              <span key={link.label} className="psz-footer__legal-item">
+                {index > 0 ? <span className="psz-footer__separator">|</span> : null}
+                <Link className="psz-footer__legal-link" href={link.href}>
+                  {link.label}
+                </Link>
+              </span>
+            ))}
+          </div>
+
+          <div className="psz-footer__legal-links" aria-label="Social links">
             <a
-              href="#"
-              className="text-[1.1rem] font-medium uppercase tracking-[0.18em] text-[#707072] transition-colors hover:text-[#111111]"
-            >
-              Facebook
-            </a>
-            <a
-              href="#"
-              className="text-[1.1rem] font-medium uppercase tracking-[0.18em] text-[#707072] transition-colors hover:text-[#111111]"
-            >
-              Twitter
-            </a>
-            <a
-              href="#"
-              className="text-[1.1rem] font-medium uppercase tracking-[0.18em] text-[#707072] transition-colors hover:text-[#111111]"
+              className="psz-footer__legal-link"
+              href={siteConfig.social.instagram}
+              target="_blank"
+              rel="noopener noreferrer"
             >
               Instagram
             </a>
+            <span className="psz-footer__separator">|</span>
+            <a
+              className="psz-footer__legal-link"
+              href={siteConfig.social.facebook}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Facebook
+            </a>
+            <span className="psz-footer__separator">|</span>
+            <a
+              className="psz-footer__legal-link"
+              href={siteConfig.social.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              LinkedIn
+            </a>
           </div>
-        </div>
-      </div>
-
-      <div className="bg-[#111111]">
-        <div className="mx-auto w-full max-w-[1440px] px-4 py-4 md:px-6 lg:px-10">
-          <p className="text-[1rem] font-medium uppercase tracking-[0.2em] text-[#cacacb]">
-            Built for community. Designed for impact.
-          </p>
         </div>
       </div>
     </footer>

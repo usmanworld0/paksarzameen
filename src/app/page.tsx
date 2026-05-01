@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { siteConfig } from "@/config/site";
-import { HomeClient } from "@/features/home/components/HomeClient";
+import { HomeClientClean } from "@/features/home/components/HomeClientClean";
+import { getPrograms } from "@/lib/services/getPrograms";
 
 export const metadata: Metadata = {
   title: "In Pakistan For Education, Health And Community Welfare",
@@ -39,6 +40,8 @@ export const metadata: Metadata = {
   },
 };
 
-export default function HomePage() {
-  return <HomeClient />;
+export default async function HomePage() {
+  const programs = await getPrograms();
+
+  return <HomeClientClean programs={programs} />;
 }

@@ -51,17 +51,14 @@ export default function ContactPage() {
 
         <header className="site-hero__inner">
           <p className="site-hero__eyebrow">Contact</p>
-          <h1 className="site-hero__title">Contact PakSarZameen</h1>
+          <h1 className="site-hero__title">Contact.</h1>
           <p className="site-hero__body">
-            Connect with our team in Bahawalpur for volunteering, partnerships,
-            blood bank coordination, media inquiries, and community development
-            initiatives across Pakistan.
+            Reach the team for support, partnerships, or coordination.
           </p>
 
           <div className="site-hero__chips">
             <span className="site-chip">Community Support</span>
             <span className="site-chip">Partnership Desk</span>
-            <span className="site-chip">Emergency Coordination</span>
           </div>
         </header>
       </section>
@@ -195,8 +192,7 @@ export default function ContactPage() {
             Send a Message
           </h2>
           <p className="mt-3 text-[1.5rem] text-[#707072]">
-            Use the form to send us a message about volunteering, partnerships,
-            campaigns, or general inquiries and we&apos;ll get back to you.
+            Send a message and the team will get back to you.
           </p>
           <div className="site-form-shell mt-4 rounded-[1.6rem] p-4 sm:p-5">
             <ContactForm />

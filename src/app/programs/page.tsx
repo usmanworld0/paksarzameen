@@ -4,8 +4,6 @@ import { siteConfig } from "@/config/site";
 import { ProgramsHubClient } from "@/features/programs/components/ProgramsHubClient";
 import { getPrograms } from "@/lib/services/getPrograms";
 
-import styles from "./ProgramsPage.module.css";
-
 export const metadata: Metadata = {
   title: "Programs: Education, Health, Environment And Welfare",
   description:
@@ -45,10 +43,29 @@ export const metadata: Metadata = {
 
 export default async function ProgramsPage() {
   const programs = await getPrograms();
+  const categoryCount = new Set(programs.map((program) => program.category)).size;
 
   return (
-    <section className={styles.page}>
+    <main className="site-page">
+      <section className="site-hero">
+        <div className="site-hero__noise" aria-hidden="true" />
+        <div className="site-hero__orb site-hero__orb--left" aria-hidden="true" />
+        <div className="site-hero__orb site-hero__orb--right" aria-hidden="true" />
+
+        <header className="site-hero__inner">
+          <p className="site-hero__eyebrow">Programs</p>
+          <h1 className="site-hero__title">Programs.</h1>
+          <p className="site-hero__body">
+            Explore PSZ work across education, health, welfare, and climate action.
+          </p>
+          <div className="site-hero__chips">
+            <span className="site-chip">{programs.length} active listings</span>
+            <span className="site-chip">{categoryCount} focus areas</span>
+          </div>
+        </header>
+      </section>
+
       <ProgramsHubClient programs={programs} />
-    </section>
+    </main>
   );
 }

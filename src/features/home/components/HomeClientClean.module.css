@@ -1,0 +1,736 @@
+.page {
+  --nike-black: #111111;
+  --nike-white: #ffffff;
+  --snow: #fafafa;
+  --light-gray: #f5f5f5;
+  --hover-gray: #e5e5e5;
+  --border: #cacacb;
+  --text-secondary: #707072;
+
+  background: var(--nike-white);
+  color: var(--nike-black);
+}
+
+.hero {
+  position: relative;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  min-height: calc(100svh - 11rem);
+  background: var(--nike-black);
+  overflow: hidden;
+}
+
+.heroTrack {
+  position: absolute;
+  inset: 0;
+}
+
+.heroSlide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 320ms ease;
+}
+
+.heroSlideActive {
+  opacity: 1;
+}
+
+.heroVideo {
+  width: 100%;
+  height: 100%;
+  background: #111111;
+  object-fit: cover;
+  object-position: center center;
+}
+
+.sectionImage {
+  object-fit: cover;
+}
+
+.heroScrim {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(17, 17, 17, 0.12) 0%,
+      rgba(17, 17, 17, 0.36) 48%,
+      rgba(17, 17, 17, 0.72) 100%
+    );
+}
+
+.heroCenter,
+.metricBand,
+.editorialSection,
+.programSection,
+.featureSection,
+.chapterSection,
+.voiceSection,
+.ctaSection {
+  width: min(1440px, 100%);
+  margin: 0 auto;
+  padding-left: clamp(1.6rem, 3vw, 4.8rem);
+  padding-right: clamp(1.6rem, 3vw, 4.8rem);
+}
+
+.heroCenter {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  min-height: inherit;
+  padding-top: clamp(4rem, 8vw, 8rem);
+  padding-bottom: clamp(9rem, 12vw, 12rem);
+}
+
+.heroCopy {
+  max-width: 72rem;
+  text-align: center;
+}
+
+.heroEyebrow,
+.sectionEyebrow,
+.inverseEyebrow,
+.ctaLabel,
+.programCategory,
+.chapterIndex,
+.programIndex,
+.quoteMeta span {
+  font-family: var(--font-psz-sans), "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.heroEyebrow {
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.heroTitle,
+.inverseTitle {
+  margin: 1.2rem 0 0;
+  font-family: var(--font-psz-display), "Arial Narrow", Arial, sans-serif;
+  font-size: clamp(5.2rem, 10vw, 9.6rem);
+  font-weight: 600;
+  line-height: 0.9;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+
+.heroTitle {
+  color: var(--nike-white);
+}
+
+.heroText,
+.sectionLead,
+.missionCard p,
+.programCard p,
+.chapterCard p,
+.quoteText,
+.inverseText,
+.contactLink span {
+  font-family: var(--font-psz-sans), "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 1.6rem;
+  line-height: 1.75;
+}
+
+.heroText {
+  max-width: 44ch;
+  margin: 1.6rem auto 0;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.heroActions,
+.ctaActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+}
+
+.heroActions {
+  margin-top: 2.8rem;
+  justify-content: center;
+}
+
+.primaryButton,
+.secondaryButton,
+.inversePrimaryButton,
+.inverseSecondaryButton,
+.textLink,
+.contactLink {
+  transition:
+    background-color 200ms ease,
+    border-color 200ms ease,
+    color 200ms ease,
+    opacity 200ms ease;
+}
+
+.primaryButton,
+.secondaryButton,
+.inversePrimaryButton,
+.inverseSecondaryButton {
+  display: inline-flex;
+  min-height: 4.8rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 0 2.4rem;
+  font-family: var(--font-psz-sans), "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 1.6rem;
+  font-weight: 600;
+}
+
+.heroPrimaryButton,
+.heroSecondaryButton {
+  display: inline-flex;
+  min-height: 4.8rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 0 2.4rem;
+  font-family: var(--font-psz-sans), "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 1.6rem;
+  font-weight: 600;
+  transition:
+    background-color 200ms ease,
+    border-color 200ms ease,
+    color 200ms ease,
+    opacity 200ms ease;
+}
+
+.heroPrimaryButton {
+  background: var(--nike-white);
+  color: var(--nike-black);
+}
+
+.heroPrimaryButton:hover {
+  background: var(--border);
+}
+
+.heroSecondaryButton {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--nike-white);
+}
+
+.heroSecondaryButton:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.primaryButton {
+  background: var(--nike-black);
+  color: var(--nike-white);
+}
+
+.primaryButton:hover,
+.primaryButton:hover {
+  background: var(--text-secondary);
+}
+
+.secondaryButton {
+  border: 1.5px solid var(--border);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--nike-white);
+}
+
+.secondaryButton:hover {
+  border-color: var(--nike-white);
+  background: rgba(255, 255, 255, 0.14);
+  color: var(--nike-white);
+}
+
+.metricBand {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  border-bottom: 1px solid var(--hover-gray);
+}
+
+.metricCard {
+  padding: 3.2rem 1.6rem;
+}
+
+.metricCard + .metricCard {
+  border-left: 1px solid var(--hover-gray);
+}
+
+.metricValue {
+  margin: 0;
+  font-family: var(--font-psz-display), "Arial Narrow", Arial, sans-serif;
+  font-size: clamp(3.8rem, 6vw, 6rem);
+  font-weight: 600;
+  line-height: 0.95;
+  text-transform: uppercase;
+}
+
+.metricLabel {
+  margin: 1rem 0 0;
+  color: var(--text-secondary);
+  font-family: var(--font-psz-sans), "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 1.5rem;
+  font-weight: 500;
+  line-height: 1.6;
+}
+
+.editorialSection,
+.programSection,
+.chapterSection,
+.voiceSection {
+  padding-top: clamp(5.6rem, 8vw, 8rem);
+}
+
+.featureSection,
+.ctaSection {
+  padding-top: clamp(5.6rem, 8vw, 8rem);
+  padding-bottom: clamp(5.6rem, 8vw, 8rem);
+}
+
+.sectionHeader {
+  max-width: 82rem;
+}
+
+.sectionEyebrow,
+.programCategory,
+.chapterIndex {
+  color: var(--text-secondary);
+}
+
+.sectionTitle,
+.programCard h3,
+.missionCard h3,
+.chapterCard h3 {
+  margin: 1rem 0 0;
+  font-family: var(--font-psz-sans), "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--nike-black);
+}
+
+.sectionTitle {
+  font-size: clamp(3.2rem, 5vw, 4.8rem);
+}
+
+.sectionLead {
+  margin: 0;
+  color: var(--nike-black);
+}
+
+.editorialGrid,
+.featureSection,
+.ctaSection {
+  display: grid;
+  gap: clamp(2.4rem, 4vw, 4.8rem);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.editorialGrid,
+.featureSection {
+  margin-top: 3.2rem;
+  align-items: start;
+}
+
+.editorialCopy {
+  display: grid;
+  gap: 3.2rem;
+}
+
+.editorialMedia,
+.featureMedia {
+  position: relative;
+  min-height: 56rem;
+  background: var(--light-gray);
+  overflow: hidden;
+}
+
+.missionGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.2rem;
+}
+
+.missionCard,
+.programCard,
+.chapterCard,
+.quoteCard {
+  border: 1px solid var(--hover-gray);
+  background: var(--snow);
+}
+
+.missionCard,
+.programCard,
+.chapterCard {
+  padding: 2.4rem;
+}
+
+.missionCard h3,
+.programCard h3,
+.chapterCard h3 {
+  font-size: 2.2rem;
+}
+
+.missionCard p,
+.programCard p,
+.chapterCard p,
+.quoteText {
+  margin: 1.2rem 0 0;
+  color: var(--text-secondary);
+}
+
+.programGrid,
+.chapterGrid,
+.quoteGrid {
+  margin-top: 3.2rem;
+  display: grid;
+  gap: 1.2rem;
+}
+
+.programGrid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.programCard {
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
+}
+
+.programIndex {
+  color: var(--nike-black);
+}
+
+.programCategory {
+  margin-top: 2rem;
+}
+
+.textLink {
+  margin-top: auto;
+  padding-top: 2.4rem;
+  font-family: var(--font-psz-sans), "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--nike-black);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 0.3rem;
+}
+
+.textLink:hover {
+  text-decoration-color: currentColor;
+}
+
+.featureCopy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.noteList {
+  margin: 3.2rem 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--hover-gray);
+}
+
+.noteList li {
+  padding: 1.6rem 0;
+  border-bottom: 1px solid var(--hover-gray);
+  font-family: var(--font-psz-sans), "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 1.6rem;
+  font-weight: 500;
+  line-height: 1.65;
+  color: var(--nike-black);
+}
+
+.featureCopy .primaryButton {
+  margin-top: 3.2rem;
+  align-self: flex-start;
+}
+
+.chapterGrid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.chapterCard {
+  min-height: 22rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.chapterIndex {
+  margin: 0;
+}
+
+.quoteGrid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.quoteCard {
+  padding: 2.4rem;
+}
+
+.quoteText {
+  margin: 0;
+  color: var(--nike-black);
+}
+
+.quoteMeta {
+  margin-top: 2.4rem;
+  display: grid;
+  gap: 0.8rem;
+}
+
+.quoteMeta span:first-child {
+  color: var(--nike-black);
+}
+
+.quoteMeta span:last-child {
+  color: var(--text-secondary);
+}
+
+.heroDots {
+  position: absolute;
+  left: 50%;
+  bottom: 2.8rem;
+  z-index: 2;
+  display: flex;
+  gap: 0.8rem;
+  transform: translateX(-50%);
+}
+
+.heroDot {
+  width: 0.8rem;
+  height: 0.8rem;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.45);
+  transition:
+    width 200ms ease,
+    background-color 200ms ease,
+    opacity 200ms ease;
+}
+
+.heroDotActive {
+  width: 2.6rem;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.heroControls {
+  position: absolute;
+  right: clamp(1.6rem, 3vw, 4.8rem);
+  bottom: 2rem;
+  z-index: 2;
+  display: flex;
+  gap: 0.8rem;
+}
+
+.heroControlButton {
+  display: inline-flex;
+  width: 4.8rem;
+  height: 4.8rem;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--nike-black);
+  transition:
+    background-color 200ms ease,
+    opacity 200ms ease;
+}
+
+.heroControlButton:hover {
+  background: var(--nike-white);
+}
+
+.ctaSection {
+  margin-top: clamp(5.6rem, 8vw, 8rem);
+  background: var(--nike-black);
+}
+
+.ctaCopy {
+  max-width: 64rem;
+}
+
+.inverseEyebrow {
+  color: rgba(255, 255, 255, 0.66);
+}
+
+.inverseTitle {
+  color: var(--nike-white);
+}
+
+.inverseText {
+  margin: 2rem 0 0;
+  color: rgba(255, 255, 255, 0.76);
+}
+
+.ctaPanel {
+  align-self: end;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: #1f1f21;
+  padding: 2.4rem;
+}
+
+.ctaLabel {
+  color: rgba(255, 255, 255, 0.66);
+}
+
+.ctaContacts {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.6rem;
+}
+
+.contactLink {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 1.4rem 1.6rem;
+  border-radius: 2rem;
+  background: #28282a;
+}
+
+.contactLink:hover {
+  background: #39393b;
+}
+
+.contactLink span:first-child {
+  color: var(--nike-white);
+  font-size: 1.4rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.contactLink span:last-child {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 1.5rem;
+}
+
+.ctaActions {
+  margin-top: 2rem;
+}
+
+.inversePrimaryButton {
+  background: var(--nike-white);
+  color: var(--nike-black);
+}
+
+.inversePrimaryButton:hover {
+  background: var(--border);
+}
+
+.inverseSecondaryButton {
+  border: 1.5px solid rgba(255, 255, 255, 0.28);
+  color: var(--nike-white);
+}
+
+.inverseSecondaryButton:hover {
+  border-color: rgba(255, 255, 255, 0.52);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+@media (max-width: 1200px) {
+  .chapterGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1024px) {
+  .editorialGrid,
+  .featureSection,
+  .ctaSection {
+    grid-template-columns: 1fr;
+  }
+
+  .programGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .quoteGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    min-height: auto;
+  }
+
+  .heroCenter {
+    min-height: auto;
+    padding-top: 8rem;
+    padding-bottom: 10rem;
+  }
+
+  .heroScrim {
+    background:
+      linear-gradient(
+        180deg,
+        rgba(17, 17, 17, 0.22) 0%,
+        rgba(17, 17, 17, 0.5) 34%,
+        rgba(17, 17, 17, 0.8) 72%,
+        rgba(17, 17, 17, 0.92) 100%
+      );
+  }
+
+  .metricBand {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .metricCard:nth-child(3),
+  .metricCard:nth-child(4) {
+    border-top: 1px solid var(--hover-gray);
+  }
+
+  .metricCard:nth-child(3) {
+    border-left: 0;
+  }
+
+  .editorialMedia,
+  .featureMedia {
+    min-height: 38rem;
+  }
+
+  .missionGrid,
+  .programGrid,
+  .chapterGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .heroActions,
+  .ctaActions {
+    flex-direction: column;
+  }
+
+  .heroControls {
+    right: 1.6rem;
+    bottom: 1.6rem;
+  }
+
+  .primaryButton,
+  .secondaryButton,
+  .inversePrimaryButton,
+  .inverseSecondaryButton,
+  .heroPrimaryButton,
+  .heroSecondaryButton {
+    width: 100%;
+  }
+
+  .metricBand {
+    grid-template-columns: 1fr;
+  }
+
+  .metricCard + .metricCard,
+  .metricCard:nth-child(3),
+  .metricCard:nth-child(4) {
+    border-left: 0;
+    border-top: 1px solid var(--hover-gray);
+  }
+}

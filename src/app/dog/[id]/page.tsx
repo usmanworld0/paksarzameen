@@ -16,9 +16,9 @@ type PageProps = {
 };
 
 const STATUS_LABELS: Record<DogStatus, string> = {
-  available: "AVAILABLE",
-  pending: "PENDING",
-  adopted: "ADOPTED",
+  available: "Available",
+  pending: "Pending",
+  adopted: "Adopted",
 };
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -49,121 +49,104 @@ export default async function DogDetailPage({ params }: PageProps) {
   const normalizedStatus = normalizeDogStatus(dog.status);
 
   return (
-    <main className="min-h-screen bg-white pb-24 pt-28 sm:pt-32 text-[#111111]">
-      <div className="mx-auto max-w-screen-2xl px-[5%]">
-        
-        {/* Navigation Breadcrumb */}
-        <div className="mb-8 border-b border-[#E5E5E5] pb-4">
-          <Link href="/dog-adoption" className="text-xs font-bold uppercase tracking-widest text-[#707072] hover:text-[#111111] transition flex items-center gap-2">
-            ← BACK TO BROWSE DOGS
+    <main className="site-page">
+      <article className="site-detail">
+        <div className="site-shell">
+          <Link href="/dog-adoption" className="site-back-link">
+            Back To Browse Dogs
           </Link>
-        </div>
 
-        <section className="grid gap-12 lg:grid-cols-[1.12fr_0.88fr] items-start">
-          <div className="border border-[#E5E5E5] bg-[#F5F5F5] relative overflow-hidden group w-full aspect-[4/3] lg:aspect-square">
-            <Image
-              src={dog.imageUrl}
-              alt={dog.name}
-              fill
-              sizes="(max-width: 1024px) 100vw, 60vw"
-              className="object-cover transition-transform duration-700 group-hover:scale-105"
-            />
-          </div>
-
-          <div className="bg-[#FAFAFA] border border-[#E5E5E5] p-8 md:p-12 space-y-8">
-            <div className="space-y-4 border-b border-[#E5E5E5] pb-6">
-              <div className="flex justify-between items-start gap-4">
-                 <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tight text-[#111111] leading-none">{dog.name}</h1>
-                 <span className={`inline-flex px-3 py-1.5 text-[10px] font-black tracking-widest uppercase text-white bg-[#111111]`}>
-                   {STATUS_LABELS[normalizedStatus]}
-                 </span>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4 mt-6">
-                 <div>
-                    <p className="text-[10px] uppercase font-bold text-[#707072] tracking-widest">Rescue Name</p>
-                    <p className="text-sm font-bold uppercase text-[#111111]">{dog.rescueName}</p>
-                 </div>
-                 {dog.petName && (
-                   <div>
-                      <p className="text-[10px] uppercase font-bold text-[#1151FF] tracking-widest">Pet Name</p>
-                      <p className="text-sm font-bold uppercase text-[#111111]">{dog.petName}</p>
-                   </div>
-                 )}
-              </div>
-              
-              <div className="pt-4 flex gap-4 text-sm font-bold uppercase tracking-widest text-[#707072]">
-                <span>{dog.breed}</span>
-                <span>/</span>
-                <span>{dog.color}</span>
-                <span>/</span>
-                <span>{dog.age}</span>
-                <span>/</span>
-                <span>{dog.gender}</span>
-              </div>
+          <div className="site-detail__body lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] mt-6">
+            <div className="site-detail__media site-detail__media--square">
+              <Image
+                src={dog.imageUrl}
+                alt={dog.name}
+                fill
+                sizes="(max-width: 1024px) 100vw, 55vw"
+                className="object-cover"
+              />
             </div>
 
-            <div className="prose prose-slate max-w-none">
-              <p className="text-base leading-relaxed text-[#111111] font-medium">{dog.description}</p>
-            </div>
-
-            <div className="pt-6">
-              {normalizedStatus === "available" ? (
-                <AdoptDogButton dogId={dog.dogId} />
-              ) : (
-                <div className="border border-[#111111] bg-[#111111] px-6 py-4 text-center text-sm font-bold tracking-widest uppercase text-white">
-                  STATUS: {STATUS_LABELS[normalizedStatus]} (UNAVAILABLE)
+            <section className="site-panel site-panel--soft">
+              <div className="site-panel__body">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="site-eyebrow">{dog.rescueName}</p>
+                    <h1 className="site-display mt-4 max-w-[10ch]">{dog.name}</h1>
+                  </div>
+                  <span
+                    className={`site-badge ${
+                      normalizedStatus === "available" ? "site-badge--dark" : "site-badge--muted"
+                    }`}
+                  >
+                    {STATUS_LABELS[normalizedStatus]}
+                  </span>
                 </div>
-              )}
-            </div>
-          </div>
-        </section>
 
-        {/* Life After Adoption */}
-        <section className="mt-20 pt-16 border-t border-[#E5E5E5]">
-          <div className="mb-10 flex flex-col gap-2">
-            <h2 className="text-[3rem] font-black uppercase tracking-tighter text-[#111111] leading-none">
-              AFTER ADOPTION.
-            </h2>
-            <p className="text-sm font-bold uppercase tracking-widest text-[#707072]">
-              POST-ADOPTION MOMENTS
-            </p>
-          </div>
+                <div className="site-meta-row mt-6">
+                  <span>{dog.breed}</span>
+                  <span>{dog.color}</span>
+                  <span>{dog.age}</span>
+                  <span>{dog.gender}</span>
+                </div>
 
-          {!updates.length ? (
-             <div className="border border-[#E5E5E5] bg-[#F5F5F5] p-10 text-center text-sm font-bold uppercase tracking-widest text-[#707072]">
-               No post-adoption updates yet.
-             </div>
-          ) : (
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {updates.map((item) => (
-                <article key={item.updateId} className="group border border-[#E5E5E5] bg-white transition hover:border-[#111111] flex flex-col">
-                  <div className="relative aspect-[4/3] bg-[#F5F5F5] overflow-hidden">
-                    <Image
-                      src={item.imageUrl}
-                      alt={item.caption}
-                      fill
-                      sizes="(max-width: 1024px) 50vw, 33vw"
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
+                {dog.petName ? (
+                  <div className="site-callout mt-5">
+                    Pet name: {dog.petName}
                   </div>
-                  <div className="p-6 flex-1 flex flex-col justify-between">
-                     <p className="text-sm font-medium leading-relaxed text-[#111111] mb-6">{item.caption}</p>
-                     
-                     {item.collarTag && (
-                        <div className="pt-4 border-t border-[#E5E5E5]">
-                          <p className="text-[10px] font-black uppercase tracking-widest text-[#111111]">
-                            COLLAR TAG: {item.collarTag}
-                          </p>
+                ) : null}
+
+                <p className="site-copy mt-6">{dog.description}</p>
+
+                <div className="site-divider mt-6 pt-6">
+                  {normalizedStatus === "available" ? (
+                    <AdoptDogButton dogId={dog.dogId} />
+                  ) : (
+                    <div className="site-callout">
+                      This profile is currently marked {STATUS_LABELS[normalizedStatus].toLowerCase()} and is not available for a new request.
+                    </div>
+                  )}
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <section className="site-section">
+            <div>
+              <p className="site-eyebrow">After adoption</p>
+              <h2 className="site-heading site-heading--sm mt-3">Post-Adoption Moments</h2>
+            </div>
+
+            {!updates.length ? (
+              <div className="site-empty mt-6">No post-adoption updates yet.</div>
+            ) : (
+              <div className="site-grid site-grid--three mt-6">
+                {updates.map((item) => (
+                  <article key={item.updateId} className="site-card site-card--rounded overflow-hidden">
+                    <div className="site-detail__media site-detail__media--landscape">
+                      <Image
+                        src={item.imageUrl}
+                        alt={item.caption}
+                        fill
+                        sizes="(max-width: 1024px) 100vw, 33vw"
+                        className="object-cover"
+                      />
+                    </div>
+                    <div className="site-card__body">
+                      <p className="site-copy site-copy--sm">{item.caption}</p>
+                      {item.collarTag ? (
+                        <div className="site-meta-row mt-5">
+                          <span>Collar tag: {item.collarTag}</span>
                         </div>
-                     )}
-                  </div>
-                </article>
-              ))}
-            </div>
-          )}
-        </section>
-      </div>
+                      ) : null}
+                    </div>
+                  </article>
+                ))}
+              </div>
+            )}
+          </section>
+        </div>
+      </article>
     </main>
   );
 }

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+
 import { BloodBankRequestForm } from "@/features/blood-bank/components/BloodBankRequestForm";
 import { EmergencyBloodRequest } from "@/features/blood-bank/components/EmergencyBloodRequest";
 
@@ -6,29 +7,43 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "HealthCare Blood Bank",
-  description: "Blood bank is now a HealthCare subdivision for donor registration, matching, and donor chat.",
+  description:
+    "Blood bank is now a HealthCare subdivision for donor registration, matching, and donor chat.",
 };
 
 export default function HealthCareBloodBankPage() {
   return (
-    <main className="min-h-screen bg-[linear-gradient(180deg,_#f7fcf7_0%,_#edf5ef_100%)] px-[4%] pb-20 pt-28">
-      <section className="mx-auto max-w-screen-2xl space-y-6">
-        <header className="rounded-3xl border border-emerald-100 bg-white p-6 shadow-sm sm:p-8">
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-700">HealthCare / Blood Bank</p>
-          <h1 className="mt-2 text-3xl font-semibold text-slate-900 sm:text-4xl">Emergency Blood Support</h1>
-          <p className="mt-3 max-w-3xl text-sm text-slate-600 sm:text-base">
-            Register blood requests, find compatible donors, and chat directly with donors for urgent coordination.
+    <main className="site-page">
+      <section className="site-hero">
+        <div className="site-hero__noise" aria-hidden="true" />
+        <div className="site-hero__orb site-hero__orb--left" aria-hidden="true" />
+        <div className="site-hero__orb site-hero__orb--right" aria-hidden="true" />
+
+        <header className="site-hero__inner">
+          <p className="site-hero__eyebrow">HealthCare / Blood Bank</p>
+          <h1 className="site-hero__title">Blood Support.</h1>
+          <p className="site-hero__body">
+            Register requests, match donors, and coordinate quickly.
           </p>
-        </header>
-
-        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="text-xl font-semibold text-slate-900">Donor Registration & Request</h2>
-          <div className="mt-4">
-            <BloodBankRequestForm />
+          <div className="site-hero__chips">
+            <span className="site-chip">Request support</span>
+            <span className="site-chip">Donor matching</span>
           </div>
-        </section>
+        </header>
+      </section>
 
-        <EmergencyBloodRequest />
+      <section className="site-section">
+        <div className="site-shell">
+          <div className="site-grid site-grid--two">
+            <section className="site-panel site-panel--rounded">
+              <div className="site-panel__body">
+                <BloodBankRequestForm />
+              </div>
+            </section>
+
+            <EmergencyBloodRequest />
+          </div>
+        </div>
       </section>
     </main>
   );

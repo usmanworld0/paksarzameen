@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
+
 import { createClient } from "@/utils/supabase/client";
 
 type DoctorRequestResponse = {
@@ -41,7 +42,9 @@ export function DoctorPortalSignupForm() {
   const [bio, setBio] = useState("");
   const [experienceYears, setExperienceYears] = useState("");
   const [consultationFee, setConsultationFee] = useState("");
-  const [existingStatus, setExistingStatus] = useState<"pending" | "approved" | "declined" | "none">("none");
+  const [existingStatus, setExistingStatus] = useState<
+    "pending" | "approved" | "declined" | "none"
+  >("none");
   const [existingAdminNote, setExistingAdminNote] = useState<string | null>(null);
   const [isLoadingContext, setIsLoadingContext] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -86,14 +89,16 @@ export function DoctorPortalSignupForm() {
         setSpecialization(payload.data?.request?.specialization ?? "");
         setBio(payload.data?.request?.bio ?? "");
         setExperienceYears(
-          payload.data?.request?.experienceYears === null || payload.data?.request?.experienceYears === undefined
+          payload.data?.request?.experienceYears === null ||
+            payload.data?.request?.experienceYears === undefined
             ? ""
-            : String(payload.data.request.experienceYears)
+            : String(payload.data.request.experienceYears),
         );
         setConsultationFee(
-          payload.data?.request?.consultationFee === null || payload.data?.request?.consultationFee === undefined
+          payload.data?.request?.consultationFee === null ||
+            payload.data?.request?.consultationFee === undefined
             ? ""
-            : String(payload.data.request.consultationFee)
+            : String(payload.data.request.consultationFee),
         );
         setExistingStatus(payload.data?.request?.status ?? "none");
         setExistingAdminNote(payload.data?.request?.adminNote ?? null);
@@ -101,7 +106,11 @@ export function DoctorPortalSignupForm() {
         if (!isMounted) {
           return;
         }
-        setError(loadError instanceof Error ? loadError.message : "Unable to load doctor application context.");
+        setError(
+          loadError instanceof Error
+            ? loadError.message
+            : "Unable to load doctor application context.",
+        );
       } finally {
         if (isMounted) {
           setIsLoadingContext(false);
@@ -191,35 +200,31 @@ export function DoctorPortalSignupForm() {
   }
 
   if (isLoadingContext) {
-    return (
-      <div className="w-full max-w-xl rounded-3xl border border-emerald-100 bg-white p-7 text-sm text-slate-600 shadow-[0_24px_90px_rgba(7,41,25,0.12)] sm:p-9">
-        Loading doctor application form...
-      </div>
-    );
+    return <div className="site-auth-form">Loading doctor application form...</div>;
   }
 
   return (
-    <form onSubmit={handleSubmit} className="w-full max-w-xl space-y-5 rounded-3xl border border-emerald-100 bg-white p-7 shadow-[0_24px_90px_rgba(7,41,25,0.12)] sm:p-9">
-      <div className="space-y-1">
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-700">Doctor Portal</p>
-        <h1 className="text-3xl font-semibold text-emerald-950">
-          {isAuthenticated ? "Update doctor application" : "Apply as a doctor"}
+    <form onSubmit={handleSubmit} className="site-auth-form space-y-4">
+      <div className="site-auth-form__intro">
+        <p className="site-auth-form__eyebrow">Doctor Portal</p>
+        <h1 className="site-auth-form__heading">
+          {isAuthenticated ? "Update Doctor Application" : "Apply As A Doctor"}
         </h1>
-        <p className="text-sm text-emerald-900/70">
+        <p className="site-auth-form__copy">
           {isAuthenticated
-            ? "Update your details and resubmit your doctor request for admin approval."
-            : "Create a doctor account, then an admin will approve or decline the request before dashboard access opens."}
+            ? "Update your details and resubmit your application for review."
+            : "Create a doctor account and submit your profile for admin approval."}
         </p>
       </div>
 
       {existingStatus !== "none" ? (
-        <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+        <div className="site-status">
           <p>
-            <span className="font-semibold text-slate-900">Current request status:</span> {existingStatus}
+            <strong>Current request status:</strong> {existingStatus}
           </p>
           {existingAdminNote ? (
             <p className="mt-2">
-              <span className="font-semibold text-slate-900">Admin note:</span> {existingAdminNote}
+              <strong>Admin note:</strong> {existingAdminNote}
             </p>
           ) : null}
         </div>
@@ -228,20 +233,20 @@ export function DoctorPortalSignupForm() {
       {!isAuthenticated ? (
         <>
           <label className="block space-y-2">
-            <span className="text-sm font-medium text-emerald-950">Email</span>
+            <span className="site-form-label">Email</span>
             <input
               type="email"
               required
               autoComplete="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              className="w-full rounded-xl border border-emerald-200 px-4 py-3 text-sm text-emerald-950 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+              className="site-input"
               placeholder="doctor@example.com"
             />
           </label>
 
           <label className="block space-y-2">
-            <span className="text-sm font-medium text-emerald-950">Password</span>
+            <span className="site-form-label">Password</span>
             <input
               type="password"
               required
@@ -249,70 +254,70 @@ export function DoctorPortalSignupForm() {
               autoComplete="new-password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              className="w-full rounded-xl border border-emerald-200 px-4 py-3 text-sm text-emerald-950 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+              className="site-input"
               placeholder="At least 8 characters"
             />
           </label>
         </>
       ) : (
-        <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
-          Signed in as <span className="font-semibold text-slate-900">{email}</span>
+        <div className="site-status">
+          Signed in as <strong>{email}</strong>
         </div>
       )}
 
       <label className="block space-y-2">
-        <span className="text-sm font-medium text-emerald-950">Full name</span>
+        <span className="site-form-label">Full Name</span>
         <input
           required
           value={fullName}
           onChange={(event) => setFullName(event.target.value)}
-          className="w-full rounded-xl border border-emerald-200 px-4 py-3 text-sm text-emerald-950 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+          className="site-input"
           placeholder="Dr. Your Name"
         />
       </label>
 
       <label className="block space-y-2">
-        <span className="text-sm font-medium text-emerald-950">Specialization</span>
+        <span className="site-form-label">Specialization</span>
         <input
           value={specialization}
           onChange={(event) => setSpecialization(event.target.value)}
-          className="w-full rounded-xl border border-emerald-200 px-4 py-3 text-sm text-emerald-950 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+          className="site-input"
           placeholder="Cardiology, Pediatrics, General Medicine..."
         />
       </label>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="site-grid site-grid--two">
         <label className="block space-y-2">
-          <span className="text-sm font-medium text-emerald-950">Experience years</span>
+          <span className="site-form-label">Experience Years</span>
           <input
             type="number"
             min={0}
             value={experienceYears}
             onChange={(event) => setExperienceYears(event.target.value)}
-            className="w-full rounded-xl border border-emerald-200 px-4 py-3 text-sm text-emerald-950 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+            className="site-input"
             placeholder="8"
           />
         </label>
 
         <label className="block space-y-2">
-          <span className="text-sm font-medium text-emerald-950">Consultation fee</span>
+          <span className="site-form-label">Consultation Fee</span>
           <input
             type="number"
             min={0}
             value={consultationFee}
             onChange={(event) => setConsultationFee(event.target.value)}
-            className="w-full rounded-xl border border-emerald-200 px-4 py-3 text-sm text-emerald-950 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+            className="site-input"
             placeholder="1500"
           />
         </label>
       </div>
 
       <label className="block space-y-2">
-        <span className="text-sm font-medium text-emerald-950">Professional bio</span>
+        <span className="site-form-label">Professional Bio</span>
         <textarea
           value={bio}
           onChange={(event) => setBio(event.target.value)}
-          className="min-h-28 w-full rounded-xl border border-emerald-200 px-4 py-3 text-sm text-emerald-950 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+          className="site-textarea"
           placeholder="Share your clinical background, focus areas, and experience."
         />
       </label>
@@ -320,31 +325,27 @@ export function DoctorPortalSignupForm() {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full rounded-xl bg-emerald-700 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-60"
+        className="site-button w-full disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isSubmitting
           ? "Submitting..."
           : isAuthenticated
-            ? "Resubmit for approval"
-            : "Create doctor account"}
+            ? "Resubmit For Approval"
+            : "Create Doctor Account"}
       </button>
 
-      <div className="flex flex-wrap items-center justify-between gap-2 text-sm text-emerald-900/80">
-        <Link href="/healthcare/doctor/sign-in" className="font-semibold text-emerald-700 hover:text-emerald-800">
+      <div className="site-inline-links text-[1.3rem]">
+        <Link href="/healthcare/doctor/sign-in" className="font-medium text-[#111111] hover:text-[#707072]">
           Already have an account?
         </Link>
-        <Link href="/healthcare" className="font-medium text-emerald-700 hover:text-emerald-800">
+        <Link href="/healthcare" className="font-medium text-[#111111] hover:text-[#707072]">
           Back to healthcare
         </Link>
       </div>
 
-      {error ? <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p> : null}
-      {success ? <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">{success}</p> : null}
-      {supabaseError ? (
-        <p className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
-          {supabaseError}
-        </p>
-      ) : null}
+      {error ? <p className="site-status--error">{error}</p> : null}
+      {success ? <p className="site-status--success">{success}</p> : null}
+      {supabaseError ? <p className="site-status">{supabaseError}</p> : null}
     </form>
   );
 }

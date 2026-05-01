@@ -11,21 +11,21 @@ const DEFAULT_COMMONWEALTH_URL =
 export const navLinks: NavLink[] = [
   { label: "Home", href: "/" },
   { label: "About PSZ", href: "/about" },
-  { label: "🐶 Adopt a Dog", href: "/dog-adoption" },
+  { label: "Adopt a Dog", href: "/dog-adoption" },
   { label: "HealthCare", href: "/healthcare" },
   { label: "Programs", href: "/programs" },
   { label: "Impact", href: "/impact" },
   { label: "Get Involved", href: "/get-involved" },
   { label: "News & Resources", href: "/news" },
   { label: "Paksarzameen Store", href: "/commonwealth-lab" },
-  { label: "Contact", href: "/contact" }
+  { label: "Contact", href: "/contact" },
 ];
 
 export const siteConfig = {
   name: "PakSarZameen",
   missionLine: "Building Community Wealth.",
   description:
-    "PakSarZameen is a community development organization in Pakistan working from Bahawalpur through volunteer programs, blood bank support, education, health outreach, environmental action, and animal welfare initiatives.",
+    "PakSarZameen is a community development organization in Pakistan focused on education, health, blood support, environmental action, and animal welfare.",
   siteUrl:
     process.env.NEXT_PUBLIC_SITE_URL ?? "https://paksarzameenwfo.com",
   commonwealthLabel: "Paksarzameen Store",

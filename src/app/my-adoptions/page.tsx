@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { listMyAdoptionRequests, type AdoptionRequestStatus } from "@/lib/dog-adoption";
@@ -18,10 +19,10 @@ const STATUS_LABELS: Record<AdoptionRequestStatus, string> = {
   rejected: "Rejected",
 };
 
-function statusClass(status: AdoptionRequestStatus) {
-  if (status === "approved") return "bg-emerald-100 text-emerald-800";
-  if (status === "rejected") return "bg-rose-100 text-rose-700";
-  return "bg-amber-100 text-amber-700";
+function statusBadgeClass(status: AdoptionRequestStatus) {
+  if (status === "approved") return "site-badge site-badge--dark";
+  if (status === "rejected") return "site-badge site-badge--muted";
+  return "site-badge";
 }
 
 export default async function MyAdoptionsPage() {
@@ -41,67 +42,71 @@ export default async function MyAdoptionsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[linear-gradient(180deg,_#f8fcf8_0%,_#edf5ef_100%)] px-4 pb-20 pt-28 sm:px-6 lg:px-10">
-      <section className="mx-auto max-w-5xl space-y-6">
-        <div className="rounded-3xl border border-emerald-100 bg-white/95 p-7 shadow-lg shadow-emerald-900/10 sm:p-9">
-          <h1 className="text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">My Adoption Requests</h1>
-          <p className="mt-2 text-base text-slate-600">
-            Track the status of all requests you submitted for rescue dogs.
-          </p>
+    <main className="site-page">
+      <article className="site-detail">
+        <div className="site-shell--narrow">
+          <header className="site-detail__hero">
+            <p className="site-eyebrow">Adoption dashboard</p>
+            <h1 className="site-display mt-4 max-w-[11ch]">My Adoptions.</h1>
+            <p className="site-copy mt-4">
+              Track request status and open approved pet profiles.
+            </p>
+          </header>
+
+          {error ? <div className="site-callout site-callout--error mt-6">{error}</div> : null}
+
+          {!error && !requests.length ? (
+            <div className="site-empty mt-6">
+              You have not submitted any adoption requests yet.
+            </div>
+          ) : null}
+
+          {!error && requests.length ? (
+            <div className="site-stack mt-6">
+              {requests.map((request) => (
+                <article key={request.requestId} className="site-panel site-panel--rounded">
+                  <div className="site-panel__body flex flex-col gap-5 sm:flex-row sm:items-center">
+                    <div className="site-detail__media h-24 w-full max-w-[12.8rem] sm:h-24 sm:w-32 sm:flex-none">
+                      <Image
+                        src={request.dogImageUrl}
+                        alt={request.dogName}
+                        fill
+                        sizes="128px"
+                        className="object-cover"
+                      />
+                    </div>
+
+                    <div className="min-w-0 flex-1">
+                      <p className="site-card__eyebrow">{request.dogBreed}</p>
+                      <h2 className="site-heading site-heading--sm mt-3">{request.dogName}</h2>
+                      <p className="site-copy site-copy--sm mt-3">
+                        {request.dogColor} / Requested on{" "}
+                        {new Date(request.requestedAt).toLocaleString()}
+                      </p>
+                      {request.petName ? (
+                        <div className="site-meta-row mt-4">
+                          <span>Pet name: {request.petName}</span>
+                        </div>
+                      ) : null}
+                    </div>
+
+                    <div className="site-stack w-full sm:w-auto sm:items-end">
+                      <span className={statusBadgeClass(request.status)}>
+                        {STATUS_LABELS[request.status]}
+                      </span>
+                      {request.status === "approved" ? (
+                        <Link href={`/my-pets/${request.dogId}`} className="site-button-secondary">
+                          View My Pet
+                        </Link>
+                      ) : null}
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          ) : null}
         </div>
-
-        {error ? (
-          <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</div>
-        ) : null}
-
-        {!error && !requests.length ? (
-          <div className="rounded-xl border border-slate-200 bg-white p-5 text-sm text-slate-600">
-            You have not submitted any adoption requests yet.
-          </div>
-        ) : null}
-
-        {!error && requests.length ? (
-          <div className="space-y-3">
-            {requests.map((request) => (
-              <article
-                key={request.requestId}
-                className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center"
-              >
-                <div className="relative h-24 w-full overflow-hidden rounded-xl bg-slate-100 sm:h-24 sm:w-32">
-                  <Image
-                    src={request.dogImageUrl}
-                    alt={request.dogName}
-                    fill
-                    sizes="128px"
-                    className="object-cover"
-                  />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <h2 className="truncate text-lg font-semibold text-slate-900">{request.dogName}</h2>
-                  <p className="text-sm text-slate-600">{request.dogBreed} • {request.dogColor}</p>
-                  {request.petName ? <p className="text-xs font-semibold text-indigo-700">Pet Name: {request.petName}</p> : null}
-                  <p className="mt-1 text-xs text-slate-500">
-                    Requested on {new Date(request.requestedAt).toLocaleString()}
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className={`inline-flex w-fit rounded-full px-2.5 py-1 text-xs font-semibold ${statusClass(request.status)}`}>
-                    {STATUS_LABELS[request.status]}
-                  </span>
-                  {request.status === "approved" ? (
-                    <a
-                      href={`/my-pets/${request.dogId}`}
-                      className="rounded-full border border-emerald-700 px-3 py-1 text-xs font-semibold text-emerald-700"
-                    >
-                      View My Pet →
-                    </a>
-                  ) : null}
-                </div>
-              </article>
-            ))}
-          </div>
-        ) : null}
-      </section>
+      </article>
     </main>
   );
 }

@@ -44,25 +44,25 @@ export const metadata: Metadata = {
 const waysToHelp = [
   {
     title: "Volunteer",
-    desc: "Contribute your time and skills to field activities, campaigns, and community support work in Bahawalpur and beyond.",
+    desc: "Give your time and skills to field work, campaigns, and community support.",
     icon: Users2,
     tone: "from-[#1f8f63]/20 via-white to-white",
   },
   {
     title: "Partner",
-    desc: "Collaborate through schools, hospitals, businesses, universities, and public institutions.",
+    desc: "Work with us through schools, hospitals, businesses, or public institutions.",
     icon: HeartHandshake,
     tone: "from-[#2b9f74]/20 via-white to-white",
   },
   {
     title: "Donate",
-    desc: "Support a specific program area or strengthen the operations that keep community work moving.",
+    desc: "Support a program or the operations behind it.",
     icon: Check,
     tone: "from-[#1fae79]/18 via-white to-white",
   },
   {
     title: "Spread Awareness",
-    desc: "Share our work online and offline so more volunteers, donors, and communities can connect with PSZ.",
+    desc: "Help more volunteers, donors, and communities find PSZ.",
     icon: Megaphone,
     tone: "from-[#54b486]/22 via-white to-white",
   },
@@ -78,20 +78,16 @@ export default function GetInvolvedPage() {
 
         <header className="site-hero__inner">
           <p className="site-hero__eyebrow">Get Involved</p>
-          <h1 className="site-hero__title">Volunteer, Partner, Or Support PakSarZameen</h1>
+          <h1 className="site-hero__title">Get Involved.</h1>
           <p className="site-hero__body">
-            Whether you want to volunteer on the ground, build an institutional
-            partnership, support our blood bank, or strengthen our education,
-            health, environmental, and welfare programs, we would love to hear
-            from you. Fill in the form below and our team will be in touch
-            within 3-5 working days.
+            Volunteer, partner, or support a program and the team will follow up.
           </p>
 
           <div className="site-hero__chips">
             {[
               "Community action",
               "Institutional partnerships",
-              "Skill-based volunteering",
+              "Skill-based support",
             ].map((chip) => (
               <span key={chip} className="site-chip">{chip}</span>
             ))}
@@ -134,15 +130,14 @@ export default function GetInvolvedPage() {
                 Already part of PSZ?
               </p>
               <p className="mt-3 text-[1.5rem] leading-[1.8] text-[#707072]">
-                Reach out directly at{" "}
+                Reach us at{" "}
                 <a
                   href={`mailto:${siteConfig.contact.email}`}
                   className="break-words font-medium text-[#111111] hover:text-[#707072]"
                 >
                   {siteConfig.contact.email}
                 </a>{" "}
-                or call {siteConfig.contact.phone}. Visit us in Bahawalpur at{" "}
-                {siteConfig.contact.address}.
+                or call {siteConfig.contact.phone}. Visit us in Bahawalpur at {siteConfig.contact.address}.
               </p>
               <p className="mt-3 text-[1.35rem] leading-[1.8] text-[#707072]">
                 Follow us on{" "}

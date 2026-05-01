@@ -80,15 +80,14 @@ export function ImpactStoryPage({ story }: { story: ImpactStoryPageData }) {
     "--accent-soft": story.accentSoft,
   } as CSSProperties;
 
-  const compactIntro = toCompactText(story.intro, 32);
-  const compactSummary = toCompactText(story.summary, 38);
+  const compactIntro = toCompactText(`${story.intro} ${story.summary}`, 34);
   const compactQuickFacts = story.quickFacts.slice(0, 3);
   const compactHighlights = story.highlights.slice(0, 4);
-  const compactChapters = story.storyChapters.slice(0, 4).map((chapter) => ({
+  const compactChapters = story.storyChapters.slice(0, 3).map((chapter) => ({
     ...chapter,
-    body: toCompactText(chapter.body, 36),
+    body: toCompactText(chapter.body, 24),
   }));
-  const compactOutcomes = story.outcomes.slice(0, 6).map((item) => toCompactText(item, 24));
+  const compactOutcomes = story.outcomes.slice(0, 4).map((item) => toCompactText(item, 18));
   const compactRelatedStories =
     story.relatedStories
       ?.filter((item) => !isDataResearchItem(item.title) && !isDataResearchItem(item.href))
@@ -125,7 +124,6 @@ export function ImpactStoryPage({ story }: { story: ImpactStoryPageData }) {
             <p className={styles.eyebrow}>{story.eyebrow}</p>
             <h1 className={styles.title}>{story.title}</h1>
             <p className={styles.lead}>{compactIntro}</p>
-            <p className={styles.summary}>{compactSummary}</p>
 
             {compactHighlights.length > 0 ? (
               <div className={styles.pillRow}>
@@ -214,7 +212,6 @@ export function ImpactStoryPage({ story }: { story: ImpactStoryPageData }) {
             <div className={styles.sectionHeadingCompact}>
               <p className={styles.sectionEyebrow}>Field frames</p>
               <h2>{story.galleryTitle ?? "In the field"}</h2>
-              {story.galleryIntro ? <p>{toCompactText(story.galleryIntro, 32)}</p> : null}
             </div>
 
             <div className={styles.galleryGrid}>
@@ -237,7 +234,6 @@ export function ImpactStoryPage({ story }: { story: ImpactStoryPageData }) {
             <div className={styles.sectionHeadingCompact}>
               <p className={styles.sectionEyebrow}>Instagram</p>
               <h2>{story.mediaHeading ?? "Community snapshots"}</h2>
-              {story.mediaIntro ? <p>{toCompactText(story.mediaIntro, 30)}</p> : null}
             </div>
 
             <div className={styles.mediaGrid}>
@@ -259,7 +255,6 @@ export function ImpactStoryPage({ story }: { story: ImpactStoryPageData }) {
             <div className={styles.sectionHeadingCompact}>
               <p className={styles.sectionEyebrow}>Stories of hope</p>
               <h2>{story.hopeStoriesHeading ?? "Personal journeys"}</h2>
-              {story.hopeStoriesIntro ? <p>{toCompactText(story.hopeStoriesIntro, 32)}</p> : null}
             </div>
             <div className={styles.hopeGrid}>
               {compactHopeStories.map((item) => (

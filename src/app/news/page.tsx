@@ -54,11 +54,9 @@ export default async function NewsPage() {
 
         <header className="site-hero__inner">
           <p className="site-hero__eyebrow">News Hub</p>
-          <h1 className="site-hero__title">PakSarZameen News And Resources</h1>
+          <h1 className="site-hero__title">News & Resources.</h1>
           <p className="site-hero__body">
-            Follow the latest PSZ field updates, impact stories, announcements,
-            and resource-led reporting from our work in education, health,
-            environment, welfare, and community outreach.
+            Field updates, impact stories, and key announcements from PSZ.
           </p>
 
           <div className="site-hero__chips">

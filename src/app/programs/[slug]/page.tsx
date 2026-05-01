@@ -117,82 +117,66 @@ export default async function ProgramDetailPage({ params }: ProgramDetailPagePro
     narrativeBySlug[program.slug] ??
     narrativeBySlug["mahkma-shajarkari"];
 
+  const photos = [10, 11, 12];
+
   return (
-    <article className="mx-auto w-full max-w-screen-xl px-[5%] py-24 sm:py-28 lg:py-32">
-      <Link
-        href="/programs"
-        className="text-xs font-semibold uppercase tracking-[0.18em] text-psz-green hover:text-psz-green-light transition-colors"
-      >
-        &larr; Back To Programs
-      </Link>
+    <main className="site-page">
+      <article className="site-detail">
+        <div className="site-shell">
+          <Link href="/programs" className="site-back-link">
+            Back To Programs
+          </Link>
 
-      <header className="mt-6 rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm sm:p-8 lg:p-10">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-psz-green">
-          {program.category}
-        </p>
-        <h1 className="mt-3 max-w-3xl font-heading text-4xl font-bold leading-tight tracking-tight text-neutral-900 sm:text-5xl lg:text-6xl">
-          {program.title}
-        </h1>
-        <p className="mt-4 max-w-2xl text-sm leading-relaxed text-neutral-500 sm:text-base lg:max-w-3xl lg:text-lg">
-          {program.description}
-        </p>
-      </header>
+          <header className="site-detail__hero mt-6">
+            <p className="site-eyebrow">{program.category}</p>
+            <h1 className="site-display mt-4 max-w-[12ch]">{program.title}</h1>
+            <p className="site-copy mt-4 max-w-[70rem]">{program.description}</p>
+          </header>
 
-      <section className="mt-10 grid gap-6 lg:grid-cols-3">
-        <section className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm sm:p-6 lg:col-span-1">
-          <h2 className="font-heading text-2xl font-semibold text-neutral-900">Overview</h2>
-          <p className="mt-3 text-sm leading-relaxed text-neutral-500">
-            {program.fullContent}
-          </p>
-        </section>
+          <div className="site-detail__body lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+            <section className="site-panel">
+              <div className="site-panel__body">
+                <p className="site-card__eyebrow">Overview</p>
+                <h2 className="site-heading site-heading--sm mt-3">Overview</h2>
+                <p className="site-copy mt-4">{program.fullContent}</p>
+              </div>
+            </section>
 
-        <section className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm sm:p-6 lg:col-span-2">
-          <h2 className="font-heading text-2xl font-semibold text-neutral-900">Problem Being Addressed</h2>
-          <p className="mt-3 text-sm leading-relaxed text-neutral-500 sm:text-base">
-            {narrative.problem}
-          </p>
+            <section className="site-panel">
+              <div className="site-panel__body">
+                <p className="site-card__eyebrow">Context</p>
+                <h2 className="site-heading site-heading--sm mt-3">The Need</h2>
+                <p className="site-copy mt-4">{narrative.problem}</p>
+                <h2 className="site-heading site-heading--sm mt-8">Response</h2>
+                <p className="site-copy mt-4">{narrative.solution}</p>
+              </div>
+            </section>
+          </div>
 
-          <h2 className="mt-8 font-heading text-2xl font-semibold text-neutral-900">PSZ Solution</h2>
-          <p className="mt-3 text-sm leading-relaxed text-neutral-500 sm:text-base">
-            {narrative.solution}
-          </p>
-        </section>
-      </section>
+          <section className="site-section">
+            <div className="site-toolbar__row">
+              <div>
+                <p className="site-eyebrow">Gallery</p>
+                <h2 className="site-heading site-heading--sm mt-3">Program Moments</h2>
+              </div>
+            </div>
 
-      <section className="mt-10" aria-labelledby="program-photos-heading">
-        <h2 id="program-photos-heading" className="font-heading text-3xl font-semibold text-neutral-900">
-          Photos
-        </h2>
-        <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {(() => {
-            const placeholderFiles = [
-              "/images/placeholders/10.png",
-              "/images/placeholders/11.png",
-              "/images/placeholders/12.png",
-              "/images/placeholders/13.png",
-              "/images/placeholders/14.png",
-              "/images/placeholders/15.png",
-            ];
-            return Array.from({ length: 3 }).map((_, index) => {
-              const src = placeholderFiles[(index % placeholderFiles.length)];
-              return (
-                <figure
-                  key={`${program.slug}-photo-${index + 1}`}
-                  className="overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm"
-                >
+            <div className="site-media-grid mt-6 sm:grid-cols-2 lg:grid-cols-3">
+              {photos.map((imageId, index) => (
+                <figure key={`${program.slug}-photo-${index + 1}`} className="site-detail__media site-detail__media--landscape">
                   <Image
-                    src={src}
+                    src={`/images/placeholders/${imageId}.png`}
                     alt={`${program.title} photo ${index + 1}`}
-                    width={900}
-                    height={600}
-                    className="h-52 w-full object-cover"
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 33vw"
+                    className="object-cover"
                   />
                 </figure>
-              );
-            });
-          })()}
+              ))}
+            </div>
+          </section>
         </div>
-      </section>
-    </article>
+      </article>
+    </main>
   );
 }

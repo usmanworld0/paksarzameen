@@ -2,8 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useDeferredValue, useState } from "react";
 import { Search } from "lucide-react";
+import { useDeferredValue, useState } from "react";
 
 import type { DogRecord, DogStatus } from "@/lib/dog-adoption";
 
@@ -23,10 +23,10 @@ const STATUS_PRIORITY: Record<DogStatus, number> = {
 };
 
 const SORT_OPTIONS: Array<{ label: string; value: SortOption }> = [
-  { label: "NEWEST FIRST", value: "newest" },
-  { label: "OLDEST FIRST", value: "oldest" },
-  { label: "NAME A-Z", value: "name" },
-  { label: "AVAILABLE FIRST", value: "available-first" },
+  { label: "Newest First", value: "newest" },
+  { label: "Oldest First", value: "oldest" },
+  { label: "Name A-Z", value: "name" },
+  { label: "Available First", value: "available-first" },
 ];
 
 export function DogMarketplace({ dogs }: { dogs: DogRecord[] }) {
@@ -91,178 +91,172 @@ export function DogMarketplace({ dogs }: { dogs: DogRecord[] }) {
   }
 
   return (
-    <div className="space-y-8">
-      {/* FILTER SECTION */}
-      <section className="bg-[#F5F5F5] border border-[#E5E5E5] p-6 lg:p-8">
-        <div className="flex flex-col lg:flex-row gap-6">
-          {/* Text Summary & Top filters */}
-          <div className="flex-1 space-y-4">
-            <h2 className="text-xl font-bold uppercase tracking-tight text-[#111111]">
-              FILTER DIRECTORY
-            </h2>
-            <div className="flex flex-wrap gap-2 mb-4">
-               <button
-                 onClick={() => setStatusFilter("all")}
-                 className={`border px-4 py-2 text-xs font-bold uppercase tracking-widest transition ${statusFilter === "all" ? "bg-[#111111] text-white border-[#111111]" : "bg-white text-[#111111] border-[#CACACB] hover:border-[#111111]"}`}
-               >
-                 ALL ({dogs.length})
-               </button>
-               <button
-                 onClick={() => setStatusFilter("available")}
-                 className={`border px-4 py-2 text-xs font-bold uppercase tracking-widest transition ${statusFilter === "available" ? "bg-[#111111] text-white border-[#111111]" : "bg-white text-[#111111] border-[#CACACB] hover:border-[#111111]"}`}
-               >
-                 AVAILABLE ({availableCount})
-               </button>
-               <button
-                 onClick={() => setStatusFilter("adopted")}
-                 className={`border px-4 py-2 text-xs font-bold uppercase tracking-widest transition ${statusFilter === "adopted" ? "bg-[#111111] text-white border-[#111111]" : "bg-white text-[#111111] border-[#CACACB] hover:border-[#111111]"}`}
-               >
-                 ADOPTED ({adoptedCount})
-               </button>
-            </div>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="relative">
-                  <Search className="absolute left-3 top-3.5 h-4 w-4 text-[#707072]" />
-                  <input
-                    type="search"
-                    value={query}
-                    onChange={(event) => setQuery(event.target.value)}
-                    placeholder="NAME, BREED..."
-                    className="h-12 w-full bg-white border border-[#CACACB] pl-10 pr-4 text-xs font-medium text-[#111111] uppercase tracking-wide focus:border-[#111111] outline-none rounded-none"
-                  />
-                </div>
-                
-                <select
-                  value={breedFilter}
-                  onChange={(event) => setBreedFilter(event.target.value)}
-                  className="h-12 w-full bg-white border border-[#CACACB] px-4 text-xs font-medium text-[#111111] uppercase tracking-wide focus:border-[#111111] outline-none rounded-none"
-                >
-                  <option value="all">ALL BREEDS</option>
-                  {breedOptions.map((o) => <option key={o.value} value={o.value}>{o.label.toUpperCase()}</option>)}
-                </select>
+    <div className="site-stack--xl">
+      <section className="site-toolbar">
+        <div className="site-toolbar__row">
+          <div>
+            <p className="site-eyebrow">Directory filters</p>
+            <h2 className="site-heading site-heading--sm mt-3">Find Your Match</h2>
+          </div>
+          <span className="site-badge site-badge--muted">
+            {filteredDogs.length} results
+          </span>
+        </div>
 
-                <select
-                  value={cityFilter}
-                  onChange={(event) => setCityFilter(event.target.value)}
-                  className="h-12 w-full bg-white border border-[#CACACB] px-4 text-xs font-medium text-[#111111] uppercase tracking-wide focus:border-[#111111] outline-none rounded-none"
-                >
-                  <option value="all">ALL CITIES</option>
-                  {cityOptions.map((o) => <option key={o.value} value={o.value}>{o.label.toUpperCase()}</option>)}
-                </select>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => setStatusFilter("all")}
+            className={`site-pill-button ${statusFilter === "all" ? "site-pill-button--active" : ""}`}
+          >
+            All ({dogs.length})
+          </button>
+          <button
+            type="button"
+            onClick={() => setStatusFilter("available")}
+            className={`site-pill-button ${statusFilter === "available" ? "site-pill-button--active" : ""}`}
+          >
+            Available ({availableCount})
+          </button>
+          <button
+            type="button"
+            onClick={() => setStatusFilter("adopted")}
+            className={`site-pill-button ${statusFilter === "adopted" ? "site-pill-button--active" : ""}`}
+          >
+            Adopted ({adoptedCount})
+          </button>
+        </div>
 
-                <select
-                  value={genderFilter}
-                  onChange={(event) => setGenderFilter(event.target.value)}
-                  className="h-12 w-full bg-white border border-[#CACACB] px-4 text-xs font-medium text-[#111111] uppercase tracking-wide focus:border-[#111111] outline-none rounded-none"
-                >
-                  <option value="all">ALL GENDERS</option>
-                  {genderOptions.map((o) => <option key={o.value} value={o.value}>{o.label.toUpperCase()}</option>)}
-                </select>
-            </div>
-            
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-6 pt-6 border-t border-[#CACACB]">
-               <div className="text-xs font-bold text-[#707072] uppercase tracking-widest mb-4 sm:mb-0">
-                  {filteredDogs.length} MATCH{filteredDogs.length === 1 ? "" : "ES"}
-               </div>
-               <div className="flex items-center gap-4 w-full sm:w-auto">
-                 <select
-                    value={sortBy}
-                    onChange={(event) => setSortBy(event.target.value as SortOption)}
-                    className="h-10 bg-transparent border-b border-[#CACACB] px-0 text-xs font-bold text-[#111111] uppercase tracking-widest focus:border-[#111111] outline-none"
-                  >
-                    {SORT_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-                 </select>
-                 <button
-                    onClick={resetFilters}
-                    className="h-10 border border-[#111111] bg-white px-6 text-xs font-bold text-[#111111] uppercase tracking-widest transition hover:bg-[#111111] hover:text-white"
-                 >
-                    CLEAR
-                 </button>
-               </div>
-            </div>
+        <div className="site-toolbar__grid md:grid-cols-2 xl:grid-cols-5">
+          <div className="site-toolbar__search xl:col-span-2">
+            <Search className="site-toolbar__icon" />
+            <input
+              type="search"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Search by name, breed, or city"
+              className="site-input"
+            />
+          </div>
+
+          <select
+            value={breedFilter}
+            onChange={(event) => setBreedFilter(event.target.value)}
+            className="site-select"
+          >
+            <option value="all">All Breeds</option>
+            {breedOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+
+          <select
+            value={cityFilter}
+            onChange={(event) => setCityFilter(event.target.value)}
+            className="site-select"
+          >
+            <option value="all">All Cities</option>
+            {cityOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+
+          <select
+            value={genderFilter}
+            onChange={(event) => setGenderFilter(event.target.value)}
+            className="site-select"
+          >
+            <option value="all">All Genders</option>
+            {genderOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="site-toolbar__row border-t border-[#e5e5e5] pt-4">
+          <div className="site-meta-row">
+            <span>{filteredDogs.length} matching dogs</span>
+            <span>Adoption fee {ADOPTION_FEE_LABEL}</span>
+          </div>
+
+          <div className="site-form-actions">
+            <select
+              value={sortBy}
+              onChange={(event) => setSortBy(event.target.value as SortOption)}
+              className="site-select min-w-[20rem]"
+            >
+              {SORT_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            <button type="button" onClick={resetFilters} className="site-button-secondary">
+              Clear Filters
+            </button>
           </div>
         </div>
       </section>
 
-      {/* RESULTS SECTION */}
       {filteredDogs.length === 0 ? (
-        <div className="border border-[#E5E5E5] p-12 text-center">
-             <h3 className="text-2xl font-bold uppercase tracking-tight text-[#111111] mb-2">
-               NO DOGS FIT THE CRITERIA
-             </h3>
-             <p className="text-sm font-medium text-[#707072] uppercase tracking-wide mb-6">
-               Adjust your filters to see more results.
-             </p>
-             <button
-                onClick={resetFilters}
-                className="bg-[#111111] text-white px-8 py-3 text-xs font-bold uppercase tracking-widest transition hover:bg-[#707072]"
-             >
-                RESET FILTERS
-             </button>
+        <div className="site-empty">
+          No dogs fit these filters. Clear them to see all listings.
         </div>
       ) : (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="site-grid site-grid--three xl:grid-cols-4">
           {filteredDogs.map((dog) => (
-            <article
-              key={dog.dogId}
-              className="group flex flex-col justify-between border border-[#E5E5E5] bg-white transition hover:border-[#111111]"
-            >
-              <div>
-                 <div className="relative aspect-square w-full bg-[#F5F5F5] overflow-hidden">
-                    <Image
-                      src={dog.imageUrl}
-                      alt={dog.name}
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                    {dog.status !== "available" && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-[#111111]/80 backdrop-blur-sm">
-                        <span className="text-2xl font-black uppercase text-white tracking-widest rotate-[-10deg]">
-                          {dog.status}
-                        </span>
-                      </div>
-                    )}
-                 </div>
-                 <div className="p-5">
-                    <div className="flex justify-between items-start mb-1">
-                      <h3 className="text-xl font-bold uppercase tracking-tight text-[#111111]">
-                        {dog.name}
-                      </h3>
-                      {dog.status === "available" && (
-                         <span className="bg-[#E5E5E5] text-[#111111] text-[10px] font-bold px-2 py-1 tracking-widest uppercase">
-                           AVAILABLE
-                         </span>
-                      )}
-                    </div>
-                    <p className="text-xs font-semibold uppercase tracking-widest text-[#707072] mb-3">
-                      {dog.breed} / {dog.age} / {dog.gender}
-                    </p>
-                    {dog.city && (
-                      <p className="text-sm font-medium text-[#111111] uppercase tracking-wide">
-                        {dog.city}{dog.area ? `, ${dog.area}` : ""}
-                      </p>
-                    )}
-                    <p className="text-xs font-medium text-[#707072] mt-4 line-clamp-2">
-                       {dog.description}
-                    </p>
-                 </div>
+            <article key={dog.dogId} className="site-card site-card--rounded overflow-hidden">
+              <div className="site-detail__media site-detail__media--square">
+                <Image
+                  src={dog.imageUrl}
+                  alt={dog.name}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 25vw"
+                  className="object-cover"
+                />
               </div>
-              
-              <div className="p-5 pt-0 mt-4 border-t border-[#E5E5E5] flex justify-between items-center bg-white">
-                 <div className="pt-4">
-                    <p className="text-[10px] uppercase font-bold text-[#707072] tracking-widest">FEE</p>
-                     <p className="text-sm font-bold text-[#111111] uppercase">{ADOPTION_FEE_LABEL}</p>
-                 </div>
-                 <div className="pt-4">
-                    <Link
-                      href={`/dog/${dog.dogId}`}
-                      className="inline-block rounded-full bg-[#111111] px-5 py-2 text-xs font-bold text-white uppercase tracking-widest transition hover:bg-[#707072]"
-                    >
-                      DETAILS
-                    </Link>
-                 </div>
+
+              <div className="site-card__body">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="site-card__eyebrow">{dog.city ?? "Pakistan"}</p>
+                    <h3 className="site-card__title">{dog.name}</h3>
+                  </div>
+                  <span
+                    className={`site-badge ${
+                      dog.status === "available" ? "site-badge--dark" : "site-badge--muted"
+                    }`}
+                  >
+                    {dog.status}
+                  </span>
+                </div>
+
+                <p className="site-card__text mt-4">
+                  {dog.breed} / {dog.age} / {dog.gender}
+                </p>
+                {dog.area || dog.color ? (
+                  <div className="site-meta-row mt-4">
+                    {dog.area ? <span>{dog.area}</span> : null}
+                    {dog.color ? <span>{dog.color}</span> : null}
+                  </div>
+                ) : null}
+                <p className="site-copy site-copy--sm mt-4 line-clamp-3">{dog.description}</p>
+
+                <div className="site-toolbar__row border-t border-[#e5e5e5] pt-5 mt-5">
+                  <div>
+                    <p className="site-card__eyebrow">Fee</p>
+                    <p className="site-copy site-copy--sm mt-2 text-[#111111]">{ADOPTION_FEE_LABEL}</p>
+                  </div>
+                  <Link href={`/dog/${dog.dogId}`} className="site-button">
+                    Details
+                  </Link>
+                </div>
               </div>
             </article>
           ))}
@@ -279,21 +273,21 @@ function normalizeValue(value: string | null | undefined): string {
 
 function collectOptions(
   values: Array<string | null | undefined>,
-  formatter: (val: string) => string = (val) => val
+  formatter: (val: string) => string = (val) => val,
 ): FilterOption[] {
   const unique = new Set<string>();
 
-  for (const val of values) {
-    if (val) {
-      unique.add(normalizeValue(val));
+  for (const value of values) {
+    if (value) {
+      unique.add(normalizeValue(value));
     }
   }
 
   return Array.from(unique)
     .sort()
-    .map((val) => ({
-      value: val,
-      label: val === "unknown" ? "Unknown" : formatter(val),
+    .map((value) => ({
+      value,
+      label: value === "unknown" ? "Unknown" : formatter(value),
     }));
 }
 

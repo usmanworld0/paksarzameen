@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { DogMarketplace } from "@/features/dog-adoption/components/DogMarketplace";
+import { DogLocationMap } from "@/features/dog-adoption/components/DogLocationMap";
 import { hasDatabaseConnection } from "@/lib/db";
 import { listAdoptedDogsWithOwners, listDogs } from "@/lib/dog-adoption";
 
@@ -29,37 +30,45 @@ export default async function DogAdoptionPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[linear-gradient(180deg,_#f8fcf8_0%,_#eef6ef_100%)] px-[4%] pb-20 pt-28">
-      <section className="mx-auto max-w-screen-2xl space-y-8">
+    <main className="min-h-screen bg-white px-[4%] pb-20 pt-28">
+      <section className="mx-auto max-w-screen-2xl space-y-12">
+        {/* Adoption Banner */}
         <div className="rounded-2xl border border-rose-200 bg-[linear-gradient(135deg,_#fff1f2_0%,_#ffe4e6_100%)] px-5 py-4 text-center shadow-sm sm:px-6">
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-rose-700">Adoption Drive</p>
           <p className="mt-1 text-lg font-semibold text-rose-900 sm:text-xl">Adopt a dog, save a life for 3500 only</p>
         </div>
 
-        <div className="overflow-hidden rounded-3xl border border-emerald-100 bg-white/95 p-8 shadow-xl shadow-emerald-900/10 sm:p-10">
-          <p className="mb-3 inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700">
-            Dog Adoption
-          </p>
-          <h1 className="text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">
-            Adopt a Stray, Save a Soul
-          </h1>
-          <p className="mt-3 max-w-3xl text-base leading-relaxed text-slate-600 sm:text-lg">
-            Browse rescue dogs in a marketplace-style layout, compare profiles quickly, and open any listing to adopt when you are ready.
-          </p>
+        {/* Map Section */}
+        <div className="space-y-3">
+          <h2 className="text-lg font-semibold text-slate-900">Dog Locations Map</h2>
+          <p className="text-sm text-slate-600">Discover where rescue dogs are found in your area</p>
+          <DogLocationMap />
         </div>
 
+        {/* Error State */}
         {error ? (
           <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-red-700">{error}</div>
         ) : null}
 
+        {/* No Dogs State */}
         {!error && !dogs.length ? (
           <div className="rounded-2xl border border-slate-200 bg-white p-6 text-slate-600">
             No dogs listed yet. Please check back soon.
           </div>
         ) : null}
 
-        {!error && dogs.length ? <DogMarketplace dogs={dogs} /> : null}
+        {/* Available Dogs Section */}
+        {!error && dogs.length ? (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-2xl font-semibold text-slate-900 sm:text-3xl">Available Dogs for Adoption</h2>
+              <p className="mt-2 text-slate-600">Find your perfect companion from our rescue dogs</p>
+            </div>
+            <DogMarketplace dogs={dogs} />
+          </div>
+        ) : null}
 
+        {/* Adopted Dogs Section */}
         {!error ? (
           <section className="space-y-4 rounded-3xl border border-slate-200 bg-white/95 p-6 shadow-sm sm:p-8">
             <div className="flex flex-wrap items-end justify-between gap-3">

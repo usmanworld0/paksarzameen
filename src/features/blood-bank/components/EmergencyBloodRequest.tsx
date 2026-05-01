@@ -1,7 +1,6 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-
 import { DonorChatBox } from "@/features/blood-bank/components/DonorChatBox";
 
 type MatchDonor = {
@@ -52,92 +51,76 @@ export function EmergencyBloodRequest() {
   }
 
   return (
-    <section className="site-panel site-panel--rounded">
-      <div className="site-panel__body">
-        <div>
-          <p className="site-eyebrow">Emergency match</p>
-          <h2 className="site-heading site-heading--sm mt-3">Find Ranked Donor Matches</h2>
-          <p className="site-copy mt-4">
-            Match by blood group, city, availability, and donation eligibility.
+    <section className="rounded-3xl border border-emerald-100 bg-white p-6 shadow-[0_18px_60px_rgba(8,39,24,0.1)] sm:p-8">
+      <div className="mb-5 space-y-2">
+        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-emerald-700">Emergency Blood Request</p>
+        <h2 className="text-2xl font-semibold text-emerald-950 sm:text-3xl">AI-assisted donor matching</h2>
+        <p className="text-sm text-emerald-900/75">Get the top 5 donors by blood compatibility, city proximity, availability, and donation eligibility.</p>
+      </div>
+
+      <form onSubmit={onSubmit} className="grid gap-3 rounded-2xl border border-emerald-100 bg-emerald-50/70 p-4 sm:grid-cols-3">
+        <label className="space-y-1">
+          <span className="text-sm font-medium text-emerald-950">Required blood group</span>
+          <select
+            value={bloodGroup}
+            onChange={(event) => setBloodGroup(event.target.value)}
+            className="w-full rounded-xl border border-emerald-200 px-3 py-2 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+          >
+            {BLOOD_GROUPS.map((group) => (
+              <option key={group} value={group}>
+                {group}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="space-y-1">
+          <span className="text-sm font-medium text-emerald-950">City</span>
+          <input
+            required
+            value={city}
+            onChange={(event) => setCity(event.target.value)}
+            className="w-full rounded-xl border border-emerald-200 px-3 py-2 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+            placeholder="Bahawalpur"
+          />
+        </label>
+
+        <div className="flex items-end">
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full rounded-xl bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isSubmitting ? "Matching..." : "Find matched donors"}
+          </button>
+        </div>
+      </form>
+
+      {error ? <p className="mt-4 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p> : null}
+
+      <div className="mt-5 grid gap-3">
+        {matches.length === 0 ? (
+          <p className="rounded-xl border border-emerald-100 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+            No ranked donors yet. Run an emergency request to view smart matches.
           </p>
-        </div>
-
-        <form onSubmit={onSubmit} className="site-toolbar mt-6">
-          <div className="site-toolbar__grid md:grid-cols-3">
-            <label className="block">
-              <span className="site-form-label site-form-label--caps">Required Blood Group</span>
-              <select
-                value={bloodGroup}
-                onChange={(event) => setBloodGroup(event.target.value)}
-                className="site-select mt-2"
-              >
-                {BLOOD_GROUPS.map((group) => (
-                  <option key={group} value={group}>
-                    {group}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label className="block">
-              <span className="site-form-label site-form-label--caps">City</span>
-              <input
-                required
-                value={city}
-                onChange={(event) => setCity(event.target.value)}
-                className="site-input mt-2"
-                placeholder="Bahawalpur"
-              />
-            </label>
-
-            <div className="flex items-end">
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="site-button w-full disabled:opacity-60"
-              >
-                {isSubmitting ? "Matching..." : "Find Donors"}
-              </button>
-            </div>
-          </div>
-        </form>
-
-        {error ? <p className="site-status--error mt-6">{error}</p> : null}
-
-        <div className="site-stack mt-6">
-          {matches.length === 0 ? (
-            <div className="site-empty">
-              No ranked donors yet. Run an emergency request to view smart matches.
-            </div>
-          ) : (
-            matches.map((donor, index) => (
-              <article key={donor.id} className="site-card site-card--rounded">
-                <div className="site-card__body">
-                  <div className="site-toolbar__row">
-                    <div>
-                      <p className="site-card__eyebrow">Match #{index + 1}</p>
-                      <h3 className="site-heading site-heading--sm mt-3">{donor.name}</h3>
-                    </div>
-                    <span className="site-badge">Score {donor.score}</span>
-                  </div>
-
-                  <div className="site-meta-row mt-5">
-                    <span>{donor.bloodGroup || "N/A"}</span>
-                    <span>{donor.city || "N/A"}</span>
-                    <span>{donor.availabilityStatus}</span>
-                  </div>
-                  <p className="site-copy site-copy--sm mt-4">
-                    Contact: {donor.phone || donor.email || "Not provided"}
-                  </p>
-                  <p className="site-copy site-copy--sm mt-2">
-                    Eligibility: {donor.eligibility ? "Eligible" : "Not eligible yet"}
-                  </p>
-                  <DonorChatBox donorUserId={donor.id} />
-                </div>
-              </article>
-            ))
-          )}
-        </div>
+        ) : (
+          matches.map((donor, index) => (
+            <article key={donor.id} className="rounded-2xl border border-emerald-100 bg-white p-4">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <h3 className="text-base font-semibold text-emerald-950">
+                  #{index + 1} {donor.name}
+                </h3>
+                <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-800">Score {donor.score}</span>
+              </div>
+              <p className="mt-2 text-sm text-emerald-900/80">
+                {donor.bloodGroup || "N/A"} | {donor.city || "N/A"} | {donor.availabilityStatus}
+              </p>
+              <p className="text-sm text-emerald-900/80">Contact: {donor.phone || donor.email || "Not provided"}</p>
+              <p className="text-xs text-emerald-700/90">Eligibility: {donor.eligibility ? "Eligible" : "Not eligible yet"}</p>
+              <DonorChatBox donorUserId={donor.id} />
+            </article>
+          ))
+        )}
       </div>
     </section>
   );

@@ -88,90 +88,97 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
   const encodedTitle = encodeURIComponent(article.title);
 
   return (
-    <main className="site-page">
-      <article className="site-detail">
-        <div className="site-shell--narrow">
-          <Link href="/news" className="site-back-link">
-            Back To News Hub
-          </Link>
+    <article className="mx-auto w-full max-w-screen-xl px-[5%] py-24 sm:py-28 lg:py-32">
+      <Link
+        href="/news"
+        className="text-xs font-semibold uppercase tracking-[0.18em] text-psz-green hover:text-psz-green-light transition-colors"
+      >
+        &larr; Back To News Hub
+      </Link>
 
-          <header className="site-detail__hero mt-6">
-            <p className="site-eyebrow">{article.category}</p>
-            <h1 className="site-display mt-4 max-w-[13ch]">{article.title}</h1>
-            <div className="site-meta-row mt-5">
-              <span>
-                {new Date(article.date).toLocaleDateString("en-GB", {
-                  day: "2-digit",
-                  month: "long",
-                  year: "numeric",
-                })}
-              </span>
-            </div>
-            <p className="site-copy mt-4">{article.excerpt}</p>
-          </header>
+      <header className="mt-6 rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm sm:p-8 lg:p-10">
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-psz-green">
+          {article.category}
+        </p>
+        <h1 className="mt-3 max-w-4xl font-heading text-4xl font-bold leading-tight tracking-tight text-neutral-900 sm:text-5xl lg:text-6xl">
+          {article.title}
+        </h1>
+        <p className="mt-4 text-sm uppercase tracking-[0.18em] text-neutral-400">
+          {new Date(article.date).toLocaleDateString("en-GB", {
+            day: "2-digit",
+            month: "long",
+            year: "numeric",
+          })}
+        </p>
+        <p className="mt-5 max-w-2xl text-sm leading-relaxed text-neutral-500 sm:text-base lg:max-w-3xl lg:text-lg">
+          {article.excerpt}
+        </p>
+      </header>
 
-          <section className="site-panel mt-6">
-            <div className="site-panel__body">
-              <p className="site-card__eyebrow">Full article</p>
-              <h2 className="site-heading site-heading--sm mt-3">Article</h2>
-              <p className="site-copy mt-4">{article.fullContent}</p>
-            </div>
-          </section>
+      <section className="mt-10 rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm sm:p-7">
+        <h2 className="font-heading text-3xl font-semibold text-neutral-900">Full Article</h2>
+        <p className="mt-4 text-sm leading-relaxed text-neutral-500 sm:text-base">
+          {article.fullContent}
+        </p>
+      </section>
 
-          <section className="site-panel mt-6">
-            <div className="site-panel__body">
-              <p className="site-card__eyebrow">Share</p>
-              <h2 className="site-heading site-heading--sm mt-3">Share</h2>
-              <div className="site-form-actions mt-5">
-                <a
-                  href={`https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="site-button-secondary"
-                >
-                  Share on X
-                </a>
-                <a
-                  href={`https://wa.me/?text=${encodedTitle}%20${encodedUrl}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="site-button-secondary"
-                >
-                  Share on WhatsApp
-                </a>
-              </div>
-            </div>
-          </section>
-
-          <section className="site-section">
-            <div>
-              <p className="site-eyebrow">Related</p>
-              <h2 className="site-heading site-heading--sm mt-3">Related</h2>
-            </div>
-
-            {relatedArticles.length > 0 ? (
-              <div className="site-grid site-grid--three mt-6">
-                {relatedArticles.map((related) => (
-                  <article key={related.id} className="site-card site-card--rounded">
-                    <div className="site-card__body">
-                      <p className="site-card__eyebrow">{related.category}</p>
-                      <h3 className="site-card__title">{related.title}</h3>
-                      <p className="site-card__text">{related.excerpt}</p>
-                      <Link href={`/news/${related.slug}`} className="site-card-link mt-5">
-                        Read Story
-                      </Link>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            ) : (
-              <div className="site-empty mt-6">
-                More related stories will appear here as the resource library grows.
-              </div>
-            )}
-          </section>
+      <section className="mt-10 rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm sm:p-7">
+        <h2 className="font-heading text-3xl font-semibold text-neutral-900">Share This Story</h2>
+        <div className="mt-4 flex flex-wrap gap-3 text-sm font-semibold">
+          <a
+            href={`https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-full border border-neutral-300 bg-white px-4 py-2 text-neutral-600 hover:bg-psz-green hover:text-white hover:border-psz-green transition-all"
+          >
+            Share on X
+          </a>
+          <a
+            href={`https://wa.me/?text=${encodedTitle}%20${encodedUrl}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-full border border-neutral-300 bg-white px-4 py-2 text-neutral-600 hover:bg-psz-green hover:text-white hover:border-psz-green transition-all"
+          >
+            Share on WhatsApp
+          </a>
         </div>
-      </article>
-    </main>
+      </section>
+
+      <section className="mt-10" aria-labelledby="related-articles-heading">
+        <h2 id="related-articles-heading" className="font-heading text-3xl font-semibold text-neutral-900">
+          Related Articles
+        </h2>
+        <div className="mt-5 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {relatedArticles.length > 0 ? (
+            relatedArticles.map((related) => (
+              <article
+                key={related.id}
+                className="group rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm transition-all hover:shadow-md hover:border-psz-green/30"
+              >
+                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-psz-green">
+                  {related.category}
+                </p>
+                <h3 className="mt-3 font-heading text-2xl font-semibold text-neutral-900 group-hover:text-psz-green transition-colors">
+                  {related.title}
+                </h3>
+                <p className="mt-3 text-sm leading-relaxed text-neutral-500">
+                  {related.excerpt}
+                </p>
+                <Link
+                  href={`/news/${related.slug}`}
+                  className="mt-4 inline-flex items-center text-sm font-semibold text-psz-green hover:text-psz-green-light transition-colors"
+                >
+                  Read Related Story
+                </Link>
+              </article>
+            ))
+          ) : (
+            <div className="rounded-xl border border-dashed border-neutral-300 bg-neutral-50 p-5 text-sm text-neutral-400">
+              More related articles will appear as the resource library grows.
+            </div>
+          )}
+        </div>
+      </section>
+    </article>
   );
 }

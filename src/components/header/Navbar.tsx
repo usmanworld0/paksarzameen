@@ -1,409 +1,359 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
+import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
-import { ChevronDown, Menu, X } from "lucide-react";
+import { navLinks } from "@/config/site";
+import { impactCategories, impactHopeStories } from "@/content/impact";
 
-import { navLinks, siteConfig } from "@/config/site";
-import { impactCategories } from "@/content/impact/shared";
 
-const primaryHrefs = ["/about", "/programs", "/impact", "/get-involved", "/contact"];
-const utilityHrefs = ["/healthcare", "/dog-adoption", "/news", "/commonwealth-lab"];
 
-function toTightSummary(text: string, maxWords = 9) {
-  const words = text.split(/\s+/).filter(Boolean);
-  if (words.length <= maxWords) return text;
-  return `${words.slice(0, maxWords).join(" ")}...`;
+/* ── Impact mega-dropdown data ─────────────────────────── */
+const IMPACT_CATS = impactCategories;
+
+const STORIES_OF_HOPE = impactHopeStories;
+/* ────────────────────────────────────────────────────── */
+
+type Panel = "impact" | null;
+const DROPDOWN_LABELS: Record<string, Panel> = { "Impact": "impact" };
+
+type ImpactCategorySlug = (typeof IMPACT_CATS)[number]["slug"];
+
+function ImpactGlyph({ slug }: { slug: ImpactCategorySlug }) {
+  if (slug === "environmental") {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M5 14c5.5-8 10-8 14-9-1 4-1 8-9 14-1.6 1.2-3.9.8-5-.9-1.3-1.8-1.4-3.6 0-4.1Z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M7.5 16.5c1.2-2.2 3.1-3.8 5.5-4.7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      </svg>
+    );
+  }
+
+  if (slug === "education") {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M4 7l8-3 8 3-8 3-8-3Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+        <path d="M7 9v4c0 1.8 2.2 3.5 5 3.5s5-1.7 5-3.5V9" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M12 13v4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      </svg>
+    );
+  }
+
+  if (slug === "animal") {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="6.2" cy="8" r="1.6" fill="currentColor" />
+        <circle cx="10.1" cy="5.8" r="1.6" fill="currentColor" />
+        <circle cx="13.9" cy="5.8" r="1.6" fill="currentColor" />
+        <circle cx="17.8" cy="8" r="1.6" fill="currentColor" />
+        <path d="M8 14.2c0-2.1 1.9-3.7 4-3.7s4 1.6 4 3.7c0 2.1-1.8 3.9-4 3.9s-4-1.8-4-3.9Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M12 4c3 3.2 4.8 6.2 4.8 8.4 0 2.7-2.1 4.9-4.8 4.9s-4.8-2.2-4.8-4.9C7.2 10.2 9 7.2 12 4Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      <path d="M10.2 13.7c.9.8 2.6.8 3.6 0" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      <path d="M12 18.2v2.3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  );
 }
 
 export function Navbar() {
   const pathname = usePathname();
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [impactOpen, setImpactOpen] = useState(false);
-  const [isHidden, setIsHidden] = useState(false);
-  const lastScrollYRef = useRef(0);
-  const closeTimerRef = useRef<number | null>(null);
-
-  const primaryLinks = useMemo(
-    () => navLinks.filter((link) => primaryHrefs.includes(link.href)),
-    []
-  );
-  const utilityLinks = useMemo(
-    () => navLinks.filter((link) => utilityHrefs.includes(link.href)),
-    []
-  );
-
-  const displayFont = {
-    fontFamily: 'var(--font-psz-display), "Arial Narrow", Arial, sans-serif',
-  } as const;
-
-  const bodyFont = {
-    fontFamily: 'var(--font-psz-sans), "Helvetica Neue", Helvetica, Arial, sans-serif',
-  } as const;
+  const [hidden, setHidden]           = useState(false);
+  const [scrolled, setScrolled]       = useState(false);
+  const [menuOpen, setMenuOpen]       = useState(false);
+  const [activePanel, setActivePanel] = useState<Panel>(null);
+  const lastY = useRef(0);
 
   useEffect(() => {
     const handleScroll = () => {
-      const currentY = window.scrollY;
-
-      if (currentY <= 8) {
-        setIsHidden(false);
-        lastScrollYRef.current = currentY;
-        return;
+      const y = window.scrollY;
+      setScrolled(y > 40);
+      if (y > lastY.current && y > 80) {
+        setHidden(true);
+        setActivePanel(null);
+      } else {
+        setHidden(false);
       }
-
-      const isScrollingUp = currentY < lastScrollYRef.current;
-      const isScrollingDown = currentY > lastScrollYRef.current;
-
-      if (isScrollingUp && currentY > 80) {
-        setIsHidden(false);
-      } else if (isScrollingDown) {
-        setIsHidden(true);
-      }
-
-      lastScrollYRef.current = currentY;
+      lastY.current = y;
     };
-
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
   useEffect(() => {
     setMenuOpen(false);
-    setImpactOpen(false);
+    setActivePanel(null);
   }, [pathname]);
 
   useEffect(() => {
     document.body.classList.toggle("menu-open", menuOpen);
 
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+        setActivePanel(null);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
     return () => {
       document.body.classList.remove("menu-open");
+      window.removeEventListener("keydown", handleKeyDown);
     };
   }, [menuOpen]);
 
-  useEffect(() => {
-    return () => {
-      if (closeTimerRef.current) {
-        window.clearTimeout(closeTimerRef.current);
-      }
-    };
-  }, []);
-
-  if (pathname.startsWith("/commonwealth-lab/products/")) return null;
-
-  const scheduleImpactClose = () => {
-    if (closeTimerRef.current) {
-      window.clearTimeout(closeTimerRef.current);
-    }
-
-    closeTimerRef.current = window.setTimeout(() => {
-      setImpactOpen(false);
-    }, 120);
-  };
-
-  const openImpact = () => {
-    if (closeTimerRef.current) {
-      window.clearTimeout(closeTimerRef.current);
-    }
-
-    setImpactOpen(true);
-  };
+  // Hide navbar on product detail pages
+  if (pathname.startsWith("/commonwealth-lab/products/")) {
+    return null;
+  }
 
   return (
     <>
       <header
-        className={`fixed inset-x-0 top-0 z-50 border-b border-[#e5e5e5] bg-white transition-transform duration-300 ${
-          isHidden ? "-translate-y-full" : "translate-y-0"
-        }`}
+        className={`psz-header always-white-bg ${scrolled ? "scrolled" : ""} ${hidden ? "nav-hidden" : ""} light-text`}
+        onMouseLeave={() => setActivePanel(null)}
       >
-        <div className="mx-auto hidden w-full max-w-[1440px] items-center justify-end gap-4 px-4 pt-3 md:px-6 lg:flex lg:px-10">
-          {utilityLinks.map((link) => {
-            const isActive = pathname === link.href || pathname.startsWith(`${link.href}/`);
-
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                style={bodyFont}
-                className={`text-[1.15rem] font-medium transition-colors ${
-                  isActive ? "text-[#111111]" : "text-[#707072] hover:text-[#111111]"
-                }`}
-              >
-                {link.label}
-              </Link>
-            );
-          })}
-
-          <span className="h-4 w-px bg-[#e5e5e5]" aria-hidden="true" />
-
-          <Link
-            href="/healthcare/doctor/sign-in"
-            style={bodyFont}
-            className="text-[1.15rem] font-medium text-[#707072] transition-colors hover:text-[#111111]"
-          >
-            Doctor Portal
+        <div className="blur-bg" />
+        <nav>
+          <Link href="/" className="nav-logo">
+            <Image
+              src="/paksarzameen_logo.png"
+              alt="PakSarZameen"
+              width={40}
+              height={40}
+              priority
+              className="nav-logo-img"
+            />
+            Pak<span className="green">Sar</span>Zameen
           </Link>
-          <Link
-            href="/login"
-            style={bodyFont}
-            className="text-[1.15rem] font-medium text-[#111111] transition-colors hover:text-[#707072]"
-          >
-            Sign In
-          </Link>
-        </div>
 
-        <div
-          className="relative"
-          onMouseLeave={scheduleImpactClose}
-        >
-          <nav className="mx-auto flex w-full max-w-[1440px] items-center gap-6 px-4 py-4 md:px-6 lg:px-10">
-            <Link href="/" className="group flex shrink-0 items-center gap-3">
-              <span className="relative h-10 w-10 overflow-hidden">
-                <Image
-                  src="/paksarzameen_logo.png"
-                  alt="PakSarZameen"
-                  fill
-                  sizes="40px"
-                  className="object-contain"
-                  priority
-                />
-              </span>
-              <span className="min-w-0 flex flex-col">
-                <span
-                  style={bodyFont}
-                  className="hidden text-[1rem] font-medium uppercase tracking-[0.22em] text-[#707072] sm:block"
-                >
-                  Community Development
-                </span>
-                <span
-                  style={displayFont}
-                  className="text-[1.9rem] font-semibold uppercase leading-none tracking-[0.04em] text-[#111111] sm:text-[2.2rem]"
-                >
-                  PakSarZameen
-                </span>
-              </span>
-            </Link>
-
-            <div className="hidden flex-1 items-center justify-center gap-8 lg:flex">
-              {primaryLinks.map((link) => {
-                const isImpact = link.href === "/impact";
-                const isActive = pathname === link.href || pathname.startsWith(`${link.href}/`);
-
-                if (isImpact) {
-                  return (
-                    <div
-                      key={link.href}
-                      className="relative"
-                      onMouseEnter={openImpact}
-                      onFocus={openImpact}
-                    >
-                      <button
-                        type="button"
-                        style={bodyFont}
-                        aria-expanded={impactOpen}
-                        className={`inline-flex items-center gap-2 text-[1.6rem] font-medium transition-colors ${
-                          isActive || impactOpen
-                            ? "text-[#111111]"
-                            : "text-[#111111] hover:text-[#707072]"
-                        }`}
-                      >
-                        <span>{link.label}</span>
-                        <ChevronDown
-                          className={`h-4 w-4 transition-transform ${impactOpen ? "rotate-180" : ""}`}
-                        />
-                      </button>
-                    </div>
-                  );
-                }
-
+          <div className="nav-links">
+            {navLinks
+              .filter((link) => link.label !== "Paksarzameen Store")
+              .map((link) => {
+              const panel = DROPDOWN_LABELS[link.label];
+              const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
+              const isBloodBank = link.label === "Blood Bank";
+              if (panel) {
+                const isOpen = activePanel === panel;
                 return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    style={bodyFont}
-                    className={`text-[1.6rem] font-medium transition-colors ${
-                      isActive ? "text-[#111111]" : "text-[#111111] hover:text-[#707072]"
-                    }`}
+                  <div
+                    key={link.label}
+                    className="nav-dropdown-wrapper"
+                    onMouseEnter={() => setActivePanel(panel)}
                   >
-                    {link.label}
-                  </Link>
+                    <Link
+                      href={link.href}
+                      className={`nav-dropdown-trigger${isOpen ? " active" : ""}${isActive ? " nav-link-active" : ""}`}
+                    >
+                      {link.label}
+                      <svg
+                        className={`nav-chevron${isOpen ? " open" : ""}`}
+                        width="10" height="6" viewBox="0 0 10 6"
+                        fill="currentColor" aria-hidden="true"
+                      >
+                        <path d="M0 0l5 6 5-6z" />
+                      </svg>
+                    </Link>
+                  </div>
                 );
-              })}
-            </div>
+              }
+              return (
+                <Link 
+                  key={link.label} 
+                  href={link.href}
+                  className={`nav-link${isActive ? " nav-link-active" : ""}${isBloodBank ? " nav-link-bloodbank" : ""}`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
+          </div>
 
-            <div className="ml-auto hidden items-center gap-3 lg:flex">
-              <Link
-                href="/healthcare/blood-bank"
-                style={bodyFont}
-                className="inline-flex min-h-[4.4rem] items-center justify-center rounded-full bg-[#f5f5f5] px-5 text-[1.2rem] font-medium text-[#111111] transition-colors hover:bg-[#e5e5e5]"
-              >
-                24/7 Blood Support
-              </Link>
-            </div>
-
+          <div className="nav-actions">
+            <Link href="/healthcare/doctor/sign-in" className="nav-doctor-btn">
+              Doctor Portal
+            </Link>
+            <Link
+              href="/commonwealth-lab"
+              className="nav-commonwealth-btn"
+            >
+              Paksarzameen Store
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M2 2h10v4m0-4L2 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </Link>
             <button
               type="button"
+              className={`nav-toggle ${menuOpen ? "open" : ""}`}
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
               aria-expanded={menuOpen}
-              aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
-              onClick={() => setMenuOpen(!menuOpen)}
-              className="ml-auto inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#cacacb] bg-white text-[#111111] transition-colors hover:bg-[#f5f5f5] lg:hidden"
+              onClick={() => setMenuOpen((p) => !p)}
             >
-              {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              <div className="bar1" />
+              <div className="bar2" />
             </button>
-          </nav>
+          </div>
+        </nav>
 
-          {impactOpen && (
-            <div
-              className="hidden border-t border-[#e5e5e5] bg-white lg:block"
-              onMouseEnter={openImpact}
-              onMouseLeave={scheduleImpactClose}
-            >
-              <div className="mx-auto grid w-full max-w-[1440px] grid-cols-4 gap-10 px-10 py-10">
-                {impactCategories.map((category) => (
-                  <div key={category.slug} className="min-w-0">
-                    <Link
-                      href={category.href}
-                      style={bodyFont}
-                      className="text-[2rem] font-medium text-[#111111] transition-colors hover:text-[#707072]"
-                    >
-                      {category.title}
-                    </Link>
-                    <p
-                      style={bodyFont}
-                      className="mt-3 max-w-[28ch] text-[1.35rem] leading-[1.7] text-[#707072]"
-                    >
-                      {toTightSummary(category.summary)}
-                    </p>
-                    <div className="mt-5 flex flex-col gap-3">
-                      {category.items.map((item) => (
-                        <Link
-                          key={item.href}
-                          href={item.href}
-                          style={bodyFont}
-                          className="text-[1.45rem] font-medium text-[#111111] transition-colors hover:text-[#707072]"
-                        >
-                          {item.title}
-                        </Link>
-                      ))}
+        {/* ══ Impact Mega Dropdown ══════════════════════════ */}
+        <div
+          className={`nav-mega-panel${activePanel === "impact" ? " open" : ""}`}
+          onMouseEnter={() => setActivePanel("impact")}
+          aria-hidden={activePanel !== "impact"}
+        >
+          <div className="mega-inner">
+
+            {/* ── Left: intro ── */}
+            <div className="mega-left">
+              <span className="mega-eyebrow">Explore</span>
+              <h3 className="mega-heading">Impact</h3>
+              <p className="mega-tagline">
+                Measuring the real change we create across Pakistan&apos;s
+                communities — environmental, social, and human.
+              </p>
+              <Link href="/impact" className="mega-view-all">
+                View all impact →
+              </Link>
+            </div>
+
+            {/* ── Right: categories + stories ── */}
+            <div className="mega-right">
+
+              {/* 4 category columns */}
+              <div className="mega-cats-grid">
+                {IMPACT_CATS.map((cat, index) => (
+                  <div key={cat.slug} className={`mega-cat mega-cat--tone-${(index % 5) + 1}`}>
+                    <div className="mega-cat-header">
+                      <span className="mega-cat-icon" aria-hidden="true">
+                        <ImpactGlyph slug={cat.slug} />
+                      </span>
+                      <h4 className="mega-cat-title">{cat.title}</h4>
                     </div>
+                    <ul className="mega-cat-list">
+                      {cat.items.map((item) => {
+                        return (
+                          <li key={item.href}>
+                            <Link href={item.href}>
+                              {item.title}
+                            </Link>
+                          </li>
+                        );
+                      })}
+                    </ul>
                   </div>
                 ))}
               </div>
-            </div>
-          )}
-        </div>
 
-        {menuOpen && (
-          <div className="border-t border-[#e5e5e5] bg-white lg:hidden">
-            <div className="mx-auto flex min-h-[calc(100svh-8.8rem)] w-full max-w-[1440px] flex-col px-4 py-6 md:px-6">
-              <div className="border-b border-[#e5e5e5] pb-5">
-                <p
-                  style={bodyFont}
-                  className="text-[1.05rem] font-medium uppercase tracking-[0.2em] text-[#707072]"
-                >
-                  Navigation
-                </p>
-                <p
-                  style={displayFont}
-                  className="mt-3 text-[4rem] font-semibold uppercase leading-[0.92] tracking-[0.04em] text-[#111111]"
-                >
-                  Explore
-                  <br />
-                  PakSarZameen
-                </p>
-              </div>
-
-              <div className="mt-5 grid gap-3">
-                {navLinks.map((link) => {
-                  const isActive = pathname === link.href || pathname.startsWith(`${link.href}/`);
-                  const isImpact = link.href === "/impact";
-
-                  return (
-                    <div key={link.href} className="rounded-[2rem] border border-[#e5e5e5] bg-[#fafafa]">
-                      <Link
-                        href={link.href}
-                        style={bodyFont}
-                        className={`block px-4 py-4 text-[1.35rem] font-medium uppercase tracking-[0.16em] transition-colors ${
-                          isActive ? "text-[#111111]" : "text-[#111111]"
-                        }`}
-                      >
-                        {link.label}
-                      </Link>
-
-                      {isImpact && (
-                        <div className="border-t border-[#e5e5e5] px-4 py-4">
-                          <div className="grid gap-4">
-                            {impactCategories.map((category) => (
-                              <div key={category.slug}>
-                                <Link
-                                  href={category.href}
-                                  style={bodyFont}
-                                  className="text-[1.3rem] font-medium uppercase tracking-[0.12em] text-[#111111]"
-                                >
-                                  {category.title}
-                                </Link>
-                                <div className="mt-2 flex flex-col gap-2">
-                                  {category.items.slice(0, 2).map((item) => (
-                                    <Link
-                                      key={item.href}
-                                      href={item.href}
-                                      style={bodyFont}
-                                      className="text-[1.25rem] font-medium text-[#707072] transition-colors hover:text-[#111111]"
-                                    >
-                                      {item.title}
-                                    </Link>
-                                  ))}
-                                </div>
-                              </div>
-                            ))}
+              {/* Stories of Hope */}
+              <div className="mega-stories-row">
+                <div className="mega-stories-header">
+                  <span className="mega-cat-icon mega-cat-icon--story" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <path d="M6 8.5A3.5 3.5 0 0 1 9.5 5h5A3.5 3.5 0 0 1 18 8.5v7A3.5 3.5 0 0 1 14.5 19h-5A3.5 3.5 0 0 1 6 15.5v-7Z" stroke="currentColor" strokeWidth="1.6" />
+                      <path d="M9 10h6M9 13h4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                    </svg>
+                  </span>
+                  <h4 className="mega-cat-title">Stories of Hope</h4>
+                </div>
+                <div className="mega-story-cards">
+                  {STORIES_OF_HOPE.map((s, index) => (
+                    <Link href={s.href} key={s.name} className={`mega-story-card mega-story-card--tone-${(index % 5) + 1}`}>
+                      <div className="mega-story-img-wrap">
+                        {s.image ? (
+                          <Image
+                            src={s.image.src}
+                            alt={s.image.alt}
+                            width={56}
+                            height={56}
+                            className="mega-story-img"
+                          />
+                        ) : (
+                          <div className="mega-story-fallback" aria-hidden="true">
+                            {s.name
+                              .split(" ")
+                              .map((part) => part[0])
+                              .join("")
+                              .slice(0, 2)}
                           </div>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
+                        )}
+                      </div>
+                      <div className="mega-story-info">
+                        <strong>{s.name}</strong>
+                        <span>{s.role}</span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
               </div>
 
-              <div className="mt-auto grid gap-3 border-t border-[#e5e5e5] pt-5 sm:grid-cols-2">
-                <Link
-                  href="/healthcare/doctor/sign-in"
-                  style={bodyFont}
-                  className="inline-flex min-h-[4.8rem] items-center justify-center rounded-full border border-[#cacacb] px-4 text-center text-[1.2rem] font-medium text-[#111111] transition-colors hover:border-[#111111] hover:bg-[#f5f5f5]"
-                >
-                  Doctor Portal
-                </Link>
-                <Link
-                  href="/login"
-                  style={bodyFont}
-                  className="inline-flex min-h-[4.8rem] items-center justify-center rounded-full bg-[#111111] px-4 text-center text-[1.2rem] font-medium text-white transition-colors hover:bg-[#707072]"
-                >
-                  Sign In
-                </Link>
-              </div>
-
-              <div className="mt-4 flex flex-wrap gap-4 border-t border-[#e5e5e5] pt-4">
-                <Link
-                  href="/healthcare/blood-bank"
-                  style={bodyFont}
-                  className="text-[1.15rem] font-medium text-[#707072] transition-colors hover:text-[#111111]"
-                >
-                  24/7 Blood Support
-                </Link>
-                <a
-                  href={`mailto:${siteConfig.contact.email}`}
-                  style={bodyFont}
-                  className="text-[1.15rem] font-medium text-[#707072] transition-colors hover:text-[#111111]"
-                >
-                  {siteConfig.contact.email}
-                </a>
-              </div>
             </div>
           </div>
-        )}
+        </div>
+        {/* ════════════════════════════════════════════════ */}
+
       </header>
 
-      <div className="h-[8.8rem] md:h-[10.2rem]" />
+      {/* Mobile menu */}
+      <div className={`mobile-menu ${menuOpen ? "open" : ""}`} aria-hidden={!menuOpen}>
+        <div className="mobile-menu__panel">
+          <div className="mobile-menu__intro">
+            <span className="mobile-menu__eyebrow">PakSarZameen</span>
+            <p className="mobile-menu__title">
+              Community-led work across education, health, blood support, the
+              environment, and welfare.
+            </p>
+          </div>
+
+          <div className="mobile-menu__links">
+            {navLinks
+              .filter((link) => link.label !== "Paksarzameen Store")
+              .map((link) => (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  className={link.label === "Blood Bank" ? "mobile-menu__link mobile-menu__link--accent" : "mobile-menu__link"}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {link.label}
+                </Link>
+              ))}
+          </div>
+
+          <div className="mobile-menu__actions">
+            <Link
+              href="/healthcare/doctor/sign-in"
+              className="mobile-menu__doctor"
+              onClick={() => setMenuOpen(false)}
+            >
+              Doctor Portal
+            </Link>
+            <Link
+              href="/commonwealth-lab"
+              className="mobile-menu__store"
+              onClick={() => setMenuOpen(false)}
+            >
+              Visit Paksarzameen Store
+            </Link>
+            <Link
+              href="/get-involved"
+              className="mobile-menu__cta"
+              onClick={() => setMenuOpen(false)}
+            >
+              Get Involved
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      
     </>
   );
 }

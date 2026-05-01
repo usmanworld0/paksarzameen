@@ -1,23 +1,34 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
-import { Search } from "lucide-react";
+import Image from "next/image";
+import type { CSSProperties } from "react";
 import { useMemo, useState } from "react";
 
-import { PROGRAM_CARDS } from "@/features/home/home.content";
 import type { Program } from "@/lib/models/Program";
+import { PROGRAM_CARDS } from "@/features/home/home.content";
+
+import styles from "./ProgramsHubClient.module.css";
 
 type ProgramsHubClientProps = {
   programs: Program[];
 };
 
-function getProgramImage(programTitle: string) {
+const ORBIT_POINTS = [
+  { top: "1%", right: "18%", shift: "0rem", delay: "0ms", rotate: "-10deg" },
+  { top: "17%", right: "10%", shift: "5.1rem", delay: "120ms", rotate: "6deg" },
+  { top: "34%", right: "2%", shift: "9.2rem", delay: "220ms", rotate: "12deg" },
+  { top: "53%", right: "2%", shift: "9.2rem", delay: "320ms", rotate: "-10deg" },
+  { top: "71%", right: "10%", shift: "5.1rem", delay: "420ms", rotate: "5deg" },
+  { top: "88%", right: "18%", shift: "0rem", delay: "520ms", rotate: "10deg" },
+] as const;
+
+// Helper function to get program icon/logo index based on title
+function getProgramLogoIndex(programTitle: string): number {
   const programCard = PROGRAM_CARDS.find(
-    (card) => card.name.toLowerCase() === programTitle.toLowerCase(),
+    (card) => card.name.toLowerCase() === programTitle.toLowerCase()
   );
-  const fallbackIndex = programCard ? PROGRAM_CARDS.indexOf(programCard) : 0;
-  return `/images/placeholders/${10 + (fallbackIndex % 6)}.png`;
+  return programCard ? PROGRAM_CARDS.indexOf(programCard) : 0;
 }
 
 export function ProgramsHubClient({ programs }: ProgramsHubClientProps) {
@@ -31,94 +42,116 @@ export function ProgramsHubClient({ programs }: ProgramsHubClientProps) {
 
   const filteredPrograms = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
-
     return programs.filter((program) => {
       const matchCategory =
         activeCategory === "All" || program.category === activeCategory;
       const matchSearch =
         normalizedQuery.length === 0 ||
         program.title.toLowerCase().includes(normalizedQuery) ||
-        program.description.toLowerCase().includes(normalizedQuery) ||
-        program.fullContent.toLowerCase().includes(normalizedQuery);
-
+        program.description.toLowerCase().includes(normalizedQuery);
       return matchCategory && matchSearch;
     });
   }, [activeCategory, programs, query]);
 
+  const orbitPrograms = useMemo(() => {
+    if (filteredPrograms.length === 0) {
+      return [] as Program[];
+    }
+    return filteredPrograms.slice(0, ORBIT_POINTS.length);
+  }, [filteredPrograms]);
+
   return (
-    <section className="site-section" aria-labelledby="programs-hub-results-heading">
-      <div className="site-toolbar">
-        <div className="site-toolbar__row">
-          <div>
-            <p className="site-eyebrow">Programs directory</p>
-            <h2 id="programs-hub-results-heading" className="site-heading site-heading--sm mt-3">
-              Browse By Category
-            </h2>
+    <section
+      className={styles.section}
+      aria-labelledby="programs-hub-heading"
+    >
+      <div className={styles.heroWrap}>
+        <header className={styles.heroContent}>
+          <p className={styles.eyebrow}>Programs Hub</p>
+          <h1 id="programs-hub-heading" className={styles.title}>
+            PakSarZameen Projects And Programs
+          </h1>
+          <p className={styles.description}>
+            Explore our community development programs in education, health,
+            environmental action, animal welfare, women empowerment, and social
+            care. Filter by category and follow the areas where PSZ is working
+            on the ground.
+          </p>
+
+          <div className={styles.controls}>
+            <label className={styles.searchLabel} htmlFor="program-search">
+              Search Programs
+            </label>
+            <input
+              id="program-search"
+              type="search"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Search by department or focus area"
+              className={styles.searchInput}
+            />
+
+            <div className={styles.categoryRow}>
+              {categories.map((category) => {
+                const isActive = category === activeCategory;
+                return (
+                  <button
+                    key={category}
+                    type="button"
+                    onClick={() => setActiveCategory(category)}
+                    className={`${styles.categoryButton} ${isActive ? styles.categoryButtonActive : ""}`}
+                  >
+                    {category}
+                  </button>
+                );
+              })}
+            </div>
           </div>
-          <span className="site-badge site-badge--muted">
-            {filteredPrograms.length} results
-          </span>
-        </div>
+        </header>
 
-        <div className="site-toolbar__search">
-          <Search className="site-toolbar__icon" />
-          <input
-            id="program-search"
-            type="search"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search programs"
-            className="site-input"
-          />
-        </div>
+        <div className={styles.heroOrbit} aria-live="polite">
+          <div className={styles.heroOrbitGlow} />
+          <div className={styles.heroOrbitRing} />
 
-        <div className="flex flex-wrap gap-2">
-          {categories.map((category) => {
-            const isActive = category === activeCategory;
-
-            return (
-              <button
-                key={category}
-                type="button"
-                onClick={() => setActiveCategory(category)}
-                className={`site-pill-button ${isActive ? "site-pill-button--active" : ""}`}
+          {orbitPrograms.length > 0 ? (
+            orbitPrograms.map((program, index) => (
+              <Link
+                href={`/programs/${program.slug}`}
+                key={program.id}
+                className={`${styles.heroOrbitItem} ${styles[`tone${(index % 5) + 1}` as const]}`}
+                style={
+                  {
+                        top: ORBIT_POINTS[index].top,
+                        right: ORBIT_POINTS[index].right,
+                        ["--orbit-shift" as string]: ORBIT_POINTS[index].shift,
+                        ["--orbit-delay" as string]: ORBIT_POINTS[index].delay,
+                        ["--orbit-rotate" as string]: ORBIT_POINTS[index].rotate,
+                  } as CSSProperties
+                }
               >
-                {category}
-              </button>
-            );
-          })}
+                <div className={styles.heroOrbitBadge}>
+                  <Image
+                    src={`/images/placeholders/${10 + getProgramLogoIndex(program.title)}.png`}
+                    alt={`${program.title} logo`}
+                    fill
+                    sizes="160px"
+                    className={styles.heroOrbitImage}
+                    quality={60}
+                  />
+                </div>
+                <div className={styles.heroOrbitText}>
+                  <p>{program.title}</p>
+                  <span>{program.category}</span>
+                </div>
+              </Link>
+            ))
+          ) : (
+            <div className={styles.emptyState}>
+              No programs found for this filter. Try another category or search term.
+            </div>
+          )}
         </div>
       </div>
-
-      {filteredPrograms.length === 0 ? (
-        <div className="site-empty mt-6">
-          No programs match that search. Try another keyword.
-        </div>
-      ) : (
-        <div className="site-grid site-grid--three mt-6">
-          {filteredPrograms.map((program) => (
-            <article key={program.id} className="site-card site-card--rounded overflow-hidden">
-              <div className="site-detail__media site-detail__media--landscape">
-                <Image
-                  src={getProgramImage(program.title)}
-                  alt={program.title}
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 33vw"
-                  className="object-cover"
-                />
-              </div>
-              <div className="site-card__body">
-                <p className="site-card__eyebrow">{program.category}</p>
-                <h3 className="site-card__title">{program.title}</h3>
-                <p className="site-card__text">{program.description}</p>
-                <Link href={`/programs/${program.slug}`} className="site-card-link mt-5">
-                  View Program
-                </Link>
-              </div>
-            </article>
-          ))}
-        </div>
-      )}
     </section>
   );
 }

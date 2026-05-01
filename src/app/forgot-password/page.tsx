@@ -18,8 +18,8 @@ export default async function ForgotPasswordPage() {
   }
 
   return (
-    <main className="site-auth">
-      <section className="site-auth-shell">
+    <main className="min-h-screen bg-[linear-gradient(180deg,_#f8fcf8_0%,_#edf5ef_100%)] px-4 py-14 sm:px-6 lg:px-8">
+      <section className="mx-auto flex min-h-[calc(100vh-7rem)] max-w-4xl items-center justify-center">
         <ForgotPasswordForm />
       </section>
     </main>

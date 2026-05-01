@@ -15,7 +15,7 @@ export function AdoptDogButton({ dogId }: AdoptDogButtonProps) {
   async function handleAdopt() {
     const normalizedWhatsapp = whatsappNumber.trim();
     if (!normalizedWhatsapp) {
-      setError("Please provide your WhatsApp number so our team can contact you.");
+      setError("Please provide your WhatsApp number so our admin can contact you.");
       setSuccess(null);
       return;
     }
@@ -45,18 +45,18 @@ export function AdoptDogButton({ dogId }: AdoptDogButtonProps) {
 
       setSuccess(payload.message ?? "Adoption request submitted.");
     } catch (requestError) {
-      setError(
-        requestError instanceof Error ? requestError.message : "Could not submit request.",
-      );
+      setError(requestError instanceof Error ? requestError.message : "Could not submit request.");
     } finally {
       setSubmitting(false);
     }
   }
 
   return (
-    <div className="site-stack">
-      <label htmlFor={`adopt-whatsapp-${dogId}`} className="block">
-        <span className="site-form-label site-form-label--caps">WhatsApp Number</span>
+    <div className="space-y-3">
+      <div className="space-y-2">
+        <label htmlFor={`adopt-whatsapp-${dogId}`} className="block text-sm font-medium text-slate-700">
+          WhatsApp Number
+        </label>
         <input
           id={`adopt-whatsapp-${dogId}`}
           type="tel"
@@ -65,24 +65,22 @@ export function AdoptDogButton({ dogId }: AdoptDogButtonProps) {
           value={whatsappNumber}
           onChange={(event) => setWhatsappNumber(event.target.value)}
           placeholder="03XX1234567"
-          className="site-input mt-2"
+          className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
           disabled={submitting}
         />
-      </label>
-
-      <p className="site-copy site-copy--sm">Our admin team will contact you after review.</p>
+        <p className="text-xs text-slate-500">Our admin will contact you on this WhatsApp number.</p>
+      </div>
 
       <button
         type="button"
         onClick={() => void handleAdopt()}
         disabled={submitting}
-        className="site-button w-full disabled:cursor-not-allowed disabled:opacity-50"
+        className="inline-flex items-center rounded-full bg-emerald-700 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-800/25 transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-70"
       >
         {submitting ? "Submitting..." : "Adopt This Dog"}
       </button>
-
-      {success ? <div className="site-status--success">{success}</div> : null}
-      {error ? <div className="site-status--error">{error}</div> : null}
+      {success ? <p className="text-sm text-emerald-700">{success}</p> : null}
+      {error ? <p className="text-sm text-red-700">{error}</p> : null}
     </div>
   );
 }

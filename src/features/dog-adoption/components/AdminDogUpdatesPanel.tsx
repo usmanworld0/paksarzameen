@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-
+import type { DogPostAdoptionUpdateRecord, DogRecord } from "@/lib/dog-adoption";
 import { adminFetch } from "@/features/auth/utils/admin-api";
 import { canAccessAdminRoute, useAdminClientSession } from "@/features/auth/utils/admin-session-client";
-import type { DogPostAdoptionUpdateRecord, DogRecord } from "@/lib/dog-adoption";
 
 type UpdateFormState = {
   dogId: string;
@@ -124,138 +123,132 @@ export function AdminDogUpdatesPanel() {
     }
   }
 
-  const quickLinks = [
-    { href: "/admin", label: "Control Center" },
-    { href: "/admin/dogs", label: "Manage Dogs" },
-    { href: "/admin/adoption-requests", label: "Adoption Requests" },
-    { href: "/admin/blood-requests", label: "Blood Requests" },
-  ].filter((item) => canAccessAdminRoute(session, item.href));
-
   return (
-    <main className="admin-page">
-      <section className="site-shell site-stack--xl pb-20 pt-32">
-        <header className="site-panel site-panel--rounded">
-          <div className="site-panel__body">
-            <p className="site-eyebrow">Post-adoption storytelling</p>
-            <div className="site-toolbar__row mt-3">
-              <div>
-                <h1 className="site-display">Life After Rescue</h1>
-                <p className="site-copy mt-4 max-w-[70rem]">
-                  Keep the adoption journey visible by attaching updated photos, collar tag notes, and follow-up moments for dogs already in homes.
-                </p>
-              </div>
-              <span className="site-badge site-badge--muted">{updates.length} updates</span>
-            </div>
-            {quickLinks.length ? (
-              <div className="site-form-actions mt-6">
-                {quickLinks.map((item) => (
-                  <a key={item.href} href={item.href} className="site-link">
-                    {item.label}
-                  </a>
-                ))}
-              </div>
-            ) : null}
+    <main className="min-h-screen bg-[linear-gradient(180deg,_#f7fcf7_0%,_#eef6ef_100%)] px-4 pb-16 pt-28 sm:px-6 lg:px-10">
+      <section className="mx-auto max-w-6xl space-y-6">
+        <header className="rounded-3xl border border-emerald-100 bg-white p-6 shadow-lg shadow-emerald-900/10 sm:p-8">
+          <h1 className="text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">Admin · Dog Updates</h1>
+          <p className="mt-2 text-sm text-slate-600 sm:text-base">
+            Upload life-after-adoption photos and maintain the rescue journey gallery.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-3">
+            {[
+              { href: "/admin", label: "Control Center" },
+              { href: "/admin/dogs", label: "Manage Dogs" },
+              { href: "/admin/adoption-requests", label: "Adoption Requests" },
+              { href: "/admin/blood-requests", label: "Blood Requests" },
+            ]
+              .filter((item) => canAccessAdminRoute(session, item.href))
+              .map((item) => (
+                <a
+                  key={item.href}
+                  className="text-sm font-semibold text-emerald-700 hover:text-emerald-600"
+                  href={item.href}
+                >
+                  {item.label} →
+                </a>
+              ))}
           </div>
         </header>
 
-        {error ? <div className="site-callout site-callout--error">{error}</div> : null}
+        {error ? <p className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</p> : null}
 
-        <section className="site-grid site-grid--two xl:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
-          <div className="site-panel site-panel--rounded">
-            <div className="site-panel__body">
-              <div className="border-b border-[#e5e5e5] pb-5">
-                <p className="site-eyebrow">Upload update</p>
-                <h2 className="site-heading site-heading--sm mt-3">Add A New Story</h2>
-                <p className="site-copy site-copy--sm mt-3">Only dogs with approved adoptions can receive follow-up updates.</p>
-              </div>
+        <section className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h2 className="text-xl font-semibold text-slate-900">Upload Post-Adoption Update</h2>
+            <p className="mt-1 text-xs text-slate-500">Only adopted dogs can receive updates.</p>
 
-              <div className="mt-5 grid gap-3">
-                <select
-                  className="site-select"
-                  value={form.dogId}
-                  onChange={(event) => setForm((prev) => ({ ...prev, dogId: event.target.value }))}
-                >
-                  <option value="">Select adopted dog</option>
-                  {adoptedDogs.map((dog) => (
-                    <option key={dog.dogId} value={dog.dogId}>
-                      {dog.name} ({dog.breed})
-                    </option>
-                  ))}
-                </select>
+            <div className="mt-4 grid gap-3">
+              <select
+                className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                value={form.dogId}
+                onChange={(event) => setForm((prev) => ({ ...prev, dogId: event.target.value }))}
+              >
+                <option value="">Select adopted dog</option>
+                {adoptedDogs.map((dog) => (
+                  <option key={dog.dogId} value={dog.dogId}>
+                    {dog.name} ({dog.breed})
+                  </option>
+                ))}
+              </select>
 
-                <textarea
-                  className="site-textarea"
-                  placeholder="Caption"
-                  value={form.caption}
-                  onChange={(event) => setForm((prev) => ({ ...prev, caption: event.target.value }))}
-                />
+              <textarea
+                className="min-h-28 rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                placeholder="Caption"
+                value={form.caption}
+                onChange={(event) => setForm((prev) => ({ ...prev, caption: event.target.value }))}
+              />
 
-                <input
-                  className="site-input"
-                  placeholder="Collar Tag (optional)"
-                  value={form.collarTag}
-                  onChange={(event) => setForm((prev) => ({ ...prev, collarTag: event.target.value }))}
-                />
+              <input
+                className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                placeholder="Collar Tag (optional)"
+                value={form.collarTag}
+                onChange={(event) => setForm((prev) => ({ ...prev, collarTag: event.target.value }))}
+              />
 
-                <input
-                  className="site-input"
-                  placeholder="Image URL (optional if upload provided)"
-                  value={form.imageUrl}
-                  onChange={(event) => setForm((prev) => ({ ...prev, imageUrl: event.target.value }))}
-                />
+              <input
+                className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                placeholder="Image URL (optional if upload provided)"
+                value={form.imageUrl}
+                onChange={(event) => setForm((prev) => ({ ...prev, imageUrl: event.target.value }))}
+              />
 
-                <input
-                  className="site-input"
-                  type="file"
-                  accept="image/*"
-                  onChange={(event) =>
-                    setForm((prev) => ({
-                      ...prev,
-                      imageFile: event.target.files?.[0] ?? null,
-                    }))
-                  }
-                />
+              <input
+                className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                type="file"
+                accept="image/*"
+                onChange={(event) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    imageFile: event.target.files?.[0] ?? null,
+                  }))
+                }
+              />
 
-                <button type="button" disabled={saving} onClick={() => void submitUpdate()} className="site-button">
-                  {saving ? "Uploading..." : "Upload Update"}
-                </button>
-              </div>
+              <button
+                type="button"
+                disabled={saving}
+                onClick={() => void submitUpdate()}
+                className="rounded-full bg-emerald-700 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-600 disabled:opacity-70"
+              >
+                {saving ? "Uploading..." : "Upload Update"}
+              </button>
             </div>
           </div>
 
-          <div className="site-panel site-panel--rounded">
-            <div className="site-panel__body">
-              <div className="border-b border-[#e5e5e5] pb-5">
-                <p className="site-eyebrow">Existing updates</p>
-                <h2 className="site-heading site-heading--sm mt-3">Published Follow-Ups</h2>
-              </div>
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h2 className="text-xl font-semibold text-slate-900">Existing Updates</h2>
+            {loading ? <p className="mt-3 text-sm text-slate-600">Loading updates...</p> : null}
+            {!loading && !updates.length ? (
+              <p className="mt-3 text-sm text-slate-600">No updates uploaded yet.</p>
+            ) : null}
 
-              {loading ? <p className="site-copy mt-5">Loading updates...</p> : null}
-              {!loading && !updates.length ? <div className="site-empty mt-5">No updates uploaded yet.</div> : null}
-
-              <div className="mt-5 space-y-3">
-                {updates.map((item) => (
-                  <article key={item.updateId} className="rounded-[1.8rem] border border-[#e5e5e5] bg-[#fafafa] p-4">
-                    <div className="site-toolbar__row">
-                      <div>
-                        <h3 className="text-[1.5rem] font-medium uppercase tracking-[-0.03em] text-[#111111]">{item.dogName}</h3>
-                        <p className="mt-3 text-[1.25rem] leading-[1.7] text-[#707072]">{item.caption}</p>
-                        {item.collarTag ? (
-                          <p className="mt-3 text-[1.05rem] uppercase tracking-[0.16em] text-[#111111]">
-                            Collar tag: {item.collarTag}
-                          </p>
-                        ) : null}
-                        <p className="mt-3 text-[1.1rem] text-[#707072]">
-                          {new Date(item.uploadedAt).toLocaleString()} / {item.uploadedBy}
+            <div className="mt-4 space-y-3">
+              {updates.map((item) => (
+                <article key={item.updateId} className="rounded-xl border border-slate-200 p-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <h3 className="text-sm font-semibold text-slate-900">{item.dogName}</h3>
+                      <p className="text-xs text-slate-600">{item.caption}</p>
+                      {item.collarTag ? (
+                        <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-emerald-700">
+                          Collar: {item.collarTag}
                         </p>
-                      </div>
-                      <button type="button" onClick={() => void deleteUpdate(item.updateId)} className="site-button-secondary">
-                        Delete
-                      </button>
+                      ) : null}
+                      <p className="mt-1 text-[11px] text-slate-500">
+                        {new Date(item.uploadedAt).toLocaleString()} · {item.uploadedBy}
+                      </p>
                     </div>
-                  </article>
-                ))}
-              </div>
+                    <button
+                      type="button"
+                      onClick={() => void deleteUpdate(item.updateId)}
+                      className="rounded-md border border-rose-200 px-2 py-1 text-xs font-semibold text-rose-700"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </article>
+              ))}
             </div>
           </div>
         </section>

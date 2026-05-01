@@ -11,13 +11,7 @@ export type Message = {
   createdAt: string;
 };
 
-export default function ChatBox({
-  dogId,
-  initialMessages = [],
-}: {
-  dogId: string;
-  initialMessages?: Message[];
-}) {
+export default function ChatBox({ dogId, initialMessages = [] }: { dogId: string; initialMessages?: Message[] }) {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [value, setValue] = useState("");
   const [sending, setSending] = useState(false);
@@ -41,7 +35,7 @@ export default function ChatBox({
     if (!value.trim()) return;
     setSending(true);
     try {
-      const res = await fetch("/api/dog-messages", {
+      const res = await fetch(`/api/dog-messages`, {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ dogId, body: value }),
@@ -49,7 +43,7 @@ export default function ChatBox({
 
       const payload = await res.json();
       if (res.ok && payload.data) {
-        setMessages((current) => [...current, payload.data]);
+        setMessages((m) => [...m, payload.data]);
         setValue("");
       }
     } catch {
@@ -60,33 +54,25 @@ export default function ChatBox({
   }
 
   return (
-    <div className="site-stack">
-      <div className="max-h-80 space-y-3 overflow-y-auto pr-1">
-        {messages.length === 0 ? (
-          <div className="site-empty">No messages yet. Start the conversation below.</div>
-        ) : (
-          messages.map((message) => (
-            <article key={message.id} className="site-panel site-panel--soft">
-              <div className="site-panel__body !p-4">
-                <p className="site-card__eyebrow">
-                  {message.senderName ?? message.senderId} / {new Date(message.createdAt).toLocaleString()}
-                </p>
-                <p className="site-copy site-copy--sm mt-3 text-[#111111]">{message.body}</p>
-              </div>
-            </article>
-          ))
-        )}
+    <div className="rounded-lg border border-slate-200 bg-white p-3">
+      <div className="max-h-80 overflow-y-auto space-y-2 pb-2">
+        {messages.map((m) => (
+          <div key={m.id} className="text-sm">
+            <div className="text-xs text-slate-500">{m.senderName ?? m.senderId} • {new Date(m.createdAt).toLocaleString()}</div>
+            <div className="mt-1 rounded-md bg-slate-50 p-2 text-slate-800">{m.body}</div>
+          </div>
+        ))}
       </div>
 
-      <div className="site-form-actions">
+      <div className="mt-3 flex gap-2">
         <input
-          className="site-input flex-1"
+          className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm"
           value={value}
-          onChange={(event) => setValue(event.target.value)}
-          placeholder="Write a message"
+          onChange={(e) => setValue(e.target.value)}
+          placeholder="Write a message to the tenant"
         />
         <button
-          className="site-button disabled:opacity-70"
+          className="rounded-full bg-emerald-700 px-4 py-2 text-sm font-semibold text-white disabled:opacity-70"
           disabled={sending}
           onClick={() => void send()}
         >

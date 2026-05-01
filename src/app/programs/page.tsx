@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 
-import { CompactPageHeader } from "@/components/layout/CompactPageHeader";
 import { siteConfig } from "@/config/site";
 import { ProgramsHubClient } from "@/features/programs/components/ProgramsHubClient";
 import { getPrograms } from "@/lib/services/getPrograms";
+
+import styles from "./ProgramsPage.module.css";
 
 export const metadata: Metadata = {
   title: "Programs: Education, Health, Environment And Welfare",
@@ -46,13 +47,8 @@ export default async function ProgramsPage() {
   const programs = await getPrograms();
 
   return (
-    <main className="site-page">
-      <CompactPageHeader
-        title="Programs."
-        description="Explore PSZ work across education, health, welfare, and climate action."
-      />
-
+    <section className={styles.page}>
       <ProgramsHubClient programs={programs} />
-    </main>
+    </section>
   );
 }

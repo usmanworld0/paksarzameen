@@ -21,6 +21,12 @@ const STATUS_LABELS: Record<DogStatus, string> = {
   adopted: "Adopted",
 };
 
+function statusClass(status: DogStatus) {
+  if (status === "available") return "bg-emerald-100 text-emerald-800";
+  if (status === "adopted") return "bg-indigo-100 text-indigo-700";
+  return "bg-amber-100 text-amber-700";
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
   const dog = await getDogById(id);
@@ -49,110 +55,90 @@ export default async function DogDetailPage({ params }: PageProps) {
   const normalizedStatus = normalizeDogStatus(dog.status);
 
   return (
-    <main className="site-page">
-      <article className="site-detail">
-        <div className="site-shell">
-          <Link href="/dog-adoption" className="site-back-link">
-            Back To Browse Dogs
-          </Link>
+    <main className="min-h-screen bg-[linear-gradient(180deg,_#f8fcf8_0%,_#edf5ef_100%)] px-4 pb-20 pt-28 sm:px-6 lg:px-10">
+      <section className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1.12fr_0.88fr]">
+        <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-lg shadow-slate-900/5">
+          <div className="relative aspect-[4/3] bg-slate-100">
+            <Image
+              src={dog.imageUrl}
+              alt={dog.name}
+              fill
+              sizes="(max-width: 1024px) 100vw, 60vw"
+              className="object-cover"
+            />
+          </div>
+        </div>
 
-          <div className="site-detail__body lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] mt-6">
-            <div className="site-detail__media site-detail__media--square">
-              <Image
-                src={dog.imageUrl}
-                alt={dog.name}
-                fill
-                sizes="(max-width: 1024px) 100vw, 55vw"
-                className="object-cover"
-              />
-            </div>
-
-            <section className="site-panel site-panel--soft">
-              <div className="site-panel__body">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <p className="site-eyebrow">{dog.rescueName}</p>
-                    <h1 className="site-display mt-4 max-w-[10ch]">{dog.name}</h1>
-                  </div>
-                  <span
-                    className={`site-badge ${
-                      normalizedStatus === "available" ? "site-badge--dark" : "site-badge--muted"
-                    }`}
-                  >
-                    {STATUS_LABELS[normalizedStatus]}
-                  </span>
-                </div>
-
-                <div className="site-meta-row mt-6">
-                  <span>{dog.breed}</span>
-                  <span>{dog.color}</span>
-                  <span>{dog.age}</span>
-                  <span>{dog.gender}</span>
-                </div>
-
-                {dog.locationLabel || dog.city || dog.area ? (
-                  <div className="site-callout mt-5">
-                    Rescue area: {dog.locationLabel ?? [dog.city, dog.area].filter(Boolean).join(", ")}
-                  </div>
-                ) : null}
-
-                {dog.petName ? (
-                  <div className="site-callout mt-5">
-                    Pet name: {dog.petName}
-                  </div>
-                ) : null}
-
-                <p className="site-copy mt-6">{dog.description}</p>
-
-                <div className="site-divider mt-6 pt-6">
-                  {normalizedStatus === "available" ? (
-                    <AdoptDogButton dogId={dog.dogId} />
-                  ) : (
-                    <div className="site-callout">
-                      This profile is currently marked {STATUS_LABELS[normalizedStatus].toLowerCase()} and is not available for a new request.
-                    </div>
-                  )}
-                </div>
-              </div>
-            </section>
+        <div className="space-y-5 rounded-3xl border border-emerald-100 bg-white/95 p-6 shadow-xl shadow-emerald-900/10 sm:p-8">
+          <div className="space-y-2">
+            <p className="inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700">
+              Dog Profile
+            </p>
+            <h1 className="text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">{dog.name}</h1>
+            <p className="text-xs uppercase tracking-wide text-slate-500">Rescue Name: {dog.rescueName}</p>
+            {dog.petName ? <p className="text-sm font-semibold text-indigo-700">Pet Name: {dog.petName}</p> : null}
+            <p className="text-sm text-slate-600 sm:text-base">
+              {dog.breed} • {dog.color} • {dog.age} • {dog.gender}
+            </p>
+            <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${statusClass(normalizedStatus)}`}>
+              {STATUS_LABELS[normalizedStatus]}
+            </span>
           </div>
 
-          <section className="site-section">
-            <div>
-              <p className="site-eyebrow">After adoption</p>
-              <h2 className="site-heading site-heading--sm mt-3">Post-Adoption Moments</h2>
-            </div>
+          <p className="text-base leading-relaxed text-slate-700">{dog.description}</p>
 
-            {!updates.length ? (
-              <div className="site-empty mt-6">No post-adoption updates yet.</div>
-            ) : (
-              <div className="site-grid site-grid--three mt-6">
-                {updates.map((item) => (
-                  <article key={item.updateId} className="site-card site-card--rounded overflow-hidden">
-                    <div className="site-detail__media site-detail__media--landscape">
-                      <Image
-                        src={item.imageUrl}
-                        alt={item.caption}
-                        fill
-                        sizes="(max-width: 1024px) 100vw, 33vw"
-                        className="object-cover"
-                      />
-                    </div>
-                    <div className="site-card__body">
-                      <p className="site-copy site-copy--sm">{item.caption}</p>
-                      {item.collarTag ? (
-                        <div className="site-meta-row mt-5">
-                          <span>Collar tag: {item.collarTag}</span>
-                        </div>
-                      ) : null}
-                    </div>
-                  </article>
-                ))}
-              </div>
-            )}
-          </section>
+          {normalizedStatus === "available" ? (
+            <AdoptDogButton dogId={dog.dogId} />
+          ) : (
+            <p className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+              This dog is currently marked as {STATUS_LABELS[normalizedStatus]}.
+            </p>
+          )}
+
+          <Link href="/dog-adoption" className="inline-flex text-sm font-semibold text-emerald-700 hover:text-emerald-600">
+            ← Back to Browse Dogs
+          </Link>
         </div>
-      </article>
+      </section>
+
+      <section className="mx-auto mt-10 max-w-6xl space-y-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+        <div>
+          <h2 className="text-2xl font-semibold text-slate-900">Life After Adoption</h2>
+          <p className="mt-1 text-sm text-slate-600 sm:text-base">
+            Post-adoption moments shared by the admin team for adopted dogs.
+          </p>
+        </div>
+
+        {!updates.length ? (
+          <p className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+            No post-adoption updates uploaded yet.
+          </p>
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {updates.map((item) => (
+              <article key={item.updateId} className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+                <div className="relative aspect-[4/3] bg-slate-100">
+                  <Image
+                    src={item.imageUrl}
+                    alt={item.caption}
+                    fill
+                    sizes="(max-width: 1024px) 50vw, 33vw"
+                    className="object-cover"
+                  />
+                </div>
+                <div className="space-y-2 p-4">
+                  <p className="text-sm leading-relaxed text-slate-700">{item.caption}</p>
+                  {item.collarTag ? (
+                    <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700">
+                      Collar Tag: {item.collarTag}
+                    </p>
+                  ) : null}
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
     </main>
   );
 }

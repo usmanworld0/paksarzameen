@@ -314,8 +314,8 @@ export function AdminUsersPanel() {
   }
 
   return (
-    <main className="admin-page">
-      <section className="site-shell site-stack--xl pb-20 pt-32">
+    <main className="min-h-screen bg-[linear-gradient(180deg,#f6fbf7_0%,#ecf4ee_100%)] px-4 pb-16 pt-28 sm:px-6 lg:px-10">
+      <section className="mx-auto max-w-7xl space-y-6">
         <div className="rounded-3xl border border-emerald-100 bg-white/95 p-6 shadow-[0_25px_70px_rgba(4,45,29,0.12)] sm:p-8">
           <div className="mb-6 space-y-2">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700">Admin</p>

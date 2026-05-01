@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 
+import styles from "./BloodBankRequestForm.module.css";
+
 type FormState = {
   name: string;
   neededAt: string;
@@ -68,13 +70,13 @@ export function BloodBankRequestForm() {
         throw new Error(payload.error ?? "Submission failed.");
       }
 
-      setMessage("Registration submitted. Our blood bank team will contact you shortly.");
+      setMessage("Registration submitted. Our blood bank team will contact you shortly. رجسٹریشن کامیاب۔");
       setForm(INITIAL_STATE);
     } catch (submitError) {
       setError(
         submitError instanceof Error
           ? submitError.message
-          : "Unable to submit your request right now.",
+          : "Unable to submit your request right now."
       );
     } finally {
       setIsSubmitting(false);
@@ -82,19 +84,20 @@ export function BloodBankRequestForm() {
   }
 
   useEffect(() => {
+    // Try to fetch profile to prefill form when user is authenticated
     let mounted = true;
 
     async function loadProfile() {
       try {
-        const response = await fetch("/api/profile");
+        const res = await fetch('/api/profile');
         if (!mounted) return;
-        if (!response.ok) {
+        if (!res.ok) {
           setIsAuthChecked(true);
           setIsLoggedIn(false);
           return;
         }
 
-        const payload = await response.json();
+        const payload = await res.json();
         const data = payload?.data;
         if (data) {
           if (data.profile) setProfile(data.profile);
@@ -108,13 +111,13 @@ export function BloodBankRequestForm() {
           setIsLoggedIn(true);
         }
       } catch {
-        // ignore
+        // ignore network/profile errors — treat as unauthenticated
       } finally {
         if (mounted) setIsAuthChecked(true);
       }
     }
 
-    void loadProfile();
+    loadProfile();
 
     return () => {
       mounted = false;
@@ -123,109 +126,99 @@ export function BloodBankRequestForm() {
 
   if (isAuthChecked && !isLoggedIn) {
     return (
-      <div className="site-callout">
-        <p>Create an account or sign in before registering for blood support coordination.</p>
-        <div className="site-form-actions mt-4">
-          <Link href="/signup" className="site-button">
-            Create Account
-          </Link>
-          <Link href="/login" className="site-button-secondary">
-            Sign In
-          </Link>
+      <div className={styles.authBox}>
+        <p className={styles.authText}>Please create an account or sign in to register as a donor — this makes coordination faster.</p>
+        <div className={styles.authButtons}>
+          <Link href="/signup" className={styles.authButton}>Create account</Link>
+          <Link href="/login" className={styles.authButton}>Sign in</Link>
         </div>
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="site-stack--lg">
-      <div>
-        <p className="site-card__eyebrow">Request support</p>
-        <h3 className="site-heading site-heading--sm mt-3">Blood Donation Registration</h3>
-        <p className="site-copy mt-4">
-          Enter the essential details so the team can coordinate quickly.
-        </p>
-      </div>
+    <form onSubmit={handleSubmit} className={styles.form}>
+      <h3 className={styles.title}>Blood Donation Registration</h3>
+      <p className={styles.description}>Enter your basic details.</p>
 
       {isLoggedIn && profile ? (
-        <div className="site-callout">
-          <strong>{profile.name ?? form.name}</strong>
-          <div className="site-meta-row mt-3">
-            <span>{profile.city ?? form.location}</span>
-            <span>{(profile.bloodGroup ?? form.bloodGroup) || "Blood group N/A"}</span>
-            <span>{profile.phone ?? form.contactNumber}</span>
+        <div className={styles.profileSummary}>
+          <div>
+            <strong>{profile.name ?? form.name}</strong>
+            <div className={styles.profileRow}>
+              {profile.city ?? form.location} · {(profile.bloodGroup ?? form.bloodGroup) || "Blood group N/A"}
+            </div>
+            <div className={styles.profileRow}>Contact: {profile.phone ?? form.contactNumber}</div>
           </div>
-          <Link href="/dashboard" className="site-card-link mt-4">
-            Edit Profile
-          </Link>
+          <div>
+            <Link href="/dashboard" className={styles.profileEdit}>Edit profile</Link>
+          </div>
         </div>
       ) : null}
 
-      <div className="site-grid site-grid--two">
-        <label className="block">
-          <span className="site-form-label site-form-label--caps">Full Name</span>
+      <div className={styles.grid}>
+        <label className={styles.label}>
+          Full Name | پورا نام
           <input
             required
             placeholder="Full name"
             value={form.name}
             onChange={(event) => setForm((prev) => ({ ...prev, name: event.target.value }))}
-            className="site-input mt-2"
+            className={styles.input}
           />
         </label>
 
-        <label className="block">
-          <span className="site-form-label site-form-label--caps">Contact Number</span>
+        <label className={styles.label}>
+          Contact Number | رابطہ نمبر
           <input
             required
-            placeholder="+92 3xx xxx xxxx"
+            placeholder="+92 (3xx) xxx xxxx"
             value={form.contactNumber}
-            onChange={(event) =>
-              setForm((prev) => ({ ...prev, contactNumber: event.target.value }))
-            }
-            className="site-input mt-2"
+            onChange={(event) => setForm((prev) => ({ ...prev, contactNumber: event.target.value }))}
+            className={styles.input}
           />
         </label>
 
-        <label className="block">
-          <span className="site-form-label site-form-label--caps">City / Hospital</span>
+        <label className={styles.label}>
+          City / Hospital | شہر / اسپتال
           <input
             required
             placeholder="Bahawalpur"
             value={form.location}
             onChange={(event) => setForm((prev) => ({ ...prev, location: event.target.value }))}
-            className="site-input mt-2"
+            className={styles.input}
           />
         </label>
 
-        <label className="block">
-          <span className="site-form-label site-form-label--caps">CNIC</span>
+        <label className={styles.label}>
+          CNIC | شناختی کارڈ
           <input
             required
             placeholder="xxxxx-xxxxxxx-x"
             value={form.cnic}
             onChange={(event) => setForm((prev) => ({ ...prev, cnic: event.target.value }))}
-            className="site-input mt-2"
+            className={styles.input}
           />
         </label>
 
-        <label className="block">
-          <span className="site-form-label site-form-label--caps">Available Time</span>
+        <label className={`${styles.label} ${styles.fullWidth}`}>
+          Available Time | دستیاب وقت
           <input
             type="datetime-local"
             required
             min={minDateTime}
             value={form.neededAt}
             onChange={(event) => setForm((prev) => ({ ...prev, neededAt: event.target.value }))}
-            className="site-input mt-2"
+            className={styles.input}
           />
         </label>
 
-        <label className="block">
-          <span className="site-form-label site-form-label--caps">Blood Group</span>
+        <label className={styles.label}>
+          Blood Group (optional)
           <select
             value={form.bloodGroup}
             onChange={(event) => setForm((prev) => ({ ...prev, bloodGroup: event.target.value }))}
-            className="site-select mt-2"
+            className={styles.input}
           >
             <option value="">Select</option>
             <option value="A+">A+</option>
@@ -238,16 +231,15 @@ export function BloodBankRequestForm() {
             <option value="O-">O-</option>
           </select>
         </label>
+
       </div>
 
-      <div className="site-form-actions">
-        <button type="submit" disabled={isSubmitting} className="site-button">
-          {isSubmitting ? "Submitting..." : "Register"}
-        </button>
-      </div>
+      <button type="submit" disabled={isSubmitting} className={styles.submitButton}>
+        {isSubmitting ? "Submitting..." : "Register"}
+      </button>
 
-      {message ? <p className="site-status--success">{message}</p> : null}
-      {error ? <p className="site-status--error">{error}</p> : null}
+      {message ? <p className={styles.success}>{message}</p> : null}
+      {error ? <p className={styles.error}>{error}</p> : null}
     </form>
   );
 }

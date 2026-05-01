@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-
-import { CompactPageHeader } from "@/components/layout/CompactPageHeader";
 import { siteConfig } from "@/config/site";
+
+/* eslint-disable react/no-unescaped-entities */
 
 export const metadata: Metadata = {
   title: "About Us: Mission, Vision And Community Work In Pakistan",
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
         url: "/images/hero-fallback.svg",
         width: 1600,
         height: 1000,
-        alt: "PakSarZameen Bahawalpur",
+          alt: "PakSarZameen Bahawalpur",
       },
     ],
   },
@@ -41,57 +41,55 @@ export const metadata: Metadata = {
   },
 };
 
-const principles = [
-  {
-    title: "Mission",
-    text: "Build practical pathways to dignity for underserved communities.",
-  },
-  {
-    title: "Vision",
-    text: "A just Pakistan where opportunity and care are shared.",
-  },
-  {
-    title: "Method",
-    text: "Volunteer-led programs shaped around local needs and measurable outcomes.",
-  },
-];
-
 export default function AboutPage() {
   return (
-    <main className="site-page">
-      <CompactPageHeader
-        title="About PakSarZameen."
-        description="Bahawalpur-rooted community work across education, healthcare, welfare, and environmental action."
-      />
-
-      <section className="site-section">
-        <div className="site-grid site-grid--three">
-          {principles.map((item) => (
-            <article key={item.title} className="site-card site-card--soft site-card--rounded">
-              <div className="site-card__body">
-                <p className="site-card__eyebrow">{item.title}</p>
-                <h2 className="site-card__title">{item.title}</h2>
-                <p className="site-card__text">{item.text}</p>
-              </div>
-            </article>
-          ))}
+    <main className="about-page">
+      <section className="about-hero" data-scroll-section="about-hero">
+        <div className="about-hero-content">
+          <h1 className="about-hero-title">About PakSarZameen</h1>
+          <p className="about-hero-subtitle">
+            Local action. Lasting dignity.
+            <span className="about-hero-subtitle-line">Nurturing character through education.</span>
+          </p>
         </div>
+      </section>
 
-        <div className="site-panel site-panel--rounded site-panel--inverted mt-6">
-          <div className="site-panel__body">
-            <p className="site-eyebrow">Build with us</p>
-            <h2 className="site-heading mt-4 text-white">Local action that stays useful.</h2>
-            <p className="site-copy mt-4 max-w-[56rem] text-white/76">
-              Join, volunteer, or partner with PSZ to support practical community work.
-            </p>
-            <div className="site-form-actions mt-6">
-              <Link href="/get-involved" className="site-button">
-                Get Involved
-              </Link>
-              <Link href="/contact" className="site-button-secondary">
-                Contact Us
-              </Link>
+      <section className="about-minimal-intro">
+        <div className="about-minimal-intro__inner">
+          <p className="about-minimal-intro__lead">
+            PakSarZameen is a Bahawalpur-rooted movement working across education,
+            health, welfare, and environmental care.
+          </p>
+          <div className="about-minimal-grid">
+            <div className="about-minimal-card">
+              <h3>Mission</h3>
+              <p>Build practical pathways to dignity for underserved communities.</p>
             </div>
+            <div className="about-minimal-card">
+              <h3>Vision</h3>
+              <p>A just Pakistan where opportunity and care are shared.</p>
+            </div>
+            <div className="about-minimal-card">
+              <h3>Method</h3>
+              <p>Volunteer-driven programs shaped by real local needs.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="about-cta">
+        <div className="about-cta-content">
+          <h2>Build With Us</h2>
+          <p>
+            Join programs, volunteer your time, or partner with us to create measurable local impact.
+          </p>
+          <div className="about-cta-links">
+            <Link href="/get-involved" className="cta-btn cta-btn-primary">
+              Get Involved
+            </Link>
+            <Link href="/contact" className="cta-btn cta-btn-secondary">
+              Contact Us
+            </Link>
           </div>
         </div>
       </section>

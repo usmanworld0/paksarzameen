@@ -25,28 +25,9 @@ export default async function DoctorSignUpPage() {
   }
 
   return (
-    <main className="site-auth">
-      <section className="site-auth-shell site-auth-shell--split">
-        <div className="site-auth-panel site-auth-panel--dark">
-          <div className="site-auth-panel__content">
-            <div className="space-y-4">
-              <p className="site-auth-badge">Doctor Portal</p>
-              <h1 className="site-auth-title">Apply to join the healthcare network.</h1>
-              <p className="site-auth-copy">
-                Share your clinical background, specialization, and consultation details so the
-                admin team can review your application.
-              </p>
-            </div>
-
-            <div className="site-auth-note">
-              Approved doctors receive access to appointments, patient conversations, and the portal dashboard.
-            </div>
-          </div>
-        </div>
-
-        <div className="site-auth-form-wrap">
-          <DoctorPortalSignupForm />
-        </div>
+    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(16,99,62,0.2),_transparent_42%),linear-gradient(160deg,_#f6fbf7_0%,_#edf5ef_52%,_#e8f0ea_100%)] px-4 py-14 sm:px-6 lg:px-10">
+      <section className="mx-auto flex min-h-[calc(100vh-7rem)] max-w-6xl items-center justify-center">
+        <DoctorPortalSignupForm />
       </section>
     </main>
   );

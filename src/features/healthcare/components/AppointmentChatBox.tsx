@@ -87,57 +87,51 @@ export function AppointmentChatBox({ appointmentId }: { appointmentId: string })
   }
 
   return (
-    <div className="border border-[#E5E5E5] bg-white p-4 rounded-none">
-      <div className="max-h-64 space-y-4 overflow-y-auto pr-2 scrollbar-thin">
+    <div className="rounded-xl border border-slate-200 bg-white p-3">
+      <div className="max-h-48 space-y-2 overflow-y-auto pr-1">
         {messages.map((message) => (
           <div key={message.messageId} className="text-sm">
-             <p className="text-[10px] font-bold uppercase tracking-widest text-[#707072] mb-1">
-              {message.senderName ?? "User"} / {new Date(message.createdAt).toLocaleString('en-US', { hour: 'numeric', minute: '2-digit' })}
-             </p>
-             <p className="bg-[#F5F5F5] p-3 text-[#111111] inline-block max-w-[85%]">{message.body}</p>
-             {message.attachmentUrl ? (
+            <p className="text-xs text-slate-500">
+              {message.senderName ?? "User"} • {new Date(message.createdAt).toLocaleString()}
+            </p>
+            <p className="rounded-lg bg-slate-50 p-2 text-slate-800">{message.body}</p>
+            {message.attachmentUrl ? (
               <a
                 href={message.attachmentUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="mt-1 block text-xs font-bold uppercase tracking-wide text-[#1151FF] hover:underline"
+                className="mt-1 inline-block text-xs font-semibold text-emerald-700 underline"
               >
-                OPEN ATTACHMENT
+                Open attachment
               </a>
-             ) : null}
+            ) : null}
           </div>
         ))}
-        {messages.length === 0 && (
-          <p className="text-xs font-medium uppercase tracking-widest text-[#CACACB] text-center my-4">No messages yet</p>
-        )}
       </div>
 
-      <div className="mt-4 pt-4 border-t border-[#E5E5E5] space-y-3">
-        <div className="flex gap-3">
-          <input
-            value={value}
-            onChange={(event) => setValue(event.target.value)}
-            onKeyDown={(e) => { if (e.key === 'Enter') void sendMessage(); }}
-            placeholder="Type a message..."
-            className="flex-1 border-[#CACACB] bg-[#F5F5F5] px-4 py-3 border focus:border-[#111111] outline-none text-sm transition rounded-none"
-          />
-          <button
-            type="button"
-            disabled={sending}
-            onClick={() => void sendMessage()}
-            className="bg-[#111111] px-6 py-3 text-xs font-bold uppercase tracking-wide text-white disabled:opacity-50 transition hover:bg-[#707072] rounded-none"
-          >
-            {sending ? "SENDING" : "SEND"}
-          </button>
-        </div>
+      <div className="mt-3 flex gap-2">
         <input
-          value={attachmentUrl}
-          onChange={(event) => setAttachmentUrl(event.target.value)}
-          placeholder="Optional attachment URL"
-          className="w-full border-b border-[#CACACB] bg-transparent py-2 text-xs focus:border-[#111111] outline-none transition rounded-none"
+          value={value}
+          onChange={(event) => setValue(event.target.value)}
+          placeholder="Write a message"
+          className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm"
         />
-        {error ? <p className="text-xs font-medium text-[#D30005]">{error}</p> : null}
+        <button
+          type="button"
+          disabled={sending}
+          onClick={() => void sendMessage()}
+          className="rounded-full bg-emerald-700 px-4 py-2 text-xs font-semibold text-white disabled:opacity-60"
+        >
+          {sending ? "Sending..." : "Send"}
+        </button>
       </div>
+      <input
+        value={attachmentUrl}
+        onChange={(event) => setAttachmentUrl(event.target.value)}
+        placeholder="Optional attachment URL (https://...)"
+        className="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2 text-xs"
+      />
+      {error ? <p className="mt-2 text-xs text-red-700">{error}</p> : null}
     </div>
   );
 }

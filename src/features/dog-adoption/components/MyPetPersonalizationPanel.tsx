@@ -10,16 +10,13 @@ type MyPetPersonalizationPanelProps = {
   earTagConfig: EarTagGlobalConfigRecord;
 };
 
-export function MyPetPersonalizationPanel({
-  dog,
-  earTagConfig,
-}: MyPetPersonalizationPanelProps) {
+export function MyPetPersonalizationPanel({ dog, earTagConfig }: MyPetPersonalizationPanelProps) {
   const styleOptions = useMemo(
     () =>
       earTagConfig.styleOptions.length > 0
         ? earTagConfig.styleOptions
         : earTagConfig.styleImages.map((imageUrl) => ({ title: "Untitled", imageUrl })),
-    [earTagConfig.styleImages, earTagConfig.styleOptions],
+    [earTagConfig.styleImages, earTagConfig.styleOptions]
   );
 
   const boundaryOptions = useMemo(
@@ -27,29 +24,22 @@ export function MyPetPersonalizationPanel({
       earTagConfig.boundaryOptions.length > 0
         ? earTagConfig.boundaryOptions
         : earTagConfig.boundaryImages.map((imageUrl) => ({ title: "Untitled", imageUrl })),
-    [earTagConfig.boundaryImages, earTagConfig.boundaryOptions],
+    [earTagConfig.boundaryImages, earTagConfig.boundaryOptions]
   );
 
   const [petName, setPetName] = useState("");
   const [petNameSaving, setPetNameSaving] = useState(false);
   const [earTagSaving, setEarTagSaving] = useState(false);
-  const [styleImageUrl, setStyleImageUrl] = useState(
-    dog.earTagStyleImageUrl ?? styleOptions[0]?.imageUrl ?? "",
-  );
+  const [styleImageUrl, setStyleImageUrl] = useState(dog.earTagStyleImageUrl ?? styleOptions[0]?.imageUrl ?? "");
   const [color, setColor] = useState(dog.earTagColor ?? earTagConfig.colorOptions[0] ?? "");
-  const [boundaryImageUrl, setBoundaryImageUrl] = useState(
-    dog.earTagBoundaryImageUrl ?? boundaryOptions[0]?.imageUrl ?? "",
-  );
+  const [boundaryImageUrl, setBoundaryImageUrl] = useState(dog.earTagBoundaryImageUrl ?? boundaryOptions[0]?.imageUrl ?? "");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [savedPetName, setSavedPetName] = useState<string | null>(dog.petName);
 
   const hasConfig = useMemo(
-    () =>
-      styleOptions.length > 0 &&
-      earTagConfig.colorOptions.length > 0 &&
-      boundaryOptions.length > 0,
-    [boundaryOptions.length, earTagConfig.colorOptions.length, styleOptions.length],
+    () => styleOptions.length > 0 && earTagConfig.colorOptions.length > 0 && boundaryOptions.length > 0,
+    [boundaryOptions.length, earTagConfig.colorOptions.length, styleOptions.length]
   );
 
   async function savePetName() {
@@ -99,161 +89,124 @@ export function MyPetPersonalizationPanel({
 
       setSuccess("Ear tag customization saved successfully.");
     } catch (saveError) {
-      setError(
-        saveError instanceof Error
-          ? saveError.message
-          : "Failed to save ear tag customization.",
-      );
+      setError(saveError instanceof Error ? saveError.message : "Failed to save ear tag customization.");
     } finally {
       setEarTagSaving(false);
     }
   }
 
   return (
-    <section className="site-panel site-panel--rounded">
-      <div className="site-panel__body">
-        <p className="site-card__eyebrow">Personalization</p>
-        <h2 className="site-heading site-heading--sm mt-3">Customize The Ear Tag</h2>
-        <p className="site-copy mt-4">
-          Assign your pet name once, then choose the ear tag style, color, and reflective boundary.
-        </p>
+    <section className="rounded-2xl border border-slate-200 bg-white p-5">
+      <h2 className="text-lg font-semibold text-slate-900">Customize Your Ear Tag</h2>
+      <p className="mt-1 text-sm text-slate-600">
+        Assign your pet name once, then personalize ear tag style, color, and reflective boundary.
+      </p>
 
-        <div className="site-stack mt-6">
-          {savedPetName ? (
-            <div className="site-callout">Pet name: {savedPetName}</div>
-          ) : (
-            <div className="site-stack">
-              <label className="site-form-label site-form-label--caps" htmlFor="pet-name">
-                Assign Pet Name
-              </label>
-              <div className="site-form-actions">
-                <input
-                  id="pet-name"
-                  className="site-input flex-1"
-                  placeholder="Enter pet name"
-                  value={petName}
-                  onChange={(event) => setPetName(event.target.value)}
-                  disabled={petNameSaving}
-                />
-                <button
-                  type="button"
-                  onClick={() => void savePetName()}
-                  disabled={petNameSaving}
-                  className="site-button"
-                >
-                  {petNameSaving ? "Saving..." : "Save Name"}
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {!savedPetName ? (
-          <p className="site-copy site-copy--sm mt-4">
-            Ear tag customization unlocks once the pet name is assigned.
+      <div className="mt-4 space-y-3">
+        {savedPetName ? (
+          <p className="rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-sm font-medium text-indigo-700">
+            Pet name: {savedPetName}
           </p>
-        ) : null}
-
-        {savedPetName && hasConfig ? (
-          <div className="site-stack--lg mt-6">
-            <div>
-              <label className="site-form-label site-form-label--caps">Ear Tag Style</label>
-              <div className="site-grid mt-3 sm:grid-cols-2">
-                {styleOptions.map((item) => (
-                  <button
-                    key={item.imageUrl}
-                    type="button"
-                    onClick={() => setStyleImageUrl(item.imageUrl)}
-                    className={`site-card overflow-hidden text-left ${
-                      styleImageUrl === item.imageUrl ? "border-[#111111]" : ""
-                    }`}
-                  >
-                    <div className="site-detail__media h-32">
-                      <Image
-                        src={item.imageUrl}
-                        alt={item.title || "Ear tag style"}
-                        fill
-                        sizes="200px"
-                        className="object-cover"
-                      />
-                    </div>
-                    <div className="site-card__body !p-4">
-                      <p className="site-copy site-copy--sm text-[#111111]">{item.title}</p>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <label className="site-form-label site-form-label--caps" htmlFor="ear-tag-color">
-                Color
-              </label>
-              <select
-                id="ear-tag-color"
-                className="site-select mt-2"
-                value={color}
-                onChange={(event) => setColor(event.target.value)}
+        ) : (
+          <div className="space-y-2">
+            <label className="block text-xs font-semibold uppercase tracking-wide text-slate-500">Assign Pet Name (one-time)</label>
+            <div className="flex flex-wrap gap-2">
+              <input
+                className="h-11 flex-1 rounded-lg border border-slate-300 px-3 text-sm"
+                placeholder="Enter pet name"
+                value={petName}
+                onChange={(event) => setPetName(event.target.value)}
+                disabled={petNameSaving}
+              />
+              <button
+                type="button"
+                onClick={() => void savePetName()}
+                disabled={petNameSaving}
+                className="rounded-full bg-emerald-700 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-600 disabled:opacity-70"
               >
-                {earTagConfig.colorOptions.map((item) => (
-                  <option key={item} value={item}>
-                    {item}
-                  </option>
-                ))}
-              </select>
+                {petNameSaving ? "Saving..." : "Save Name"}
+              </button>
             </div>
-
-            <div>
-              <label className="site-form-label site-form-label--caps">
-                Reflective Boundary
-              </label>
-              <div className="site-grid mt-3 sm:grid-cols-2">
-                {boundaryOptions.map((item) => (
-                  <button
-                    key={item.imageUrl}
-                    type="button"
-                    onClick={() => setBoundaryImageUrl(item.imageUrl)}
-                    className={`site-card overflow-hidden text-left ${
-                      boundaryImageUrl === item.imageUrl ? "border-[#111111]" : ""
-                    }`}
-                  >
-                    <div className="site-detail__media h-32">
-                      <Image
-                        src={item.imageUrl}
-                        alt={item.title || "Reflective boundary"}
-                        fill
-                        sizes="200px"
-                        className="object-cover"
-                      />
-                    </div>
-                    <div className="site-card__body !p-4">
-                      <p className="site-copy site-copy--sm text-[#111111]">{item.title}</p>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => void saveEarTag()}
-              disabled={earTagSaving}
-              className="site-button"
-            >
-              {earTagSaving ? "Saving..." : "Save Ear Tag"}
-            </button>
           </div>
-        ) : null}
-
-        {savedPetName && !hasConfig ? (
-          <div className="site-callout mt-6">
-            Ear tag options are not configured by admin yet.
-          </div>
-        ) : null}
-
-        {success ? <p className="site-status--success mt-6">{success}</p> : null}
-        {error ? <p className="site-status--error mt-6">{error}</p> : null}
+        )}
       </div>
+
+      {!savedPetName ? (
+        <p className="mt-4 text-xs text-slate-500">Ear tag customization unlocks once pet name is assigned.</p>
+      ) : null}
+
+      {savedPetName && hasConfig ? (
+        <div className="mt-5 space-y-4">
+          <div className="space-y-2">
+            <label className="block text-xs font-semibold uppercase tracking-wide text-slate-500">Ear Tag Style</label>
+            <div className="grid grid-cols-2 gap-2">
+              {styleOptions.map((item) => (
+                <button
+                  key={item.imageUrl}
+                  type="button"
+                  onClick={() => setStyleImageUrl(item.imageUrl)}
+                  className={`relative overflow-hidden rounded-xl border ${styleImageUrl === item.imageUrl ? "border-emerald-500" : "border-slate-200"}`}
+                >
+                  <div className="relative h-24 w-full bg-slate-100">
+                    <Image src={item.imageUrl} alt={item.title || "Ear tag style"} fill sizes="120px" className="object-cover" />
+                  </div>
+                  <p className="border-t border-slate-200 bg-white px-2 py-1 text-left text-[11px] font-medium text-slate-700">{item.title}</p>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-xs font-semibold uppercase tracking-wide text-slate-500">Color</label>
+            <select
+              className="h-11 w-full rounded-lg border border-slate-300 px-3 text-sm"
+              value={color}
+              onChange={(event) => setColor(event.target.value)}
+            >
+              {earTagConfig.colorOptions.map((item) => (
+                <option key={item} value={item}>{item}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-xs font-semibold uppercase tracking-wide text-slate-500">Reflective Boundary</label>
+            <div className="grid grid-cols-2 gap-2">
+              {boundaryOptions.map((item) => (
+                <button
+                  key={item.imageUrl}
+                  type="button"
+                  onClick={() => setBoundaryImageUrl(item.imageUrl)}
+                  className={`relative overflow-hidden rounded-xl border ${boundaryImageUrl === item.imageUrl ? "border-emerald-500" : "border-slate-200"}`}
+                >
+                  <div className="relative h-24 w-full bg-slate-100">
+                    <Image src={item.imageUrl} alt={item.title || "Reflective boundary"} fill sizes="120px" className="object-cover" />
+                  </div>
+                  <p className="border-t border-slate-200 bg-white px-2 py-1 text-left text-[11px] font-medium text-slate-700">{item.title}</p>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => void saveEarTag()}
+            disabled={earTagSaving}
+            className="rounded-full bg-emerald-700 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-600 disabled:opacity-70"
+          >
+            {earTagSaving ? "Saving..." : "Save Ear Tag"}
+          </button>
+        </div>
+      ) : null}
+
+      {savedPetName && !hasConfig ? (
+        <p className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-700">
+          Ear tag options are not configured by admin yet.
+        </p>
+      ) : null}
+
+      {success ? <p className="mt-4 text-sm text-emerald-700">{success}</p> : null}
+      {error ? <p className="mt-4 text-sm text-red-700">{error}</p> : null}
     </section>
   );
 }

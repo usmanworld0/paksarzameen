@@ -33,39 +33,36 @@ export function MainAdminHeader({ onToggleSidebar, sidebarOpen }: MainAdminHeade
   }, [pathname]);
 
   return (
-    <header className="sticky top-0 z-30 border-b border-[#e5e5e5] bg-white/94 backdrop-blur-xl">
-      <div className="flex min-h-[72px] items-center gap-3 px-5 sm:px-8">
+    <header className="sticky top-0 z-30 border-b border-neutral-100/80 bg-white/85 backdrop-blur-xl">
+      <div className="flex h-[64px] items-center gap-3 px-4 sm:px-6">
         <button
           type="button"
           onClick={onToggleSidebar}
-          className="inline-flex h-10 w-10 items-center justify-center rounded-full text-neutral-500 transition-colors hover:bg-neutral-100 md:hidden"
+          className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-neutral-500 transition-colors hover:bg-neutral-100 md:hidden"
           aria-label={sidebarOpen ? "Close menu" : "Open menu"}
         >
           {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
 
-        <div className="hidden md:block">
-          <p className="text-[1rem] font-medium uppercase tracking-[0.18em] text-[#707072]">Operations workspace</p>
-          <nav className="mt-2 flex items-center gap-1.5 text-[11px]" aria-label="Breadcrumb">
-            {breadcrumbs.map((crumb, index) => (
-              <span key={crumb.href} className="flex items-center gap-1.5">
-                {index > 0 ? <ChevronRight className="h-3 w-3 text-neutral-200" /> : null}
-                {crumb.isLast ? (
-                  <span className="font-semibold uppercase tracking-[0.12em] text-neutral-800">
-                    {crumb.label}
-                  </span>
-                ) : (
-                  <span className="uppercase tracking-[0.12em] text-neutral-400">{crumb.label}</span>
-                )}
-              </span>
-            ))}
-          </nav>
-        </div>
+        <nav className="hidden items-center gap-1.5 text-[11px] md:flex" aria-label="Breadcrumb">
+          {breadcrumbs.map((crumb, index) => (
+            <span key={crumb.href} className="flex items-center gap-1.5">
+              {index > 0 ? <ChevronRight className="h-3 w-3 text-neutral-200" /> : null}
+              {crumb.isLast ? (
+                <span className="font-semibold uppercase tracking-[0.12em] text-neutral-800">
+                  {crumb.label}
+                </span>
+              ) : (
+                <span className="uppercase tracking-[0.12em] text-neutral-400">{crumb.label}</span>
+              )}
+            </span>
+          ))}
+        </nav>
 
         <div className="ml-auto flex items-center gap-1.5">
           <button
             type="button"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700"
             onClick={() => setShowSearch((prev) => !prev)}
             aria-label="Toggle search"
           >
@@ -74,7 +71,7 @@ export function MainAdminHeader({ onToggleSidebar, sidebarOpen }: MainAdminHeade
 
           <button
             type="button"
-            className="relative inline-flex h-10 w-10 items-center justify-center rounded-full text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700"
+            className="relative inline-flex h-9 w-9 items-center justify-center rounded-lg text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700"
             aria-label="Notifications"
           >
             <Bell className="h-4 w-4" />
@@ -84,7 +81,7 @@ export function MainAdminHeader({ onToggleSidebar, sidebarOpen }: MainAdminHeade
       </div>
 
       {showSearch ? (
-        <div className="border-t border-neutral-100/60 px-5 py-4 sm:px-8">
+        <div className="border-t border-neutral-100/60 px-4 py-3 sm:px-6">
           <div className="relative max-w-md">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-300" />
             <input

@@ -33,31 +33,31 @@ export type Chapter = {
 export const PSZ_CHAPTERS: readonly Chapter[] = [
   {
     city: "Islamabad",
-    tagline: "Policy and strategy",
+    tagline: "Policy and Strategy Hub",
     icon: "faisal-mosque",
     accent: "#0f7a47",
   },
   {
     city: "Bahawalpur",
-    tagline: "Heritage and education",
+    tagline: "Heritage and Education Centre",
     icon: "noor-mahal",
     accent: "#c4a265",
   },
   {
     city: "Hyderabad",
-    tagline: "Sindh outreach",
+    tagline: "Sindh Outreach Office",
     icon: "pakka-qila",
     accent: "#3b82f6",
   },
   {
     city: "Lahore",
-    tagline: "Punjab operations",
+    tagline: "Punjab Operations Base",
     icon: "minar-e-pakistan",
     accent: "#ef4444",
   },
   {
     city: "Multan",
-    tagline: "South Punjab hub",
+    tagline: "Southern Punjab Hub",
     icon: "shah-rukn-e-alam",
     accent: "#8b5cf6",
   },
@@ -67,7 +67,7 @@ export const heroContent = {
   title: "PakSarZameen",
   subtitle: "Building Community Wealth.",
   supportingLine:
-    "Community action for education, health, and dignity across Pakistan.",
+    "A community development platform for education, compassion, and grassroots progress across Pakistan.",
   exploreCta: "Explore Programs",
   joinCta: "Join the Mission",
   videoSrc:
@@ -79,25 +79,25 @@ export const missionCards: MissionCard[] = [
   {
     title: "Community Empowerment",
     description:
-      "Help communities lead their own change.",
+      "Enable neighborhoods to lead positive change through participation and shared responsibility.",
     icon: "globe",
   },
   {
     title: "Ethical Enterprise",
     description:
-      "Back dignified livelihoods with real social value.",
+      "Promote dignified livelihoods that align economic growth with social wellbeing.",
     icon: "spark",
   },
   {
     title: "Cultural Heritage",
     description:
-      "Protect local identity while opening new opportunities.",
+      "Protect local identity and traditions while building relevant, future-ready opportunities.",
     icon: "heritage",
   },
   {
     title: "Grassroots Development",
     description:
-      "Build practical solutions shaped by local need.",
+      "Invest in practical, high-impact local solutions shaped by community realities.",
     icon: "leaf",
   },
 ];
@@ -105,7 +105,7 @@ export const missionCards: MissionCard[] = [
 export const joinContent = {
   heading: "Join the Mission",
   text:
-    "Volunteer, partner, or support work that stays useful on the ground.",
+    "Partner with PakSarZameen to expand opportunity, strengthen communities, and deliver meaningful social impact across Pakistan.",
   volunteerCta: "Volunteer With PSZ",
   partnerCta: "Become a Partner",
 } as const;
@@ -114,21 +114,21 @@ export const storiesContent = [
   {
     id: 1,
     quote:
-      "PSZ stays close to the ground and builds support people can use.",
+      "PSZ feels close to the ground. The team listens first, then builds support that people can actually use.",
     author: "Volunteer Reflection",
     role: "Community outreach",
   },
   {
     id: 2,
     quote:
-      "The mix of compassion and follow-through makes partnership easy.",
+      "What stands out is the mix of compassion and follow-through. Partnerships move faster when the mission is clear.",
     author: "Partner Perspective",
     role: "Institutional collaboration",
   },
   {
     id: 3,
     quote:
-      "The work feels practical, local, and deeply human.",
+      "From blood support to education and environmental action, the work feels practical, local, and deeply human.",
     author: "Supporter Reflection",
     role: "Community advocate",
   },
@@ -151,32 +151,32 @@ export const SCROLL_TEXT_BLOCKS: readonly ScrollTextBlock[] = [
   {
     title: "Room Zia",
     description:
-      "Learning support for communities that need safer paths into education.",
+      "Learning support and community care for underserved groups who need safer pathways into education and opportunity.",
   },
   {
     title: "Health Outreach",
     description:
-      "Medical support and referral guidance closer to the people who need it.",
+      "Practical medical support, preventive awareness, and referral guidance delivered closer to the people who need it.",
   },
   {
     title: "Skills for Tomorrow",
     description:
-      "Training that builds confidence, skills, and stronger futures.",
+      "Training programs that help young people build confidence, practical skills, and stronger economic futures.",
   },
   {
     title: "Cleaner Communities",
     description:
-      "Environmental action shaped by local stewardship.",
+      "Environmental action shaped by local stewardship, from plantation campaigns to small-scale sustainability efforts.",
   },
   {
     title: "Women Enterprise",
     description:
-      "Support for women building leadership, skills, and livelihoods.",
+      "Support for women seeking leadership, skills, and more stable pathways into dignified livelihoods.",
   },
   {
     title: "Community Care",
     description:
-      "Programs built around practical needs and steady follow-up.",
+      "Programs designed around practical needs, consistent follow-up, and long-term community trust.",
   },
 ];
 
@@ -187,7 +187,7 @@ export const PROGRAM_CARDS: readonly ProgramCard[] = [
   {
     name: "Mahkma Shajarkari",
     subtitle: "Plantation Unit",
-    desc: "Tree planting and public climate action rooted in local care.",
+    desc: "Leading tree plantation, urban greening, and climate-awareness efforts that help communities care for their environment.",
     tag: "Environment",
     icon: "leaf",
     bg: PSZ_GREEN_GRADIENT,
@@ -196,7 +196,7 @@ export const PROGRAM_CARDS: readonly ProgramCard[] = [
   {
     name: "Ehsas ul Haiwanat",
     subtitle: "Animal Welfare Section",
-    desc: "Humane animal care through feeding, protection, and awareness.",
+    desc: "Supporting animal welfare through feeding, protection, humane treatment, and neighborhood-level awareness.",
     tag: "Welfare",
     icon: "paw",
     bg: PSZ_GREEN_GRADIENT,
@@ -205,7 +205,7 @@ export const PROGRAM_CARDS: readonly ProgramCard[] = [
   {
     name: "Room Zia",
     subtitle: "Bureau for Empowering Marginalized Communities",
-    desc: "Support pathways built around care, dignity, and opportunity.",
+    desc: "Creating support pathways for orphaned, transgender, and specially abled individuals through care, dignity, and opportunity.",
     tag: "Social Care",
     icon: "support",
     bg: PSZ_GREEN_GRADIENT,
@@ -214,7 +214,7 @@ export const PROGRAM_CARDS: readonly ProgramCard[] = [
   {
     name: "Dar ul Aloom",
     subtitle: "Agency of Educational Development",
-    desc: "Education, mentoring, and practical learning support.",
+    desc: "Expanding access to education, mentoring, and learning opportunities through practical community-based programs.",
     tag: "Education",
     icon: "book",
     bg: PSZ_GREEN_GRADIENT,
@@ -223,7 +223,7 @@ export const PROGRAM_CARDS: readonly ProgramCard[] = [
   {
     name: "Tibi Imdad",
     subtitle: "Bureau for Improving Health Standards",
-    desc: "Medical support, outreach camps, and preventive care.",
+    desc: "Improving community health through medical support, preventive awareness, outreach camps, and welfare services.",
     tag: "Healthcare",
     icon: "health",
     bg: PSZ_GREEN_GRADIENT,
@@ -232,7 +232,7 @@ export const PROGRAM_CARDS: readonly ProgramCard[] = [
   {
     name: "Wajood-e-Zan",
     subtitle: "Women Empowerment Department",
-    desc: "Women's dignity, leadership, and economic participation.",
+    desc: "Promoting women's dignity, education, leadership, and economic participation so they can shape stronger communities.",
     tag: "Empowerment",
     icon: "empower",
     bg: PSZ_GREEN_GRADIENT,

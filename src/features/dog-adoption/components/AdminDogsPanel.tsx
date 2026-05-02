@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import type { DogRecord, DogStatus, EarTagGlobalConfigRecord, EarTagImageOption } from "@/lib/dog-adoption";
+import type { ColorOption, DogRecord, DogStatus, EarTagGlobalConfigRecord, EarTagImageOption } from "@/lib/dog-adoption";
 import { adminFetch } from "@/features/auth/utils/admin-api";
 import { canAccessAdminRoute, useAdminClientSession } from "@/features/auth/utils/admin-session-client";
 
@@ -71,10 +71,13 @@ export function AdminDogsPanel() {
   const [editingDogId, setEditingDogId] = useState<string | null>(null);
   const [form, setForm] = useState<DogFormState>(INITIAL_FORM);
   const [earTagStyleOptions, setEarTagStyleOptions] = useState<EarTagImageOption[]>([]);
-  const [earTagColorOptions, setEarTagColorOptions] = useState<string[]>([]);
+  const [earTagColorOptions, setEarTagColorOptions] = useState<ColorOption[]>([]);
   const [earTagBoundaryOptions, setEarTagBoundaryOptions] = useState<EarTagImageOption[]>([]);
   const [earTagStyleFiles, setEarTagStyleFiles] = useState<File[]>([]);
   const [earTagStyleUploadTitles, setEarTagStyleUploadTitles] = useState<string[]>([]);
+  const [earTagColorFiles, setEarTagColorFiles] = useState<File[]>([]);
+  const [earTagColorUploadTitles, setEarTagColorUploadTitles] = useState<string[]>([]);
+  const [earTagColorUploadTextColors, setEarTagColorUploadTextColors] = useState<string[]>([]);
   const [earTagBoundaryFiles, setEarTagBoundaryFiles] = useState<File[]>([]);
   const [earTagBoundaryUploadTitles, setEarTagBoundaryUploadTitles] = useState<string[]>([]);
   const [earTagSaving, setEarTagSaving] = useState(false);
@@ -129,10 +132,15 @@ export function AdminDogsPanel() {
       formData.set("colorOptions", JSON.stringify(earTagColorOptions));
       formData.set("boundaryOptions", JSON.stringify(earTagBoundaryOptions));
       formData.set("styleUploadTitles", JSON.stringify(earTagStyleUploadTitles));
+      formData.set("colorUploadTitles", JSON.stringify(earTagColorUploadTitles));
+      formData.set("colorUploadTextColors", JSON.stringify(earTagColorUploadTextColors));
       formData.set("boundaryUploadTitles", JSON.stringify(earTagBoundaryUploadTitles));
 
       for (const file of earTagStyleFiles) {
         formData.append("styleImageFiles", file);
+      }
+      for (const file of earTagColorFiles) {
+        formData.append("colorImageFiles", file);
       }
       for (const file of earTagBoundaryFiles) {
         formData.append("boundaryImageFiles", file);
@@ -152,6 +160,9 @@ export function AdminDogsPanel() {
       setEarTagBoundaryOptions(payload.data?.boundaryOptions ?? []);
       setEarTagStyleFiles([]);
       setEarTagStyleUploadTitles([]);
+      setEarTagColorFiles([]);
+      setEarTagColorUploadTitles([]);
+      setEarTagColorUploadTextColors([]);
       setEarTagBoundaryFiles([]);
       setEarTagBoundaryUploadTitles([]);
     } catch (configError) {
@@ -458,19 +469,30 @@ export function AdminDogsPanel() {
             </label>
 
             <label className="space-y-2">
-              <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Color Options</span>
+              <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Color Options (Format: Title | Hex Color | https://...)</span>
               <textarea
                 className="min-h-24 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                value={earTagColorOptions.join("\n")}
+                value={earTagColorOptions.map((item) => `${item.title}${item.textColor ? ` | ${item.textColor}` : ""} | ${item.imageUrl}`).join("\n")}
                 onChange={(event) =>
                   setEarTagColorOptions(
                     event.target.value
                       .split("\n")
-                      .map((item) => item.trim())
-                      .filter(Boolean)
+                      .map((line) => {
+                        const [titlePart, ...rest] = line.split("|");
+                        if (!rest.length) return null;
+                        const urlPart = rest.pop()?.trim();
+                        const textColorPart = rest.length > 0 ? rest[0]?.trim() : undefined;
+                        if (!urlPart) return null;
+                        return {
+                          title: titlePart.trim() || "Untitled",
+                          imageUrl: urlPart,
+                          textColor: textColorPart,
+                        };
+                      })
+                      .filter(Boolean) as ColorOption[]
                   )
                 }
-                placeholder="One color per line"
+                placeholder="Format: Title | #HEXCOLOR | https://image.url&#10;Example: Red | #FF0000 | https://example.com/red.png&#10;Example: Blue | #0000FF | https://example.com/blue.png"
               />
             </label>
 
@@ -547,6 +569,71 @@ export function AdminDogsPanel() {
                         placeholder="Option title"
                       />
                     </label>
+                  ))}
+                </div>
+              ) : null}
+
+              <label className="block space-y-2">
+                <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Upload Color Option Images</span>
+                <input
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={(event) => {
+                    const files = Array.from(event.target.files ?? []);
+                    setEarTagColorFiles(files);
+                    setEarTagColorUploadTitles(files.map((file) => inferTitleFromFilename(file)));
+                    setEarTagColorUploadTextColors(files.map(() => "#000000"));
+                  }}
+                />
+              </label>
+
+              {earTagColorFiles.length > 0 ? (
+                <div className="space-y-2 rounded-lg border border-slate-200 bg-slate-50 p-3">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Color option details</p>
+                  {earTagColorFiles.map((file, index) => (
+                    <div key={`${file.name}-${index}`} className="space-y-2 rounded-lg border border-slate-300 bg-white p-2">
+                      <span className="text-xs font-medium text-slate-700">{file.name}</span>
+                      <input
+                        className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                        value={earTagColorUploadTitles[index] ?? ""}
+                        onChange={(event) =>
+                          setEarTagColorUploadTitles((prev) => {
+                            const next = [...prev];
+                            next[index] = event.target.value;
+                            return next;
+                          })
+                        }
+                        placeholder="Color title (e.g., Red, Blue)"
+                      />
+                      <div className="flex gap-2">
+                        <input
+                          type="color"
+                          className="h-10 w-16 rounded-lg border border-slate-300"
+                          value={earTagColorUploadTextColors[index] ?? "#000000"}
+                          onChange={(event) =>
+                            setEarTagColorUploadTextColors((prev) => {
+                              const next = [...prev];
+                              next[index] = event.target.value;
+                              return next;
+                            })
+                          }
+                        />
+                        <input
+                          className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                          value={earTagColorUploadTextColors[index] ?? "#000000"}
+                          onChange={(event) =>
+                            setEarTagColorUploadTextColors((prev) => {
+                              const next = [...prev];
+                              next[index] = event.target.value;
+                              return next;
+                            })
+                          }
+                          placeholder="Hex color (e.g., #FF0000)"
+                        />
+                      </div>
+                    </div>
                   ))}
                 </div>
               ) : null}

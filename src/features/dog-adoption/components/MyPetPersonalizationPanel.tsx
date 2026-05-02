@@ -31,7 +31,7 @@ export function MyPetPersonalizationPanel({ dog, earTagConfig }: MyPetPersonaliz
   const [petNameSaving, setPetNameSaving] = useState(false);
   const [earTagSaving, setEarTagSaving] = useState(false);
   const [styleImageUrl, setStyleImageUrl] = useState(dog.earTagStyleImageUrl ?? styleOptions[0]?.imageUrl ?? "");
-  const [color, setColor] = useState(dog.earTagColor ?? earTagConfig.colorOptions[0] ?? "");
+  const [colorTitle, setColorTitle] = useState(dog.earTagColorTitle ?? earTagConfig.colorOptions[0]?.title ?? "");
   const [boundaryImageUrl, setBoundaryImageUrl] = useState(dog.earTagBoundaryImageUrl ?? boundaryOptions[0]?.imageUrl ?? "");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -79,7 +79,7 @@ export function MyPetPersonalizationPanel({ dog, earTagConfig }: MyPetPersonaliz
       const response = await fetch(`/api/my-pets/${dog.dogId}/ear-tag`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ styleImageUrl, color, boundaryImageUrl }),
+        body: JSON.stringify({ styleImageUrl, colorTitle, boundaryImageUrl }),
       });
 
       const payload = (await response.json()) as { error?: string };
@@ -157,16 +157,25 @@ export function MyPetPersonalizationPanel({ dog, earTagConfig }: MyPetPersonaliz
           </div>
 
           <div className="space-y-2">
-            <label className="block text-xs font-semibold uppercase tracking-wide text-slate-500">Color</label>
-            <select
-              className="h-11 w-full rounded-lg border border-slate-300 px-3 text-sm"
-              value={color}
-              onChange={(event) => setColor(event.target.value)}
-            >
+            <label className="block text-xs font-semibold uppercase tracking-wide text-slate-500">Color Options</label>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
               {earTagConfig.colorOptions.map((item) => (
-                <option key={item} value={item}>{item}</option>
+                <button
+                  key={item.title}
+                  type="button"
+                  onClick={() => setColorTitle(item.title)}
+                  className={`relative overflow-hidden rounded-xl border transition ${colorTitle === item.title ? "border-emerald-500 ring-2 ring-emerald-200" : "border-slate-200 hover:border-slate-300"}`}
+                >
+                  <div className="relative h-32 w-full bg-slate-100">
+                    <Image src={item.imageUrl} alt={item.title} fill sizes="140px" className="object-cover" />
+                  </div>
+                  <div className="border-t border-slate-200 bg-white px-2 py-2 text-center">
+                    <p className="text-sm font-medium text-slate-900">{item.title}</p>
+                    {item.textColor && <p className="text-xs text-slate-500">Text: {item.textColor}</p>}
+                  </div>
+                </button>
               ))}
-            </select>
+            </div>
           </div>
 
           <div className="space-y-2">

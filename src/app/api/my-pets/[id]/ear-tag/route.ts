@@ -24,15 +24,15 @@ export async function PATCH(request: Request, context: RouteContext) {
     const { id } = await context.params;
     const body = (await request.json()) as {
       styleImageUrl?: string;
-      color?: string;
+      colorTitle?: string;
       boundaryImageUrl?: string;
     };
 
     const styleImageUrl = String(body.styleImageUrl ?? "").trim();
-    const color = String(body.color ?? "").trim();
+    const colorTitle = String(body.colorTitle ?? "").trim();
     const boundaryImageUrl = String(body.boundaryImageUrl ?? "").trim();
 
-    if (!styleImageUrl || !color || !boundaryImageUrl) {
+    if (!styleImageUrl || !colorTitle || !boundaryImageUrl) {
       return NextResponse.json(
         { error: "Ear tag style, color, and reflective boundary design are required." },
         { status: 400 }
@@ -41,7 +41,7 @@ export async function PATCH(request: Request, context: RouteContext) {
 
     const data = await updateDogEarTagCustomization(id, user.id, {
       styleImageUrl,
-      color,
+      colorTitle,
       boundaryImageUrl,
     });
 

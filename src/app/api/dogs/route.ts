@@ -73,7 +73,7 @@ export async function GET(request: Request) {
       adoptedByUserId: row.adopted_by_user_id ? String(row.adopted_by_user_id) : null,
       petNamedByUserId: row.pet_named_by_user_id ? String(row.pet_named_by_user_id) : null,
       earTagStyleImageUrl: row.ear_tag_style_image_url ? String(row.ear_tag_style_image_url) : null,
-      earTagColor: row.ear_tag_color ? String(row.ear_tag_color) : null,
+      earTagColorTitle: row.ear_tag_color ? String(row.ear_tag_color) : null,
       earTagBoundaryImageUrl: row.ear_tag_boundary_image_url ? String(row.ear_tag_boundary_image_url) : null,
       status: (row.status as DogStatus) || "available",
       createdBy: row.created_by ? String(row.created_by) : null,

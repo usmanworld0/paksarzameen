@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import {
+  type ColorOption,
   type EarTagImageOption,
   getEarTagGlobalConfig,
   updateEarTagGlobalConfig,
@@ -100,6 +101,51 @@ function uniqueImageOptions(values: EarTagImageOption[]) {
   return result;
 }
 
+function parseColorOptions(value: string | null): ColorOption[] {
+  if (!value) return [];
+
+  try {
+    const parsed = JSON.parse(value) as unknown;
+    if (!Array.isArray(parsed)) return [];
+
+    return parsed
+      .map((item) => {
+        if (!item || typeof item !== "object") return null;
+        const row = item as { title?: unknown; imageUrl?: unknown; url?: unknown; textColor?: unknown };
+        const imageUrl = String(row.imageUrl ?? row.url ?? "").trim();
+        if (!imageUrl) return null;
+        const title = String(row.title ?? "").trim() || inferTitleFromUrl(imageUrl);
+        const textColor = String(row.textColor ?? "").trim() || undefined;
+        return { title, imageUrl, textColor } satisfies ColorOption;
+      })
+      .filter((item): item is ColorOption => Boolean(item));
+  } catch {
+    return [];
+  }
+}
+
+function uniqueColorOptions(values: ColorOption[]) {
+  const seen = new Set<string>();
+  const result: ColorOption[] = [];
+
+  for (const value of values) {
+    const imageUrl = value.imageUrl.trim();
+    if (!imageUrl) continue;
+
+    const key = imageUrl.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+
+    result.push({
+      title: value.title.trim() || inferTitleFromUrl(imageUrl),
+      imageUrl,
+      textColor: value.textColor?.trim(),
+    });
+  }
+
+  return result;
+}
+
 export async function GET() {
   const session = await getRequiredAdminOrModuleApiUser("dog_adoption", "view");
   if (!session) {
@@ -134,17 +180,20 @@ export async function PUT(request: Request) {
     const current = await getEarTagGlobalConfig();
 
     const styleOptionsInput = parseImageOptions(String(formData.get("styleOptions") ?? ""));
+    const colorOptionsInput = parseColorOptions(String(formData.get("colorOptions") ?? ""));
     const boundaryOptionsInput = parseImageOptions(String(formData.get("boundaryOptions") ?? ""));
     const styleImagesInput = parseStringArray(String(formData.get("styleImages") ?? ""));
-    const colorOptionsInput = parseStringArray(String(formData.get("colorOptions") ?? ""));
     const boundaryImagesInput = parseStringArray(String(formData.get("boundaryImages") ?? ""));
     const styleUploadTitles = parseStringArray(String(formData.get("styleUploadTitles") ?? ""));
+    const colorUploadTitles = parseStringArray(String(formData.get("colorUploadTitles") ?? ""));
+    const colorUploadTextColors = parseStringArray(String(formData.get("colorUploadTextColors") ?? ""));
     const boundaryUploadTitles = parseStringArray(String(formData.get("boundaryUploadTitles") ?? ""));
 
     const styleUploads = formData.getAll("styleImageFiles").filter((item): item is File => item instanceof File && item.size > 0);
+    const colorUploads = formData.getAll("colorImageFiles").filter((item): item is File => item instanceof File && item.size > 0);
     const boundaryUploads = formData.getAll("boundaryImageFiles").filter((item): item is File => item instanceof File && item.size > 0);
 
-    if ((styleUploads.length || boundaryUploads.length) && !hasCloudinaryUploadConfig()) {
+    if ((styleUploads.length || colorUploads.length || boundaryUploads.length) && !hasCloudinaryUploadConfig()) {
       return NextResponse.json(
         {
           error:
@@ -161,6 +210,17 @@ export async function PUT(request: Request) {
       uploadedStyleOptions.push({
         title: styleUploadTitles[index] || fallbackTitle || inferTitleFromUrl(uploaded.url),
         imageUrl: uploaded.url,
+      });
+    }
+
+    const uploadedColorOptions: ColorOption[] = [];
+    for (const [index, file] of colorUploads.entries()) {
+      const uploaded = await uploadImageFile(file, "dog-ear-tags/colors");
+      const fallbackTitle = file.name.replace(/\.[^.]+$/, "");
+      uploadedColorOptions.push({
+        title: colorUploadTitles[index] || fallbackTitle || inferTitleFromUrl(uploaded.url),
+        imageUrl: uploaded.url,
+        textColor: colorUploadTextColors[index],
       });
     }
 
@@ -191,7 +251,11 @@ export async function PUT(request: Request) {
         ...styleOptionsInput,
         ...uploadedStyleOptions,
       ]),
-      colorOptions: unique([...colorOptionsInput]),
+      colorOptions: uniqueColorOptions([
+        ...current.colorOptions,
+        ...colorOptionsInput,
+        ...uploadedColorOptions,
+      ]),
       boundaryOptions: uniqueImageOptions([
         ...current.boundaryOptions,
         ...legacyBoundaryOptions,

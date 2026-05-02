@@ -36,7 +36,7 @@ export function AdoptDogButton({ dogId, earTagConfig }: AdoptDogButtonProps) {
   );
 
   const [styleImageUrl, setStyleImageUrl] = useState(styleOptions[0]?.imageUrl ?? "");
-  const [color, setColor] = useState(earTagConfig.colorOptions[0] ?? "");
+  const [colorTitle, setColorTitle] = useState(earTagConfig.colorOptions[0]?.title ?? "");
   const [boundaryImageUrl, setBoundaryImageUrl] = useState(boundaryOptions[0]?.imageUrl ?? "");
 
   const hasConfig = useMemo(
@@ -45,7 +45,7 @@ export function AdoptDogButton({ dogId, earTagConfig }: AdoptDogButtonProps) {
   );
 
   async function handleAdopt() {
-    if (!styleImageUrl || !color || !boundaryImageUrl) {
+    if (!styleImageUrl || !colorTitle || !boundaryImageUrl) {
       setError("Please select all ear tag options");
       return;
     }
@@ -61,7 +61,7 @@ export function AdoptDogButton({ dogId, earTagConfig }: AdoptDogButtonProps) {
           dogId,
           whatsappNumber: SUPPORT_WHATSAPP,
           earTagStyle: styleImageUrl,
-          earTagColor: color,
+          earTagColor: colorTitle,
           earTagBoundary: boundaryImageUrl,
         }),
       });
@@ -162,19 +162,36 @@ export function AdoptDogButton({ dogId, earTagConfig }: AdoptDogButtonProps) {
 
           {/* Color */}
           <div className="space-y-2">
-            <label className="block text-xs font-semibold uppercase tracking-wide text-slate-700">Color</label>
-            <select
-              value={color}
-              onChange={(event) => setColor(event.target.value)}
-              disabled={submitting}
-              className="h-10 w-full rounded-lg border border-slate-300 px-3 text-sm text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 disabled:opacity-50"
-            >
+            <label className="block text-xs font-semibold uppercase tracking-wide text-slate-700">Color Options</label>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
               {earTagConfig.colorOptions.map((item) => (
-                <option key={item} value={item}>
-                  {item}
-                </option>
+                <button
+                  key={item.title}
+                  type="button"
+                  onClick={() => setColorTitle(item.title)}
+                  disabled={submitting}
+                  className={`relative overflow-hidden rounded-xl border-2 transition ${
+                    colorTitle === item.title
+                      ? "border-emerald-600 ring-2 ring-emerald-200"
+                      : "border-slate-200 hover:border-slate-300"
+                  } disabled:opacity-50`}
+                >
+                  <div className="relative h-24 w-full bg-slate-100">
+                    <Image
+                      src={item.imageUrl}
+                      alt={item.title}
+                      fill
+                      sizes="120px"
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="bg-white px-2 py-2 text-center">
+                    <p className="text-sm font-medium text-slate-900">{item.title}</p>
+                    {item.textColor && <p className="text-xs text-slate-500">Text: {item.textColor}</p>}
+                  </div>
+                </button>
               ))}
-            </select>
+            </div>
           </div>
 
           {/* Boundary */}

@@ -25,7 +25,7 @@ export type DogRecord = {
   adoptedByUserId: string | null;
   petNamedByUserId: string | null;
   earTagStyleImageUrl: string | null;
-  earTagColor: string | null;
+  earTagColorTitle: string | null;
   earTagBoundaryImageUrl: string | null;
   status: DogStatus;
   createdBy?: string | null;
@@ -81,25 +81,33 @@ export type CreateDogInput = {
 
 export type UpdateDogInput = Partial<CreateDogInput>;
 
+export type EarTagImageOption = {
+  title: string;
+  imageUrl: string;
+};
+
+export type ColorOption = {
+  title: string;
+  imageUrl: string;
+  textColor?: string; // optional text label color
+};
+
 export type EarTagGlobalConfigRecord = {
   styleOptions: EarTagImageOption[];
   styleImages: string[];
-  colorOptions: string[];
+  colorOptions: ColorOption[];
+  legacyColorOptions?: string[]; // backward compatibility
   boundaryOptions: EarTagImageOption[];
   boundaryImages: string[];
   updatedAt: string;
   updatedBy: string | null;
 };
 
-export type EarTagImageOption = {
-  title: string;
-  imageUrl: string;
-};
-
 export type UpdateEarTagGlobalConfigInput = {
   styleOptions?: EarTagImageOption[];
   styleImages?: string[];
-  colorOptions: string[];
+  colorOptions?: ColorOption[];
+  legacyColorOptions?: string[];
   boundaryOptions?: EarTagImageOption[];
   boundaryImages?: string[];
   updatedBy: string | null;
@@ -107,7 +115,7 @@ export type UpdateEarTagGlobalConfigInput = {
 
 export type UpdateDogEarTagCustomizationInput = {
   styleImageUrl: string;
-  color: string;
+  colorTitle: string;
   boundaryImageUrl: string;
 };
 
@@ -1186,6 +1194,69 @@ function normalizeEarTagImageOptions(options: EarTagImageOption[] | undefined, f
   return result;
 }
 
+function parseColorOptions(value: unknown): ColorOption[] {
+  const items: unknown[] =
+    Array.isArray(value)
+      ? value
+      : typeof value === "string"
+        ? (() => {
+            try {
+              const parsed = JSON.parse(value) as unknown;
+              return Array.isArray(parsed) ? parsed : [];
+            } catch {
+              return [];
+            }
+          })()
+        : [];
+
+  const result: ColorOption[] = [];
+
+  for (const item of items) {
+    if (typeof item === "string") {
+      // Legacy format: just a string (color title)
+      const title = normalizedText(item);
+      if (title) {
+        result.push({ title, imageUrl: "", textColor: undefined });
+      }
+      continue;
+    }
+
+    if (!item || typeof item !== "object") continue;
+
+    const record = item as { title?: unknown; imageUrl?: unknown; url?: unknown; textColor?: unknown };
+    const imageUrl = normalizedText(record.imageUrl ?? record.url);
+    const title = normalizedText(record.title) || (imageUrl ? inferEarTagTitleFromUrl(imageUrl) : "");
+    const textColor = normalizedText(record.textColor);
+
+    if (title && imageUrl) {
+      result.push({ title, imageUrl, textColor: textColor || undefined });
+    }
+  }
+
+  return result;
+}
+
+function uniqueColorOptions(values: ColorOption[]) {
+  const seen = new Set<string>();
+  const result: ColorOption[] = [];
+
+  for (const value of values) {
+    if (!value.imageUrl) continue;
+
+    const key = value.imageUrl.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+
+    result.push({
+      title: value.title || inferEarTagTitleFromUrl(value.imageUrl),
+      imageUrl: value.imageUrl,
+      textColor: value.textColor?.trim() || undefined,
+    });
+  }
+
+  return result;
+}
+
 export async function getEarTagGlobalConfig(): Promise<EarTagGlobalConfigRecord> {
   await ensureDogAdoptionSchema();
   const pool = getDbPool();
@@ -1210,11 +1281,12 @@ export async function getEarTagGlobalConfig(): Promise<EarTagGlobalConfigRecord>
 
   const styleOptions = parseJsonImageOptions(row.style_images);
   const boundaryOptions = parseJsonImageOptions(row.boundary_images);
+  const colorOptions = parseColorOptions(row.color_options);
 
   return {
     styleOptions,
     styleImages: styleOptions.map((option) => option.imageUrl),
-    colorOptions: parseJsonArray(row.color_options),
+    colorOptions,
     boundaryOptions,
     boundaryImages: boundaryOptions.map((option) => option.imageUrl),
     updatedAt: new Date(String(row.updated_at)).toISOString(),
@@ -1332,10 +1404,10 @@ export async function updateDogEarTagCustomization(
   const pool = getDbPool();
 
   const styleImageUrl = normalizedText(input.styleImageUrl);
-  const color = normalizedText(input.color);
+  const colorTitle = normalizedText(input.colorTitle);
   const boundaryImageUrl = normalizedText(input.boundaryImageUrl);
 
-  if (!styleImageUrl || !color || !boundaryImageUrl) {
+  if (!styleImageUrl || !colorTitle || !boundaryImageUrl) {
     throw new Error("Ear tag style, color, and reflective boundary are required.");
   }
 
@@ -1343,7 +1415,7 @@ export async function updateDogEarTagCustomization(
   if (!config.styleOptions.some((option) => option.imageUrl === styleImageUrl)) {
     throw new Error("Selected ear tag style is not in global configuration.");
   }
-  if (!config.colorOptions.includes(color)) {
+  if (!config.colorOptions.some((option) => option.title === colorTitle)) {
     throw new Error("Selected ear tag color is not in global configuration.");
   }
   if (!config.boundaryOptions.some((option) => option.imageUrl === boundaryImageUrl)) {
@@ -1369,7 +1441,7 @@ export async function updateDogEarTagCustomization(
         image_url, adopted_by_user_id, ear_tag_style_image_url, ear_tag_color, ear_tag_boundary_image_url,
         status, created_at, updated_at;
     `,
-    [dogId, userId, styleImageUrl, color, boundaryImageUrl]
+    [dogId, userId, styleImageUrl, colorTitle, boundaryImageUrl]
   );
 
   if (!result.rows[0]) {
@@ -1461,7 +1533,7 @@ function mapDogRow(row: Record<string, unknown>): DogRecord {
     adoptedByUserId: row.adopted_by_user_id ? String(row.adopted_by_user_id) : null,
     petNamedByUserId: row.pet_named_by_user_id ? String(row.pet_named_by_user_id) : null,
     earTagStyleImageUrl: row.ear_tag_style_image_url ? String(row.ear_tag_style_image_url) : null,
-    earTagColor: row.ear_tag_color ? String(row.ear_tag_color) : null,
+    earTagColorTitle: row.ear_tag_color ? String(row.ear_tag_color) : null,
     earTagBoundaryImageUrl: row.ear_tag_boundary_image_url ? String(row.ear_tag_boundary_image_url) : null,
     status: String(row.status) as DogStatus,
     createdAt: new Date(String(row.created_at)).toISOString(),

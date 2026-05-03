@@ -57,7 +57,11 @@ export function DogMarketplace({ dogs }: { dogs: DogRecord[] }) {
     e.stopPropagation();
     setFavorites((prev) => {
       const next = new Set(prev);
-      next.has(dogId) ? next.delete(dogId) : next.add(dogId);
+      if (next.has(dogId)) {
+        next.delete(dogId);
+      } else {
+        next.add(dogId);
+      }
       return next;
     });
   };

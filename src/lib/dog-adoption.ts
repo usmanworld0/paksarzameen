@@ -1299,7 +1299,7 @@ export async function updateEarTagGlobalConfig(input: UpdateEarTagGlobalConfigIn
   const pool = getDbPool();
 
   const styleOptions = normalizeEarTagImageOptions(input.styleOptions, input.styleImages ?? []);
-  const colorOptions = uniqueNonEmpty(input.colorOptions);
+  const colorOptions = uniqueNonEmpty(input.colorOptions ?? []);
   const boundaryOptions = normalizeEarTagImageOptions(input.boundaryOptions, input.boundaryImages ?? []);
 
   const result = await pool.query(
@@ -1329,7 +1329,7 @@ export async function updateEarTagGlobalConfig(input: UpdateEarTagGlobalConfigIn
   return {
     styleOptions: savedStyleOptions,
     styleImages: savedStyleOptions.map((option) => option.imageUrl),
-    colorOptions: parseJsonArray(result.rows[0]?.color_options),
+    colorOptions: parseColorOptions(result.rows[0]?.color_options),
     boundaryOptions: savedBoundaryOptions,
     boundaryImages: savedBoundaryOptions.map((option) => option.imageUrl),
     updatedAt: new Date(String(result.rows[0]?.updated_at)).toISOString(),

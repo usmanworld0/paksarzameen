@@ -109,16 +109,16 @@ function parseColorOptions(value: string | null): ColorOption[] {
     if (!Array.isArray(parsed)) return [];
 
     return parsed
-      .map((item) => {
+      .map((item): ColorOption | null => {
         if (!item || typeof item !== "object") return null;
         const row = item as { title?: unknown; imageUrl?: unknown; url?: unknown; textColor?: unknown };
         const imageUrl = String(row.imageUrl ?? row.url ?? "").trim();
         if (!imageUrl) return null;
         const title = String(row.title ?? "").trim() || inferTitleFromUrl(imageUrl);
         const textColor = String(row.textColor ?? "").trim() || undefined;
-        return { title, imageUrl, textColor } satisfies ColorOption;
+        return { title, imageUrl, textColor };
       })
-      .filter((item): item is ColorOption => Boolean(item));
+      .filter((item): item is ColorOption => item !== null);
   } catch {
     return [];
   }

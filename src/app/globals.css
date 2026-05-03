@@ -580,6 +580,7 @@ video {
   }
 }
 
+/* ── Boot Loader (splash screen) ── */
 .app-boot-loader {
   position: fixed;
   inset: 0;
@@ -587,11 +588,72 @@ video {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.96);
-  transition: opacity 0.35s ease, visibility 0.35s ease;
+  background: #040d07;
+  transition: opacity 0.55s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.55s;
 }
 
-.app-boot-loader__spinner,
+.app-boot-loader__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.4rem;
+  user-select: none;
+}
+
+.app-boot-loader__logo {
+  width: clamp(56px, 10vw, 72px);
+  height: auto;
+  object-fit: contain;
+  animation: psz-boot-breathe 2.4s ease-in-out infinite;
+  filter: drop-shadow(0 0 28px rgba(15, 122, 71, 0.5));
+}
+
+@keyframes psz-boot-breathe {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.8; transform: scale(0.96); }
+}
+
+.app-boot-loader__wordmark {
+  font-family: var(--font-display), var(--font-body), sans-serif;
+  font-size: clamp(1.55rem, 4vw, 2.1rem);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1;
+}
+
+.app-boot-loader__wordmark span {
+  color: var(--psz-green);
+}
+
+.app-boot-loader__bar {
+  width: clamp(120px, 22vw, 180px);
+  height: 2px;
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 0.4rem;
+}
+
+.app-boot-loader__bar-fill {
+  height: 100%;
+  width: 45%;
+  background: linear-gradient(90deg, transparent 0%, var(--psz-green) 50%, transparent 100%);
+  animation: psz-boot-sweep 1.6s ease-in-out infinite;
+}
+
+@keyframes psz-boot-sweep {
+  from { transform: translateX(-250%); }
+  to   { transform: translateX(400%); }
+}
+
+html.app-ready .app-boot-loader {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Legacy spinner kept for page-level loading states */
 .page-loading-wheel {
   width: 3rem;
   height: 3rem;
@@ -599,11 +661,6 @@ video {
   border: 3px solid rgba(20, 89, 58, 0.16);
   border-top-color: var(--psz-green);
   animation: psz-spin 0.8s linear infinite;
-}
-
-html.app-ready .app-boot-loader {
-  opacity: 0;
-  visibility: hidden;
 }
 
 .page-loading-state {
@@ -2713,84 +2770,231 @@ html.app-ready .app-boot-loader {
 .mobile-menu {
   position: fixed;
   inset: 0;
-  width: auto;
   min-height: 100dvh;
-  background-color: rgba(0, 0, 0, 0.95);
-  backdrop-filter: blur(30px);
+  background: linear-gradient(160deg, #060e07 0%, #030904 100%);
+  backdrop-filter: blur(24px);
   z-index: 998;
   display: flex;
   flex-direction: column;
   align-items: stretch;
   justify-content: flex-start;
-  gap: 1.8rem;
-  padding: clamp(8.5rem, 16vw, 10rem) min(6vw, 2rem) 3rem;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   opacity: 0;
+  transform: translateY(12px);
   pointer-events: none;
-  transition: opacity 0.3s;
+  transition: opacity 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.38s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .mobile-menu.open {
   opacity: 1;
+  transform: translateY(0);
   pointer-events: all;
 }
 
-.mobile-menu a {
-  width: min(100%, 32rem);
-  margin: 0 auto;
-  padding: 1rem 1.25rem;
-  font-size: clamp(1.8rem, 4vw, 2.4rem);
-  color: var(--white);
+/* Panel wrapper for consistent padding */
+.mobile-menu__panel {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: clamp(7.5rem, 15vw, 9rem) min(6vw, 2.4rem) 3.5rem;
+  min-height: 100dvh;
+}
+
+/* Intro block */
+.mobile-menu__intro {
+  padding: 0 0.25rem;
+}
+
+.mobile-menu__eyebrow {
+  display: block;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--psz-green);
+  margin-bottom: 0.8rem;
+}
+
+.mobile-menu__title {
+  font-size: clamp(1.3rem, 3.5vw, 1.55rem);
+  color: rgba(255, 255, 255, 0.52);
+  line-height: 1.6;
+  font-weight: 400;
+  max-width: 40ch;
+  margin: 0;
+}
+
+/* Nav links list */
+.mobile-menu__links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.mobile-menu__link {
+  display: block;
+  width: 100%;
+  padding: 1.1rem 1.4rem;
+  font-size: clamp(1.65rem, 4.2vw, 2.1rem);
+  color: rgba(255, 255, 255, 0.88);
   font-weight: 600;
-  text-align: center;
   border-radius: 1.2rem;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.07);
   background: rgba(255, 255, 255, 0.03);
+  transition: color 0.2s, background 0.2s, border-color 0.2s, transform 0.2s;
+  text-align: left;
   overflow-wrap: anywhere;
 }
 
-.mobile-menu a:hover {
+.mobile-menu__link:hover,
+.mobile-menu__link:focus-visible {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateX(3px);
+}
+
+.mobile-menu__link--accent {
+  color: #ff6b6b;
+  border-color: rgba(255, 107, 107, 0.18);
+  background: rgba(255, 107, 107, 0.05);
+}
+
+.mobile-menu__link--accent:hover {
+  color: #ff4f4f;
+  background: rgba(255, 107, 107, 0.1);
+}
+
+/* Action buttons at bottom */
+.mobile-menu__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.mobile-menu__doctor {
+  display: block;
+  width: 100%;
+  padding: 1.1rem 1.4rem;
+  border-radius: 1.2rem;
+  border: 1px solid rgba(15, 122, 71, 0.4);
+  background: rgba(15, 122, 71, 0.08);
+  color: var(--psz-green);
+  font-size: 1.4rem;
+  font-weight: 700;
+  text-align: center;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.mobile-menu__doctor:hover {
+  background: rgba(15, 122, 71, 0.16);
+  border-color: rgba(15, 122, 71, 0.65);
+}
+
+.mobile-menu__store {
+  display: block;
+  width: 100%;
+  padding: 1.1rem 1.4rem;
+  border-radius: 1.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.4rem;
+  font-weight: 600;
+  text-align: center;
+  transition: background 0.2s, color 0.2s;
+}
+
+.mobile-menu__store:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.mobile-menu__cta {
+  display: block;
+  width: 100%;
+  padding: 1.25rem 1.4rem;
+  border-radius: 1.2rem;
+  background: linear-gradient(135deg, var(--psz-green) 0%, #0a8f48 100%);
+  color: #fff;
+  font-size: 1.45rem;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 0.02em;
+  box-shadow: 0 12px 28px rgba(15, 122, 71, 0.28);
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.mobile-menu__cta:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+/* Fallback: generic anchor inside mobile-menu retains basic styling */
+.mobile-menu a:not([class]) {
+  display: block;
+  width: min(100%, 32rem);
+  margin: 0 auto;
+  padding: 1rem 1.25rem;
+  font-size: clamp(1.65rem, 4vw, 2.1rem);
+  color: rgba(255, 255, 255, 0.88);
+  font-weight: 600;
+  text-align: center;
+  border-radius: 1.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.03);
+  overflow-wrap: anywhere;
+  transition: color 0.2s;
+}
+
+.mobile-menu a:not([class]):hover {
   color: var(--psz-green);
 }
 
 @media (max-width: 720px) {
-  .psz-header .nav-links {
-    display: none;
-  }
-  .psz-header .nav-toggle {
-    display: block;
-  }
-
   .psz-header nav {
-    padding: 2.4rem 5% 1.6rem;
+    padding: 1.4rem 5%;
   }
 }
 
 @media (max-width: 540px) {
   .psz-header nav {
-    padding: 1.1rem 5%;
+    padding: 1rem 4.5%;
   }
 
   .psz-header .nav-logo {
-    font-size: clamp(1.4rem, 5vw, 1.82rem);
+    font-size: clamp(1.35rem, 5vw, 1.75rem);
     letter-spacing: 0.02em;
   }
 
   .psz-header .nav-logo-img {
-    width: 34px;
-    height: 34px;
+    width: 32px;
+    height: 32px;
   }
 
-  .mobile-menu {
-    padding-top: 7.8rem;
+  .mobile-menu__panel {
+    padding-top: 7.2rem;
   }
 
-  .mobile-menu a {
-    font-size: clamp(1.5rem, 6vw, 1.95rem);
+  .mobile-menu__link {
+    font-size: clamp(1.45rem, 5.5vw, 1.85rem);
+    padding: 0.95rem 1.1rem;
+  }
+
+  .mobile-menu__cta,
+  .mobile-menu__doctor,
+  .mobile-menu__store {
+    font-size: 1.3rem;
   }
 }
 
-@media (max-width: 1320px) {
+/* Nav collapses to hamburger below 1060px — keeps links visible on most laptops */
+@media (max-width: 1060px) {
   .psz-header .nav-links {
     display: none;
   }
@@ -2810,7 +3014,7 @@ html.app-ready .app-boot-loader {
   }
 
   .psz-header nav {
-    padding: 1.3rem 4.5%;
+    padding: 1.2rem 4.5%;
   }
 }
 

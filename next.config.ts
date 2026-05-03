@@ -10,6 +10,7 @@ const nextConfig: NextConfig = {
   /* ── Experimental performance optimisations ── */
   experimental: {
     scrollRestoration: true,
+    optimizePackageImports: ["lucide-react", "framer-motion", "gsap"],
   },
 
   /* ── Image optimisation ── */
@@ -55,6 +56,13 @@ const nextConfig: NextConfig = {
         headers: [
           { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
           { key: "Vary", value: "Accept" },
+        ],
+      },
+      {
+        /* Cache the logo and root-level static assets aggressively */
+        source: "/:file(paksarzameen_logo\\.png|favicon\\.ico|manifest\\.json)",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
         ],
       },
       {

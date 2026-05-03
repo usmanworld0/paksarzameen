@@ -123,14 +123,16 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://images.pexels.com" />
         <link rel="dns-prefetch" href="https://videos.pexels.com" />
         <link rel="dns-prefetch" href="https://images.unsplash.com" />
-        <link rel="preconnect" href="https://www.instagram.com" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://platform.instagram.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://res.cloudinary.com" />
+        <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://images.pexels.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://videos.pexels.com" crossOrigin="anonymous" />
-        {/* Force light theme to avoid any theme toggling */}
+        {/* Preload critical above-fold assets */}
+        <link rel="preload" href="/paksarzameen_logo.png" as="image" type="image/png" />
+        {/* Force light theme and remove splash when DOM is interactive */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{document.documentElement.setAttribute('data-theme','light');var ready=function(){document.documentElement.classList.add('app-ready');};if(document.readyState==='interactive'||document.readyState==='complete'){requestAnimationFrame(ready);}else{document.addEventListener('DOMContentLoaded',ready,{once:true});window.addEventListener('load',ready,{once:true});}setTimeout(ready,2500);}catch(e){}})();`,
+            __html: `(function(){try{document.documentElement.setAttribute('data-theme','light');var ready=function(){document.documentElement.classList.add('app-ready');};if(document.readyState==='interactive'||document.readyState==='complete'){requestAnimationFrame(ready);}else{document.addEventListener('DOMContentLoaded',ready,{once:true});window.addEventListener('load',ready,{once:true});}setTimeout(ready,1800);}catch(e){}})();`,
           }}
         />
         <script
@@ -141,7 +143,12 @@ export default function RootLayout({
       <body className="antialiased">
         <Providers>
           <div className="app-boot-loader" aria-hidden="true">
-            <div className="app-boot-loader__spinner" />
+            <div className="app-boot-loader__inner">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/paksarzameen_logo.png" alt="" className="app-boot-loader__logo" width="72" height="72" />
+              <span className="app-boot-loader__wordmark">Pak<span>Sar</span>Zameen</span>
+              <div className="app-boot-loader__bar"><div className="app-boot-loader__bar-fill" /></div>
+            </div>
           </div>
           <RootShell>{children}</RootShell>
         </Providers>

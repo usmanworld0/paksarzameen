@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { adminFetch } from "@/features/auth/utils/admin-api";
 
 type Doctor = {
@@ -73,7 +73,7 @@ export function AdminHealthCarePanel() {
     [doctorRequests]
   );
 
-  async function loadDoctorRequests() {
+  const loadDoctorRequests = useCallback(async () => {
     const response = await adminFetch("/api/admin/healthcare/doctor-requests", { cache: "no-store" });
     const payload = (await response.json()) as { data?: DoctorSignupRequest[]; error?: string };
 
@@ -93,9 +93,9 @@ export function AdminHealthCarePanel() {
       });
       return next;
     });
-  }
+  }, []);
 
-  async function loadDoctors() {
+  const loadDoctors = useCallback(async () => {
     const params = new URLSearchParams();
     if (doctorSearch.trim()) params.set("search", doctorSearch.trim());
     if (doctorSpecialization.trim()) params.set("specialization", doctorSpecialization.trim());
@@ -112,7 +112,7 @@ export function AdminHealthCarePanel() {
     }
 
     setDoctors(payload.data ?? []);
-  }
+  }, [doctorSearch, doctorSpecialization, doctorMinExperience, doctorMaxFee, doctorSortBy, doctorSortOrder]);
 
   async function reviewDoctorRequest(requestId: string, status: "approved" | "declined") {
     setReviewingRequestId(requestId);
@@ -140,7 +140,7 @@ export function AdminHealthCarePanel() {
     await Promise.all([loadDoctorRequests(), loadDoctors()]);
   }
 
-  async function loadDoctorAppointments(doctorId: string) {
+  const loadDoctorAppointments = useCallback(async (doctorId: string) => {
     const params = new URLSearchParams();
     if (appointmentStatus !== "all") params.set("status", appointmentStatus);
     if (appointmentSearch.trim()) params.set("search", appointmentSearch.trim());
@@ -159,7 +159,7 @@ export function AdminHealthCarePanel() {
     }
 
     setDoctorAppointments((prev) => ({ ...prev, [doctorId]: payload.data ?? [] }));
-  }
+  }, [appointmentStatus, appointmentSearch]);
 
   function startEditingDoctor(doctor: Doctor) {
     setEditingDoctorId(doctor.doctorId);

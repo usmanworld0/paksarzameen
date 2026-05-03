@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AppointmentChatBox } from "@/features/healthcare/components/AppointmentChatBox";
 import { DoctorPortalLogoutButton } from "@/features/healthcare/components/DoctorPortalLogoutButton";
 
@@ -59,7 +59,7 @@ export function DoctorDashboard() {
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
 
-  async function loadProfile() {
+  const loadProfile = useCallback(async () => {
     const response = await fetch("/api/healthcare/doctor/profile", { cache: "no-store" });
     const payload = (await response.json()) as { data?: DoctorProfile; error?: string };
 
@@ -81,9 +81,9 @@ export function DoctorDashboard() {
     } else {
       setFeedback(payload.error ?? "Unable to load doctor profile.");
     }
-  }
+  }, []);
 
-  async function loadSlots() {
+  const loadSlots = useCallback(async () => {
     const slotsResponse = await fetch("/api/healthcare/doctor/slots", { cache: "no-store" });
     const slotsPayload = (await slotsResponse.json()) as { data?: Slot[]; error?: string };
     if (slotsResponse.ok) {
@@ -91,9 +91,9 @@ export function DoctorDashboard() {
     } else {
       setFeedback(slotsPayload.error ?? "Unable to load slots.");
     }
-  }
+  }, []);
 
-  async function loadAppointments() {
+  const loadAppointments = useCallback(async () => {
     const params = new URLSearchParams();
     if (appointmentSearch.trim()) params.set("search", appointmentSearch.trim());
     if (appointmentStatus !== "all") params.set("status", appointmentStatus);
@@ -109,11 +109,11 @@ export function DoctorDashboard() {
     } else {
       setFeedback(appointmentsPayload.error ?? "Unable to load appointments.");
     }
-  }
+  }, [appointmentSearch, appointmentStatus, appointmentSortBy, appointmentSortOrder]);
 
-  async function load() {
+  const load = useCallback(async () => {
     await Promise.all([loadProfile(), loadSlots(), loadAppointments()]);
-  }
+  }, [loadProfile, loadSlots, loadAppointments]);
 
   useEffect(() => {
     void load();
@@ -121,7 +121,7 @@ export function DoctorDashboard() {
 
   useEffect(() => {
     void loadAppointments();
-  }, [appointmentStatus, appointmentSortBy, appointmentSortOrder, loadAppointments]);
+  }, [loadAppointments]);
 
   async function addSlot() {
     setFeedback(null);

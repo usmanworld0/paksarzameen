@@ -284,7 +284,7 @@ export default async function DogAdoptionPage() {
                             Owner: <span className="font-semibold text-slate-800">{dog.ownerName ?? "—"}</span>
                           </p>
                           {dog.petName && (
-                            <p className="mt-0.5 text-xs font-semibold text-indigo-600">"{dog.petName}"</p>
+                            <p className="mt-0.5 text-xs font-semibold text-indigo-600">&ldquo;{dog.petName}&rdquo;</p>
                           )}
                         </div>
                         <Link

@@ -27,19 +27,6 @@ function parseStringArray(value: string | null): string[] {
   }
 }
 
-function unique(values: string[]) {
-  const seen = new Set<string>();
-  const result: string[] = [];
-
-  for (const value of values) {
-    const key = value.toLowerCase();
-    if (seen.has(key)) continue;
-    seen.add(key);
-    result.push(value);
-  }
-
-  return result;
-}
 
 function inferTitleFromUrl(imageUrl: string): string {
   const raw = imageUrl.trim();

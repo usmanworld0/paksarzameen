@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 type AppointmentMessage = {
   messageId: string;
@@ -21,7 +21,7 @@ export function AppointmentChatBox({ appointmentId }: { appointmentId: string })
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function loadMessages(signal?: AbortSignal) {
+  const loadMessages = useCallback(async (signal?: AbortSignal) => {
     const response = await fetch(`/api/healthcare/appointments/${appointmentId}/messages`, {
       cache: "no-store",
       signal,
@@ -38,7 +38,7 @@ export function AppointmentChatBox({ appointmentId }: { appointmentId: string })
       cache: "no-store",
       signal,
     });
-  }
+  }, [appointmentId]);
 
   useEffect(() => {
     const controller = new AbortController();

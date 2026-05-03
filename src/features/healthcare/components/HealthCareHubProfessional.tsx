@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { MessageCircle, Calendar, Users, Heart, AlertCircle } from "lucide-react";
 import { HealthcareProfileManager } from "./HealthcareProfileManager";
 import { AppointmentChatBox } from "./AppointmentChatBox";
@@ -88,7 +88,7 @@ export function HealthCareHubProfessional() {
     setReason("");
   }
 
-  async function loadData() {
+  const loadData = useCallback(async () => {
     try {
       console.log("[loadData] Starting to load doctors and appointments...");
       const params = new URLSearchParams();
@@ -155,7 +155,7 @@ export function HealthCareHubProfessional() {
       setAppointments([]);
       setFeedback("Unable to load healthcare data right now.");
     }
-  }
+  }, [doctorSearch, doctorSpecialization, doctorMinExperience, doctorMaxFee, doctorSortBy, doctorSortOrder, appointmentSearch, appointmentStatus, appointmentSortBy, appointmentSortOrder]);
 
   async function askQuickAnswer() {
     const response = await fetch("/api/ai", {
@@ -248,14 +248,6 @@ export function HealthCareHubProfessional() {
   useEffect(() => {
     void loadData();
   }, [loadData]);
-
-  useEffect(() => {
-    void loadData();
-  }, [doctorSortBy, doctorSortOrder, loadData]);
-
-  useEffect(() => {
-    void loadData();
-  }, [appointmentStatus, appointmentSortBy, appointmentSortOrder, loadData]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-emerald-50">

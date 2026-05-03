@@ -1098,18 +1098,6 @@ function uniqueNonEmpty(values: unknown[]): string[] {
   return result;
 }
 
-function parseJsonArray(value: unknown): string[] {
-  if (Array.isArray(value)) return uniqueNonEmpty(value);
-  if (typeof value === "string") {
-    try {
-      const parsed = JSON.parse(value) as unknown;
-      return Array.isArray(parsed) ? uniqueNonEmpty(parsed) : [];
-    } catch {
-      return [];
-    }
-  }
-  return [];
-}
 
 function inferEarTagTitleFromUrl(imageUrl: string): string {
   const raw = normalizedText(imageUrl);
@@ -1248,26 +1236,6 @@ function parseColorOptions(value: unknown): ColorOption[] {
   return result;
 }
 
-function uniqueColorOptions(values: ColorOption[]) {
-  const seen = new Set<string>();
-  const result: ColorOption[] = [];
-
-  for (const value of values) {
-    if (!value.imageUrl) continue;
-
-    const key = value.imageUrl.toLowerCase();
-    if (seen.has(key)) continue;
-    seen.add(key);
-
-    result.push({
-      title: value.title || inferEarTagTitleFromUrl(value.imageUrl),
-      imageUrl: value.imageUrl,
-      textColor: value.textColor?.trim() || undefined,
-    });
-  }
-
-  return result;
-}
 
 export async function getEarTagGlobalConfig(): Promise<EarTagGlobalConfigRecord> {
   await ensureDogAdoptionSchema();

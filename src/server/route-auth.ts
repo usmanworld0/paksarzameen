@@ -111,6 +111,14 @@ async function resolveUserFromAdminSession() {
   }
 }
 
+export async function getApiUser() {
+  try {
+    return await getRequiredApiUser();
+  } catch {
+    return null;
+  }
+}
+
 export async function getRequiredApiUser() {
   const cookieUser = await requireAuthenticatedUser();
   if (cookieUser) {

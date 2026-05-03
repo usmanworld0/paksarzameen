@@ -41,9 +41,11 @@ export type AdoptionRequestRecord = {
   dogBreed: string;
   dogColor: string;
   dogImageUrl: string;
-  userId: string;
+  userId: string | null;
   userName: string | null;
   userEmail: string | null;
+  applicantName: string | null;
+  applicantPhone: string | null;
   whatsappNumber: string | null;
   status: AdoptionRequestStatus;
   requestedAt: string;
@@ -398,6 +400,11 @@ export async function ensureDogAdoptionSchema() {
 
   await pool.query(`ALTER TABLE adoption_requests ADD COLUMN IF NOT EXISTS whatsapp_number text;`);
 
+  // Allow unauthenticated (walk-in) applicants — make user_id nullable
+  await pool.query(`ALTER TABLE adoption_requests ALTER COLUMN user_id DROP NOT NULL;`);
+  await pool.query(`ALTER TABLE adoption_requests ADD COLUMN IF NOT EXISTS applicant_name text;`);
+  await pool.query(`ALTER TABLE adoption_requests ADD COLUMN IF NOT EXISTS applicant_phone text;`);
+
   await pool.query(`
     CREATE TABLE IF NOT EXISTS dog_post_adoption_updates (
       id text PRIMARY KEY,
@@ -685,19 +692,24 @@ export async function deleteDog(dogId: string) {
   await pool.query(`DELETE FROM dogs WHERE id = $1`, [dogId]);
 }
 
-export async function createAdoptionRequest(dogId: string, userId: string, whatsappNumber: string) {
+export async function createAdoptionRequest(
+  dogId: string,
+  applicantInput: {
+    userId?: string | null;
+    applicantName: string;
+    applicantPhone: string;
+  }
+) {
   await ensureDogAdoptionSchema();
   const pool = getDbPool();
   const client = await pool.connect();
-  const normalizedWhatsapp = normalizedText(whatsappNumber);
 
-  if (!normalizedWhatsapp) {
-    throw new Error("WhatsApp number is required.");
-  }
+  const applicantName = normalizedText(applicantInput.applicantName);
+  const applicantPhone = normalizedText(applicantInput.applicantPhone);
+  const userId = applicantInput.userId ?? null;
 
-  if (!/^\+?[0-9\s\-()]{7,20}$/.test(normalizedWhatsapp)) {
-    throw new Error("Please enter a valid WhatsApp number.");
-  }
+  if (!applicantName) throw new Error("Full name is required.");
+  if (!applicantPhone) throw new Error("Phone number is required.");
 
   try {
     await client.query("BEGIN");
@@ -716,27 +728,22 @@ export async function createAdoptionRequest(dogId: string, userId: string, whats
       throw new Error("Dog is no longer available for adoption.");
     }
 
-    const existingForUser = await client.query(
-      `
-      SELECT id
-      FROM adoption_requests
-      WHERE dog_id = $1 AND user_id = $2
-      LIMIT 1;
-      `,
-      [dogId, userId]
+    // Prevent duplicate submissions from the same phone number
+    const existingForPhone = await client.query(
+      `SELECT id FROM adoption_requests WHERE dog_id = $1 AND applicant_phone = $2 LIMIT 1;`,
+      [dogId, applicantPhone]
     );
-
-    if (existingForUser.rows[0]) {
+    if (existingForPhone.rows[0]) {
       throw new Error("You have already submitted a request for this dog.");
     }
 
     const requestResult = await client.query(
       `
-      INSERT INTO adoption_requests (id, dog_id, user_id, whatsapp_number, status)
-      VALUES ($1, $2, $3, $4, 'pending')
-      RETURNING id, dog_id, user_id, whatsapp_number, status, requested_at;
+      INSERT INTO adoption_requests (id, dog_id, user_id, applicant_name, applicant_phone, status)
+      VALUES ($1, $2, $3, $4, $5, 'pending')
+      RETURNING id, dog_id, user_id, applicant_name, applicant_phone, status, requested_at;
       `,
-      [randomUUID(), dogId, userId, normalizedWhatsapp]
+      [randomUUID(), dogId, userId, applicantName, applicantPhone]
     );
 
     await client.query(
@@ -754,8 +761,9 @@ export async function createAdoptionRequest(dogId: string, userId: string, whats
     return {
       requestId: String(requestResult.rows[0].id),
       dogId: String(requestResult.rows[0].dog_id),
-      userId: String(requestResult.rows[0].user_id),
-      whatsappNumber: requestResult.rows[0].whatsapp_number ? String(requestResult.rows[0].whatsapp_number) : null,
+      userId: requestResult.rows[0].user_id ? String(requestResult.rows[0].user_id) : null,
+      applicantName: requestResult.rows[0].applicant_name ? String(requestResult.rows[0].applicant_name) : null,
+      applicantPhone: requestResult.rows[0].applicant_phone ? String(requestResult.rows[0].applicant_phone) : null,
       status: String(requestResult.rows[0].status) as AdoptionRequestStatus,
       requestedAt: new Date(String(requestResult.rows[0].requested_at)).toISOString(),
     };
@@ -776,6 +784,8 @@ export async function listAdoptionRequests() {
       ar.id,
       ar.dog_id,
       ar.user_id,
+      ar.applicant_name,
+      ar.applicant_phone,
       ar.status,
       ar.requested_at,
       ar.whatsapp_number,
@@ -805,6 +815,8 @@ export async function listMyAdoptionRequests(userId: string) {
       ar.id,
       ar.dog_id,
       ar.user_id,
+      ar.applicant_name,
+      ar.applicant_phone,
       ar.status,
       ar.requested_at,
       ar.whatsapp_number,
@@ -1550,9 +1562,11 @@ function mapAdoptionRequestRow(row: Record<string, unknown>): AdoptionRequestRec
     dogBreed: String(row.dog_breed),
     dogColor: row.dog_color ? String(row.dog_color) : "Unknown",
     dogImageUrl: String(row.dog_image_url),
-    userId: String(row.user_id),
+    userId: row.user_id ? String(row.user_id) : null,
     userName: row.user_name ? String(row.user_name) : null,
     userEmail: row.user_email ? String(row.user_email) : null,
+    applicantName: row.applicant_name ? String(row.applicant_name) : null,
+    applicantPhone: row.applicant_phone ? String(row.applicant_phone) : null,
     whatsappNumber: row.whatsapp_number ? String(row.whatsapp_number) : null,
     status: String(row.status) as AdoptionRequestStatus,
     requestedAt: new Date(String(row.requested_at)).toISOString(),

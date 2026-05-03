@@ -5,6 +5,7 @@ import { Heart, MapPin, Shield, Star, Users } from "lucide-react";
 
 import { DogMarketplace } from "@/features/dog-adoption/components/DogMarketplace";
 import { DogLocationMap } from "@/features/dog-adoption/components/DogLocationMap";
+import { DogListingsMap } from "@/features/dog-adoption/components/DogListingsMap";
 import { hasDatabaseConnection } from "@/lib/db";
 import { listAdoptedDogsWithOwners, listDogs } from "@/lib/dog-adoption";
 
@@ -81,10 +82,10 @@ export default async function DogAdoptionPage() {
                   <Heart className="h-4 w-4" /> Find My Dog
                 </a>
                 <a
-                  href="#rescue-map"
+                  href="#dogs-map"
                   className="inline-flex items-center gap-2 rounded-full border border-emerald-400/40 bg-white/5 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
                 >
-                  <MapPin className="h-4 w-4" /> Rescue Map
+                  <MapPin className="h-4 w-4" /> View on Map
                 </a>
               </div>
             </div>
@@ -163,12 +164,39 @@ export default async function DogAdoptionPage() {
             )}
           </section>
 
-          {/* ── Rescue Map ── */}
+          {/* ── Dogs on Map ── */}
+          {!error && dogs.length > 0 && (
+            <section id="dogs-map" className="scroll-mt-24 space-y-6">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-600">Find Near You</p>
+                <h2 className="mt-1 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Dogs on the Map</h2>
+                <p className="mt-2 text-slate-500">
+                  See where each listed dog is located — tap a marker to view their profile
+                </p>
+                {/* Legend */}
+                <div className="mt-3 flex flex-wrap gap-4">
+                  {[
+                    { color: "bg-emerald-500", label: "Available" },
+                    { color: "bg-amber-400", label: "Pending" },
+                    { color: "bg-indigo-500", label: "Adopted" },
+                  ].map((item) => (
+                    <div key={item.label} className="flex items-center gap-1.5 text-xs font-semibold text-slate-600">
+                      <span className={`h-3 w-3 rounded-full ${item.color}`} />
+                      {item.label}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <DogListingsMap dogs={dogs} />
+            </section>
+          )}
+
+          {/* ── Rescue Hotspots Map ── */}
           <section id="rescue-map" className="scroll-mt-24 space-y-6">
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-600">Rescue Hotspots</p>
-              <h2 className="mt-1 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Dog Location Map</h2>
-              <p className="mt-2 text-slate-500">Live rescue hotspots — tap a marker for details</p>
+              <h2 className="mt-1 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Rescue Location Map</h2>
+              <p className="mt-2 text-slate-500">Active rescue hotspots in the area — tap a marker for details</p>
             </div>
             <DogLocationMap />
           </section>

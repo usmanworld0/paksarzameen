@@ -25,13 +25,14 @@ type Step = "details" | "style" | "color" | "boundary" | "confirm" | "success";
 const SUPPORT_WHATSAPP = "+92 303 5763435";
 const SUPPORT_WHATSAPP_LINK = "https://wa.me/923035763435";
 
-const STEPS: { key: Step; label: string }[] = [
-  { key: "details", label: "Your Info" },
-  { key: "style", label: "Style" },
-  { key: "color", label: "Color" },
-  { key: "boundary", label: "Boundary" },
-  { key: "confirm", label: "Confirm" },
-];
+const STEP_LABELS: Record<Step, string> = {
+  details: "Your Info",
+  style: "Style",
+  color: "Color",
+  boundary: "Boundary",
+  confirm: "Confirm",
+  success: "",
+};
 
 export function AdoptDogButton({ dogId, earTagConfig }: AdoptDogButtonProps) {
   const styleOptions = useMemo(
@@ -207,7 +208,7 @@ export function AdoptDogButton({ dogId, earTagConfig }: AdoptDogButtonProps) {
                 {done ? <Check className="h-3.5 w-3.5" strokeWidth={3} /> : i + 1}
               </div>
               <span className={`hidden text-[10px] font-semibold sm:block ${active ? "text-emerald-700" : done ? "text-slate-400" : "text-slate-300"}`}>
-                {STEPS.find((x) => x.key === s)?.label}
+                {STEP_LABELS[s]}
               </span>
             </div>
             {i < activeSteps.length - 1 && (

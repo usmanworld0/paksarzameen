@@ -32,31 +32,6 @@ const INITIAL_FORM: DogFormState = {
   imageFile: null,
 };
 
-function parseOptionLines(value: string): EarTagImageOption[] {
-  return value
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .map((line) => {
-      const [titlePart, ...urlParts] = line.split("|");
-      const imageUrl = urlParts.join("|").trim();
-      const title = titlePart.trim();
-
-      if (!imageUrl) {
-        return null;
-      }
-
-      return {
-        title: title || "Untitled",
-        imageUrl,
-      } satisfies EarTagImageOption;
-    })
-    .filter((item): item is EarTagImageOption => Boolean(item));
-}
-
-function formatOptionLines(values: EarTagImageOption[]) {
-  return values.map((item) => `${item.title} | ${item.imageUrl}`).join("\n");
-}
 
 function inferTitleFromFilename(file: File) {
   const value = file.name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ").trim();
@@ -467,208 +442,313 @@ export function AdminDogsPanel() {
         <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <h2 className="text-xl font-semibold text-slate-900">Customize Your Ear Tag</h2>
           <p className="mt-2 text-sm text-slate-600">
-            Global settings used for every adopted dog. Admin-defined options are reused in all adopter workflows.
+            Upload images for each category. Adopters will see these as selectable options during the adoption flow.
+            Click <span className="font-semibold text-rose-600">×</span> on any saved option to remove it, then save.
           </p>
 
-          <div className="mt-5 grid gap-4 lg:grid-cols-2">
-            <label className="space-y-2">
-              <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Ear Tag Style Images (URLs)</span>
-              <textarea
-                className="min-h-28 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                value={formatOptionLines(earTagStyleOptions)}
-                onChange={(event) => setEarTagStyleOptions(parseOptionLines(event.target.value))}
-                placeholder="One option per line: Title | https://..."
-              />
-            </label>
+          <div className="mt-6 space-y-10">
 
-            <label className="space-y-2">
-              <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Reflective Boundary Images (URLs)</span>
-              <textarea
-                className="min-h-28 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                value={formatOptionLines(earTagBoundaryOptions)}
-                onChange={(event) => setEarTagBoundaryOptions(parseOptionLines(event.target.value))}
-                placeholder="One option per line: Title | https://..."
-              />
-            </label>
+            {/* ── Ear Tag Styles ── */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-bold uppercase tracking-widest text-slate-700">Ear Tag Styles</h3>
+                {earTagStyleOptions.length > 0 && (
+                  <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">
+                    {earTagStyleOptions.length} saved
+                  </span>
+                )}
+                {earTagStyleFiles.length > 0 && (
+                  <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-700">
+                    {earTagStyleFiles.length} pending
+                  </span>
+                )}
+              </div>
 
-            <label className="space-y-2">
-              <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Color Options (Format: Title | Hex Color | https://...)</span>
-              <textarea
-                className="min-h-24 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                value={earTagColorOptions.map((item) => `${item.title}${item.textColor ? ` | ${item.textColor}` : ""} | ${item.imageUrl}`).join("\n")}
-                onChange={(event) =>
-                  setEarTagColorOptions(
-                    event.target.value
-                      .split("\n")
-                      .map((line) => {
-                        const [titlePart, ...rest] = line.split("|");
-                        if (!rest.length) return null;
-                        const urlPart = rest.pop()?.trim();
-                        const textColorPart = rest.length > 0 ? rest[0]?.trim() : undefined;
-                        if (!urlPart) return null;
-                        return {
-                          title: titlePart.trim() || "Untitled",
-                          imageUrl: urlPart,
-                          textColor: textColorPart,
-                        };
-                      })
-                      .filter(Boolean) as ColorOption[]
-                  )
-                }
-                placeholder="Format: Title | #HEXCOLOR | https://image.url&#10;Example: Red | #FF0000 | https://example.com/red.png&#10;Example: Blue | #0000FF | https://example.com/blue.png"
-              />
-            </label>
-
-            <div className="space-y-3">
-              <label className="block space-y-2">
-                <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Upload Ear Tag Style Images</span>
-                <input
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={(event) => {
-                    const files = Array.from(event.target.files ?? []);
-                    setEarTagStyleFiles(files);
-                    setEarTagStyleUploadTitles(files.map((file) => inferTitleFromFilename(file)));
-                  }}
-                />
-              </label>
-
-              {earTagStyleFiles.length > 0 ? (
-                <div className="space-y-2 rounded-lg border border-slate-200 bg-slate-50 p-3">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Style upload titles</p>
-                  {earTagStyleFiles.map((file, index) => (
-                    <label key={`${file.name}-${index}`} className="block space-y-1">
-                      <span className="text-xs text-slate-500">{file.name}</span>
-                      <input
-                        className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                        value={earTagStyleUploadTitles[index] ?? ""}
-                        onChange={(event) =>
-                          setEarTagStyleUploadTitles((prev) => {
-                            const next = [...prev];
-                            next[index] = event.target.value;
-                            return next;
-                          })
-                        }
-                        placeholder="Option title"
-                      />
-                    </label>
-                  ))}
-                </div>
-              ) : null}
-
-              <label className="block space-y-2">
-                <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Upload Reflective Boundaries</span>
-                <input
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={(event) => {
-                    const files = Array.from(event.target.files ?? []);
-                    setEarTagBoundaryFiles(files);
-                    setEarTagBoundaryUploadTitles(files.map((file) => inferTitleFromFilename(file)));
-                  }}
-                />
-              </label>
-
-              {earTagBoundaryFiles.length > 0 ? (
-                <div className="space-y-2 rounded-lg border border-slate-200 bg-slate-50 p-3">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Boundary upload titles</p>
-                  {earTagBoundaryFiles.map((file, index) => (
-                    <label key={`${file.name}-${index}`} className="block space-y-1">
-                      <span className="text-xs text-slate-500">{file.name}</span>
-                      <input
-                        className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                        value={earTagBoundaryUploadTitles[index] ?? ""}
-                        onChange={(event) =>
-                          setEarTagBoundaryUploadTitles((prev) => {
-                            const next = [...prev];
-                            next[index] = event.target.value;
-                            return next;
-                          })
-                        }
-                        placeholder="Option title"
-                      />
-                    </label>
-                  ))}
-                </div>
-              ) : null}
-
-              <label className="block space-y-2">
-                <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Upload Color Option Images</span>
-                <input
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={(event) => {
-                    const files = Array.from(event.target.files ?? []);
-                    setEarTagColorFiles(files);
-                    setEarTagColorUploadTitles(files.map((file) => inferTitleFromFilename(file)));
-                    setEarTagColorUploadTextColors(files.map(() => "#000000"));
-                  }}
-                />
-              </label>
-
-              {earTagColorFiles.length > 0 ? (
-                <div className="space-y-2 rounded-lg border border-slate-200 bg-slate-50 p-3">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Color option details</p>
-                  {earTagColorFiles.map((file, index) => (
-                    <div key={`${file.name}-${index}`} className="space-y-2 rounded-lg border border-slate-300 bg-white p-2">
-                      <span className="text-xs font-medium text-slate-700">{file.name}</span>
-                      <input
-                        className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                        value={earTagColorUploadTitles[index] ?? ""}
-                        onChange={(event) =>
-                          setEarTagColorUploadTitles((prev) => {
-                            const next = [...prev];
-                            next[index] = event.target.value;
-                            return next;
-                          })
-                        }
-                        placeholder="Color title (e.g., Red, Blue)"
-                      />
-                      <div className="flex gap-2">
-                        <input
-                          type="color"
-                          className="h-10 w-16 rounded-lg border border-slate-300"
-                          value={earTagColorUploadTextColors[index] ?? "#000000"}
-                          onChange={(event) =>
-                            setEarTagColorUploadTextColors((prev) => {
-                              const next = [...prev];
-                              next[index] = event.target.value;
-                              return next;
-                            })
-                          }
-                        />
-                        <input
-                          className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                          value={earTagColorUploadTextColors[index] ?? "#000000"}
-                          onChange={(event) =>
-                            setEarTagColorUploadTextColors((prev) => {
-                              const next = [...prev];
-                              next[index] = event.target.value;
-                              return next;
-                            })
-                          }
-                          placeholder="Hex color (e.g., #FF0000)"
-                        />
+              {earTagStyleOptions.length > 0 ? (
+                <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-6">
+                  {earTagStyleOptions.map((opt, i) => (
+                    <div key={`saved-style-${i}`} className="group relative">
+                      <div className="aspect-square overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={opt.imageUrl} alt={opt.title} className="h-full w-full object-cover" />
                       </div>
+                      <p className="mt-1 truncate text-center text-[11px] font-medium text-slate-600">{opt.title}</p>
+                      <button
+                        type="button"
+                        title="Remove"
+                        onClick={() => setEarTagStyleOptions((prev) => prev.filter((_, idx) => idx !== i))}
+                        className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-rose-500 text-[11px] font-bold text-white opacity-0 shadow transition group-hover:opacity-100"
+                      >
+                        ×
+                      </button>
                     </div>
                   ))}
                 </div>
-              ) : null}
+              ) : (
+                <p className="text-xs italic text-slate-400">No styles saved yet — upload below to add the first one.</p>
+              )}
+
+              <label className="flex cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 py-5 transition hover:border-emerald-300 hover:bg-emerald-50">
+                <svg className="h-6 w-6 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                </svg>
+                <span className="text-sm font-semibold text-slate-600">Upload style images</span>
+                <span className="text-xs text-slate-400">Multiple files allowed · PNG, JPG, WEBP</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  className="sr-only"
+                  onChange={(event) => {
+                    const files = Array.from(event.target.files ?? []);
+                    setEarTagStyleFiles((prev) => [...prev, ...files]);
+                    setEarTagStyleUploadTitles((prev) => [...prev, ...files.map(inferTitleFromFilename)]);
+                    event.target.value = "";
+                  }}
+                />
+              </label>
+
+              {earTagStyleFiles.length > 0 && (
+                <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-6">
+                  {earTagStyleFiles.map((file, i) => (
+                    <div key={`pending-style-${i}`} className="group relative space-y-1">
+                      <div className="aspect-square overflow-hidden rounded-xl border-2 border-dashed border-emerald-300 bg-slate-100">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={URL.createObjectURL(file)} alt="" className="h-full w-full object-cover" />
+                      </div>
+                      <input
+                        className="w-full rounded-lg border border-slate-300 px-2 py-1 text-[11px]"
+                        value={earTagStyleUploadTitles[i] ?? ""}
+                        onChange={(event) =>
+                          setEarTagStyleUploadTitles((prev) => {
+                            const next = [...prev];
+                            next[i] = event.target.value;
+                            return next;
+                          })
+                        }
+                        placeholder="Title"
+                      />
+                      <button
+                        type="button"
+                        title="Remove"
+                        onClick={() => {
+                          setEarTagStyleFiles((prev) => prev.filter((_, idx) => idx !== i));
+                          setEarTagStyleUploadTitles((prev) => prev.filter((_, idx) => idx !== i));
+                        }}
+                        className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-rose-500 text-[11px] font-bold text-white shadow"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
+
+            {/* ── Colors ── */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-bold uppercase tracking-widest text-slate-700">Colors</h3>
+                {earTagColorOptions.length > 0 && (
+                  <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">
+                    {earTagColorOptions.length} saved
+                  </span>
+                )}
+                {earTagColorFiles.length > 0 && (
+                  <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-700">
+                    {earTagColorFiles.length} pending
+                  </span>
+                )}
+              </div>
+
+              {earTagColorOptions.length > 0 ? (
+                <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-6">
+                  {earTagColorOptions.map((opt, i) => (
+                    <div key={`saved-color-${i}`} className="group relative">
+                      <div className="aspect-square overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={opt.imageUrl} alt={opt.title} className="h-full w-full object-cover" />
+                      </div>
+                      <p className="mt-1 truncate text-center text-[11px] font-medium text-slate-600">{opt.title}</p>
+                      <button
+                        type="button"
+                        title="Remove"
+                        onClick={() => setEarTagColorOptions((prev) => prev.filter((_, idx) => idx !== i))}
+                        className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-rose-500 text-[11px] font-bold text-white opacity-0 shadow transition group-hover:opacity-100"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs italic text-slate-400">No colors saved yet — upload below to add the first one.</p>
+              )}
+
+              <label className="flex cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 py-5 transition hover:border-emerald-300 hover:bg-emerald-50">
+                <svg className="h-6 w-6 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                </svg>
+                <span className="text-sm font-semibold text-slate-600">Upload color images</span>
+                <span className="text-xs text-slate-400">Multiple files allowed · PNG, JPG, WEBP</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  className="sr-only"
+                  onChange={(event) => {
+                    const files = Array.from(event.target.files ?? []);
+                    setEarTagColorFiles((prev) => [...prev, ...files]);
+                    setEarTagColorUploadTitles((prev) => [...prev, ...files.map(inferTitleFromFilename)]);
+                    setEarTagColorUploadTextColors((prev) => [...prev, ...files.map(() => "#000000")]);
+                    event.target.value = "";
+                  }}
+                />
+              </label>
+
+              {earTagColorFiles.length > 0 && (
+                <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-5">
+                  {earTagColorFiles.map((file, i) => (
+                    <div key={`pending-color-${i}`} className="group relative space-y-1">
+                      <div className="aspect-square overflow-hidden rounded-xl border-2 border-dashed border-emerald-300 bg-slate-100">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={URL.createObjectURL(file)} alt="" className="h-full w-full object-cover" />
+                      </div>
+                      <input
+                        className="w-full rounded-lg border border-slate-300 px-2 py-1 text-[11px]"
+                        value={earTagColorUploadTitles[i] ?? ""}
+                        onChange={(event) =>
+                          setEarTagColorUploadTitles((prev) => {
+                            const next = [...prev];
+                            next[i] = event.target.value;
+                            return next;
+                          })
+                        }
+                        placeholder="Color name"
+                      />
+                      <button
+                        type="button"
+                        title="Remove"
+                        onClick={() => {
+                          setEarTagColorFiles((prev) => prev.filter((_, idx) => idx !== i));
+                          setEarTagColorUploadTitles((prev) => prev.filter((_, idx) => idx !== i));
+                          setEarTagColorUploadTextColors((prev) => prev.filter((_, idx) => idx !== i));
+                        }}
+                        className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-rose-500 text-[11px] font-bold text-white shadow"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* ── Reflective Boundaries ── */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-bold uppercase tracking-widest text-slate-700">Reflective Boundaries</h3>
+                {earTagBoundaryOptions.length > 0 && (
+                  <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">
+                    {earTagBoundaryOptions.length} saved
+                  </span>
+                )}
+                {earTagBoundaryFiles.length > 0 && (
+                  <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-700">
+                    {earTagBoundaryFiles.length} pending
+                  </span>
+                )}
+              </div>
+
+              {earTagBoundaryOptions.length > 0 ? (
+                <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-6">
+                  {earTagBoundaryOptions.map((opt, i) => (
+                    <div key={`saved-boundary-${i}`} className="group relative">
+                      <div className="aspect-square overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={opt.imageUrl} alt={opt.title} className="h-full w-full object-cover" />
+                      </div>
+                      <p className="mt-1 truncate text-center text-[11px] font-medium text-slate-600">{opt.title}</p>
+                      <button
+                        type="button"
+                        title="Remove"
+                        onClick={() => setEarTagBoundaryOptions((prev) => prev.filter((_, idx) => idx !== i))}
+                        className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-rose-500 text-[11px] font-bold text-white opacity-0 shadow transition group-hover:opacity-100"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs italic text-slate-400">No boundaries saved yet — upload below to add the first one.</p>
+              )}
+
+              <label className="flex cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 py-5 transition hover:border-emerald-300 hover:bg-emerald-50">
+                <svg className="h-6 w-6 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                </svg>
+                <span className="text-sm font-semibold text-slate-600">Upload boundary images</span>
+                <span className="text-xs text-slate-400">Multiple files allowed · PNG, JPG, WEBP</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  className="sr-only"
+                  onChange={(event) => {
+                    const files = Array.from(event.target.files ?? []);
+                    setEarTagBoundaryFiles((prev) => [...prev, ...files]);
+                    setEarTagBoundaryUploadTitles((prev) => [...prev, ...files.map(inferTitleFromFilename)]);
+                    event.target.value = "";
+                  }}
+                />
+              </label>
+
+              {earTagBoundaryFiles.length > 0 && (
+                <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-6">
+                  {earTagBoundaryFiles.map((file, i) => (
+                    <div key={`pending-boundary-${i}`} className="group relative space-y-1">
+                      <div className="aspect-square overflow-hidden rounded-xl border-2 border-dashed border-emerald-300 bg-slate-100">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={URL.createObjectURL(file)} alt="" className="h-full w-full object-cover" />
+                      </div>
+                      <input
+                        className="w-full rounded-lg border border-slate-300 px-2 py-1 text-[11px]"
+                        value={earTagBoundaryUploadTitles[i] ?? ""}
+                        onChange={(event) =>
+                          setEarTagBoundaryUploadTitles((prev) => {
+                            const next = [...prev];
+                            next[i] = event.target.value;
+                            return next;
+                          })
+                        }
+                        placeholder="Title"
+                      />
+                      <button
+                        type="button"
+                        title="Remove"
+                        onClick={() => {
+                          setEarTagBoundaryFiles((prev) => prev.filter((_, idx) => idx !== i));
+                          setEarTagBoundaryUploadTitles((prev) => prev.filter((_, idx) => idx !== i));
+                        }}
+                        className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-rose-500 text-[11px] font-bold text-white shadow"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
           </div>
 
-          <div className="mt-4">
+          <div className="mt-8 border-t border-slate-100 pt-5">
             <button
               type="button"
               disabled={earTagSaving}
               onClick={() => void saveEarTagConfig()}
-              className="rounded-full bg-emerald-700 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-600 disabled:opacity-70"
+              className="rounded-full bg-emerald-700 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-600 disabled:opacity-70"
             >
               {earTagSaving ? "Saving..." : "Save Ear Tag Configuration"}
             </button>

@@ -402,6 +402,8 @@ export async function ensureDogAdoptionSchema() {
 
   // Allow unauthenticated (walk-in) applicants — make user_id nullable
   await pool.query(`ALTER TABLE adoption_requests ALTER COLUMN user_id DROP NOT NULL;`);
+  // Drop FK so auth user IDs not in the public users table don't cause constraint violations
+  await pool.query(`ALTER TABLE adoption_requests DROP CONSTRAINT IF EXISTS adoption_requests_user_id_fkey;`);
   await pool.query(`ALTER TABLE adoption_requests ADD COLUMN IF NOT EXISTS applicant_name text;`);
   await pool.query(`ALTER TABLE adoption_requests ADD COLUMN IF NOT EXISTS applicant_phone text;`);
 
@@ -1082,21 +1084,6 @@ export async function deleteDogPostAdoptionUpdate(updateId: string) {
   }
 }
 
-function uniqueNonEmpty(values: unknown[]): string[] {
-  const seen = new Set<string>();
-  const result: string[] = [];
-
-  for (const value of values) {
-    const item = normalizedText(value);
-    if (!item) continue;
-    const key = item.toLowerCase();
-    if (seen.has(key)) continue;
-    seen.add(key);
-    result.push(item);
-  }
-
-  return result;
-}
 
 
 function inferEarTagTitleFromUrl(imageUrl: string): string {
@@ -1160,6 +1147,26 @@ function parseJsonImageOptions(value: unknown): EarTagImageOption[] {
 
     const title = normalizedText(record.title) || inferEarTagTitleFromUrl(imageUrl);
     result.push({ title, imageUrl });
+  }
+
+  return result;
+}
+
+function normalizeColorOptions(options: ColorOption[] | undefined): ColorOption[] {
+  const seen = new Set<string>();
+  const result: ColorOption[] = [];
+
+  for (const option of options ?? []) {
+    const imageUrl = normalizedText(option.imageUrl);
+    if (!imageUrl) continue;
+    const key = imageUrl.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    result.push({
+      title: normalizedText(option.title) || inferEarTagTitleFromUrl(imageUrl),
+      imageUrl,
+      textColor: normalizedText(option.textColor) || undefined,
+    });
   }
 
   return result;
@@ -1279,7 +1286,7 @@ export async function updateEarTagGlobalConfig(input: UpdateEarTagGlobalConfigIn
   const pool = getDbPool();
 
   const styleOptions = normalizeEarTagImageOptions(input.styleOptions, input.styleImages ?? []);
-  const colorOptions = uniqueNonEmpty(input.colorOptions ?? []);
+  const colorOptions = normalizeColorOptions(input.colorOptions);
   const boundaryOptions = normalizeEarTagImageOptions(input.boundaryOptions, input.boundaryImages ?? []);
 
   const result = await pool.query(

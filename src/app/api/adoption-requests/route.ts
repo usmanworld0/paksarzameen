@@ -15,11 +15,13 @@ export async function POST(request: Request) {
       dogId?: string;
       applicantName?: string;
       applicantPhone?: string;
+      proposedPetName?: string;
     };
 
     const dogId = String(body.dogId ?? "").trim();
     const applicantName = String(body.applicantName ?? "").trim();
     const applicantPhone = String(body.applicantPhone ?? "").trim();
+    const proposedPetName = String(body.proposedPetName ?? "").trim() || null;
 
     if (!dogId) {
       return NextResponse.json({ error: "Dog ID is required." }, { status: 400 });
@@ -38,6 +40,7 @@ export async function POST(request: Request) {
       userId: user?.id ?? null,
       applicantName,
       applicantPhone,
+      proposedPetName,
     });
 
     return NextResponse.json(

@@ -406,6 +406,8 @@ export async function ensureDogAdoptionSchema() {
   await pool.query(`ALTER TABLE adoption_requests DROP CONSTRAINT IF EXISTS adoption_requests_user_id_fkey;`);
   await pool.query(`ALTER TABLE adoption_requests ADD COLUMN IF NOT EXISTS applicant_name text;`);
   await pool.query(`ALTER TABLE adoption_requests ADD COLUMN IF NOT EXISTS applicant_phone text;`);
+  // Proposed nickname the adopter wants to give the dog
+  await pool.query(`ALTER TABLE adoption_requests ADD COLUMN IF NOT EXISTS proposed_pet_name text;`);
 
   await pool.query(`
     CREATE TABLE IF NOT EXISTS dog_post_adoption_updates (
@@ -694,12 +696,36 @@ export async function deleteDog(dogId: string) {
   await pool.query(`DELETE FROM dogs WHERE id = $1`, [dogId]);
 }
 
+export async function isPetNameAvailable(proposedName: string): Promise<boolean> {
+  await ensureDogAdoptionSchema();
+  const pool = getDbPool();
+
+  const name = normalizedText(proposedName).toLowerCase();
+  if (!name) return false;
+
+  const dogCheck = await pool.query(
+    `SELECT id FROM dogs WHERE LOWER(pet_name) = $1 LIMIT 1`,
+    [name]
+  );
+  if (dogCheck.rows[0]) return false;
+
+  const requestCheck = await pool.query(
+    `SELECT id FROM adoption_requests
+     WHERE LOWER(proposed_pet_name) = $1
+       AND status IN ('pending', 'approved')
+     LIMIT 1`,
+    [name]
+  );
+  return !requestCheck.rows[0];
+}
+
 export async function createAdoptionRequest(
   dogId: string,
   applicantInput: {
     userId?: string | null;
     applicantName: string;
     applicantPhone: string;
+    proposedPetName?: string | null;
   }
 ) {
   await ensureDogAdoptionSchema();
@@ -708,6 +734,7 @@ export async function createAdoptionRequest(
 
   const applicantName = normalizedText(applicantInput.applicantName);
   const applicantPhone = normalizedText(applicantInput.applicantPhone);
+  const proposedPetName = normalizedText(applicantInput.proposedPetName ?? "") || null;
   const userId = applicantInput.userId ?? null;
 
   if (!applicantName) throw new Error("Full name is required.");
@@ -739,13 +766,35 @@ export async function createAdoptionRequest(
       throw new Error("You have already submitted a request for this dog.");
     }
 
+    // Ensure the proposed nickname is globally unique
+    if (proposedPetName) {
+      const nameLower = proposedPetName.toLowerCase();
+      const dogNameCheck = await client.query(
+        `SELECT id FROM dogs WHERE LOWER(pet_name) = $1 LIMIT 1`,
+        [nameLower]
+      );
+      if (dogNameCheck.rows[0]) {
+        throw new Error(`The nickname "${proposedPetName}" is already taken by another dog.`);
+      }
+      const reqNameCheck = await client.query(
+        `SELECT id FROM adoption_requests
+         WHERE LOWER(proposed_pet_name) = $1
+           AND status IN ('pending', 'approved')
+         LIMIT 1`,
+        [nameLower]
+      );
+      if (reqNameCheck.rows[0]) {
+        throw new Error(`The nickname "${proposedPetName}" is already reserved by another adoption request.`);
+      }
+    }
+
     const requestResult = await client.query(
       `
-      INSERT INTO adoption_requests (id, dog_id, user_id, applicant_name, applicant_phone, status)
-      VALUES ($1, $2, $3, $4, $5, 'pending')
-      RETURNING id, dog_id, user_id, applicant_name, applicant_phone, status, requested_at;
+      INSERT INTO adoption_requests (id, dog_id, user_id, applicant_name, applicant_phone, proposed_pet_name, status)
+      VALUES ($1, $2, $3, $4, $5, $6, 'pending')
+      RETURNING id, dog_id, user_id, applicant_name, applicant_phone, proposed_pet_name, status, requested_at;
       `,
-      [randomUUID(), dogId, userId, applicantName, applicantPhone]
+      [randomUUID(), dogId, userId, applicantName, applicantPhone, proposedPetName]
     );
 
     await client.query(
@@ -766,6 +815,7 @@ export async function createAdoptionRequest(
       userId: requestResult.rows[0].user_id ? String(requestResult.rows[0].user_id) : null,
       applicantName: requestResult.rows[0].applicant_name ? String(requestResult.rows[0].applicant_name) : null,
       applicantPhone: requestResult.rows[0].applicant_phone ? String(requestResult.rows[0].applicant_phone) : null,
+      proposedPetName: requestResult.rows[0].proposed_pet_name ? String(requestResult.rows[0].proposed_pet_name) : null,
       status: String(requestResult.rows[0].status) as AdoptionRequestStatus,
       requestedAt: new Date(String(requestResult.rows[0].requested_at)).toISOString(),
     };

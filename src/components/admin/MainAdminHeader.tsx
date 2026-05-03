@@ -2,15 +2,13 @@
 
 import { useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
-import { Menu, X, Search, Bell, ChevronRight } from "lucide-react";
+import { Menu, X, Search, Bell, ChevronRight, Home } from "lucide-react";
+import { useAdminClientSession } from "@/features/auth/utils/admin-session-client";
 
-type MainAdminHeaderProps = {
-  onToggleSidebar: () => void;
-  sidebarOpen: boolean;
-};
+type Props = { onToggleSidebar: () => void; sidebarOpen: boolean };
 
 const BREADCRUMB_LABELS: Record<string, string> = {
-  admin: "Control Center",
+  admin: "Dashboard",
   users: "Users & Tenants",
   "blood-requests": "Blood Requests",
   healthcare: "HealthCare",
@@ -19,9 +17,10 @@ const BREADCRUMB_LABELS: Record<string, string> = {
   "dog-updates": "Dog Updates",
 };
 
-export function MainAdminHeader({ onToggleSidebar, sidebarOpen }: MainAdminHeaderProps) {
+export function MainAdminHeader({ onToggleSidebar, sidebarOpen }: Props) {
   const pathname = usePathname();
   const [showSearch, setShowSearch] = useState(false);
+  const { session } = useAdminClientSession();
 
   const breadcrumbs = useMemo(() => {
     const segments = pathname.split("/").filter(Boolean);
@@ -32,66 +31,96 @@ export function MainAdminHeader({ onToggleSidebar, sidebarOpen }: MainAdminHeade
     });
   }, [pathname]);
 
+  const currentLabel = breadcrumbs[breadcrumbs.length - 1]?.label ?? "Dashboard";
+
   return (
-    <header className="sticky top-0 z-30 border-b border-neutral-100/80 bg-white/85 backdrop-blur-xl">
-      <div className="flex h-[64px] items-center gap-3 px-4 sm:px-6">
+    <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/95 backdrop-blur-md">
+      <div className="flex h-[60px] items-center gap-3 px-4 sm:px-6">
+
+        {/* Mobile menu toggle */}
         <button
           type="button"
           onClick={onToggleSidebar}
-          className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-neutral-500 transition-colors hover:bg-neutral-100 md:hidden"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 md:hidden"
           aria-label={sidebarOpen ? "Close menu" : "Open menu"}
         >
           {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
 
-        <nav className="hidden items-center gap-1.5 text-[11px] md:flex" aria-label="Breadcrumb">
-          {breadcrumbs.map((crumb, index) => (
-            <span key={crumb.href} className="flex items-center gap-1.5">
-              {index > 0 ? <ChevronRight className="h-3 w-3 text-neutral-200" /> : null}
+        {/* Breadcrumb — desktop */}
+        <nav className="hidden items-center gap-1 md:flex" aria-label="Breadcrumb">
+          <a href="/admin" className="flex items-center gap-1 text-slate-400 transition hover:text-slate-600">
+            <Home className="h-3.5 w-3.5" />
+          </a>
+          {breadcrumbs.map((crumb, i) => (
+            <span key={crumb.href} className="flex items-center gap-1">
+              <ChevronRight className="h-3 w-3 text-slate-300" />
               {crumb.isLast ? (
-                <span className="font-semibold uppercase tracking-[0.12em] text-neutral-800">
-                  {crumb.label}
-                </span>
+                <span className="text-[13px] font-semibold text-slate-800">{crumb.label}</span>
               ) : (
-                <span className="uppercase tracking-[0.12em] text-neutral-400">{crumb.label}</span>
+                <a href={crumb.href} className="text-[13px] text-slate-400 transition hover:text-slate-600">
+                  {crumb.label}
+                </a>
               )}
             </span>
           ))}
         </nav>
 
-        <div className="ml-auto flex items-center gap-1.5">
+        {/* Mobile: current page title */}
+        <span className="text-[14px] font-semibold text-slate-800 md:hidden">{currentLabel}</span>
+
+        {/* Right actions */}
+        <div className="ml-auto flex items-center gap-1">
           <button
             type="button"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700"
-            onClick={() => setShowSearch((prev) => !prev)}
-            aria-label="Toggle search"
+            onClick={() => setShowSearch((p) => !p)}
+            className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+            aria-label="Search"
           >
             <Search className="h-4 w-4" />
           </button>
 
           <button
             type="button"
-            className="relative inline-flex h-9 w-9 items-center justify-center rounded-lg text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700"
+            className="relative flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
             aria-label="Notifications"
           >
             <Bell className="h-4 w-4" />
             <span className="admin-pulse-dot" />
           </button>
+
+          {/* Divider */}
+          <div className="mx-1.5 h-5 w-px bg-slate-200" />
+
+          {/* User avatar */}
+          {session && (
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 text-[11px] font-bold uppercase text-white shadow-sm">
+                {session.email.charAt(0)}
+              </div>
+              <div className="hidden lg:block">
+                <p className="text-[12px] font-semibold leading-none text-slate-800">{session.email.split("@")[0]}</p>
+                <p className="mt-0.5 text-[10px] capitalize leading-none text-slate-400">{session.role}</p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
-      {showSearch ? (
-        <div className="border-t border-neutral-100/60 px-4 py-3 sm:px-6">
-          <div className="relative max-w-md">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-300" />
+      {/* Search bar dropdown */}
+      {showSearch && (
+        <div className="border-t border-slate-100 px-4 py-3 sm:px-6">
+          <div className="relative max-w-sm">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-300" />
             <input
+              autoFocus
               type="text"
               placeholder="Search admin modules..."
-              className="h-10 w-full rounded-lg border border-neutral-200 bg-neutral-50/60 pl-10 pr-4 text-sm text-neutral-700 placeholder:text-neutral-300 focus:border-emerald-500/30 focus:outline-none focus:ring-2 focus:ring-emerald-500/10"
+              className="h-9 w-full rounded-lg border border-slate-200 bg-slate-50 pl-9 pr-4 text-sm text-slate-700 placeholder:text-slate-300 focus:border-emerald-400/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/10"
             />
           </div>
         </div>
-      ) : null}
+      )}
     </header>
   );
 }

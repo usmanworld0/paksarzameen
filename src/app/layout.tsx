@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 
-import { Navbar } from "@/components/header/Navbar";
-import { Footer } from "@/components/footer/Footer";
 import { Providers } from "@/components/providers";
+import { RootShell } from "@/components/RootShell";
 // ThemeProvider removed: app is light-only now
 import { siteConfig } from "@/config/site";
 
@@ -144,11 +143,7 @@ export default function RootLayout({
           <div className="app-boot-loader" aria-hidden="true">
             <div className="app-boot-loader__spinner" />
           </div>
-          <Navbar />
-          <main id="main-content">
-            {children}
-          </main>
-          <Footer />
+          <RootShell>{children}</RootShell>
         </Providers>
       </body>
     </html>

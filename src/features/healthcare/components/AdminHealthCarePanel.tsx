@@ -257,7 +257,7 @@ export function AdminHealthCarePanel() {
   }, [selectedDoctorId, appointmentStatus, loadDoctorAppointments]);
 
   return (
-    <main className="min-h-screen bg-[linear-gradient(180deg,_#f7fcf7_0%,_#edf5ef_100%)] px-4 pb-20 pt-28 sm:px-6 lg:px-10">
+    <div>
       <section className="mx-auto max-w-6xl space-y-6">
         <header className="rounded-3xl border border-emerald-100 bg-white p-6 shadow-sm sm:p-8">
           <h1 className="text-3xl font-semibold text-slate-900">HealthCare Admin</h1>
@@ -625,6 +625,6 @@ export function AdminHealthCarePanel() {
           </div>
         </section>
       </section>
-    </main>
+    </div>
   );
 }

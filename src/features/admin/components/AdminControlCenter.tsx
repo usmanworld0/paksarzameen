@@ -591,7 +591,7 @@ export function AdminControlCenter() {
   }
 
   return (
-    <main className="min-h-screen bg-[linear-gradient(180deg,#f4faf5_0%,#eaf3ec_100%)] px-4 pb-16 pt-28 sm:px-6 lg:px-10">
+    <div>
       <section className="mx-auto max-w-7xl space-y-6">
         <header className="rounded-3xl border border-emerald-100 bg-white p-6 shadow-[0_25px_70px_rgba(4,45,29,0.12)] sm:p-8">
           <div className="flex flex-wrap items-start justify-between gap-4">
@@ -976,6 +976,6 @@ export function AdminControlCenter() {
           </form>
         </section>
       </section>
-    </main>
+    </div>
   );
 }

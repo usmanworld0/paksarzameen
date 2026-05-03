@@ -33,11 +33,11 @@ export function DogLocationMap() {
   }, []);
 
   return (
-    <div className="w-full h-[400px] sm:h-[500px] rounded-3xl overflow-hidden border border-slate-200 shadow-lg">
-      <MapContainer 
+    <div className="h-full w-full overflow-hidden">
+      <MapContainer
         center={center}
-        zoom={12} 
-        scrollWheelZoom={true}
+        zoom={12}
+        scrollWheelZoom={false}
         style={{ height: "100%", width: "100%" }}
       >
         <TileLayer

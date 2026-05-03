@@ -76,14 +76,14 @@ export function DogListingsMap({ dogs }: Props) {
 
   if (!dogsWithCoords.length) {
     return (
-      <div className="flex h-64 items-center justify-center rounded-3xl border border-dashed border-slate-200 bg-slate-50 text-sm text-slate-400">
+      <div className="flex h-full items-center justify-center bg-slate-50 text-sm text-slate-400">
         No dogs with known locations to show
       </div>
     );
   }
 
   return (
-    <div className="h-[420px] w-full overflow-hidden rounded-3xl border border-slate-200 shadow-md sm:h-[500px]">
+    <div className="h-full w-full overflow-hidden">
       <MapContainer center={center} zoom={12} scrollWheelZoom={false} style={{ height: "100%", width: "100%" }}>
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

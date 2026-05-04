@@ -2,235 +2,573 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
-import { MapPin, Heart, Search } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { ChevronDown, MapPin, RotateCcw, Search, SlidersHorizontal } from "lucide-react";
 
+import { DogListingsMap } from "@/features/dog-adoption/components/DogListingsMap";
 import type { DogRecord, DogStatus } from "@/lib/dog-adoption";
 
 type StatusFilter = "all" | DogStatus;
 
-const ADOPTION_FEE_LABEL = "PKR 5,000";
+type MarketplaceFilters = {
+  status: StatusFilter;
+  search: string;
+  city: string;
+  area: string;
+  breed: string;
+  age: string;
+};
 
 const STATUS_LABELS: Record<DogStatus, string> = {
   available: "Available",
-  pending: "Pending",
+  pending: "Requested",
   adopted: "Adopted",
 };
 
-const STATUS_CONFIG: Record<DogStatus, { bg: string; text: string; dot: string }> = {
-  available: { bg: "bg-emerald-100", text: "text-emerald-800", dot: "bg-emerald-500" },
-  pending: { bg: "bg-amber-100", text: "text-amber-800", dot: "bg-amber-500" },
-  adopted: { bg: "bg-indigo-100", text: "text-indigo-800", dot: "bg-indigo-500" },
+const STATUS_SORT_ORDER: Record<DogStatus, number> = {
+  available: 0,
+  pending: 1,
+  adopted: 2,
 };
 
-export function DogMarketplace({ dogs }: { dogs: DogRecord[] }) {
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("available");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [favorites, setFavorites] = useState<Set<string>>(new Set());
+const STATUS_STYLE: Record<DogStatus, { badge: string; dot: string; border: string; text: string }> = {
+  available: {
+    badge: "bg-emerald-100 text-emerald-700",
+    dot: "bg-emerald-500",
+    border: "border-emerald-200",
+    text: "text-emerald-700",
+  },
+  pending: {
+    badge: "bg-amber-100 text-amber-700",
+    dot: "bg-amber-400",
+    border: "border-amber-200",
+    text: "text-amber-700",
+  },
+  adopted: {
+    badge: "bg-sky-100 text-sky-700",
+    dot: "bg-sky-500",
+    border: "border-sky-200",
+    text: "text-sky-700",
+  },
+};
 
-  const filteredDogs = useMemo(() => {
-    let result = dogs;
-    if (statusFilter !== "all") result = result.filter((d) => d.status === statusFilter);
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      result = result.filter(
-        (d) =>
-          d.name.toLowerCase().includes(q) ||
-          d.breed.toLowerCase().includes(q) ||
-          d.color.toLowerCase().includes(q) ||
-          (d.city ?? "").toLowerCase().includes(q) ||
-          (d.area ?? "").toLowerCase().includes(q)
-      );
-    }
-    return [...result].sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
-  }, [dogs, statusFilter, searchQuery]);
-
-  const counts: Record<StatusFilter, number> = {
-    all: dogs.length,
-    available: dogs.filter((d) => d.status === "available").length,
-    pending: dogs.filter((d) => d.status === "pending").length,
-    adopted: dogs.filter((d) => d.status === "adopted").length,
-  };
-
-  const toggleFavorite = (dogId: string, e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setFavorites((prev) => {
-      const next = new Set(prev);
-      if (next.has(dogId)) {
-        next.delete(dogId);
-      } else {
-        next.add(dogId);
-      }
-      return next;
-    });
-  };
-
-  return (
-    <div className="space-y-6">
-      {/* Filters + Search */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-wrap gap-2">
-          {(["available", "adopted", "all"] as StatusFilter[]).map((filter) => {
-            const active = statusFilter === filter;
-            const colorMap: Record<string, string> = {
-              available: active
-                ? "bg-emerald-600 text-white border-emerald-600 shadow-emerald-200"
-                : "bg-white text-emerald-700 border-emerald-200 hover:bg-emerald-50",
-              adopted: active
-                ? "bg-indigo-600 text-white border-indigo-600 shadow-indigo-100"
-                : "bg-white text-indigo-700 border-indigo-200 hover:bg-indigo-50",
-              all: active
-                ? "bg-slate-800 text-white border-slate-800"
-                : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50",
-            };
-            return (
-              <button
-                key={filter}
-                onClick={() => setStatusFilter(filter)}
-                className={`flex items-center gap-1.5 rounded-full border px-4 py-2 text-sm font-semibold shadow-sm transition ${colorMap[filter]}`}
-              >
-                {filter === "available" && <span className={`h-1.5 w-1.5 rounded-full ${active ? "bg-white" : "bg-emerald-500"}`} />}
-                {filter === "adopted" && <span className={`h-1.5 w-1.5 rounded-full ${active ? "bg-white" : "bg-indigo-500"}`} />}
-                {filter === "available" ? "Available" : filter === "adopted" ? "Adopted" : "All"}
-                <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${active ? "bg-white/20 text-white" : "bg-slate-100 text-slate-600"}`}>
-                  {counts[filter]}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="relative max-w-xs w-full">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-          <input
-            type="text"
-            placeholder="Search name, breed, location…"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-full border border-slate-200 bg-slate-50 py-2 pl-9 pr-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
-          />
-        </div>
-      </div>
-
-      <p className="text-xs font-medium text-slate-400">
-        {filteredDogs.length === 0 ? "No results" : `${filteredDogs.length} dog${filteredDogs.length === 1 ? "" : "s"}`}
-        {searchQuery && <> for &ldquo;{searchQuery}&rdquo;</>}
-      </p>
-
-      {filteredDogs.length === 0 ? (
-        <div className="flex flex-col items-center gap-4 rounded-3xl border border-dashed border-slate-200 bg-slate-50 py-16 text-center">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-sm">
-            <Heart className="h-7 w-7 text-slate-300" />
-          </div>
-          <div>
-            <p className="font-semibold text-slate-700">No dogs found</p>
-            <p className="mt-1 text-sm text-slate-400">
-              {searchQuery ? "Try a different search term" : "Check back soon for new rescues!"}
-            </p>
-          </div>
-          {searchQuery && (
-            <button onClick={() => setSearchQuery("")} className="text-sm font-semibold text-emerald-600 hover:text-emerald-500">
-              Clear search
-            </button>
-          )}
-        </div>
-      ) : (
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {filteredDogs.map((dog) => {
-            const cfg = STATUS_CONFIG[dog.status];
-            const isFav = favorites.has(dog.dogId);
-            return (
-              <div
-                key={dog.dogId}
-                className="group relative overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-lg"
-              >
-                <Link href={`/dog/${dog.dogId}`} className="relative block overflow-hidden bg-slate-100">
-                  <div className="relative aspect-[4/3]">
-                    <Image
-                      src={dog.imageUrl}
-                      alt={dog.name}
-                      fill
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      className="object-cover transition duration-500 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent" />
-                  </div>
-
-                  {/* Status */}
-                  <div className="absolute right-3 top-3">
-                    <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold ${cfg.bg} ${cfg.text}`}>
-                      <span className={`h-1.5 w-1.5 rounded-full ${cfg.dot}`} />
-                      {STATUS_LABELS[dog.status]}
-                    </span>
-                  </div>
-
-                  {/* Favorite */}
-                  <button
-                    onClick={(e) => toggleFavorite(dog.dogId, e)}
-                    aria-label={isFav ? "Remove from favorites" : "Add to favorites"}
-                    className="absolute left-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 shadow-sm transition hover:scale-110 hover:bg-white"
-                  >
-                    <Heart className={`h-4 w-4 transition ${isFav ? "fill-rose-500 text-rose-500" : "text-slate-400"}`} />
-                  </button>
-
-                  {/* Fee */}
-                  <div className="absolute bottom-3 left-3">
-                    <span className="rounded-full bg-black/55 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-sm">
-                      {ADOPTION_FEE_LABEL}
-                    </span>
-                  </div>
-                </Link>
-
-                <div className="space-y-3 p-4">
-                  <div>
-                    <h3 className="truncate text-lg font-bold text-slate-900">{dog.name}</h3>
-                    <div className="mt-1.5 flex flex-wrap gap-1.5">
-                      {[dog.breed, dog.age, dog.gender].filter(Boolean).map((tag) => (
-                        <span key={tag} className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600">
-                          {tag}
-                        </span>
-                      ))}
-                      {dog.color && (
-                        <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700">
-                          {dog.color}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                    <MapPin className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
-                    <span className="truncate">{getLocationLabel(dog)}</span>
-                  </div>
-
-                  <Link
-                    href={`/dog/${dog.dogId}`}
-                    className={`flex w-full items-center justify-center gap-2 rounded-2xl py-2.5 text-sm font-semibold transition ${
-                      dog.status === "available"
-                        ? "bg-emerald-600 text-white hover:bg-emerald-500 shadow-sm"
-                        : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                    }`}
-                  >
-                    {dog.status === "available" ? (
-                      <><Heart className="h-4 w-4" />Adopt Now</>
-                    ) : (
-                      "View Profile"
-                    )}
-                  </Link>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </div>
+function sortTextValues(values: string[]) {
+  return [...new Set(values.map((value) => value.trim()).filter(Boolean))].sort((left, right) =>
+    left.localeCompare(right, undefined, { sensitivity: "base" })
   );
 }
 
+function sortAgeValues(values: string[]) {
+  return [...new Set(values.map((value) => value.trim()).filter(Boolean))].sort((left, right) => {
+    const leftNumber = Number.parseFloat(left);
+    const rightNumber = Number.parseFloat(right);
+
+    if (Number.isFinite(leftNumber) && Number.isFinite(rightNumber) && leftNumber !== rightNumber) {
+      return leftNumber - rightNumber;
+    }
+
+    return left.localeCompare(right, undefined, { sensitivity: "base" });
+  });
+}
+
 function getLocationLabel(dog: DogRecord) {
-  if (dog.city && dog.area) return `${dog.area}, ${dog.city}`;
+  if (dog.area && dog.city) return `${dog.area}, ${dog.city}`;
   if (dog.city) return dog.city;
   if (dog.area) return dog.area;
   return "Location to be confirmed";
+}
+
+function matchesDog(dog: DogRecord, filters: MarketplaceFilters, ignore: Array<keyof MarketplaceFilters> = []) {
+  const ignored = new Set(ignore);
+
+  if (!ignored.has("status") && filters.status !== "all" && dog.status !== filters.status) {
+    return false;
+  }
+
+  if (!ignored.has("search") && filters.search.trim()) {
+    const query = filters.search.trim().toLowerCase();
+    const haystack = [dog.name, dog.breed, dog.color, dog.age, dog.city ?? "", dog.area ?? ""].join(" ").toLowerCase();
+
+    if (!haystack.includes(query)) {
+      return false;
+    }
+  }
+
+  if (!ignored.has("city") && filters.city !== "all" && dog.city !== filters.city) {
+    return false;
+  }
+
+  if (!ignored.has("area") && filters.area !== "all" && dog.area !== filters.area) {
+    return false;
+  }
+
+  if (!ignored.has("breed") && filters.breed !== "all" && dog.breed !== filters.breed) {
+    return false;
+  }
+
+  if (!ignored.has("age") && filters.age !== "all" && dog.age !== filters.age) {
+    return false;
+  }
+
+  return true;
+}
+
+export function DogMarketplace({
+  dogs,
+  initialCounts,
+}: {
+  dogs: DogRecord[];
+  initialCounts?: { available: number; pending: number; adopted: number };
+}) {
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCity, setSelectedCity] = useState("all");
+  const [selectedArea, setSelectedArea] = useState("all");
+  const [selectedBreed, setSelectedBreed] = useState("all");
+  const [selectedAge, setSelectedAge] = useState("all");
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+
+  const filters = {
+    status: statusFilter,
+    search: searchQuery,
+    city: selectedCity,
+    area: selectedArea,
+    breed: selectedBreed,
+    age: selectedAge,
+  } satisfies MarketplaceFilters;
+
+  const filteredDogs = useMemo(() => {
+    return dogs
+      .filter((dog) => matchesDog(dog, filters))
+      .sort((left, right) => {
+        const statusDelta = STATUS_SORT_ORDER[left.status] - STATUS_SORT_ORDER[right.status];
+        if (statusDelta !== 0) return statusDelta;
+        return Date.parse(right.createdAt) - Date.parse(left.createdAt);
+      });
+  }, [dogs, filters]);
+
+  const cityOptions = useMemo(() => {
+    return sortTextValues(
+      dogs
+        .filter((dog) => matchesDog(dog, filters, ["city"]))
+        .map((dog) => dog.city ?? "")
+    );
+  }, [dogs, filters]);
+
+  const areaOptions = useMemo(() => {
+    return sortTextValues(
+      dogs
+        .filter((dog) => matchesDog(dog, filters, ["area"]))
+        .map((dog) => dog.area ?? "")
+    );
+  }, [dogs, filters]);
+
+  const breedOptions = useMemo(() => {
+    return sortTextValues(
+      dogs
+        .filter((dog) => matchesDog(dog, filters, ["breed"]))
+        .map((dog) => dog.breed)
+    );
+  }, [dogs, filters]);
+
+  const ageOptions = useMemo(() => {
+    return sortAgeValues(
+      dogs
+        .filter((dog) => matchesDog(dog, filters, ["age"]))
+        .map((dog) => dog.age)
+    );
+  }, [dogs, filters]);
+
+  useEffect(() => {
+    if (selectedCity !== "all" && !cityOptions.includes(selectedCity)) {
+      setSelectedCity("all");
+    }
+  }, [cityOptions, selectedCity]);
+
+  useEffect(() => {
+    if (selectedArea !== "all" && !areaOptions.includes(selectedArea)) {
+      setSelectedArea("all");
+    }
+  }, [areaOptions, selectedArea]);
+
+  useEffect(() => {
+    if (selectedBreed !== "all" && !breedOptions.includes(selectedBreed)) {
+      setSelectedBreed("all");
+    }
+  }, [breedOptions, selectedBreed]);
+
+  useEffect(() => {
+    if (selectedAge !== "all" && !ageOptions.includes(selectedAge)) {
+      setSelectedAge("all");
+    }
+  }, [ageOptions, selectedAge]);
+
+  const counts = useMemo(
+    () => ({
+      all: dogs.length,
+      available: initialCounts?.available ?? dogs.filter((dog) => dog.status === "available").length,
+      pending: initialCounts?.pending ?? dogs.filter((dog) => dog.status === "pending").length,
+      adopted: initialCounts?.adopted ?? dogs.filter((dog) => dog.status === "adopted").length,
+    }),
+    [dogs, initialCounts]
+  );
+
+  const activeFilters = [
+    statusFilter !== "all" ? STATUS_LABELS[statusFilter] : null,
+    searchQuery.trim() ? `Search: ${searchQuery.trim()}` : null,
+    selectedCity !== "all" ? selectedCity : null,
+    selectedArea !== "all" ? selectedArea : null,
+    selectedBreed !== "all" ? selectedBreed : null,
+    selectedAge !== "all" ? selectedAge : null,
+  ].filter(Boolean) as string[];
+
+  const resetFilters = () => {
+    setStatusFilter("all");
+    setSearchQuery("");
+    setSelectedCity("all");
+    setSelectedArea("all");
+    setSelectedBreed("all");
+    setSelectedAge("all");
+  };
+
+  return (
+    <div className="space-y-8">
+      <div className="grid gap-6 xl:grid-cols-[320px,minmax(0,1fr)]">
+        <aside className="rounded-[32px] border border-[#dde6da] bg-white/95 shadow-[0_20px_60px_rgba(15,23,42,0.08)] backdrop-blur xl:sticky xl:top-28 xl:self-start">
+          <div className="p-5 sm:p-6">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-emerald-700">Filters</p>
+                <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">Find the right dog</h2>
+                <p className="mt-2 text-sm leading-6 text-slate-500">
+                  Narrow by location, breed, age, or adoption stage and watch the map update instantly.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t border-slate-100 xl:hidden">
+            <button
+              type="button"
+              onClick={() => setMobileFiltersOpen((value) => !value)}
+              className="flex w-full items-center justify-between px-5 py-4 text-left sm:px-6"
+              aria-expanded={mobileFiltersOpen}
+              aria-controls="dog-marketplace-filters"
+            >
+              <span className="inline-flex items-center gap-2 text-sm font-semibold text-slate-900">
+                <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700">
+                  <SlidersHorizontal className="h-4 w-4" />
+                </span>
+                {mobileFiltersOpen ? "Hide filters" : "Show filters"}
+              </span>
+              <ChevronDown className={`h-4 w-4 text-slate-500 transition ${mobileFiltersOpen ? "rotate-180" : ""}`} />
+            </button>
+          </div>
+
+          <div
+            id="dog-marketplace-filters"
+            className={`${mobileFiltersOpen ? "block" : "hidden"} border-t border-slate-100 p-5 pt-5 sm:p-6 xl:block xl:border-t-0`}
+          >
+            <div className="space-y-6">
+              <div className="space-y-3">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Status</p>
+                <div className="flex gap-2 overflow-x-auto pb-1 xl:grid xl:grid-cols-1 xl:overflow-visible xl:pb-0">
+                  {([
+                    { key: "all", label: "All dogs", count: counts.all, dot: "bg-slate-500" },
+                    { key: "available", label: "Available", count: counts.available, dot: STATUS_STYLE.available.dot },
+                    { key: "pending", label: "Requested", count: counts.pending, dot: STATUS_STYLE.pending.dot },
+                    { key: "adopted", label: "Adopted", count: counts.adopted, dot: STATUS_STYLE.adopted.dot },
+                  ] as Array<{ key: StatusFilter; label: string; count: number; dot: string }>).map((option) => {
+                    const isActive = statusFilter === option.key;
+
+                    return (
+                      <button
+                        key={option.key}
+                        type="button"
+                        onClick={() => setStatusFilter(option.key)}
+                        className={`flex min-w-fit items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-left transition xl:min-w-0 ${
+                          isActive
+                            ? "border-slate-900 bg-slate-900 text-white shadow-sm"
+                            : "border-slate-200 bg-slate-50 text-slate-700 hover:border-slate-300 hover:bg-white"
+                        }`}
+                      >
+                        <span className="flex items-center gap-2 text-sm font-semibold">
+                          <span className={`h-2.5 w-2.5 rounded-full ${isActive ? "bg-white" : option.dot}`} />
+                          {option.label}
+                        </span>
+                        <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${isActive ? "bg-white/15 text-white" : "bg-white text-slate-500"}`}>
+                          {option.count}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <label className="block">
+                <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Search</span>
+                <div className="relative mt-3">
+                  <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(event) => setSearchQuery(event.target.value)}
+                    placeholder="Name, breed, city, area"
+                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-11 pr-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-emerald-400 focus:bg-white focus:ring-4 focus:ring-emerald-100"
+                  />
+                </div>
+              </label>
+
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
+                <label className="block">
+                  <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">City</span>
+                  <select
+                    value={selectedCity}
+                    onChange={(event) => setSelectedCity(event.target.value)}
+                    className="mt-3 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-emerald-400 focus:bg-white focus:ring-4 focus:ring-emerald-100"
+                  >
+                    <option value="all">All cities</option>
+                    {cityOptions.map((city) => (
+                      <option key={city} value={city}>
+                        {city}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="block">
+                  <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Area</span>
+                  <select
+                    value={selectedArea}
+                    onChange={(event) => setSelectedArea(event.target.value)}
+                    className="mt-3 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-emerald-400 focus:bg-white focus:ring-4 focus:ring-emerald-100"
+                  >
+                    <option value="all">All areas</option>
+                    {areaOptions.map((area) => (
+                      <option key={area} value={area}>
+                        {area}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="block">
+                  <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Breed</span>
+                  <select
+                    value={selectedBreed}
+                    onChange={(event) => setSelectedBreed(event.target.value)}
+                    className="mt-3 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-emerald-400 focus:bg-white focus:ring-4 focus:ring-emerald-100"
+                  >
+                    <option value="all">All breeds</option>
+                    {breedOptions.map((breed) => (
+                      <option key={breed} value={breed}>
+                        {breed}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="block">
+                  <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Age</span>
+                  <select
+                    value={selectedAge}
+                    onChange={(event) => setSelectedAge(event.target.value)}
+                    className="mt-3 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-emerald-400 focus:bg-white focus:ring-4 focus:ring-emerald-100"
+                  >
+                    <option value="all">All ages</option>
+                    {ageOptions.map((age) => (
+                      <option key={age} value={age}>
+                        {age}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+
+              <div className="flex items-center justify-between rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-3">
+                <div>
+                  <p className="text-sm font-semibold text-slate-700">Active filters</p>
+                  <p className="text-xs text-slate-500">
+                    {activeFilters.length === 0 ? "Showing every listed dog." : `${activeFilters.length} filters applied`}
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={resetFilters}
+                  className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-100"
+                >
+                  <RotateCcw className="h-3.5 w-3.5" />
+                  Reset
+                </button>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <section className="overflow-hidden rounded-[32px] border border-[#dde6da] bg-white shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
+          <div className="border-b border-slate-100 px-5 py-5 sm:px-6">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-emerald-700">Live map</p>
+                <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">Dog status by location</h2>
+                <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
+                  Green markers are available dogs, yellow markers are requested, and blue markers are already adopted.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                {(["available", "pending", "adopted"] as DogStatus[]).map((status) => (
+                  <div
+                    key={status}
+                    className={`inline-flex items-center gap-2 rounded-full border bg-white px-3 py-2 text-xs font-semibold ${STATUS_STYLE[status].border} ${STATUS_STYLE[status].text}`}
+                  >
+                    <span className={`h-2.5 w-2.5 rounded-full ${STATUS_STYLE[status].dot}`} />
+                    {STATUS_LABELS[status]}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="-mx-1 mt-5 flex gap-3 overflow-x-auto px-1 pb-1">
+              <div className="min-w-[140px] flex-1 rounded-3xl bg-emerald-50 px-4 py-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">Available</p>
+                <p className="mt-2 text-3xl font-bold tracking-tight text-emerald-950">{counts.available}</p>
+              </div>
+              <div className="min-w-[140px] flex-1 rounded-3xl bg-amber-50 px-4 py-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-amber-700">Requested</p>
+                <p className="mt-2 text-3xl font-bold tracking-tight text-amber-950">{counts.pending}</p>
+              </div>
+              <div className="min-w-[140px] flex-1 rounded-3xl bg-sky-50 px-4 py-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-700">Adopted</p>
+                <p className="mt-2 text-3xl font-bold tracking-tight text-sky-950">{counts.adopted}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="h-[320px] sm:h-[420px] xl:h-[540px]">
+            <DogListingsMap dogs={filteredDogs} />
+          </div>
+        </section>
+      </div>
+
+      <section className="rounded-[32px] border border-[#dde6da] bg-white p-5 shadow-[0_20px_60px_rgba(15,23,42,0.08)] sm:p-6">
+        <div className="flex flex-col gap-4 border-b border-slate-100 pb-5 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-emerald-700">Listings</p>
+            <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">All dog cards</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-500">
+              {filteredDogs.length === 0
+                ? "No dogs match the current filters."
+                : `Showing ${filteredDogs.length} dog${filteredDogs.length === 1 ? "" : "s"} that match the current view.`}
+            </p>
+          </div>
+
+          {activeFilters.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {activeFilters.map((filter) => (
+                <span
+                  key={filter}
+                  className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-600"
+                >
+                  {filter}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {filteredDogs.length === 0 ? (
+          <div className="flex flex-col items-center justify-center gap-4 px-4 py-16 text-center">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-100">
+              <Search className="h-6 w-6 text-slate-400" />
+            </div>
+            <div className="space-y-1">
+              <p className="text-lg font-semibold text-slate-900">No dogs found</p>
+              <p className="text-sm text-slate-500">Try clearing a filter or broadening the search terms.</p>
+            </div>
+            <button
+              type="button"
+              onClick={resetFilters}
+              className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-700"
+            >
+              <RotateCcw className="h-4 w-4" />
+              Clear filters
+            </button>
+          </div>
+        ) : (
+          <div className="mt-6 grid gap-5 md:grid-cols-2 2xl:grid-cols-3">
+            {filteredDogs.map((dog) => {
+              const statusStyle = STATUS_STYLE[dog.status];
+
+              return (
+                <article
+                  key={dog.dogId}
+                  className="group overflow-hidden rounded-[28px] border border-slate-200 bg-[#fcfcf9] transition duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-[0_18px_40px_rgba(15,23,42,0.08)]"
+                >
+                  <Link href={`/dog/${dog.dogId}`} className="block">
+                    <div className="relative aspect-[4/3] overflow-hidden bg-slate-100">
+                      <Image
+                        src={dog.imageUrl}
+                        alt={dog.name}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1536px) 50vw, 33vw"
+                        className="object-cover transition duration-500 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-black/5 to-transparent" />
+                      <div className="absolute left-4 top-4">
+                        <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold ${statusStyle.badge}`}>
+                          <span className={`h-2.5 w-2.5 rounded-full ${statusStyle.dot}`} />
+                          {STATUS_LABELS[dog.status]}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4 p-5">
+                      <div>
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <h3 className="text-xl font-bold tracking-tight text-slate-900">{dog.name}</h3>
+                            <p className="mt-1 text-sm text-slate-500">{dog.breed}</p>
+                          </div>
+                          <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-500 shadow-sm">
+                            {dog.age}
+                          </span>
+                        </div>
+
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {[dog.gender, dog.color].filter(Boolean).map((tag) => (
+                            <span
+                              key={`${dog.dogId}-${tag}`}
+                              className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-600"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 text-sm text-slate-500">
+                        <MapPin className="h-4 w-4 shrink-0 text-emerald-600" />
+                        <span className="truncate">{getLocationLabel(dog)}</span>
+                      </div>
+
+                      <div className="flex items-center justify-between rounded-2xl bg-white px-4 py-3 shadow-sm">
+                        <span className="text-sm font-medium text-slate-500">
+                          {dog.status === "available" ? "Ready for adoption" : STATUS_LABELS[dog.status]}
+                        </span>
+                        <span className="text-sm font-semibold text-slate-900">
+                          {dog.status === "available" ? "View profile" : "See details"}
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </section>
+    </div>
+  );
 }

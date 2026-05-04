@@ -146,6 +146,8 @@ export function DogMarketplace({
       });
   }, [dogs, filters]);
 
+  const mapDogs = useMemo(() => filteredDogs, [filteredDogs]);
+
   const cityOptions = useMemo(() => {
     return sortTextValues(
       dogs
@@ -429,7 +431,7 @@ export function DogMarketplace({
           </div>
 
           <div className="h-[320px] sm:h-[420px] xl:h-[540px]">
-            <DogListingsMap dogs={filteredDogs} />
+            <DogListingsMap dogs={mapDogs} />
           </div>
         </section>
         </div>
@@ -480,7 +482,7 @@ export function DogMarketplace({
             </button>
           </div>
         ) : (
-          <div className="mt-6 grid grid-cols-2 gap-5 2xl:grid-cols-3">
+          <div className="mt-6 grid grid-cols-2 gap-5 lg:grid-cols-4">
             {filteredDogs.map((dog) => {
               const statusStyle = STATUS_STYLE[dog.status];
 

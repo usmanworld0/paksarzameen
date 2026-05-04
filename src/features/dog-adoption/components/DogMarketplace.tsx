@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { ChevronDown, MapPin, RotateCcw, Search, SlidersHorizontal } from "lucide-react";
+import { MapPin, RotateCcw, Search, SlidersHorizontal } from "lucide-react";
 
 import { DogListingsMap } from "@/features/dog-adoption/components/DogListingsMap";
 import type { DogRecord, DogStatus } from "@/lib/dog-adoption";
@@ -126,7 +126,6 @@ export function DogMarketplace({
   const [selectedArea, setSelectedArea] = useState("all");
   const [selectedBreed, setSelectedBreed] = useState("all");
   const [selectedAge, setSelectedAge] = useState("all");
-  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   const filters = {
     status: statusFilter,
@@ -233,7 +232,8 @@ export function DogMarketplace({
 
   return (
     <div className="space-y-8">
-      <div className="grid gap-6 xl:grid-cols-[320px,minmax(0,1fr)]">
+      <div className="overflow-x-auto pb-2">
+        <div className="grid min-w-[920px] gap-6 grid-cols-[320px,minmax(0,1fr)]">
         <aside className="rounded-[32px] border border-[#dde6da] bg-white/95 shadow-[0_20px_60px_rgba(15,23,42,0.08)] backdrop-blur xl:sticky xl:top-28 xl:self-start">
           <div className="p-5 sm:p-6">
             <div className="flex items-start justify-between gap-3">
@@ -244,35 +244,17 @@ export function DogMarketplace({
                   Narrow by location, breed, age, or adoption stage and watch the map update instantly.
                 </p>
               </div>
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700">
+                <SlidersHorizontal className="h-5 w-5" />
+              </span>
             </div>
           </div>
 
-          <div className="border-t border-slate-100 xl:hidden">
-            <button
-              type="button"
-              onClick={() => setMobileFiltersOpen((value) => !value)}
-              className="flex w-full items-center justify-between px-5 py-4 text-left sm:px-6"
-              aria-expanded={mobileFiltersOpen}
-              aria-controls="dog-marketplace-filters"
-            >
-              <span className="inline-flex items-center gap-2 text-sm font-semibold text-slate-900">
-                <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700">
-                  <SlidersHorizontal className="h-4 w-4" />
-                </span>
-                {mobileFiltersOpen ? "Hide filters" : "Show filters"}
-              </span>
-              <ChevronDown className={`h-4 w-4 text-slate-500 transition ${mobileFiltersOpen ? "rotate-180" : ""}`} />
-            </button>
-          </div>
-
-          <div
-            id="dog-marketplace-filters"
-            className={`${mobileFiltersOpen ? "block" : "hidden"} border-t border-slate-100 p-5 pt-5 sm:p-6 xl:block xl:border-t-0`}
-          >
+          <div className="border-t border-slate-100 p-5 pt-5 sm:p-6">
             <div className="space-y-6">
               <div className="space-y-3">
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Status</p>
-                <div className="flex gap-2 overflow-x-auto pb-1 xl:grid xl:grid-cols-1 xl:overflow-visible xl:pb-0">
+                <div className="grid gap-2">
                   {([
                     { key: "all", label: "All dogs", count: counts.all, dot: "bg-slate-500" },
                     { key: "available", label: "Available", count: counts.available, dot: STATUS_STYLE.available.dot },
@@ -286,7 +268,7 @@ export function DogMarketplace({
                         key={option.key}
                         type="button"
                         onClick={() => setStatusFilter(option.key)}
-                        className={`flex min-w-fit items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-left transition xl:min-w-0 ${
+                        className={`flex items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-left transition ${
                           isActive
                             ? "border-slate-900 bg-slate-900 text-white shadow-sm"
                             : "border-slate-200 bg-slate-50 text-slate-700 hover:border-slate-300 hover:bg-white"
@@ -385,11 +367,11 @@ export function DogMarketplace({
                 </label>
               </div>
 
-              <div className="flex items-center justify-between rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-3">
-                <div>
-                  <p className="text-sm font-semibold text-slate-700">Active filters</p>
-                  <p className="text-xs text-slate-500">
-                    {activeFilters.length === 0 ? "Showing every listed dog." : `${activeFilters.length} filters applied`}
+            <div className="flex items-center justify-between rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-3">
+              <div>
+                <p className="text-sm font-semibold text-slate-700">Active filters</p>
+                <p className="text-xs text-slate-500">
+                  {activeFilters.length === 0 ? "Showing every listed dog." : `${activeFilters.length} filters applied`}
                   </p>
                 </div>
 
@@ -450,6 +432,7 @@ export function DogMarketplace({
             <DogListingsMap dogs={filteredDogs} />
           </div>
         </section>
+        </div>
       </div>
 
       <section className="rounded-[32px] border border-[#dde6da] bg-white p-5 shadow-[0_20px_60px_rgba(15,23,42,0.08)] sm:p-6">
@@ -497,7 +480,7 @@ export function DogMarketplace({
             </button>
           </div>
         ) : (
-          <div className="mt-6 grid gap-5 md:grid-cols-2 2xl:grid-cols-3">
+          <div className="mt-6 grid grid-cols-2 gap-5 2xl:grid-cols-3">
             {filteredDogs.map((dog) => {
               const statusStyle = STATUS_STYLE[dog.status];
 

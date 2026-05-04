@@ -164,7 +164,7 @@ export default async function MyPetPage({ params }: { params: Promise<{ id: stri
           <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-[0_14px_35px_rgba(15,23,42,0.06)] sm:p-6">
             <div className="mb-4">
               <h2 className="text-[2rem] font-semibold tracking-tight text-slate-900">Post-adoption Updates</h2>
-              <p className="mt-1 text-[1.35rem] text-slate-500">Shared moments from your pet's journey after adoption.</p>
+              <p className="mt-1 text-[1.35rem] text-slate-500">Shared moments from your pet&apos;s journey after adoption.</p>
             </div>
 
             {updates.length === 0 ? (

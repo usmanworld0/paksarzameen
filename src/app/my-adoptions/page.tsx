@@ -199,7 +199,7 @@ export default async function MyAdoptionsPage() {
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div>
                         <h2 className="text-lg font-bold text-slate-900">{request.dogName}</h2>
-                        <p className="text-sm text-slate-500">{request.dogBreed} • {request.dogColor}</p>
+                        <p className="text-sm text-slate-500">{request.dogColor}</p>
                         {request.petName && (
                           <p className="mt-0.5 text-sm font-semibold text-indigo-600">Pet name: {request.petName}</p>
                         )}

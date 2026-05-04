@@ -8,10 +8,9 @@ type DogQRCodeProps = {
   dogId: string;
   dogName: string;
   rescueName?: string;
-  breed?: string;
 };
 
-export function DogQRCode({ dogId, dogName, rescueName, breed }: DogQRCodeProps) {
+export function DogQRCode({ dogId, dogName, rescueName }: DogQRCodeProps) {
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
   const [show, setShow] = useState(false);
   const dogUrl =
@@ -93,11 +92,6 @@ export function DogQRCode({ dogId, dogName, rescueName, breed }: DogQRCodeProps)
       color: #94a3b8;
       margin-bottom: 4px;
     }
-    .breed {
-      font-size: 13px;
-      color: #64748b;
-      margin-bottom: 20px;
-    }
     .qr-wrap {
       display: inline-block;
       padding: 12px;
@@ -129,7 +123,6 @@ export function DogQRCode({ dogId, dogName, rescueName, breed }: DogQRCodeProps)
     <div class="badge">Scan to Adopt</div>
     <div class="dog-name">${dogName}</div>
     ${rescueName ? `<div class="rescue-name">Rescue: ${rescueName}</div>` : ""}
-    ${breed ? `<div class="breed">${breed}</div>` : ""}
     <div class="qr-wrap">
       <img src="${qrDataUrl}" alt="QR Code for ${dogName}" />
     </div>

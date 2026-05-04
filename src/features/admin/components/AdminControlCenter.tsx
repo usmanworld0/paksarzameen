@@ -71,6 +71,8 @@ type DogRow = {
   dogId: string;
   name: string;
   breed: string;
+  rescueName?: string | null;
+  color?: string | null;
   status: "available" | "pending" | "adopted";
   city: string | null;
   createdAt: string;
@@ -335,7 +337,7 @@ export function AdminControlCenter() {
       id: row.dogId,
       module: "dogs",
       title: row.name,
-      owner: row.breed,
+      owner: row.rescueName || row.color || "Dog profile",
       location: row.city ?? "-",
       status: row.status,
       createdAt: row.createdAt,

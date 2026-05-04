@@ -64,7 +64,7 @@ export type DogPostAdoptionUpdateRecord = {
 
 export type CreateDogInput = {
   name?: string;
-  breed: string;
+  breed?: string;
   color: string;
   age: string;
   gender: string;
@@ -210,14 +210,13 @@ export function parseCreateDogPayload(payload: unknown): CreateDogInput {
   const latitude = normalizedNumber(data.latitude);
   const longitude = normalizedNumber(data.longitude);
 
-  if (!breed) throw new Error("Breed is required.");
   if (!color) throw new Error("Color is required.");
   if (!age) throw new Error("Age is required.");
   if (!gender) throw new Error("Gender is required.");
   if (!description) throw new Error("Description is required.");
   return {
     name: normalizedText(data.name) || undefined,
-    breed,
+    breed: breed || "",
     color,
     age,
     gender,
@@ -580,7 +579,7 @@ export async function createDog(input: CreateDogInput) {
       randomUUID(),
       rescueName,
       rescueName,
-      input.breed,
+      input.breed ?? "",
       input.color,
       input.age,
       input.gender,

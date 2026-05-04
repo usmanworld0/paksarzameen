@@ -78,7 +78,6 @@ export async function PATCH(request: Request, context: RouteContext) {
       }
 
       const payload = parseUpdateDogPayload({
-        breed: formData.get("breed"),
         color: formData.get("color"),
         age: formData.get("age"),
         gender: formData.get("gender"),

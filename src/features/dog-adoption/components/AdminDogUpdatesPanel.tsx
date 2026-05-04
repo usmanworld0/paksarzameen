@@ -167,7 +167,7 @@ export function AdminDogUpdatesPanel() {
                 <option value="">Select adopted dog</option>
                 {adoptedDogs.map((dog) => (
                   <option key={dog.dogId} value={dog.dogId}>
-                    {dog.name} ({dog.breed})
+                    {dog.name}
                   </option>
                 ))}
               </select>

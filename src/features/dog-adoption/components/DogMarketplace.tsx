@@ -15,7 +15,6 @@ type MarketplaceFilters = {
   search: string;
   city: string;
   area: string;
-  breed: string;
   age: string;
 };
 
@@ -87,7 +86,7 @@ function matchesDog(dog: DogRecord, filters: MarketplaceFilters, ignore: Array<k
 
   if (!ignored.has("search") && filters.search.trim()) {
     const query = filters.search.trim().toLowerCase();
-    const haystack = [dog.name, dog.breed, dog.color, dog.age, dog.city ?? "", dog.area ?? ""].join(" ").toLowerCase();
+    const haystack = [dog.name, dog.color, dog.age, dog.city ?? "", dog.area ?? ""].join(" ").toLowerCase();
 
     if (!haystack.includes(query)) {
       return false;
@@ -99,10 +98,6 @@ function matchesDog(dog: DogRecord, filters: MarketplaceFilters, ignore: Array<k
   }
 
   if (!ignored.has("area") && filters.area !== "all" && dog.area !== filters.area) {
-    return false;
-  }
-
-  if (!ignored.has("breed") && filters.breed !== "all" && dog.breed !== filters.breed) {
     return false;
   }
 
@@ -124,7 +119,6 @@ export function DogMarketplace({
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCity, setSelectedCity] = useState("all");
   const [selectedArea, setSelectedArea] = useState("all");
-  const [selectedBreed, setSelectedBreed] = useState("all");
   const [selectedAge, setSelectedAge] = useState("all");
 
   const filters = {
@@ -132,7 +126,6 @@ export function DogMarketplace({
     search: searchQuery,
     city: selectedCity,
     area: selectedArea,
-    breed: selectedBreed,
     age: selectedAge,
   } satisfies MarketplaceFilters;
 
@@ -145,8 +138,6 @@ export function DogMarketplace({
         return Date.parse(right.createdAt) - Date.parse(left.createdAt);
       });
   }, [dogs, filters]);
-
-  const mapDogs = useMemo(() => filteredDogs, [filteredDogs]);
 
   const cityOptions = useMemo(() => {
     return sortTextValues(
@@ -161,14 +152,6 @@ export function DogMarketplace({
       dogs
         .filter((dog) => matchesDog(dog, filters, ["area"]))
         .map((dog) => dog.area ?? "")
-    );
-  }, [dogs, filters]);
-
-  const breedOptions = useMemo(() => {
-    return sortTextValues(
-      dogs
-        .filter((dog) => matchesDog(dog, filters, ["breed"]))
-        .map((dog) => dog.breed)
     );
   }, [dogs, filters]);
 
@@ -193,12 +176,6 @@ export function DogMarketplace({
   }, [areaOptions, selectedArea]);
 
   useEffect(() => {
-    if (selectedBreed !== "all" && !breedOptions.includes(selectedBreed)) {
-      setSelectedBreed("all");
-    }
-  }, [breedOptions, selectedBreed]);
-
-  useEffect(() => {
     if (selectedAge !== "all" && !ageOptions.includes(selectedAge)) {
       setSelectedAge("all");
     }
@@ -219,7 +196,6 @@ export function DogMarketplace({
     searchQuery.trim() ? `Search: ${searchQuery.trim()}` : null,
     selectedCity !== "all" ? selectedCity : null,
     selectedArea !== "all" ? selectedArea : null,
-    selectedBreed !== "all" ? selectedBreed : null,
     selectedAge !== "all" ? selectedAge : null,
   ].filter(Boolean) as string[];
 
@@ -228,33 +204,31 @@ export function DogMarketplace({
     setSearchQuery("");
     setSelectedCity("all");
     setSelectedArea("all");
-    setSelectedBreed("all");
     setSelectedAge("all");
   };
 
   return (
-    <div className="space-y-8">
-      <div className="overflow-x-auto pb-2">
-        <div className="grid min-w-[920px] gap-6 grid-cols-[320px,minmax(0,1fr)]">
-        <aside className="rounded-[32px] border border-[#dde6da] bg-white/95 shadow-[0_20px_60px_rgba(15,23,42,0.08)] backdrop-blur xl:sticky xl:top-28 xl:self-start">
-          <div className="p-5 sm:p-6">
+    <div className="space-y-6">
+      <div className="grid gap-5 lg:grid-cols-[300px,minmax(0,1fr)] xl:grid-cols-[320px,minmax(0,1fr)]">
+        <aside className="rounded-[28px] border border-[#dde6da] bg-white/95 shadow-[0_18px_50px_rgba(15,23,42,0.08)] backdrop-blur lg:sticky lg:top-28 lg:self-start">
+          <div className="border-b border-slate-100 px-4 py-4 sm:px-5 sm:py-5">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.24em] text-emerald-700">Filters</p>
-                <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">Find the right dog</h2>
+                <h2 className="mt-2 text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">Find the right dog</h2>
                 <p className="mt-2 text-sm leading-6 text-slate-500">
-                  Narrow by location, breed, age, or adoption stage and watch the map update instantly.
+                  Filter by location, age, or adoption stage and keep the map and listings in sync.
                 </p>
               </div>
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700">
                 <SlidersHorizontal className="h-5 w-5" />
               </span>
             </div>
           </div>
 
-          <div className="border-t border-slate-100 p-5 pt-5 sm:p-6">
-            <div className="space-y-6">
-              <div className="space-y-3">
+          <div className="space-y-4 p-4 sm:p-5">
+            <div className="flex gap-3 overflow-x-auto pb-2 lg:grid lg:gap-4 lg:overflow-visible lg:pb-0">
+              <div className="min-w-[220px] shrink-0 space-y-3 rounded-2xl border border-slate-200 bg-slate-50 p-3.5 lg:min-w-0">
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Status</p>
                 <div className="grid gap-2">
                   {([
@@ -273,14 +247,18 @@ export function DogMarketplace({
                         className={`flex items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-left transition ${
                           isActive
                             ? "border-slate-900 bg-slate-900 text-white shadow-sm"
-                            : "border-slate-200 bg-slate-50 text-slate-700 hover:border-slate-300 hover:bg-white"
+                            : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
                         }`}
                       >
                         <span className="flex items-center gap-2 text-sm font-semibold">
                           <span className={`h-2.5 w-2.5 rounded-full ${isActive ? "bg-white" : option.dot}`} />
                           {option.label}
                         </span>
-                        <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${isActive ? "bg-white/15 text-white" : "bg-white text-slate-500"}`}>
+                        <span
+                          className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
+                            isActive ? "bg-white/15 text-white" : "bg-slate-50 text-slate-500"
+                          }`}
+                        >
                           {option.count}
                         </span>
                       </button>
@@ -289,7 +267,7 @@ export function DogMarketplace({
                 </div>
               </div>
 
-              <label className="block">
+              <label className="block min-w-[220px] shrink-0 rounded-2xl border border-slate-200 bg-slate-50 p-3.5 lg:min-w-0">
                 <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Search</span>
                 <div className="relative mt-3">
                   <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
@@ -297,107 +275,89 @@ export function DogMarketplace({
                     type="text"
                     value={searchQuery}
                     onChange={(event) => setSearchQuery(event.target.value)}
-                    placeholder="Name, breed, city, area"
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-11 pr-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-emerald-400 focus:bg-white focus:ring-4 focus:ring-emerald-100"
+                    placeholder="Name, color, city, area"
+                    className="w-full rounded-2xl border border-slate-200 bg-white py-3 pl-11 pr-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-emerald-400 focus:ring-4 focus:ring-emerald-100"
                   />
                 </div>
               </label>
 
-              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
-                <label className="block">
-                  <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">City</span>
-                  <select
-                    value={selectedCity}
-                    onChange={(event) => setSelectedCity(event.target.value)}
-                    className="mt-3 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-emerald-400 focus:bg-white focus:ring-4 focus:ring-emerald-100"
-                  >
-                    <option value="all">All cities</option>
-                    {cityOptions.map((city) => (
-                      <option key={city} value={city}>
-                        {city}
-                      </option>
-                    ))}
-                  </select>
-                </label>
+              <label className="block min-w-[180px] shrink-0 rounded-2xl border border-slate-200 bg-slate-50 p-3.5 lg:min-w-0">
+                <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">City</span>
+                <select
+                  value={selectedCity}
+                  onChange={(event) => setSelectedCity(event.target.value)}
+                  className="mt-3 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-emerald-400 focus:ring-4 focus:ring-emerald-100"
+                >
+                  <option value="all">All cities</option>
+                  {cityOptions.map((city) => (
+                    <option key={city} value={city}>
+                      {city}
+                    </option>
+                  ))}
+                </select>
+              </label>
 
-                <label className="block">
-                  <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Area</span>
-                  <select
-                    value={selectedArea}
-                    onChange={(event) => setSelectedArea(event.target.value)}
-                    className="mt-3 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-emerald-400 focus:bg-white focus:ring-4 focus:ring-emerald-100"
-                  >
-                    <option value="all">All areas</option>
-                    {areaOptions.map((area) => (
-                      <option key={area} value={area}>
-                        {area}
-                      </option>
-                    ))}
-                  </select>
-                </label>
+              <label className="block min-w-[180px] shrink-0 rounded-2xl border border-slate-200 bg-slate-50 p-3.5 lg:min-w-0">
+                <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Area</span>
+                <select
+                  value={selectedArea}
+                  onChange={(event) => setSelectedArea(event.target.value)}
+                  className="mt-3 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-emerald-400 focus:ring-4 focus:ring-emerald-100"
+                >
+                  <option value="all">All areas</option>
+                  {areaOptions.map((area) => (
+                    <option key={area} value={area}>
+                      {area}
+                    </option>
+                  ))}
+                </select>
+              </label>
 
-                <label className="block">
-                  <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Breed</span>
-                  <select
-                    value={selectedBreed}
-                    onChange={(event) => setSelectedBreed(event.target.value)}
-                    className="mt-3 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-emerald-400 focus:bg-white focus:ring-4 focus:ring-emerald-100"
-                  >
-                    <option value="all">All breeds</option>
-                    {breedOptions.map((breed) => (
-                      <option key={breed} value={breed}>
-                        {breed}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-
-                <label className="block">
-                  <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Age</span>
-                  <select
-                    value={selectedAge}
-                    onChange={(event) => setSelectedAge(event.target.value)}
-                    className="mt-3 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-emerald-400 focus:bg-white focus:ring-4 focus:ring-emerald-100"
-                  >
-                    <option value="all">All ages</option>
-                    {ageOptions.map((age) => (
-                      <option key={age} value={age}>
-                        {age}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              </div>
+              <label className="block min-w-[160px] shrink-0 rounded-2xl border border-slate-200 bg-slate-50 p-3.5 lg:min-w-0">
+                <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Age</span>
+                <select
+                  value={selectedAge}
+                  onChange={(event) => setSelectedAge(event.target.value)}
+                  className="mt-3 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-emerald-400 focus:ring-4 focus:ring-emerald-100"
+                >
+                  <option value="all">All ages</option>
+                  {ageOptions.map((age) => (
+                    <option key={age} value={age}>
+                      {age}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
 
             <div className="flex items-center justify-between rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-3">
               <div>
                 <p className="text-sm font-semibold text-slate-700">Active filters</p>
                 <p className="text-xs text-slate-500">
                   {activeFilters.length === 0 ? "Showing every listed dog." : `${activeFilters.length} filters applied`}
-                  </p>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={resetFilters}
-                  className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-100"
-                >
-                  <RotateCcw className="h-3.5 w-3.5" />
-                  Reset
-                </button>
+                </p>
               </div>
+
+              <button
+                type="button"
+                onClick={resetFilters}
+                className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-100"
+              >
+                <RotateCcw className="h-3.5 w-3.5" />
+                Reset
+              </button>
             </div>
           </div>
         </aside>
 
-        <section className="overflow-hidden rounded-[32px] border border-[#dde6da] bg-white shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
-          <div className="border-b border-slate-100 px-5 py-5 sm:px-6">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <section className="overflow-hidden rounded-[28px] border border-[#dde6da] bg-white shadow-[0_18px_50px_rgba(15,23,42,0.08)]">
+          <div className="space-y-4 border-b border-slate-100 px-4 py-4 sm:px-5 sm:py-5">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.24em] text-emerald-700">Live map</p>
-                <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">Dog status by location</h2>
+                <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">Dog status by location</h2>
                 <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
-                  Green markers are available dogs, yellow markers are requested, and blue markers are already adopted.
+                  Green markers are available, yellow markers are requested, and blue markers are already adopted.
                 </p>
               </div>
 
@@ -414,34 +374,33 @@ export function DogMarketplace({
               </div>
             </div>
 
-            <div className="-mx-1 mt-5 flex gap-3 overflow-x-auto px-1 pb-1">
-              <div className="min-w-[140px] flex-1 rounded-3xl bg-emerald-50 px-4 py-4">
+            <div className="grid gap-3 sm:grid-cols-3">
+              <div className="rounded-3xl bg-emerald-50 px-4 py-3.5">
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">Available</p>
-                <p className="mt-2 text-3xl font-bold tracking-tight text-emerald-950">{counts.available}</p>
+                <p className="mt-1 text-2xl font-bold tracking-tight text-emerald-950">{counts.available}</p>
               </div>
-              <div className="min-w-[140px] flex-1 rounded-3xl bg-amber-50 px-4 py-4">
+              <div className="rounded-3xl bg-amber-50 px-4 py-3.5">
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-amber-700">Requested</p>
-                <p className="mt-2 text-3xl font-bold tracking-tight text-amber-950">{counts.pending}</p>
+                <p className="mt-1 text-2xl font-bold tracking-tight text-amber-950">{counts.pending}</p>
               </div>
-              <div className="min-w-[140px] flex-1 rounded-3xl bg-sky-50 px-4 py-4">
+              <div className="rounded-3xl bg-sky-50 px-4 py-3.5">
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-700">Adopted</p>
-                <p className="mt-2 text-3xl font-bold tracking-tight text-sky-950">{counts.adopted}</p>
+                <p className="mt-1 text-2xl font-bold tracking-tight text-sky-950">{counts.adopted}</p>
               </div>
             </div>
           </div>
 
-          <div className="h-[320px] sm:h-[420px] xl:h-[540px]">
-            <DogListingsMap dogs={mapDogs} />
+          <div className="h-[220px] sm:h-[280px] lg:h-[340px] xl:h-[380px]">
+            <DogListingsMap dogs={filteredDogs} />
           </div>
         </section>
-        </div>
       </div>
 
       <section className="rounded-[32px] border border-[#dde6da] bg-white p-5 shadow-[0_20px_60px_rgba(15,23,42,0.08)] sm:p-6">
         <div className="flex flex-col gap-4 border-b border-slate-100 pb-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-emerald-700">Listings</p>
-            <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">All dog cards</h2>
+            <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">Listed dogs</h2>
             <p className="mt-2 text-sm leading-6 text-slate-500">
               {filteredDogs.length === 0
                 ? "No dogs match the current filters."
@@ -482,7 +441,7 @@ export function DogMarketplace({
             </button>
           </div>
         ) : (
-          <div className="mt-6 grid grid-cols-2 gap-5 lg:grid-cols-4">
+          <div className="mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
             {filteredDogs.map((dog) => {
               const statusStyle = STATUS_STYLE[dog.status];
 
@@ -514,7 +473,9 @@ export function DogMarketplace({
                         <div className="flex items-start justify-between gap-3">
                           <div>
                             <h3 className="text-xl font-bold tracking-tight text-slate-900">{dog.name}</h3>
-                            <p className="mt-1 text-sm text-slate-500">{dog.breed}</p>
+                            {dog.rescueName && dog.rescueName !== dog.name ? (
+                              <p className="mt-1 text-sm text-slate-500">Rescue name: {dog.rescueName}</p>
+                            ) : null}
                           </div>
                           <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-500 shadow-sm">
                             {dog.age}

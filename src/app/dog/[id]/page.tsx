@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!dog) return { title: "Dog Not Found" };
   return {
     title: `${dog.name} | Dog Adoption`,
-    description: `${dog.name} (${dog.breed}) is currently ${dog.status}. Read details and submit an adoption request.`,
+    description: `${dog.name} is currently ${dog.status}. Read details and submit an adoption request.`,
   };
 }
 
@@ -96,7 +96,6 @@ export default async function DogDetailPage({ params }: PageProps) {
               {/* Attribute chips */}
               <div className="grid grid-cols-2 gap-2.5">
                 {[
-                  { icon: Tag, label: "Breed", value: dog.breed },
                   { icon: Palette, label: "Color", value: dog.color },
                   { icon: Calendar, label: "Age", value: dog.age },
                   {

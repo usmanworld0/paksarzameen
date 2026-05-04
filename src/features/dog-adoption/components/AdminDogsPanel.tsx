@@ -7,7 +7,6 @@ import { canAccessAdminRoute, useAdminClientSession } from "@/features/auth/util
 import { DogQRCode } from "@/features/dog-adoption/components/DogQRCode";
 
 type DogFormState = {
-  breed: string;
   color: string;
   age: string;
   gender: string;
@@ -20,7 +19,6 @@ type DogFormState = {
 };
 
 const INITIAL_FORM: DogFormState = {
-  breed: "",
   color: "",
   age: "",
   gender: "",
@@ -167,7 +165,6 @@ export function AdminDogsPanel() {
   useEffect(() => {
     if (!editingDog) return;
     setForm({
-      breed: editingDog.breed,
       color: editingDog.color,
       age: editingDog.age,
       gender: editingDog.gender,
@@ -191,7 +188,6 @@ export function AdminDogsPanel() {
 
     try {
       const formData = new FormData();
-      formData.set("breed", form.breed);
       formData.set("color", form.color);
       formData.set("age", form.age);
       formData.set("gender", form.gender);
@@ -281,12 +277,6 @@ export function AdminDogsPanel() {
               Rescue names are generated automatically. Pet naming is available to adopters only after approval.
             </p>
             <div className="mt-4 grid gap-3">
-              <input
-                className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                placeholder="Breed"
-                value={form.breed}
-                onChange={(event) => setForm((prev) => ({ ...prev, breed: event.target.value }))}
-              />
               <input
                 className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
                 placeholder="Color"
@@ -401,9 +391,7 @@ export function AdminDogsPanel() {
                           </span>
                         </div>
                         <p className="mt-0.5 text-xs text-slate-400">Rescue: {dog.rescueName}</p>
-                        <p className="text-xs text-slate-500">
-                          {[dog.breed, dog.color, dog.age, dog.gender].filter(Boolean).join(" · ")}
-                        </p>
+                        <p className="text-xs text-slate-500">{[dog.color, dog.age, dog.gender].filter(Boolean).join(" · ")}</p>
                         {(dog.city || dog.area) && (
                           <p className="text-xs text-slate-400">{[dog.area, dog.city].filter(Boolean).join(", ")}</p>
                         )}
@@ -430,7 +418,6 @@ export function AdminDogsPanel() {
                       dogId={dog.dogId}
                       dogName={dog.name}
                       rescueName={dog.rescueName}
-                      breed={dog.breed}
                     />
                   </article>
                 );

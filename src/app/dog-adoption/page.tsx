@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Dog Adoption | Find Dogs Near You",
   description:
-    "Browse available, requested, and adopted rescue dogs on a live map and explore dog cards filtered by city, area, breed, and age.",
+    "Browse available, requested, and adopted rescue dogs on a live map and explore dog cards filtered by city, area, and age.",
 };
 
 export default async function DogAdoptionPage() {

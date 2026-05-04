@@ -121,7 +121,7 @@ export function AdminAdoptionRequestsPanel() {
                     <tr key={row.requestId} className="border-t border-slate-100">
                       <td className="px-3 py-2">
                         <p className="font-semibold text-slate-900">{row.dogName}</p>
-                        <p className="text-xs text-slate-500">{row.dogBreed} • {row.dogColor}</p>
+                        <p className="text-xs text-slate-500">{row.dogColor}</p>
                         {row.petName ? <p className="text-xs text-indigo-700">Pet name: {row.petName}</p> : null}
                       </td>
                       <td className="px-3 py-2">

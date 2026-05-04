@@ -153,9 +153,7 @@ export function DogListingsMap({ dogs }: Props) {
                         {status.label}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-500">
-                      {[dog.breed, dog.age, dog.gender].filter(Boolean).join(" / ")}
-                    </p>
+                    <p className="text-xs text-slate-500">{[dog.age, dog.gender, dog.color].filter(Boolean).join(" / ")}</p>
                     <p className="text-xs text-slate-500">{getLocationLabel(dog)}</p>
                   </div>
 

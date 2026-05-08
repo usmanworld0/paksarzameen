@@ -28,25 +28,23 @@ export default async function DogAdoptionPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[linear-gradient(180deg,#ffffff_0%,#fbfaf8_58%,#f6f2ec_100%)] pt-[72px] text-neutral-950">
-      <section className="border-b border-black/6 bg-white">
-        <div
-          className="mx-auto w-full max-w-[1380px] px-5 py-14 sm:px-8 lg:px-12 lg:py-20"
-          style={{ fontFamily: STORE_FONT_FAMILY }}
-        >
+    <main className="store-shell pt-[72px]">
+      <section className="border-b border-black/6 bg-white py-12 sm:py-16">
+        <div className="store-container" style={{ fontFamily: STORE_FONT_FAMILY }}>
           <header>
-            <p className="text-[9px] font-normal uppercase tracking-[0.28em] text-neutral-500">
-              Dog Adoption
-            </p>
-            <h1 className="mt-4 text-[clamp(2.6rem,5vw,5.2rem)] leading-[0.9] tracking-[-0.08em] text-neutral-950">
-              Dog Adoption
+            <p className="store-kicker">Animal Welfare</p>
+            <h1 className="store-heading mt-3 font-medium">
+              Adopt a Dog
             </h1>
+            <p className="store-subheading mt-2 max-w-2xl">
+              Give a homeless rescue dog a loving environment. Browse listings on a live map, filtered by city, area, and status.
+            </p>
           </header>
         </div>
       </section>
 
-      <section className="px-5 py-10 sm:px-8 sm:py-14 lg:px-12 lg:py-16">
-        <div className="mx-auto w-full max-w-[1380px]" style={{ fontFamily: STORE_FONT_FAMILY }}>
+      <section className="store-section-soft">
+        <div className="store-container" style={{ fontFamily: STORE_FONT_FAMILY }}>
           {error ? (
             <div className="mb-6 rounded-[24px] border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-700">
               {error}

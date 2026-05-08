@@ -8,18 +8,30 @@
 
 :root {
   font-size: 62.5%; /* 1rem = 10px base for clamp calculations */
-  /* Primary site font (minimalist, professional) */
-  --font-body: 'Inter', 'Helvetica Neue', 'Segoe UI', Roboto, Arial, sans-serif;
-  --font-display: 'Sora', 'Inter', 'Helvetica Neue', 'Segoe UI', Roboto, Arial, sans-serif;
-  --font-heading: 'Inter', 'Helvetica Neue', 'Segoe UI', Roboto, Arial, sans-serif;
+  /* Primary site font - Synced with Store */
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Baskerville, Georgia, serif;
+  
+  --brand-green: 40 56 45;
+  --brand-green-dark: 22 33 28;
+  --brand-rose: 233 211 204;
+  --brand-cream: 250 245 240;
+  --brand-charcoal: 24 24 24;
+  --background: 255 255 255;
+  --foreground: 17 17 17;
+  --muted: 248 247 244;
+  --muted-foreground: 111 111 111;
+  --border: 229 227 222;
+  --store-accent: 181 159 130;
+  --store-accent-soft: 245 241 236;
+
   --psz-green: #0f7a47;
   --psz-green-dark: #081c10;
   --psz-green-rgb: 15, 122, 71;
   --white: #fff;
-  --black: #1d1d1f;
+  --black: #111111;
   --dark-black: #000;
-  --light-white: hsl(0, 0%, 45%);
-  --grey-bg: #f5f5f7;
+  
   --fs-3xl: clamp(3.8rem, 8vw, 7rem);
   --fs-2xl: clamp(2.5rem, 5vw, 4rem);
   --fs-xl: clamp(2rem, 4vw, 3rem);
@@ -51,19 +63,20 @@ body {
 }
 
 body {
-  font-family: var(--font-body), "Inter", -apple-system, BlinkMacSystemFont,
-    "Segoe UI", sans-serif;
+  font-family: var(--font-sans);
   font-size: 1.6rem; /* 16px base */
-  background-color: var(--dark-black);
-  color: var(--white);
+  background: linear-gradient(180deg, #ffffff 0%, #fbfaf8 56%, #f8f6f2 100%);
+  color: #111111;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-body), "Inter", sans-serif;
-  letter-spacing: -0.02em;
+  font-family: var(--font-sans);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  color: #111111;
 }
 
 a {
@@ -7055,20 +7068,13 @@ body.menu-open {
 }
 
 /* ─── STORE SYNC DESIGN TOKENS & UTILITIES ─── */
-@layer base {
-  :root {
-    --store-accent: 181 159 130;
-    --store-accent-soft: 245 241 236;
-  }
-}
-
 @layer components {
   .store-container {
     @apply mx-auto w-full max-w-[1380px] px-5 sm:px-8 lg:px-12;
   }
 
   .store-pill-label {
-    @apply inline-flex items-center rounded-full border px-3 py-1.5 text-[10px] font-normal uppercase tracking-[0.34em];
+    @apply inline-flex items-center rounded-full border px-3 py-1.5 text-[1rem] font-normal uppercase tracking-[0.34em];
     border-color: rgba(17, 17, 17, 0.08);
     color: rgba(17, 17, 17, 0.52);
     background: rgba(255, 255, 255, 0.84);
@@ -7084,7 +7090,7 @@ body.menu-open {
   }
 
   .store-heading {
-    font-size: clamp(1.1rem, 2.6vw, 1.7rem);
+    font-size: clamp(1.76rem, 2.6vw, 2.72rem);
     line-height: 1.02;
     letter-spacing: -0.04em;
     color: #111111;
@@ -7092,23 +7098,23 @@ body.menu-open {
   }
 
   .store-subheading {
-    @apply text-[14px] leading-7 text-neutral-600 sm:text-[15px];
+    @apply text-[1.4rem] leading-7 text-neutral-600 sm:text-[1.5rem];
   }
 
   .store-button {
-    @apply inline-flex items-center justify-center rounded-xl px-6 py-3 text-[10px] font-normal uppercase tracking-[0.24em] transition-all duration-500;
+    @apply inline-flex items-center justify-center rounded-xl px-6 py-3 text-[1rem] font-normal uppercase tracking-[0.24em] transition-all duration-500;
   }
 
   .store-button-primary {
     @apply store-button text-white;
     background: #111111;
-    box-shadow: 0 18px 38px rgba(17, 17, 17, 0.08);
+    box-shadow: 0 1.8rem 3.8rem rgba(17, 17, 17, 0.08);
   }
 
   .store-button-primary:hover {
     transform: translateY(-1px);
     background: #262626;
-    box-shadow: 0 22px 42px rgba(17, 17, 17, 0.11);
+    box-shadow: 0 2.2rem 4.2rem rgba(17, 17, 17, 0.11);
   }
 
   .store-button-secondary {
@@ -7124,43 +7130,37 @@ body.menu-open {
   }
 
   .store-pill-outline {
-    @apply inline-flex items-center justify-center rounded-full border px-6 py-2 text-[0.96rem] font-normal;
+    @apply inline-flex items-center justify-center rounded-full border px-6 py-2 text-[1.5rem] font-normal;
     border-color: rgba(17, 17, 17, 0.6);
     color: #111111;
     background: transparent;
     transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease, transform 160ms ease;
   }
 
-  .store-pill-outline:hover {
-    background: #111111;
-    color: #ffffff;
-    border-color: #111111;
-    transform: translateY(-1px);
-  }
-
   .store-card {
     border: 1px solid rgba(17, 17, 17, 0.08);
     background: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 18px 48px rgba(17, 17, 17, 0.045);
+    box-shadow: 0 1.8rem 4.8rem rgba(17, 17, 17, 0.045);
   }
 
   .store-panel {
     border: 1px solid rgba(17, 17, 17, 0.08);
     background: rgba(255, 255, 255, 0.94);
-    box-shadow: 0 14px 36px rgba(17, 17, 17, 0.035);
+    box-shadow: 0 1.4rem 3.6rem rgba(17, 17, 17, 0.035);
   }
 
   .store-kicker {
-    @apply text-[9px] font-normal uppercase tracking-[0.28em];
+    @apply text-[0.9rem] font-normal uppercase tracking-[0.28em];
     color: rgba(17, 17, 17, 0.46);
   }
 
   .store-link-inline {
-    @apply inline-flex items-center gap-2 text-[10px] font-normal uppercase tracking-[0.22em] transition-colors duration-300;
+    @apply inline-flex items-center gap-2 text-[1rem] font-normal uppercase tracking-[0.22em] transition-colors duration-300;
     color: #111111;
   }
 
-  .store-link-inline:hover {
-    color: rgb(var(--store-accent));
+  .store-shell {
+    background: linear-gradient(180deg, #ffffff 0%, #fbfaf8 100%);
+    min-height: 100vh;
   }
 }

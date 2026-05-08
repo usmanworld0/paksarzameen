@@ -351,10 +351,10 @@ export function DogMarketplace({ dogs }: { dogs: DogRecord[] }) {
                   key={option.key}
                   type="button"
                   onClick={() => setStatusFilter(option.key)}
-                  className={`rounded-full border px-4 py-2 text-[11px] uppercase tracking-[0.16em] transition-all duration-300 ${
+                  className={`rounded-full border px-4 py-2 text-[10px] uppercase tracking-[0.16em] transition-all duration-300 ${
                     active
-                      ? "border-neutral-950 bg-neutral-950 text-white shadow-[0_14px_28px_rgba(17,17,17,0.08)]"
-                      : "border-black/10 bg-white text-neutral-600 hover:border-black/25 hover:text-neutral-950"
+                      ? "border-neutral-950 bg-neutral-950 text-white"
+                      : "border-black/10 bg-white text-neutral-600 hover:border-black/25"
                   }`}
                 >
                   {option.label} ({option.count})
@@ -411,13 +411,13 @@ export function DogMarketplace({ dogs }: { dogs: DogRecord[] }) {
         ) : null}
       </section>
 
-      <section className="relative z-0 isolate overflow-hidden rounded-[28px] border border-black/8 bg-white/94 shadow-[0_14px_36px_rgba(17,17,17,0.035)]">
+      <section className="store-panel relative z-0 isolate overflow-hidden">
         <div className="flex flex-col gap-3 border-b border-black/8 px-5 py-5 sm:flex-row sm:items-end sm:justify-between sm:px-6">
           <div>
-            <p className="text-[9px] font-normal uppercase tracking-[0.28em] text-neutral-500">
+            <p className="store-kicker">
               Live Map
             </p>
-            <h2 className="mt-3 text-[clamp(2rem,4vw,3.4rem)] leading-[0.92] tracking-[-0.06em] text-neutral-950">
+            <h2 className="store-heading mt-3">
               Dog locations
             </h2>
           </div>
@@ -426,7 +426,7 @@ export function DogMarketplace({ dogs }: { dogs: DogRecord[] }) {
             {(["available", "adopted"] as const).map((status) => (
               <span
                 key={status}
-                className="rounded-full border border-black/8 bg-white px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-neutral-600"
+                className="store-pill-label"
               >
                 {STATUS_LABELS[status]}
               </span>
@@ -445,36 +445,36 @@ export function DogMarketplace({ dogs }: { dogs: DogRecord[] }) {
         </div>
       ) : null}
 
-      <section className="space-y-6">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+      <section className="space-y-8">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between border-b border-black/5 pb-6">
           <div>
-            <p className="text-[9px] font-normal uppercase tracking-[0.28em] text-neutral-500">
+            <p className="store-kicker">
               Listings
             </p>
-            <h2 className="mt-3 text-[clamp(2rem,4vw,3.4rem)] leading-[0.92] tracking-[-0.06em] text-neutral-950">
+            <h2 className="store-heading mt-3">
               Browse dogs
             </h2>
           </div>
 
-          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-neutral-400">
+          <p className="text-[11px] font-normal uppercase tracking-[0.24em] text-neutral-400">
             {displayedDogs.length} result{displayedDogs.length === 1 ? "" : "s"}
           </p>
         </div>
 
         {displayedDogs.length === 0 ? (
-          <div className="rounded-[28px] border border-black/8 bg-white/94 px-6 py-16 text-center shadow-[0_14px_36px_rgba(17,17,17,0.035)]">
-            <p className="text-xl tracking-[-0.03em] text-neutral-950">No dogs match the current filters.</p>
+          <div className="store-panel px-6 py-20 text-center">
+            <p className="text-xl font-normal tracking-[-0.03em] text-neutral-950">No dogs match the current filters.</p>
             <button
               type="button"
               onClick={resetFilters}
-              className="mt-6 inline-flex items-center gap-2 rounded-xl border border-neutral-950 bg-neutral-950 px-5 py-3 text-[10px] uppercase tracking-[0.22em] text-white transition hover:bg-neutral-800"
+              className="mt-6 store-button-primary"
             >
-              <RotateCcw className="h-3.5 w-3.5" />
+              <RotateCcw className="mr-2 h-3.5 w-3.5" />
               Clear filters
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-x-4 gap-y-10 xl:grid-cols-4">
+          <div className="grid grid-cols-2 gap-x-6 gap-y-12 xl:grid-cols-4">
             {displayedDogs.map((dog) => {
               const publicStatus = getPublicDogStatus(dog.status);
               const secondaryLine = [dog.breed, dog.age].filter(Boolean).join(" / ") || dog.age;
@@ -482,16 +482,16 @@ export function DogMarketplace({ dogs }: { dogs: DogRecord[] }) {
               return (
                 <article key={dog.dogId} className="group flex h-full flex-col">
                   <Link href={`/dog/${dog.dogId}`} className="relative block overflow-hidden">
-                    <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[28px] bg-[#f4f0ea]">
+                    <div className="relative aspect-[4/5] w-full overflow-hidden bg-neutral-100">
                       <Image
                         src={dog.imageUrl}
                         alt={dog.name}
                         fill
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                         className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
                       />
                       <div className="absolute left-4 top-4">
-                        <span className="rounded-full border border-white/35 bg-white/86 px-2.5 py-1 text-[9px] uppercase tracking-[0.16em] text-neutral-950 backdrop-blur-md">
+                        <span className="rounded-full border border-white/35 bg-white/86 px-2.5 py-1 text-[9px] font-normal uppercase tracking-[0.16em] text-neutral-950 backdrop-blur-md">
                           {STATUS_LABELS[publicStatus]}
                         </span>
                       </div>
@@ -499,13 +499,13 @@ export function DogMarketplace({ dogs }: { dogs: DogRecord[] }) {
                   </Link>
 
                   <Link href={`/dog/${dog.dogId}`} className="mt-4 block text-center">
-                    <h3 className="line-clamp-1 text-[1.02rem] leading-tight tracking-[-0.02em] text-neutral-900 sm:text-[1.05rem]">
+                    <h3 className="line-clamp-1 text-[1.02rem] font-normal leading-tight tracking-[-0.02em] text-neutral-900 sm:text-[1.05rem]">
                       {dog.name}
                     </h3>
-                    <p className="line-clamp-1 mt-1 text-[0.88rem] tracking-[-0.01em] text-neutral-700 sm:text-[0.92rem]">
+                    <p className="line-clamp-1 mt-1 text-[0.88rem] font-normal tracking-[-0.01em] text-neutral-700 sm:text-[0.92rem]">
                       {secondaryLine}
                     </p>
-                    <p className="line-clamp-1 mt-1 text-[0.78rem] uppercase tracking-[0.16em] text-neutral-400">
+                    <p className="line-clamp-1 mt-1 text-[0.78rem] font-normal uppercase tracking-[0.16em] text-neutral-400">
                       {getLocationLabel(dog)}
                     </p>
                   </Link>

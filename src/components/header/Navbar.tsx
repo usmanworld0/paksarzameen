@@ -121,7 +121,7 @@ export function Navbar() {
             <button
               type="button"
               onClick={() => setMenuOpen(true)}
-              className={`inline-flex items-center gap-3 text-[12px] font-normal tracking-[0.01em] transition-colors ${actionClassName}`}
+              className={`inline-flex items-center gap-3 text-[1.4rem] font-normal tracking-[0.01em] transition-colors ${actionClassName}`}
               aria-label="Open menu"
               aria-expanded={menuOpen}
               aria-controls="psz-drawer-menu"
@@ -145,10 +145,10 @@ export function Navbar() {
             <Link href="/" aria-label="Paksarzameen home" className="text-center">
               <span
                 className={
-                  "block truncate font-normal uppercase leading-none tracking-[0.12em] transition-colors duration-300 " +
+                  "block truncate font-normal uppercase leading-none tracking-[0.16em] transition-colors duration-300 " +
                   (darkChrome ? "text-white" : "text-black")
                 }
-                style={{ fontSize: "clamp(0.95rem,1.6vw,1.2rem)" }}
+                style={{ fontSize: "clamp(1.8rem, 2vw, 2.4rem)" }}
               >
                 PAKSARZAMEEN
               </span>
@@ -176,7 +176,7 @@ export function Navbar() {
               aria-label="Get involved"
             >
               <Phone className="h-[18px] w-[18px] stroke-[1.5] sm:hidden" />
-              <span className="hidden text-[12px] font-normal tracking-[0.01em] sm:inline">
+              <span className="hidden text-[1.4rem] font-normal tracking-[0.01em] sm:inline">
                 Get Involved
               </span>
             </Link>
@@ -221,7 +221,7 @@ export function Navbar() {
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
                 placeholder="Search pages or links"
-                className="w-full bg-transparent text-sm text-black outline-none placeholder:text-black/42"
+                className="w-full bg-transparent text-[1.4rem] text-black outline-none placeholder:text-black/42"
               />
             </div>
           </div>
@@ -239,7 +239,7 @@ export function Navbar() {
                     <Link
                       key={link.label}
                       href={link.href}
-                      className={`text-[clamp(1.8rem,3.5vw,2.7rem)] leading-[1.02] tracking-[-0.03em] transition-colors ${
+                      className={`text-[clamp(2.88rem,3.5vw,4.32rem)] leading-[1.02] tracking-[-0.03em] transition-colors ${
                         active ? "text-black" : "text-black/68 hover:text-black"
                       }`}
                       onClick={() => setMenuOpen(false)}

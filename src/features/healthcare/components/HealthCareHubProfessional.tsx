@@ -260,30 +260,31 @@ export function HealthCareHubProfessional() {
   ] as const;
 
   return (
-    <div className="min-h-screen bg-[#f3f3ee]">
+    <div className="store-shell pt-[72px]">
       {/* Page Header */}
-      <header className="border-b border-[#E5E5E5] px-[5%] pb-8 pt-24 md:pb-12 md:pt-28 bg-white">
-        <div className="mx-auto max-w-screen-xl">
+      <header className="border-b border-black/6 bg-white py-12 sm:py-16">
+        <div className="store-container">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#0f7a47]">Healthcare</p>
-              <h1 className="mt-3 text-[clamp(3.2rem,8vw,6.5rem)] font-black uppercase leading-[0.88] tracking-tighter text-[#111111]">
+              <p className="store-kicker">Healthcare</p>
+              <h1 className="store-heading mt-3 font-medium">
                 HealthCare
               </h1>
-              <p className="mt-3 max-w-[56ch] text-sm font-medium leading-relaxed text-[#707072]">
+              <p className="store-subheading mt-2 max-w-2xl">
                 Your personalized medical companion — AI health answers, doctor appointments, and blood bank services.
               </p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <Link
                 href="/healthcare/doctor/sign-in"
-                className="rounded-xl border border-[#E5E5E5] bg-white px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.14em] text-[#111111] transition hover:border-[#111111]/30"
+                className="store-button-secondary"
               >
                 Doctor Sign In
               </Link>
               <Link
                 href="/healthcare/doctor/sign-up"
-                className="rounded-xl bg-[#0f7a47] px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.14em] text-white transition hover:bg-[#1a9d5f]"
+                className="store-button text-white"
+                style={{ background: "#0f7a47" }}
               >
                 Doctor Sign Up
               </Link>
@@ -293,17 +294,17 @@ export function HealthCareHubProfessional() {
       </header>
 
       {/* Tab Navigation */}
-      <div className="border-b border-[#E5E5E5] bg-white px-[5%]">
-        <div className="mx-auto max-w-screen-xl">
+      <div className="border-b border-black/6 bg-white">
+        <div className="store-container">
           <div className="flex gap-1 overflow-x-auto">
             {TABS.map(({ id, label, icon: Icon }) => (
               <button
                 key={id}
                 onClick={() => setActiveTab(id as typeof activeTab)}
-                className={`flex items-center gap-2 border-b-2 px-4 py-3 text-xs font-black uppercase tracking-[0.14em] transition whitespace-nowrap ${
+                className={`flex items-center gap-2 border-b-2 px-4 py-4 text-[1.1rem] font-medium uppercase tracking-[0.14em] transition whitespace-nowrap ${
                   activeTab === id
                     ? "border-[#111111] text-[#111111]"
-                    : "border-transparent text-[#707072] hover:text-[#111111]"
+                    : "border-transparent text-neutral-400 hover:text-[#111111]"
                 }`}
               >
                 <Icon className="h-4 w-4" />
@@ -315,31 +316,31 @@ export function HealthCareHubProfessional() {
       </div>
 
       {/* Main Content */}
-      <div className="px-[5%] py-10">
-        <div className="mx-auto max-w-screen-xl">
+      <div className="store-section-soft">
+        <div className="store-container">
 
           {/* Dashboard Tab */}
           {activeTab === "dashboard" && (
             <div className="space-y-6">
               {/* AI Assistant */}
-              <div className="rounded-2xl border border-[#E5E5E5] bg-white p-5 sm:p-6 transition hover:shadow-[0_8px_32px_rgba(0,0,0,0.07)]">
-                <div className="border-b border-[#E5E5E5] pb-4 mb-5">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#0f7a47]">Medical AI Chatbox</p>
-                  <h2 className="mt-1 text-2xl font-black tracking-tighter text-[#111111]">Medical AI Assistant</h2>
-                  <p className="mt-1 text-sm font-medium text-[#707072]">Get instant answers to your health questions</p>
+              <div className="store-panel p-5 sm:p-6 transition hover:shadow-[0_1.2rem_4.2rem_rgba(0,0,0,0.06)]">
+                <div className="border-b border-black/5 pb-5 mb-6">
+                  <p className="store-kicker">Medical AI Chatbox</p>
+                  <h2 className="store-heading mt-1">Medical AI Assistant</h2>
+                  <p className="store-subheading mt-2">Get instant answers to your health questions</p>
                 </div>
 
-                <div className="flex flex-col gap-3 sm:flex-row">
+                <div className="flex flex-col gap-4 sm:flex-row">
                   <input
                     value={question}
                     onChange={(event) => setQuestion(event.target.value)}
                     placeholder="Ask about fever, blood donation, symptoms, health concerns..."
-                    className={`flex-1 ${inputClass}`}
+                    className="flex-1 store-control"
                   />
                   <button
                     type="button"
                     onClick={() => void askQuickAnswer()}
-                    className="rounded-xl bg-[#0f7a47] px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.14em] text-white transition hover:bg-[#1a9d5f]"
+                    className="store-button-primary"
                   >
                     Ask AI
                   </button>
@@ -380,21 +381,21 @@ export function HealthCareHubProfessional() {
               </div>
 
               {/* Quick Stats */}
-              <div className="grid gap-4 sm:grid-cols-3">
-                <div className="rounded-2xl border border-[#E5E5E5] bg-white p-5 transition hover:shadow-[0_8px_32px_rgba(0,0,0,0.07)]">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#0f7a47]">Appointments</p>
-                  <p className="mt-2 text-3xl font-black tracking-tighter text-[#111111]">{appointments.length}</p>
-                  <p className="mt-1 text-sm font-medium text-[#707072]">Total Appointments</p>
+              <div className="grid gap-6 sm:grid-cols-3">
+                <div className="store-panel p-5">
+                  <p className="store-kicker">Appointments</p>
+                  <p className="mt-3 text-3xl font-normal tracking-tighter text-[#111111]">{appointments.length}</p>
+                  <p className="mt-1 text-sm text-neutral-500">Total Appointments</p>
                 </div>
-                <div className="rounded-2xl border border-[#E5E5E5] bg-white p-5 transition hover:shadow-[0_8px_32px_rgba(0,0,0,0.07)]">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#0f7a47]">Doctors</p>
-                  <p className="mt-2 text-3xl font-black tracking-tighter text-[#111111]">{doctors.length}</p>
-                  <p className="mt-1 text-sm font-medium text-[#707072]">Doctors Available</p>
+                <div className="store-panel p-5">
+                  <p className="store-kicker">Doctors</p>
+                  <p className="mt-3 text-3xl font-normal tracking-tighter text-[#111111]">{doctors.length}</p>
+                  <p className="mt-1 text-sm text-neutral-500">Doctors Available</p>
                 </div>
-                <div className="rounded-2xl border border-[#E5E5E5] bg-white p-5 transition hover:shadow-[0_8px_32px_rgba(0,0,0,0.07)]">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#0f7a47]">Slots</p>
-                  <p className="mt-2 text-3xl font-black tracking-tighter text-[#111111]">{slots.length}</p>
-                  <p className="mt-1 text-sm font-medium text-[#707072]">Available Slots</p>
+                <div className="store-panel p-5">
+                  <p className="store-kicker">Slots</p>
+                  <p className="mt-3 text-3xl font-normal tracking-tighter text-[#111111]">{slots.length}</p>
+                  <p className="mt-1 text-sm text-neutral-500">Available Slots</p>
                 </div>
               </div>
             </div>

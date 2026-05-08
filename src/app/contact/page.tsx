@@ -43,14 +43,14 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <div className="bg-[#f3f3ee]">
-      <header className="border-b border-[#E5E5E5] px-[5%] pb-8 pt-24 md:pb-12 md:pt-28">
-        <div className="mx-auto max-w-screen-xl">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#0f7a47]">Contact</p>
-          <h1 className="mt-3 text-[clamp(3.2rem,8vw,6.5rem)] font-black uppercase leading-[0.88] tracking-tighter text-[#111111]">
+    <div className="store-shell pt-[72px]">
+      <header className="border-b border-black/6 bg-white py-12 sm:py-16">
+        <div className="store-container">
+          <p className="store-kicker">Contact</p>
+          <h1 className="store-heading mt-3 font-medium">
             Contact Us
           </h1>
-          <p className="mt-3 max-w-[56ch] text-sm font-medium leading-relaxed text-[#707072]">
+          <p className="store-subheading mt-2 max-w-2xl">
             Connect with our team in Bahawalpur for volunteering, partnerships,
             blood bank coordination, media inquiries, and community development
             initiatives across Pakistan.
@@ -58,9 +58,9 @@ export default function ContactPage() {
         </div>
       </header>
 
-      <main className="px-[5%] pb-20 pt-10">
-        <div className="mx-auto max-w-screen-xl">
-          <div className="grid gap-5 lg:grid-cols-2">
+      <main className="store-section-soft">
+        <div className="store-container">
+          <div className="grid gap-6 lg:grid-cols-2">
             <div className="rounded-2xl border border-[#E5E5E5] bg-white p-5 sm:p-6">
               <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#0f7a47]">Phone</p>
               <h2 className="mt-1 text-xl font-black tracking-tighter text-[#111111]">Call Us</h2>

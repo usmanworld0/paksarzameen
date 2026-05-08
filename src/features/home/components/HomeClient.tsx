@@ -33,7 +33,6 @@ const VIDEOS = {
 /* ─── Canvas frame animation images (optimized WebP versions) ─── */
 export function HomeClient() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const introRef = useRef<HTMLDivElement>(null);
   const heroVideoRef = useRef<HTMLVideoElement | null>(null);
   const heartSectionRef = useRef<HTMLElement | null>(null);
   const coverVideoRef = useRef<HTMLVideoElement | null>(null);
@@ -42,34 +41,12 @@ export function HomeClient() {
     "/images/members/cover.PNG";
   const heartCoverImage = desktopHeartCoverImage;
 
-
-
   const revealHeroText = useCallback(() => {
     gsap.set(".hero-label", { opacity: 1, y: 0 });
     gsap.set(".hero-title", { opacity: 1, y: 0 });
     gsap.set(".hero-desc", { opacity: 1, y: 0 });
+    gsap.set(".hero-buttons", { opacity: 1, y: 0 });
   }, []);
-
-  const revealHeroImmediately = useCallback(() => {
-    const intro = introRef.current;
-    if (intro) {
-      intro.style.display = "none";
-      intro.style.pointerEvents = "none";
-      intro.setAttribute("aria-hidden", "true");
-    }
-
-    document.body.style.overflow = "";
-
-    const heroVideo = (containerRef.current?.querySelector(
-      ".hero-section video"
-    ) || heroVideoRef.current) as HTMLVideoElement | null;
-
-    if (heroVideo) {
-      gsap.set(heroVideo, { autoAlpha: 1 });
-    }
-
-    revealHeroText();
-  }, [revealHeroText]);
 
   const startMobileLiteFallbackAnimations = useCallback(() => {
     const container = containerRef.current;
@@ -88,135 +65,6 @@ export function HomeClient() {
 
     return () => {};
   }, []);
-
-
-
-  
-
-  /* ─── Cinematic intro timeline ─── */
-  const playIntro = useCallback(() => {
-    const intro = introRef.current;
-    if (!intro) return;
-
-    // Skip intro on repeat visits within the same session
-    try {
-      if (sessionStorage.getItem("psz-intro-seen")) {
-        intro.style.display = "none";
-        document.body.style.overflow = "";
-        // Keep hero text visible when intro is skipped.
-        revealHeroText();
-        return;
-      }
-      sessionStorage.setItem("psz-intro-seen", "1");
-    } catch {
-      /* sessionStorage unavailable — play intro normally */
-    }
-
-    // Lock scroll during intro
-    document.body.style.overflow = "hidden";
-
-    const tl = gsap.timeline({
-      onComplete: () => {
-        // keep pointer-events disabled once complete
-        intro.style.pointerEvents = "none";
-      },
-    });
-
-    // 0. Logo scales in with softer rotation + 3D settle
-    tl.fromTo(
-      ".intro-logo",
-      { scale: 0.78, rotationZ: -18, rotationX: 8, opacity: 0, transformOrigin: "50% 50%" },
-      {
-        scale: 1,
-        rotationZ: 0,
-        rotationX: 0,
-        opacity: 1,
-        duration: 0.75,
-        ease: "back.out(1.2)",
-      },
-      0
-    );
-
-    // 1. Staggered letter reveal (slide up + rotate)
-    tl.fromTo(
-      ".intro-letter",
-      { y: 36, opacity: 0, rotateX: 40 },
-      {
-        y: 0,
-        opacity: 1,
-        rotateX: 0,
-        duration: 0.6,
-        ease: "back.out(1.1)",
-        stagger: 0.055,
-      },
-      0.25
-    );
-
-    // gentle settle bob for the logo to make the reveal feel organic
-    tl.to(
-      ".intro-logo",
-      { y: -4, duration: 0.5, ease: "power2.out", yoyo: true, repeat: 1 },
-      ">=0.05"
-    );
-
-    // 2. Tagline fades in underneath
-    tl.fromTo(
-      ".intro-tagline",
-      { opacity: 0, y: 14 },
-      { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" },
-      "-=0.15"
-    );
-
-    // 3. Hold for a beat
-    tl.to({}, { duration: 0.35 });
-
-    // 4. Text scales up and fades out
-    tl.to(".intro-text-wrapper", {
-      scale: 1.1,
-      opacity: 0,
-      duration: 0.55,
-      ease: "power3.in",
-    });
-
-    // 5. Overlay shrinks into a circle and reveals the hero video behind
-    // Re-enable scrolling when the reveal begins so the page isn't blocked
-    tl.to(
-      intro,
-      {
-        clipPath: "circle(0% at 50% 50%)",
-        duration: 0.85,
-        ease: "power4.inOut",
-        onStart: () => {
-          try { document.body.style.overflow = ""; } catch {}
-        },
-      },
-      "-=0.35"
-    );
-
-    // 6. Clean up DOM element after transition
-    tl.set(intro, { display: "none" });
-
-    // 7. Staggered hero text reveal — label → title → description
-    tl.fromTo(
-      ".hero-label",
-      { opacity: 0, y: 30 },
-      { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" },
-      "-=0.1"
-    );
-    tl.fromTo(
-      ".hero-title",
-      { opacity: 0, y: 50 },
-      { opacity: 1, y: 0, duration: 0.9, ease: "power3.out" },
-      "-=0.45"
-    );
-    tl.fromTo(
-      ".hero-desc",
-      { opacity: 0, y: 30 },
-      { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" },
-      "-=0.45"
-    );
-  }, [revealHeroText]);
-
   const setupGSAPAnimations = useCallback(() => {
     if (!containerRef.current) return;
 
@@ -250,20 +98,7 @@ export function HomeClient() {
       ScrollTrigger.addEventListener("refresh", () => {
         ScrollTrigger.getAll().forEach(propagateZIndex);
       });
-      /* Hide hero text only when intro overlay is actually active. */
-      const intro = introRef.current;
-      const introActive =
-        !!intro &&
-        intro.style.display !== "none" &&
-        intro.getAttribute("aria-hidden") !== "true";
-
-      if (introActive) {
-        gsap.set(".hero-label", { opacity: 0, y: 30 });
-        gsap.set(".hero-title", { opacity: 0, y: 50 });
-        gsap.set(".hero-desc", { opacity: 0, y: 30 });
-      } else {
-        revealHeroText();
-      }
+      revealHeroText();
 
       /* ─── Hero: autoplay video ─── */
       const heroVideo = (containerRef.current?.querySelector(
@@ -619,27 +454,19 @@ export function HomeClient() {
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let lenis: any;
-    let idleHandle: number | null = null;
     let timeoutHandle: ReturnType<typeof setTimeout> | null = null;
-    let heroSafetyTimeout: ReturnType<typeof setTimeout> | null = null;
     let mobileFallbackCleanup: (() => void) | null = null;
 
     const isMobileLite = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     if (isMobileLite) {
       document.documentElement.classList.add("motion-lite");
-      revealHeroImmediately();
+      revealHeroText();
       mobileFallbackCleanup = startMobileLiteFallbackAnimations();
       return () => {
         document.documentElement.classList.remove("motion-lite");
         if (mobileFallbackCleanup) {
           mobileFallbackCleanup();
-        }
-        if (idleHandle !== null && "cancelIdleCallback" in window) {
-          window.cancelIdleCallback(idleHandle);
-        }
-        if (timeoutHandle) {
-          clearTimeout(timeoutHandle);
         }
       };
     }
@@ -662,50 +489,27 @@ export function HomeClient() {
       } catch {
         /* Fallback without Lenis */
       }
-      // Play intro first, then set up scroll animations
-      // Use requestAnimationFrame to ensure DOM is ready
+
+      // Synchronously guarantee layout preparation on initial frame
       requestAnimationFrame(() => {
-        playIntro();
+        revealHeroText();
         timeoutHandle = setTimeout(() => {
           setupGSAPAnimations();
-        }, 100);
-        heroSafetyTimeout = setTimeout(() => {
-          const isHidden = [".hero-label", ".hero-title", ".hero-desc"].some((selector) => {
-            const el = document.querySelector(selector) as HTMLElement | null;
-            if (!el) return false;
-            return Number.parseFloat(window.getComputedStyle(el).opacity) < 0.05;
-          });
-
-          if (isHidden) {
-            revealHeroImmediately();
-          }
-        }, 2200);
+        }, 50);
       });
     };
 
-    if ("requestIdleCallback" in window) {
-      idleHandle = window.requestIdleCallback(() => {
-        void initAll();
-      }, { timeout: 1200 });
-    } else {
-      void initAll();
-    }
+    void initAll();
 
     return () => {
       document.documentElement.classList.remove("motion-lite");
-      if (idleHandle !== null && "cancelIdleCallback" in window) {
-        window.cancelIdleCallback(idleHandle);
-      }
       if (timeoutHandle) {
         clearTimeout(timeoutHandle);
-      }
-      if (heroSafetyTimeout) {
-        clearTimeout(heroSafetyTimeout);
       }
       ScrollTrigger.getAll().forEach((t) => t.kill());
       if (lenis) lenis.destroy();
     };
-  }, [setupGSAPAnimations, playIntro, revealHeroImmediately, startMobileLiteFallbackAnimations]);
+  }, [setupGSAPAnimations, revealHeroText, startMobileLiteFallbackAnimations]);
 
   return (
     <div ref={containerRef}>
@@ -737,6 +541,26 @@ export function HomeClient() {
             blood support, environmental action, animal welfare, and
             volunteer-led community programs.
           </p>
+          <div className="hero-buttons mt-20 flex flex-wrap gap-8 items-center justify-center pointer-events-auto relative z-20 mx-auto max-w-full">
+            <Link
+              href="/healthcare"
+              className="inline-flex items-center justify-center border-b border-white/70 pb-1.5 text-[clamp(1.4rem,1.1vw,1.6rem)] font-normal leading-none tracking-[-0.01em] text-white transition-opacity hover:opacity-70"
+            >
+              Healthcare Portal
+            </Link>
+            <Link
+              href="/commonwealth-lab"
+              className="inline-flex items-center justify-center rounded-full border border-white/30 px-6 py-2.5 text-[1.1rem] uppercase tracking-[0.14em] text-white/90 transition hover:bg-white/10"
+            >
+              Paksarzameen Store
+            </Link>
+            <Link
+              href="/dog-adoption"
+              className="inline-flex items-center justify-center border-b border-white/70 pb-1.5 text-[clamp(1.4rem,1.1vw,1.6rem)] font-normal leading-none tracking-[-0.01em] text-white transition-opacity hover:opacity-70"
+            >
+              Adopt a Dog
+            </Link>
+          </div>
         </div>
       </section>
 

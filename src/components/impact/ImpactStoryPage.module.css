@@ -1,0 +1,661 @@
+.page {
+  --accent: #2d6a4f;
+  --accent-soft: rgba(45, 106, 79, 0.18);
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  overflow: hidden;
+  padding: clamp(1rem, 2vw, 1.6rem) 0 4rem;
+  color: #0c0c0c;
+  background:
+    radial-gradient(circle at top left, var(--accent-soft) 0%, transparent 30%),
+    radial-gradient(circle at 86% 14%, rgba(194, 154, 69, 0.16) 0%, transparent 30%),
+    linear-gradient(180deg, #f8fbf8 0%, #edf4ef 52%, #f7faf8 100%);
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(rgba(16, 44, 35, 0.08) 0.6px, transparent 0.6px),
+    radial-gradient(circle at 12% 20%, rgba(45, 106, 79, 0.09), transparent 35%),
+    radial-gradient(circle at 85% 85%, rgba(194, 154, 69, 0.14), transparent 30%);
+  background-size: 3px 3px, auto, auto;
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.container {
+  position: relative;
+  z-index: 1;
+  width: min(1440px, 96vw);
+  margin: 0 auto;
+}
+
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.36rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: #46665a;
+}
+
+.breadcrumb a {
+  color: #25473c;
+  text-decoration: none;
+}
+
+.breadcrumb a:hover,
+.breadcrumb a:focus-visible {
+  text-decoration: underline;
+}
+
+.separator {
+  color: #7f978d;
+}
+
+.hero,
+.storySection,
+.outcomeSection,
+.gallerySection,
+.mediaSection,
+.hopeSection,
+.linksSection,
+.closure {
+  position: relative;
+  z-index: 1;
+  margin-top: clamp(1.4rem, 2vw, 2.2rem);
+}
+
+.hero {
+  min-height: min(86vh, 900px);
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: clamp(1rem, 2vw, 2rem);
+  align-items: center;
+}
+
+.kicker,
+.sectionEyebrow,
+.linksLabel {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #204d3f;
+}
+
+.eyebrow {
+  margin: 0.85rem 0 0;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #245a49;
+}
+
+.title {
+  margin: 0.6rem 0 0;
+  font-size: clamp(2.5rem, 5.2vw, 6rem);
+  line-height: 0.94;
+  letter-spacing: -0.04em;
+  max-width: 11ch;
+}
+
+.lead {
+  margin: 1.1rem 0 0;
+  font-size: clamp(1rem, 1.45vw, 1.22rem);
+  line-height: 1.78;
+  max-width: 58ch;
+}
+
+.summary {
+  margin: 0.8rem 0 0;
+  font-size: 0.98rem;
+  line-height: 1.78;
+  color: #1d3128;
+  max-width: 58ch;
+}
+
+.pillRow {
+  margin-top: 1.2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+}
+
+.pill {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.18rem;
+  min-width: 10rem;
+  padding: 0.76rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid rgba(22, 44, 35, 0.12);
+  background: rgba(255, 255, 255, 0.74);
+  backdrop-filter: blur(10px);
+}
+
+.pill strong {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #173629;
+}
+
+.pill em {
+  margin: 0;
+  font-style: normal;
+  font-size: 0.85rem;
+  line-height: 1.42;
+  color: #243f34;
+}
+
+.actionRow {
+  margin-top: 1.2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.78rem;
+}
+
+.buttonPrimary,
+.buttonSecondary,
+.inlineLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.8rem;
+  padding: 0.7rem 1.1rem;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 700;
+  transition: transform 180ms ease, background-color 180ms ease, border-color 180ms ease;
+}
+
+.buttonPrimary {
+  color: #fff;
+  background: linear-gradient(130deg, color-mix(in srgb, var(--accent) 70%, #143629 30%) 0%, #15372a 100%);
+  box-shadow: 0 14px 28px rgba(18, 39, 30, 0.16);
+}
+
+.buttonSecondary {
+  color: #10281f;
+  border: 1px solid rgba(22, 44, 35, 0.2);
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.inlineLink {
+  min-height: 2.4rem;
+  padding: 0.5rem 0.95rem;
+  margin-top: 0.9rem;
+  color: #10281f;
+  border: 1px solid rgba(22, 44, 35, 0.2);
+  background: rgba(255, 255, 255, 0.76);
+}
+
+.buttonPrimary:hover,
+.buttonSecondary:hover,
+.inlineLink:hover,
+.buttonPrimary:focus-visible,
+.buttonSecondary:focus-visible,
+.inlineLink:focus-visible,
+.linkCard:hover,
+.linkCard:focus-visible,
+.chapterCard:hover {
+  transform: translateY(-2px);
+}
+
+.heroMedia {
+  display: grid;
+  gap: 0.9rem;
+  align-content: center;
+}
+
+.heroImageFrame {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  min-height: min(70vh, 720px);
+  border-radius: 26px;
+  border: 1px solid rgba(22, 44, 35, 0.12);
+  background: #f4f7f4;
+  box-shadow: 0 24px 60px rgba(18, 39, 30, 0.16);
+}
+
+.heroImageFrame img,
+.galleryItem img {
+  object-fit: cover;
+}
+
+.heroImageFrame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, rgba(22, 44, 35, 0.22) 100%);
+  pointer-events: none;
+}
+
+.heroFallback {
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 20% 18%, rgba(45, 106, 79, 0.16), transparent 35%),
+    radial-gradient(circle at 80% 84%, rgba(194, 154, 69, 0.2), transparent 35%),
+    linear-gradient(150deg, #f2f8f3 0%, #eaf2ec 100%);
+}
+
+.heroFallback span {
+  display: inline-flex;
+  border-radius: 999px;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid rgba(22, 44, 35, 0.2);
+  background: rgba(255, 255, 255, 0.82);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.73rem;
+}
+
+.factGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.factCard {
+  border-radius: 18px;
+  padding: 0.92rem 0.95rem;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(22, 44, 35, 0.12);
+}
+
+.factCard span {
+  display: block;
+  font-size: 0.69rem;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  color: #27483c;
+}
+
+.factCard strong {
+  display: block;
+  margin-top: 0.52rem;
+  font-size: 0.96rem;
+  line-height: 1.45;
+  color: #10281f;
+}
+
+.sectionHeading,
+.sectionHeadingCompact {
+  max-width: 660px;
+  margin-bottom: 1rem;
+}
+
+.sectionHeading h2,
+.sectionHeadingCompact h2,
+.closure h2 {
+  margin: 0.5rem 0 0;
+  font-size: clamp(1.85rem, 3.8vw, 3.8rem);
+  line-height: 0.98;
+  letter-spacing: -0.04em;
+}
+
+.sectionHeadingCompact p {
+  margin: 0.7rem 0 0;
+  line-height: 1.7;
+  color: #243f34;
+  max-width: 52ch;
+}
+
+.chapterGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.chapterCard {
+  border-radius: 22px;
+  border: 1px solid rgba(22, 44, 35, 0.12);
+  background: rgba(255, 255, 255, 0.82);
+  padding: 1rem;
+  transition: transform 180ms ease;
+}
+
+.chapterIndex {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.05rem;
+  height: 2.05rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #15382b;
+  background: rgba(223, 236, 229, 0.95);
+}
+
+.chapterCard h3 {
+  margin: 0.85rem 0 0;
+  font-size: 1.04rem;
+  line-height: 1.35;
+  color: #10281f;
+}
+
+.chapterCard p {
+  margin: 0.7rem 0 0;
+  line-height: 1.67;
+  color: #243f34;
+}
+
+.outcomeSection {
+  border-radius: 24px;
+  border: 1px solid rgba(22, 44, 35, 0.12);
+  background: rgba(255, 255, 255, 0.78);
+  padding: 1rem;
+}
+
+.outcomeList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.outcomeList li {
+  border-radius: 14px;
+  border: 1px solid rgba(22, 44, 35, 0.1);
+  background: rgba(248, 252, 249, 0.95);
+  padding: 0.74rem 0.84rem;
+  line-height: 1.64;
+  color: #18372c;
+}
+
+.galleryGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.galleryItem {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  border-radius: 20px;
+  aspect-ratio: 1 / 1.05;
+  border: 1px solid rgba(22, 44, 35, 0.1);
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.mediaGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.mediaItem {
+  border-radius: 22px;
+  border: 1px solid rgba(22, 44, 35, 0.12);
+  background: rgba(255, 255, 255, 0.86);
+  overflow: hidden;
+}
+
+.mediaMeta {
+  padding: 0.95rem 0.95rem 0.6rem;
+}
+
+.mediaMeta p {
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #10281f;
+}
+
+.mediaMeta span {
+  display: block;
+  margin-top: 0.42rem;
+  line-height: 1.6;
+  color: #2a4639;
+}
+
+.hopeGrid,
+.linkGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.hopeCard,
+.linkCard {
+  border-radius: 20px;
+  border: 1px solid rgba(22, 44, 35, 0.12);
+  background: rgba(255, 255, 255, 0.84);
+  padding: 0.92rem;
+}
+
+.hopeCard h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.hopeRole {
+  margin: 0.44rem 0 0;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  font-size: 0.68rem;
+  color: #2d5f4e;
+}
+
+.hopeCard p:last-of-type {
+  margin: 0.6rem 0 0;
+  line-height: 1.62;
+  color: #264337;
+}
+
+.linksLabel {
+  margin-bottom: 0.65rem;
+}
+
+.linksSection {
+  display: grid;
+  gap: 1rem;
+}
+
+.linkCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-decoration: none;
+  color: #10281f;
+  transition: transform 180ms ease;
+}
+
+.linkCard span {
+  line-height: 1.45;
+  max-width: 32ch;
+}
+
+.linkCard strong {
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #2b5d4c;
+}
+
+.closure {
+  border-radius: 24px;
+  border: 1px solid rgba(22, 44, 35, 0.12);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.84) 0%, rgba(246, 251, 248, 0.92) 100%);
+  padding: 1rem;
+  margin-top: clamp(2rem, 4vw, 3rem);
+}
+
+.closure > p {
+  margin: 0.8rem 0 0;
+  line-height: 1.75;
+  max-width: 60ch;
+  color: #1d3128;
+}
+
+@media (max-width: 1180px) {
+  .hero {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .heroImageFrame {
+    min-height: 56vh;
+  }
+
+  .chapterGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .galleryGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .factGrid,
+  .chapterGrid,
+  .galleryGrid,
+  .mediaGrid,
+  .hopeGrid,
+  .linkGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .heroImageFrame {
+    min-height: 48vh;
+  }
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: 0.85rem 0 3rem;
+  }
+
+  .container {
+    width: min(96vw, 96vw);
+  }
+
+  .breadcrumb {
+    margin-bottom: 0.8rem;
+    font-size: 0.78rem;
+    gap: 0.25rem;
+  }
+
+  .hero,
+  .storySection,
+  .outcomeSection,
+  .gallerySection,
+  .mediaSection,
+  .hopeSection,
+  .linksSection,
+  .closure {
+    margin-top: 1rem;
+  }
+
+  .title {
+    font-size: clamp(2.1rem, 10vw, 3rem);
+    max-width: 16ch;
+  }
+
+  .lead {
+    margin-top: 0.9rem;
+    font-size: 0.95rem;
+    line-height: 1.64;
+  }
+
+  .summary {
+    margin-top: 0.6rem;
+    font-size: 0.9rem;
+    line-height: 1.62;
+  }
+
+  .pillRow {
+    margin-top: 0.95rem;
+    gap: 0.55rem;
+  }
+
+  .pill {
+    min-width: 0;
+    width: calc(50% - 0.3rem);
+    border-radius: 14px;
+    padding: 0.64rem 0.72rem;
+  }
+
+  .actionRow {
+    margin-top: 0.95rem;
+    width: 100%;
+    gap: 0.55rem;
+  }
+
+  .buttonPrimary,
+  .buttonSecondary {
+    width: 100%;
+    min-height: 2.6rem;
+    padding: 0.62rem 0.95rem;
+  }
+
+  .heroImageFrame {
+    min-height: 42vh;
+  }
+
+  .factCard {
+    border-radius: 14px;
+    padding: 0.74rem;
+  }
+
+  .chapterCard,
+  .outcomeSection,
+  .mediaItem,
+  .hopeCard,
+  .linkCard,
+  .closure {
+    border-radius: 16px;
+  }
+
+  .chapterCard,
+  .outcomeSection,
+  .hopeCard,
+  .linkCard,
+  .closure {
+    padding: 0.8rem;
+  }
+
+  .sectionHeading h2,
+  .sectionHeadingCompact h2,
+  .closure h2 {
+    font-size: clamp(1.5rem, 8vw, 2.1rem);
+  }
+
+  .sectionHeadingCompact p,
+  .chapterCard p,
+  .outcomeList li,
+  .closure > p {
+    line-height: 1.56;
+  }
+}
+
+@media (max-width: 420px) {
+  .container {
+    width: min(95vw, 95vw);
+  }
+
+  .title {
+    font-size: clamp(1.9rem, 9.4vw, 2.6rem);
+  }
+
+  .pill {
+    width: 100%;
+  }
+}

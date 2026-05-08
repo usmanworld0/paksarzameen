@@ -1,0 +1,376 @@
+.section {
+  width: min(1280px, 94vw);
+  margin: 0 auto;
+  padding-bottom: 4.8rem;
+}
+
+.heroWrap {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(420px, 48vw);
+  gap: clamp(1.2rem, 2.8vw, 2.6rem);
+  align-items: stretch;
+  min-height: clamp(48rem, 80vh, 68rem);
+}
+
+.heroContent {
+  display: grid;
+  align-content: center;
+  gap: 0.95rem;
+  max-width: 42rem;
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  font-weight: 700;
+  color: #4a5f8f;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(3rem, 5.4vw, 6rem);
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+  color: #111626;
+  text-wrap: balance;
+}
+
+.description {
+  margin: 0;
+  max-width: 62ch;
+  color: #4f586f;
+  line-height: 1.58;
+  font-size: clamp(1.03rem, 1.75vw, 1.18rem);
+}
+
+.controls {
+  margin-top: 0.6rem;
+  border: 1px solid rgba(126, 139, 176, 0.2);
+  background: rgba(255, 255, 255, 0.86);
+  border-radius: 20px;
+  padding: clamp(0.85rem, 1.6vw, 1.2rem);
+  box-shadow: 0 12px 24px rgba(24, 34, 63, 0.07);
+}
+
+.searchLabel {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: #4a5f8f;
+}
+
+.searchInput {
+  margin-top: 0.52rem;
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(129, 141, 176, 0.3);
+  background: #ffffff;
+  min-height: 2.75rem;
+  padding: 0.55rem 0.82rem;
+  color: #1a2033;
+  font-size: 0.92rem;
+  outline: none;
+  transition: border-color 260ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.searchInput::placeholder {
+  color: #8d95ad;
+}
+
+.searchInput:focus {
+  border-color: rgba(79, 95, 171, 0.55);
+  box-shadow: 0 0 0 3px rgba(79, 95, 171, 0.13);
+}
+
+.categoryRow {
+  margin-top: 0.78rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.42rem;
+}
+
+.categoryButton {
+  border-radius: 999px;
+  border: 1px solid rgba(133, 145, 181, 0.32);
+  background: #ffffff;
+  color: #495573;
+  padding: 0.48rem 0.8rem;
+  font-size: 0.69rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1), background-color 260ms cubic-bezier(0.22, 1, 0.36, 1), color 260ms cubic-bezier(0.22, 1, 0.36, 1), border-color 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.categoryButton:hover {
+  transform: translateY(-1px);
+  border-color: rgba(94, 111, 173, 0.45);
+}
+
+.categoryButtonActive {
+  border-color: #5662a8;
+  background: #5662a8;
+  color: #ffffff;
+}
+
+.heroOrbit {
+  position: relative;
+  min-height: 100%;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.heroOrbitGlow {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 48% 50%, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.18) 42%, transparent 70%),
+    radial-gradient(circle at 70% 18%, rgba(119, 131, 255, 0.16), transparent 34%),
+    radial-gradient(circle at 78% 78%, rgba(36, 185, 154, 0.12), transparent 28%);
+  filter: blur(2px);
+  z-index: 0;
+}
+
+.heroOrbitRing {
+  position: absolute;
+  inset: 2% 6% 2% 19%;
+  border-right: 2px solid rgba(92, 104, 160, 0.16);
+  border-top: 2px solid transparent;
+  border-bottom: 2px solid transparent;
+  border-left: 2px solid rgba(92, 104, 160, 0.06);
+  border-radius: 999px;
+  opacity: 0.7;
+  z-index: 0;
+  mask-image: linear-gradient(180deg, transparent 0%, #000 14%, #000 86%, transparent 100%);
+}
+
+.heroOrbitItem {
+  position: absolute;
+  width: clamp(15.2rem, 21.6vw, 19.2rem);
+  min-height: 11.1rem;
+  padding: 1rem 1.02rem;
+  border-radius: 30px 30px 38px 38px;
+  display: grid;
+  grid-template-columns: 6.5rem 1fr;
+  gap: 1rem;
+  align-items: center;
+  box-shadow: 0 18px 34px rgba(32, 39, 64, 0.14);
+  animation: orbitFloat 6.5s ease-in-out infinite;
+  animation-delay: var(--orbit-delay);
+  transform: translateX(calc(var(--orbit-shift) * -1)) rotate(var(--orbit-rotate));
+  transform-origin: center;
+  z-index: 1;
+  text-decoration: none;
+}
+
+.heroOrbitItem:hover {
+  transform: translateX(calc(var(--orbit-shift) * -1)) rotate(var(--orbit-rotate)) scale(1.03);
+}
+
+.heroOrbitItem:nth-child(2n) {
+  animation-duration: 7.4s;
+}
+
+.heroOrbitBadge {
+  position: relative;
+  width: 6.5rem;
+  height: 6.5rem;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.22);
+  border: 2px solid rgba(255, 255, 255, 0.52);
+  justify-self: center;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.24);
+}
+
+.heroOrbitImage {
+  object-fit: cover;
+  padding: 0.15rem;
+}
+
+.heroOrbitText {
+  color: #ffffff;
+  text-align: left;
+}
+
+.heroOrbitText p {
+  margin: 0;
+  font-size: 1.03rem;
+  font-weight: 700;
+  line-height: 1.32;
+}
+
+.heroOrbitText span {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  opacity: 0.9;
+}
+
+.tone1 {
+  background: linear-gradient(165deg, #8c3ce6 0%, #b24bf2 100%);
+}
+
+.tone2 {
+  background: linear-gradient(165deg, #f6b72f 0%, #ee9550 100%);
+}
+
+.tone3 {
+  background: linear-gradient(165deg, #27b8d8 0%, #2898c0 100%);
+}
+
+.tone4 {
+  background: linear-gradient(165deg, #4e67f0 0%, #6f55e7 100%);
+}
+
+.tone5 {
+  background: linear-gradient(165deg, #1fbf86 0%, #0ca56f 100%);
+}
+
+.emptyState {
+  position: absolute;
+  left: 18%;
+  right: 12%;
+  top: 44%;
+  transform: translateY(-50%);
+  border: 1px dashed rgba(128, 140, 176, 0.44);
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #6d7897;
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.88rem;
+  z-index: 1;
+}
+
+@keyframes orbitFloat {
+  0%,
+  100% {
+    transform: translateX(calc(var(--orbit-shift) * -1)) rotate(var(--orbit-rotate)) translateY(0);
+  }
+  50% {
+    transform: translateX(calc(var(--orbit-shift) * -1)) rotate(var(--orbit-rotate)) translateY(-10px);
+  }
+}
+
+@media (max-width: 1040px) {
+  .heroWrap {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .heroOrbit {
+    min-height: 42rem;
+  }
+}
+
+@media (max-width: 760px) {
+  .section {
+    width: min(100%, 100vw);
+    padding-inline: 1.2rem;
+    padding-bottom: 4.2rem;
+  }
+
+  .heroContent {
+    max-width: none;
+    gap: 0.8rem;
+  }
+
+  .title {
+    font-size: clamp(2.2rem, 8.8vw, 3.5rem);
+  }
+
+  .description {
+    font-size: 0.98rem;
+    line-height: 1.62;
+  }
+
+  .controls {
+    border-radius: 16px;
+    padding: 0.85rem;
+  }
+
+  .searchInput {
+    min-height: 3rem;
+  }
+
+  .categoryRow {
+    gap: 0.5rem;
+  }
+
+  .categoryButton {
+    font-size: 0.66rem;
+    letter-spacing: 0.12em;
+    padding: 0.52rem 0.72rem;
+  }
+
+  .heroOrbit {
+    min-height: auto;
+    display: grid;
+    gap: 0.72rem;
+    overflow: visible;
+  }
+
+  .heroOrbitGlow,
+  .heroOrbitRing {
+    display: none;
+  }
+
+  .heroOrbitItem {
+    position: relative;
+    top: auto !important;
+    right: auto !important;
+    width: 100%;
+    min-height: 9.2rem;
+    grid-template-columns: 4.6rem 1fr;
+    border-radius: 20px;
+    padding: 0.8rem;
+    transform: none !important;
+    animation: none;
+  }
+
+  .heroOrbitBadge {
+    width: 4.6rem;
+    height: 4.6rem;
+  }
+
+  .heroOrbitItem:nth-child(2),
+  .heroOrbitItem:nth-child(4),
+  .heroOrbitItem:nth-child(5) {
+    transform: none;
+  }
+
+  .emptyState {
+    position: relative;
+    left: auto;
+    right: auto;
+    top: auto;
+    transform: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .section {
+    padding-inline: 0.9rem;
+    padding-bottom: 3.6rem;
+  }
+
+  .title {
+    font-size: clamp(2rem, 8.4vw, 3rem);
+  }
+
+  .heroOrbitText p {
+    font-size: 0.86rem;
+  }
+
+  .heroOrbitText span {
+    font-size: 0.62rem;
+  }
+}

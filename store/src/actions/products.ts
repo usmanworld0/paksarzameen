@@ -1,0 +1,262 @@
+"use server";
+
+import { prisma } from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
+import {
+  buildProductRegionPriceCreateData,
+  normalizeProductRegionPrices,
+  type ProductRegionPriceInput,
+} from "@/lib/product-region-prices";
+import { getAllStoreRegions } from "@/lib/store-regions";
+
+export async function getProducts(opts?: {
+  categorySlug?: string;
+  search?: string;
+  sort?: string;
+  featured?: boolean;
+  page?: number;
+  limit?: number;
+}) {
+  const {
+    categorySlug,
+    search,
+    sort = "newest",
+    featured,
+    page = 1,
+    limit = 12,
+  } = opts || {};
+
+  const where: Record<string, unknown> = { active: true };
+
+  if (categorySlug) {
+    where.category = { slug: categorySlug };
+  }
+  if (search) {
+    where.OR = [
+      { name: { contains: search, mode: "insensitive" } },
+      { description: { contains: search, mode: "insensitive" } },
+    ];
+  }
+  if (featured) {
+    where.featured = true;
+  }
+
+  const orderBy: Record<string, string> =
+    sort === "price-asc"
+      ? { price: "asc" }
+      : sort === "price-desc"
+        ? { price: "desc" }
+        : sort === "name"
+          ? { name: "asc" }
+          : { createdAt: "desc" };
+
+  if (!process.env.DATABASE_URL) {
+    return { products: [], total: 0, pages: 0 };
+  }
+
+  try {
+    const [products, total] = await Promise.all([
+      prisma.product.findMany({
+        where,
+        include: {
+          category: true,
+          artist: true,
+          images: { orderBy: { position: "asc" } },
+          regionPrices: { include: { region: true } },
+        },
+        orderBy,
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      prisma.product.count({ where }),
+    ]);
+
+    return { products, total, pages: Math.ceil(total / limit) };
+  } catch {
+    return { products: [], total: 0, pages: 0 };
+  }
+}
+
+export async function getProductBySlug(slug: string) {
+  if (!process.env.DATABASE_URL) {
+    return null;
+  }
+
+  try {
+    return await prisma.product.findUnique({
+      where: { slug },
+      include: {
+        category: {
+          include: {
+            customizationOptions: {
+              orderBy: [{ position: "asc" }, { name: "asc" }],
+            },
+          },
+        },
+        artist: true,
+        images: { orderBy: { position: "asc" } },
+        regionPrices: { include: { region: true } },
+      },
+    });
+  } catch {
+    try {
+      const product = await prisma.product.findUnique({
+        where: { slug },
+        include: {
+          category: true,
+          artist: true,
+          images: { orderBy: { position: "asc" } },
+          regionPrices: { include: { region: true } },
+        },
+      });
+
+      if (!product) {
+        return null;
+      }
+
+      return {
+        ...product,
+        category: product.category
+          ? { ...product.category, customizationOptions: [] }
+          : product.category,
+      };
+    } catch {
+      return null;
+    }
+  }
+}
+
+export async function createProduct(data: Record<string, unknown>) {
+  const { images, availability, regionPrices = [], ...productData } = data;
+  const storeRegions = await getAllStoreRegions();
+  const normalizedRegionPrices = normalizeProductRegionPrices(
+    regionPrices as ProductRegionPriceInput[],
+    storeRegions
+  );
+  const product = await prisma.product.create({
+    data: {
+      ...(productData as {
+        name: string;
+        slug: string;
+        description?: string;
+        materials?: string | null;
+        careInstructions?: string | null;
+        heritageStory?: string | null;
+        model3DUrl?: string | null;
+        modelOptimized?: boolean;
+        modelSize?: number | null;
+        price: number;
+        compareAtPrice?: number;
+        availability?: boolean;
+        categoryId: string;
+        artistId?: string;
+        customizable: boolean;
+        featured: boolean;
+        active: boolean;
+      }),
+      stock: availability === false ? 0 : 1,
+      artistId: (productData as { artistId?: string | null }).artistId || null,
+      compareAtPrice:
+        (productData as { compareAtPrice?: number | null }).compareAtPrice || null,
+      model3DUrl:
+        (productData as { model3DUrl?: string | null }).model3DUrl || null,
+      modelOptimized: (productData as { model3DUrl?: string | null; modelOptimized?: boolean })
+        .model3DUrl
+        ? Boolean((productData as { modelOptimized?: boolean }).modelOptimized)
+        : false,
+      modelSize: (productData as { model3DUrl?: string | null; modelSize?: number | null })
+        .model3DUrl
+        ? (productData as { modelSize?: number | null }).modelSize || null
+        : null,
+      images: {
+        create: ((images as string[]) || []).map((url, i) => ({
+          imageUrl: url,
+          position: i,
+        })),
+      },
+      regionPrices: {
+        create: buildProductRegionPriceCreateData(normalizedRegionPrices),
+      },
+    },
+  });
+  revalidatePath("/");
+  revalidatePath("/products");
+  revalidatePath("/admin/products");
+  return product;
+}
+
+export async function updateProduct(
+  id: string,
+  data: Record<string, unknown>
+) {
+  const { images, availability, regionPrices = [], ...productData } = data;
+  const storeRegions = await getAllStoreRegions();
+  const normalizedRegionPrices = normalizeProductRegionPrices(
+    regionPrices as ProductRegionPriceInput[],
+    storeRegions
+  );
+
+  // Delete existing images and re-create
+  await prisma.productImage.deleteMany({ where: { productId: id } });
+  await prisma.productRegionPrice.deleteMany({ where: { productId: id } });
+
+  const product = await prisma.product.update({
+    where: { id },
+    data: {
+      ...(productData as {
+        name?: string;
+        slug?: string;
+        description?: string;
+        materials?: string | null;
+        careInstructions?: string | null;
+        heritageStory?: string | null;
+        model3DUrl?: string | null;
+        modelOptimized?: boolean;
+        modelSize?: number | null;
+        price?: number;
+        compareAtPrice?: number;
+        availability?: boolean;
+        categoryId?: string;
+        artistId?: string;
+        customizable?: boolean;
+        featured?: boolean;
+        active?: boolean;
+      }),
+      artistId: (productData as { artistId?: string | null }).artistId || null,
+      compareAtPrice:
+        (productData as { compareAtPrice?: number | null }).compareAtPrice || null,
+      model3DUrl:
+        (productData as { model3DUrl?: string | null }).model3DUrl || null,
+      modelOptimized: (productData as { model3DUrl?: string | null; modelOptimized?: boolean })
+        .model3DUrl
+        ? Boolean((productData as { modelOptimized?: boolean }).modelOptimized)
+        : false,
+      modelSize: (productData as { model3DUrl?: string | null; modelSize?: number | null })
+        .model3DUrl
+        ? (productData as { modelSize?: number | null }).modelSize || null
+        : null,
+      stock: availability === false ? 0 : 1,
+      images: {
+        create: ((images as string[]) || []).map((url, i) => ({
+          imageUrl: url,
+          position: i,
+        })),
+      },
+      regionPrices: {
+        create: buildProductRegionPriceCreateData(normalizedRegionPrices),
+      },
+    },
+  });
+  revalidatePath("/");
+  revalidatePath("/products");
+  revalidatePath(`/products/${product.slug}`);
+  revalidatePath("/admin/products");
+  return product;
+}
+
+export async function deleteProduct(id: string) {
+  await prisma.product.delete({ where: { id } });
+  revalidatePath("/");
+  revalidatePath("/products");
+  revalidatePath("/admin/products");
+}

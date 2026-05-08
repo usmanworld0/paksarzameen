@@ -1,0 +1,180 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid()) @db.Uuid
+  name          String?
+  email         String?   @unique
+  passwordHash  String?   @map("password_hash")
+  role          UserRole  @default(donor)
+  emailVerified DateTime? @map("email_verified")
+  image         String?
+  createdAt     DateTime   @default(now()) @map("created_at")
+  updatedAt     DateTime   @updatedAt @map("updated_at")
+
+  accounts Account[]
+  sessions Session[]
+  images   Image[]
+  profile  UserProfile?
+  passwordResetTokens PasswordResetToken[]
+
+  @@map("users")
+}
+
+enum UserRole {
+  donor
+  admin
+  hospital
+}
+
+model Account {
+  id                String   @id @default(uuid()) @db.Uuid
+  userId            String   @map("user_id") @db.Uuid
+  type              String
+  provider          String
+  providerAccountId String   @map("provider_account_id")
+  refreshToken      String?  @map("refresh_token")
+  accessToken       String?  @map("access_token")
+  expiresAt         Int?     @map("expires_at")
+  tokenType         String?  @map("token_type")
+  scope             String?
+  idToken           String?  @map("id_token")
+  sessionState      String?  @map("session_state")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(uuid()) @db.Uuid
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id") @db.Uuid
+  expires      DateTime
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model Image {
+  id               String   @id @default(uuid()) @db.Uuid
+  userId           String   @map("user_id") @db.Uuid
+  publicId         String   @unique @map("public_id")
+  imageUrl         String   @map("image_url")
+  thumbnailUrl     String?  @map("thumbnail_url")
+  originalFilename String?  @map("original_filename")
+  mimeType         String?  @map("mime_type")
+  fileSize         Int?     @map("file_size")
+  width            Int?
+  height           Int?
+  caption          String?
+  approved         Boolean  @default(false)
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, approved])
+  @@index([approved, createdAt])
+  @@map("images")
+}
+
+model OtpCode {
+  id        String   @id @default(uuid()) @db.Uuid
+  email     String
+  otp       String
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([email, createdAt])
+  @@index([expiresAt])
+  @@map("otp_codes")
+}
+
+model UserProfile {
+  userId             String    @id @map("user_id") @db.Uuid
+  cnic               String?   @unique
+  phone              String?
+  city               String?
+  bloodGroup         String?   @map("blood_group")
+  availabilityStatus String    @default("unavailable") @map("availability_status")
+  lastDonationDate   DateTime? @map("last_donation_date")
+  emergencyContact   String?   @map("emergency_contact")
+  profileImage       String?   @map("profile_image")
+  dateOfBirth        DateTime? @map("date_of_birth")
+  gender             String?
+  address            String?
+  allergies          String?
+  medicalHistory     String?   @map("medical_history")
+  occupation         String?
+  maritalStatus      String?   @map("marital_status")
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([city, bloodGroup, availabilityStatus])
+  @@map("user_profile")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  tokenHash String   @map("token_hash")
+  expiresAt DateTime @map("expires_at")
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, used, expiresAt])
+  @@map("password_reset_tokens")
+}
+
+model EarTagCategory {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  options   EarTagOption[]
+
+  @@map("ear_tag_categories")
+}
+
+model EarTagOption {
+  id         String   @id @default(uuid()) @db.Uuid
+  categoryId String   @map("category_id") @db.Uuid
+  title      String
+  imageUrl   String   @map("image_url")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  category   EarTagCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@index([categoryId])
+  @@map("ear_tag_options")
+}

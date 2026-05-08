@@ -1,0 +1,945 @@
+.homePage {
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-alt: #f7f9f8;
+  --text: #16261f;
+  --muted: #4e6258;
+  --border: #d7e4dc;
+  --primary: #1e6f4a;
+  --primary-soft: #d9eadd;
+  --radius-lg: 2.4rem;
+  --radius-md: 1.6rem;
+  --shadow-soft: 0 1.2rem 3rem rgba(9, 40, 25, 0.08);
+
+  background: var(--bg);
+  color: var(--text);
+  padding: 8.8rem 1.6rem 8rem;
+}
+
+.homePage h1,
+.homePage h2,
+.homePage h3 {
+  font-family: var(--font-display), "Inter", "Segoe UI", sans-serif;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.homePage p {
+  color: var(--muted);
+  font-size: 1.5rem;
+  line-height: 1.6;
+}
+
+.hero,
+.aboutSection,
+.impactSection,
+.chaptersSection,
+.programSection,
+.donateSection,
+.testimonialsSection,
+.teamSection {
+  margin-inline: auto;
+  max-width: 118rem;
+}
+
+.hero {
+  align-items: center;
+  display: grid;
+  gap: 2rem;
+  min-height: 100svh;
+  height: 100svh;
+}
+
+.heroArt {
+  isolation: isolate;
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: visible;
+}
+
+.heroSvgLayer {
+  position: absolute;
+}
+
+.heroSvgLayer img {
+  object-fit: contain;
+}
+
+.heroSvgPrimary {
+  inset: 14% 12% 10% 10%;
+  z-index: 3;
+}
+
+.heroSvgTop {
+  height: 33%;
+  right: 10%;
+  top: -2%;
+  width: 33%;
+  z-index: 4;
+}
+
+.heroSvgRight {
+  height: 31%;
+  right: -1%;
+  top: 36%;
+  width: 31%;
+  z-index: 2;
+}
+
+.heroSvgBottom {
+  bottom: -3%;
+  height: 29%;
+  left: 38%;
+  width: 29%;
+  z-index: 1;
+}
+
+.heroSvgLeft {
+  height: 27%;
+  left: -2%;
+  top: 18%;
+  width: 27%;
+  z-index: 2;
+}
+
+.heroContent {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 2.4rem 2rem;
+}
+
+.founderStrip {
+  align-items: center;
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: auto 1fr auto;
+  margin-bottom: 1.2rem;
+}
+
+.founderLogoWrap,
+.founderPhotoWrap {
+  border-radius: 999px;
+  height: 5.2rem;
+  overflow: hidden;
+  position: relative;
+  width: 5.2rem;
+}
+
+.founderLogoWrap img,
+.founderPhotoWrap img {
+  object-fit: cover;
+}
+
+.founderMeta {
+  min-width: 0;
+}
+
+.founderOrg {
+  color: var(--primary);
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.founderName {
+  color: var(--text);
+  font-size: 1.8rem;
+  font-weight: 700;
+  line-height: 1.15;
+  margin: 0.2rem 0;
+}
+
+.founderRole {
+  font-size: 1.3rem;
+  margin: 0;
+}
+
+/* Full-width founder section with blurred logo backdrop */
+.founderSection {
+  position: relative;
+  overflow: hidden;
+  margin: 4rem 0 2.4rem;
+  padding: 5.2rem 0;
+}
+
+.founderBackdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.11;
+  transform: scale(1.14);
+  filter: blur(18px) saturate(95%);
+}
+
+.founderOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    radial-gradient(circle at 12% 20%, rgba(30, 111, 74, 0.12), transparent 42%),
+    radial-gradient(circle at 88% 80%, rgba(30, 111, 74, 0.1), transparent 38%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.84), rgba(255, 255, 255, 0.92));
+}
+
+.founderContentShell {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  align-items: center;
+  grid-template-columns: auto 1fr;
+  gap: 2.8rem;
+  max-width: 118rem;
+  margin-inline: auto;
+  padding: 1rem 0;
+}
+
+.founderPortraitWrap {
+  width: clamp(14rem, 22vw, 24rem);
+  aspect-ratio: 1 / 1;
+  border-radius: 1.8rem;
+  overflow: hidden;
+  flex-shrink: 0;
+  position: relative;
+  box-shadow: 0 1.2rem 2.8rem rgba(9, 40, 25, 0.18);
+}
+
+.founderPortraitLogoBackdrop {
+  position: absolute;
+  inset: 8%;
+  opacity: 0.26;
+  filter: blur(1.5px) saturate(90%);
+}
+
+.founderPortraitLogoBackdrop img {
+  object-fit: contain;
+}
+
+.founderPortraitPhoto {
+  object-fit: cover;
+}
+
+.founderNarrative {
+  min-width: 0;
+}
+
+.founderEyebrow {
+  margin: 0;
+  color: var(--primary);
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.founderTitle {
+  margin: 0.6rem 0 1rem;
+  color: var(--text);
+  font-size: clamp(2.6rem, 4.6vw, 3.8rem);
+  line-height: 1.08;
+}
+
+.founderMessage {
+  font-size: clamp(1.5rem, 2vw, 1.8rem);
+  color: var(--text);
+  line-height: 1.65;
+  margin: 0;
+  max-width: 70ch;
+}
+
+.founderSignature {
+  margin: 1.2rem 0 0;
+  color: var(--primary);
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 768px) {
+  .homePage {
+    text-align: center;
+  }
+
+  .founderSection {
+    padding: 4.2rem 0;
+  }
+
+  .founderContentShell {
+    grid-template-columns: 1fr;
+    text-align: center;
+    padding: 2rem 1.6rem;
+  }
+
+  .founderPortraitWrap {
+    width: min(66vw, 24rem);
+    margin-inline: auto;
+  }
+
+  .videoCarouselTrack {
+    grid-template-columns: 1fr;
+  }
+
+  .chapterCard {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .chapterAccent {
+    height: 0.5rem;
+    min-height: 0;
+    width: 100%;
+  }
+
+  .heroContent,
+  .sectionIntro,
+  .aboutCard,
+  .statCard,
+  .programCard,
+  .donateContent,
+  .testimonialCard {
+    text-align: center;
+  }
+
+  .sectionIntro h2 {
+    margin-inline: auto;
+  }
+
+  .heroActions,
+  .programLogoRow {
+    justify-content: center;
+  }
+
+  .programLink {
+    margin-inline: auto;
+  }
+
+  .emergencyNote {
+    text-align: center;
+  }
+}
+
+.kicker,
+.sectionEyebrow {
+  color: var(--primary);
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+}
+
+.heroContent h1 {
+  font-size: clamp(2.8rem, 8vw, 4rem);
+  margin-bottom: 1.4rem;
+}
+
+.heroContent p {
+  font-size: 1.6rem;
+}
+
+.urduSupport {
+  font-size: 1.7rem;
+  font-weight: 600;
+}
+
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.verticalCarouselSection {
+  margin-inline: auto;
+  margin-top: 2.4rem;
+  max-width: 118rem;
+}
+
+.chaptersSection {
+  margin-inline: auto;
+  margin-top: 6.4rem;
+  max-width: 118rem;
+}
+
+.chaptersGrid {
+  display: grid;
+  gap: 1.2rem;
+}
+
+.chapterCard {
+  background: linear-gradient(145deg, #fdfefe 8%, #eef7f2 100%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-soft);
+  display: grid;
+  gap: 1.2rem;
+  grid-template-columns: auto 1fr;
+  overflow: hidden;
+  padding: 1.6rem;
+}
+
+.chapterAccent {
+  border-radius: 999px;
+  display: block;
+  height: 100%;
+  min-height: 5rem;
+  width: 0.5rem;
+}
+
+.chapterMeta {
+  min-width: 0;
+}
+
+.chapterCity {
+  color: var(--text);
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.chapterTagline {
+  color: var(--muted);
+  font-size: 1.4rem;
+  margin: 0.5rem 0 0;
+}
+
+.videoCarouselSection {
+  margin-inline: auto;
+  margin-top: 6.4rem;
+  max-width: 118rem;
+}
+
+.gwrSection {
+  align-items: center;
+  background: linear-gradient(145deg, #fdfefe 10%, #ebf4ee 100%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  display: grid;
+  gap: 1.4rem;
+  margin-inline: auto;
+  margin-top: 6.4rem;
+  max-width: 118rem;
+  overflow: hidden;
+  padding: 1.6rem;
+}
+
+/* Compact inline GWR block for hero embed */
+.gwrInline {
+  display: grid;
+  grid-template-columns: 1fr 28rem;
+  gap: 1.2rem;
+  align-items: center;
+  width: 100%;
+  margin-top: 1.6rem;
+}
+
+.gwrInlineMedia {
+  width: 100%;
+}
+
+.gwrInlineContent h2 {
+  margin: 0 0 0.6rem;
+}
+
+@media (max-width: 900px) {
+  .gwrInline {
+    grid-template-columns: 1fr;
+  }
+}
+
+.gwrMediaFrame {
+  background: #eef5f0;
+  border: 1px solid var(--border);
+  border-radius: 1.4rem;
+  overflow: hidden;
+}
+
+.gwrVideo {
+  aspect-ratio: 16 / 9;
+  display: block;
+  object-fit: cover;
+  width: 100%;
+}
+
+.gwrContent h2 {
+  font-size: clamp(2.2rem, 6.2vw, 3rem);
+  margin-bottom: 1.2rem;
+}
+
+.gwrContent p {
+  margin-bottom: 1.6rem;
+}
+
+.videoCarouselTrack {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.2rem;
+}
+
+.videoCarouselCard {
+  min-width: 0;
+}
+
+.videoFrame {
+  background: #eef5f0;
+  border: 1px solid var(--border);
+  border-radius: 1.4rem;
+  overflow: hidden;
+}
+
+.videoElement {
+  display: block;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  width: 100%;
+}
+
+.verticalCarouselViewport {
+  /* increased height for stronger visual impact */
+  height: clamp(46rem, 72vh, 86rem);
+  overflow: hidden;
+  position: relative;
+}
+
+.verticalCarouselViewport::before,
+.verticalCarouselViewport::after {
+  content: "";
+  height: 5.6rem;
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  z-index: 2;
+}
+
+.verticalCarouselViewport::before {
+  background: linear-gradient(to bottom, #fff, rgba(255, 255, 255, 0));
+  top: 0;
+}
+
+.verticalCarouselViewport::after {
+  background: linear-gradient(to top, #fff, rgba(255, 255, 255, 0));
+  bottom: 0;
+}
+
+.verticalCarouselTrack {
+  display: grid;
+  gap: 1rem;
+  animation: verticalPhotoCarousel 36s linear infinite;
+}
+
+.verticalCarouselItem {
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  position: relative;
+}
+
+.verticalCarouselItem img {
+  object-fit: cover;
+}
+
+@keyframes verticalPhotoCarousel {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-50%);
+  }
+}
+
+@media (orientation: landscape) {
+  /* increase viewport height a bit in landscape for better composition */
+  .verticalCarouselViewport {
+    height: clamp(52rem, 82vh, 98rem);
+  }
+}
+
+/* bullets removed: using previous continuous grid animation */
+
+.primaryButton,
+.secondaryButton {
+  align-items: center;
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 1.4rem;
+  font-weight: 700;
+  justify-content: center;
+  min-height: 4.8rem;
+  padding: 0.2rem 2rem;
+  transition: transform 220ms ease, box-shadow 220ms ease, background-color 220ms ease;
+}
+
+.primaryButton {
+  background: var(--primary);
+  box-shadow: 0 0.8rem 1.6rem rgba(30, 111, 74, 0.22);
+  color: #fff;
+}
+
+.secondaryButton {
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.primaryButton:active,
+.secondaryButton:active {
+  transform: translateY(1px) scale(0.99);
+}
+
+.sectionIntro {
+  margin-top: 6.4rem;
+  margin-bottom: 2rem;
+}
+
+.sectionIconWrap {
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  height: 3.8rem;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  position: relative;
+  width: 3.8rem;
+}
+
+.sectionIconWrap img {
+  object-fit: contain;
+  padding: 0.5rem;
+}
+
+.sectionIntro h2 {
+  font-size: clamp(2.3rem, 6.2vw, 3.2rem);
+  max-width: 64rem;
+}
+
+.aboutGrid,
+.statsGrid,
+.programGrid,
+.teamGrid {
+  display: grid;
+  gap: 1.2rem;
+}
+
+.aboutCard,
+.statCard,
+.programCard,
+.testimonialCard,
+.teamCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-soft);
+}
+
+.aboutCard {
+  padding: 2rem 1.8rem;
+}
+
+.aboutCard h3 {
+  font-size: 1.9rem;
+  margin-bottom: 0.8rem;
+}
+
+.statsGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.statCard {
+  padding: 1.8rem 1.4rem;
+}
+
+.statValue {
+  color: var(--text);
+  font-family: var(--font-display), "Inter", sans-serif;
+  font-size: clamp(2.4rem, 6vw, 3.4rem);
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 0.7rem;
+}
+
+.statLabel {
+  font-size: 1.3rem;
+}
+
+.programCard {
+  display: grid;
+  gap: 1.1rem;
+  padding: 1.4rem;
+}
+
+.programLogoRow {
+  align-items: center;
+  display: flex;
+  gap: 0.9rem;
+}
+
+.programLogoWrap {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  flex-shrink: 0;
+  height: 6.8rem;
+  overflow: hidden;
+  position: relative;
+  width: 6.8rem;
+}
+
+.programLogoWrap img {
+  object-fit: contain;
+}
+
+.programArtWrap {
+  aspect-ratio: 4 / 3;
+  border-radius: 1.2rem;
+  border: 1px solid var(--border);
+  background: linear-gradient(145deg, #eff6f2, #f7fbf8);
+  overflow: hidden;
+  position: relative;
+}
+
+.programArtWrap img {
+  object-fit: contain;
+  padding: 1rem;
+}
+
+.programCategory {
+  color: var(--primary);
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.programCard h3 {
+  font-size: 2rem;
+}
+
+.programLink {
+  color: var(--primary);
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-top: 0.4rem;
+}
+
+.donateSection {
+  background: linear-gradient(145deg, #fdfefe 10%, #ebf4ee 100%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  display: grid;
+  gap: 1.4rem;
+  margin-top: 6.4rem;
+  overflow: hidden;
+  padding: 1.6rem;
+}
+
+.donateArt {
+  aspect-ratio: 5 / 4;
+  background: #e9f4ed;
+  border: 1px solid var(--border);
+  border-radius: 1.4rem;
+  overflow: hidden;
+  position: relative;
+}
+
+.donateArt img {
+  object-fit: contain;
+  padding: 1rem;
+}
+
+.donateContent h2 {
+  font-size: clamp(2.2rem, 6.2vw, 3rem);
+  margin-bottom: 1.2rem;
+}
+
+.emergencyNote {
+  border-top: 1px dashed #c8dbcf;
+  font-size: 1.3rem;
+  margin-top: 1.8rem;
+  padding-top: 1.2rem;
+}
+
+.testimonialTrack {
+  -ms-overflow-style: none;
+  display: grid;
+  gap: 1rem;
+  grid-auto-columns: minmax(84%, 1fr);
+  grid-auto-flow: column;
+  margin-top: 1.2rem;
+  overflow-x: auto;
+  padding-bottom: 0.6rem;
+  scrollbar-width: none;
+  scroll-snap-type: x mandatory;
+}
+
+.testimonialTrack::-webkit-scrollbar {
+  display: none;
+}
+
+.testimonialCard {
+  padding: 1.8rem;
+  scroll-snap-align: start;
+}
+
+.quote {
+  color: var(--text);
+  font-size: 1.6rem;
+  margin-bottom: 1.4rem;
+}
+
+.author {
+  color: var(--text);
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.role {
+  font-size: 1.3rem;
+}
+
+.teamGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.teamCard {
+  aspect-ratio: 1 / 1.15;
+  overflow: hidden;
+  position: relative;
+}
+
+.teamImage {
+  object-fit: cover;
+}
+
+.homePage [data-reveal] {
+  opacity: 0;
+  transform: translateY(1.2rem);
+  transition: opacity 500ms ease, transform 500ms ease;
+}
+
+.homePage [data-reveal].visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (min-width: 768px) {
+  .homePage {
+    padding: 10rem 2.4rem 10rem;
+  }
+
+  .hero {
+    align-items: center;
+    grid-template-columns: 1fr 1fr;
+    min-height: calc(100svh - 10rem);
+  }
+
+  .heroArt {
+    order: 2;
+  }
+
+  .heroSvgPrimary {
+    inset: 8% 8% 8% 8%;
+  }
+
+  .heroSvgTop {
+    right: 6%;
+    top: -4%;
+  }
+
+  .heroSvgRight {
+    right: -2%;
+    top: 34%;
+  }
+
+  .heroSvgBottom {
+    bottom: -5%;
+    left: 36%;
+  }
+
+  .heroSvgLeft {
+    left: -4%;
+    top: 16%;
+  }
+
+  .heroContent {
+    order: 1;
+    padding: 3rem;
+  }
+
+  .verticalCarouselSection {
+    margin-top: 1.2rem;
+  }
+
+  .videoCarouselTrack {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .verticalCarouselViewport {
+    height: clamp(46rem, 72vh, 88rem);
+  }
+
+  .aboutGrid,
+  .chaptersGrid,
+  .programGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .donateSection {
+    align-items: center;
+    grid-template-columns: 1fr 1.2fr;
+    padding: 2rem;
+  }
+
+  .gwrSection {
+    grid-template-columns: 1.25fr 1fr;
+    padding: 2rem;
+  }
+
+  .testimonialTrack {
+    grid-auto-columns: minmax(44%, 1fr);
+  }
+
+  .teamGrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .verticalCarouselTrack {
+    animation: none;
+  }
+}
+
+@media (min-width: 1100px) {
+  .homePage {
+    padding-inline: 3.2rem;
+  }
+
+  .aboutGrid,
+  .chaptersGrid,
+  .programGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .testimonialTrack {
+    gap: 1.2rem;
+    grid-auto-columns: minmax(31%, 1fr);
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+
+  .primaryButton:hover,
+  .secondaryButton:hover {
+    transform: translateY(-1px);
+  }
+}

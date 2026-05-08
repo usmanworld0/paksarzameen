@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(\\(Get-ChildItem \"c:\\\\Users\\\\ZAKKI BOSS TRADERS\\\\paksarzameen\\\\paksarzameen-landing\\\\public\\\\sequences\" -Recurse -File\\).Count)",
+      "Bash(xargs grep -l \"animation\\\\|sequence\")",
+      "Bash(ffmpeg -version)",
+      "Bash(magick -version)",
+      "Bash(cwebp -version)",
+      "Bash(node -e \"console.log\\(process.version\\)\")",
+      "Bash(npx sharp *)",
+      "Bash(node -e ' *)"
+    ]
+  }
+}

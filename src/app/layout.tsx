@@ -1,0 +1,158 @@
+import type { Metadata } from "next";
+
+import { Providers } from "@/components/providers";
+import { RootShell } from "@/components/RootShell";
+// ThemeProvider removed: app is light-only now
+import { siteConfig } from "@/config/site";
+
+import "./globals.css";
+
+export const metadata: Metadata = {
+  metadataBase: new URL(siteConfig.siteUrl),
+  applicationName: siteConfig.name,
+  title: {
+    default: "PakSarZameen | In Pakistan For Community Development",
+    template: "%s | PakSarZameen",
+  },
+  description: siteConfig.description,
+  keywords: siteConfig.seo.keywords,
+  icons: {
+    icon: [
+      { url: "/paksarzameen_logo.png", sizes: "512x512", type: "image/png" },
+      { url: "/paksarzameen_logo.png", sizes: "1024x1024", type: "image/png" },
+    ],
+    apple: { url: "/paksarzameen_logo.png", sizes: "1024x1024", type: "image/png" },
+  },
+  alternates: {
+    canonical: "/",
+  },
+  authors: [{ name: "PakSarZameen" }],
+  creator: "PakSarZameen",
+  publisher: "PakSarZameen",
+  openGraph: {
+    title: "PakSarZameen | In Pakistan For Community Development",
+    description: siteConfig.description,
+    type: "website",
+    url: siteConfig.siteUrl,
+    siteName: siteConfig.name,
+    locale: "en_PK",
+    images: [
+      {
+        url: "/images/hero-fallback.svg",
+        width: 1600,
+        height: 1000,
+        alt: "PakSarZameen volunteers working in community projects",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "PakSarZameen | In Pakistan For Community Development",
+    description: siteConfig.description,
+    images: ["/images/hero-fallback.svg"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  const organizationId = `${siteConfig.siteUrl}/#organization`;
+  const websiteId = `${siteConfig.siteUrl}/#website`;
+
+  const siteSchema = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": organizationId,
+        name: siteConfig.name,
+        url: siteConfig.siteUrl,
+        logo: `${siteConfig.siteUrl}/paksarzameen_logo.png`,
+        image: `${siteConfig.siteUrl}/images/hero-fallback.svg`,
+        description: siteConfig.description,
+        email: siteConfig.contact.email,
+        telephone: siteConfig.contact.phone,
+        foundingDate: "2021",
+        areaServed: "Pakistan",
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: `${siteConfig.contact.addressLines[0]}, ${siteConfig.contact.addressLines[1]}, ${siteConfig.contact.addressLines[2]}`,
+          addressLocality: siteConfig.contact.addressLines[3],
+          addressRegion: siteConfig.contact.addressLines[4],
+          addressCountry: siteConfig.contact.addressLines[5],
+        },
+        sameAs: [
+          siteConfig.social.instagram,
+          siteConfig.social.facebook,
+          siteConfig.social.linkedin,
+        ],
+      },
+      {
+        "@type": "WebSite",
+        "@id": websiteId,
+        url: siteConfig.siteUrl,
+        name: siteConfig.name,
+        description: siteConfig.description,
+        inLanguage: "en-PK",
+        publisher: {
+          "@id": organizationId,
+        },
+      },
+    ],
+  };
+
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Preconnect to external media domains for faster loading */}
+        <link rel="dns-prefetch" href="https://www.instagram.com" />
+        <link rel="dns-prefetch" href="https://platform.instagram.com" />
+        <link rel="dns-prefetch" href="https://images.pexels.com" />
+        <link rel="dns-prefetch" href="https://videos.pexels.com" />
+        <link rel="dns-prefetch" href="https://images.unsplash.com" />
+        <link rel="dns-prefetch" href="https://res.cloudinary.com" />
+        <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://images.pexels.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://videos.pexels.com" crossOrigin="anonymous" />
+        {/* Preload critical above-fold assets */}
+        <link rel="preload" href="/paksarzameen_logo.png" as="image" type="image/png" />
+        {/* Force light theme and remove splash when DOM is interactive */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{document.documentElement.setAttribute('data-theme','light');var ready=function(){document.documentElement.classList.add('app-ready');};if(document.readyState==='interactive'||document.readyState==='complete'){requestAnimationFrame(ready);}else{document.addEventListener('DOMContentLoaded',ready,{once:true});window.addEventListener('load',ready,{once:true});}setTimeout(ready,1800);}catch(e){}})();`,
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(siteSchema) }}
+        />
+      </head>
+      <body className="antialiased">
+        <Providers>
+          <div className="app-boot-loader" aria-hidden="true">
+            <div className="app-boot-loader__inner">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/paksarzameen_logo.png" alt="" className="app-boot-loader__logo" width="72" height="72" />
+              <span className="app-boot-loader__wordmark">Pak<span>Sar</span>Zameen</span>
+              <div className="app-boot-loader__bar"><div className="app-boot-loader__bar-fill" /></div>
+            </div>
+          </div>
+          <RootShell>{children}</RootShell>
+        </Providers>
+      </body>
+    </html>
+  );
+}

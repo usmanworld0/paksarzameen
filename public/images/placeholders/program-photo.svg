@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800" fill="none">
+  <defs>
+    <linearGradient id="a" x1="148" y1="64" x2="1060" y2="736" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#254734"/>
+      <stop offset="1" stop-color="#102017"/>
+    </linearGradient>
+    <radialGradient id="b" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(920 170) rotate(145) scale(320 220)">
+      <stop stop-color="#D3B483" stop-opacity="0.56"/>
+      <stop offset="1" stop-color="#D3B483" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#a)"/>
+  <rect width="1200" height="800" fill="url(#b)"/>
+  <path d="M0 670C140 590 255 570 385 596C530 625 624 682 756 706C903 731 1033 700 1200 605V800H0V670Z" fill="#0E1C14" fill-opacity="0.78"/>
+  <text x="72" y="126" fill="#F6F1E5" font-family="Segoe UI, sans-serif" font-size="42" font-weight="700" letter-spacing="2">PSZ PROGRAM PHOTO</text>
+</svg>

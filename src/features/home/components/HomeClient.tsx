@@ -14,6 +14,7 @@ import {
   PSZ_CHAPTERS,
 } from "@/features/home/home.content";
 import { LazyVideo } from "@/components/ui/LazyVideo";
+import { siteConfig } from "@/config/site";
 import { getBlurDataURL, getOptimizedImagePath, VIDEO_POSTERS } from "@/lib/utils/media-helpers";
 
 if (typeof window !== "undefined") {
@@ -549,7 +550,9 @@ export function HomeClient() {
               Healthcare Portal
             </Link>
             <Link
-              href="/commonwealth-lab"
+              href={siteConfig.commonwealthUrl}
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center justify-center rounded-full border border-white/30 px-6 py-2.5 text-[1.1rem] uppercase tracking-[0.14em] text-white/90 transition hover:bg-white/10"
             >
               Paksarzameen Store

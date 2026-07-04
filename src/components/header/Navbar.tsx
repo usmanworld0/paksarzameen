@@ -24,7 +24,8 @@ const HEADER_ACTIONS: HeaderAction[] = [
   },
   {
     label: "Store",
-    href: "/commonwealth-lab",
+    href: siteConfig.commonwealthUrl,
+    external: true,
   },
 ];
 
@@ -164,7 +165,9 @@ export function Navbar() {
             </Link>
 
             <Link
-              href="/commonwealth-lab"
+              href={siteConfig.commonwealthUrl}
+              target="_blank"
+              rel="noopener noreferrer"
               className={`hidden sm:inline-flex text-[12px] font-normal tracking-[0.01em] transition-colors ${actionClassName}`}
             >
               Store
@@ -233,12 +236,14 @@ export function Navbar() {
               </p>
               <nav className="flex flex-col gap-3">
                 {filteredLinks.map((link) => {
-                  const active = pathname === link.href;
+                  const active = !link.external && pathname === link.href;
 
                   return (
                     <Link
                       key={link.label}
                       href={link.href}
+                      target={link.external ? "_blank" : undefined}
+                      rel={link.external ? "noopener noreferrer" : undefined}
                       className={`text-[clamp(2.88rem,3.5vw,4.32rem)] leading-[1.02] tracking-[-0.03em] transition-colors ${
                         active ? "text-black" : "text-black/68 hover:text-black"
                       }`}

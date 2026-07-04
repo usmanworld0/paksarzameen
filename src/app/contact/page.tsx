@@ -158,7 +158,7 @@ export default function ContactPage() {
                 <Link href="/about" className="text-[#0f7a47] hover:underline">About</Link>
                 <Link href="/programs" className="text-[#0f7a47] hover:underline">Programs</Link>
                 <Link href="/get-involved" className="text-[#0f7a47] hover:underline">Get Involved</Link>
-                <Link href="/commonwealth-lab" className="text-[#0f7a47] hover:underline">Paksarzameen Store</Link>
+                <Link href={siteConfig.commonwealthUrl} target="_blank" rel="noopener noreferrer" className="text-[#0f7a47] hover:underline">Paksarzameen Store</Link>
               </div>
             </div>
 

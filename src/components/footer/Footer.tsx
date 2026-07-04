@@ -22,7 +22,12 @@ export function Footer() {
               <ul className="space-y-3 pb-4 text-[1.4rem] text-neutral-600">
                 {navLinks.map((link) => (
                   <li key={link.label}>
-                    <Link href={link.href} className="transition-colors duration-300 hover:text-neutral-950">
+                    <Link
+                      href={link.href}
+                      target={link.external ? "_blank" : undefined}
+                      rel={link.external ? "noopener noreferrer" : undefined}
+                      className="transition-colors duration-300 hover:text-neutral-950"
+                    >
                       {link.label}
                     </Link>
                   </li>
@@ -42,7 +47,12 @@ export function Footer() {
               </summary>
               <ul className="space-y-3 pb-4 text-[1.4rem] text-neutral-600">
                 <li>
-                  <Link href="/commonwealth-lab" className="transition-colors duration-300 hover:text-neutral-950">
+                  <Link
+                    href={siteConfig.commonwealthUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="transition-colors duration-300 hover:text-neutral-950"
+                  >
                     Paksarzameen Store
                   </Link>
                 </li>
@@ -136,7 +146,12 @@ export function Footer() {
             <ul className="space-y-3">
               {navLinks.slice(0, 5).map((link) => (
                 <li key={link.label}>
-                  <Link href={link.href} className="text-[1.6rem] text-neutral-600 transition-colors duration-300 hover:text-neutral-950">
+                  <Link
+                    href={link.href}
+                    target={link.external ? "_blank" : undefined}
+                    rel={link.external ? "noopener noreferrer" : undefined}
+                    className="text-[1.6rem] text-neutral-600 transition-colors duration-300 hover:text-neutral-950"
+                  >
                     {link.label}
                   </Link>
                 </li>
@@ -151,7 +166,12 @@ export function Footer() {
             <ul className="space-y-3">
               {navLinks.slice(5).map((link) => (
                 <li key={link.label}>
-                  <Link href={link.href} className="text-[1.4rem] text-neutral-600 transition-colors duration-300 hover:text-neutral-950">
+                  <Link
+                    href={link.href}
+                    target={link.external ? "_blank" : undefined}
+                    rel={link.external ? "noopener noreferrer" : undefined}
+                    className="text-[1.4rem] text-neutral-600 transition-colors duration-300 hover:text-neutral-950"
+                  >
                     {link.label}
                   </Link>
                 </li>

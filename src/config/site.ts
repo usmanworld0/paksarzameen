@@ -1,12 +1,16 @@
 export type NavLink = {
   label: string;
   href: string;
+  external?: boolean;
 };
 
 const DEFAULT_COMMONWEALTH_URL =
   process.env.NODE_ENV === "development"
     ? "http://localhost:3001"
     : "https://store.paksarzameenwfo.com";
+
+export const commonwealthStoreUrl =
+  process.env.NEXT_PUBLIC_COMMONWEALTH_URL ?? DEFAULT_COMMONWEALTH_URL;
 
 export const navLinks: NavLink[] = [
   { label: "Home", href: "/" },
@@ -17,7 +21,7 @@ export const navLinks: NavLink[] = [
   { label: "Impact", href: "/impact" },
   { label: "Get Involved", href: "/get-involved" },
   { label: "News & Resources", href: "/news" },
-  { label: "Paksarzameen Store", href: "/commonwealth-lab" },
+  { label: "Paksarzameen Store", href: commonwealthStoreUrl, external: true },
   { label: "Contact", href: "/contact" },
 ];
 
@@ -29,9 +33,7 @@ export const siteConfig = {
   siteUrl:
     process.env.NEXT_PUBLIC_SITE_URL ?? "https://paksarzameenwfo.com",
   commonwealthLabel: "Paksarzameen Store",
-  commonwealthUrl:
-    process.env.NEXT_PUBLIC_COMMONWEALTH_URL ??
-    DEFAULT_COMMONWEALTH_URL,
+  commonwealthUrl: commonwealthStoreUrl,
   contact: {
     phone: "+92 303 5763435",
     address:

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { siteConfig } from '@/config/site';
 import { useEffect, useRef, useState } from 'react';
 import { animate, useTransform, useMotionValueEvent, useMotionValue, motion, AnimatePresence, type MotionValue } from 'framer-motion';
 
@@ -575,12 +576,14 @@ function OverlayText({ frameIndex, framesPerSequence, wipeDone, scrollDir }: { f
             {[
               { href: "/dog-adoption", label: "Dog Adoption" },
               { href: "/healthcare", label: "Healthcare" },
-              { href: "/commonwealth-lab", label: "Artisan Store" },
+              { href: siteConfig.commonwealthUrl, label: "Artisan Store", external: true },
               { href: "/impact", label: "Our Impact" },
             ].map((chip) => (
               <Link
                 key={chip.href}
                 href={chip.href}
+                target={chip.external ? "_blank" : undefined}
+                rel={chip.external ? "noopener noreferrer" : undefined}
                 className="pointer-events-auto inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/8 px-4 py-1.5 text-[11px] font-outfit font-semibold uppercase tracking-[0.18em] text-white/80 backdrop-blur-sm transition-colors hover:border-white/40 hover:bg-white/15 hover:text-white"
               >
                 {chip.label}

@@ -106,7 +106,7 @@ export default function PoliciesPage() {
 
       <main className="px-[5%] pb-20 pt-10">
         <div className="mx-auto max-w-screen-xl space-y-5">
-          <section className="rounded-2xl border border-[#E5E5E5] bg-white p-6 sm:p-7">
+          <section id="faq" className="rounded-2xl border border-[#E5E5E5] bg-white p-6 sm:p-7">
             <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#0f7a47]">
               Shipping
             </p>

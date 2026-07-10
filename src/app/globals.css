@@ -206,79 +206,6 @@ video {
   z-index: 0;
 }
 
-/* ═══════════════════════════════════════════════════ */
-/* INTRO SPLASH OVERLAY                               */
-/* ═══════════════════════════════════════════════════ */
-.intro-overlay {
-  display: none !important;
-}
-
-.intro-text-wrapper {
-  text-align: center;
-  perspective: 900px;
-}
-
-.intro-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.intro-logo {
-  width: 140px;
-  height: auto;
-  margin: 0 auto 1.6rem auto;
-  display: block;
-  /* start hidden to avoid pre-animation flash; GSAP will animate these values */
-  opacity: 0;
-  will-change: transform, opacity;
-  transform: scale(0.65) rotateZ(-140deg) rotateX(18deg);
-  transform-origin: 50% 50%;
-}
-
-.intro-logo {
-  transform-style: preserve-3d;
-  backface-visibility: hidden;
-}
-
-.intro-title {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  font-size: clamp(3rem, 8vw, 6.5rem);
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  color: var(--black); /* black text on white splash */
-  line-height: 1;
-  overflow: visible;
-  margin: 0;
-}
-
-.intro-letter {
-  display: inline-block;
-  will-change: transform, opacity;
-  /* start off-screen + rotated so GSAP fromTo animates cleanly */
-  opacity: 0;
-  transform: translateY(100px) rotateX(90deg);
-}
-
-.intro-letter.green {
-  color: var(--psz-green);
-}
-
-.intro-tagline {
-  font-size: clamp(0.9rem, 1.6vw, 1.2rem);
-  color: rgba(0, 0, 0, 0.65); /* darker tagline for contrast */
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  margin-top: 1.6rem;
-  /* start slightly down and hidden */
-  opacity: 0;
-  transform: translateY(20px);
-}
-
 /* ─── Vision Pro Sections ─── */
 
 /* Hero section (page-1) */
@@ -622,79 +549,6 @@ video {
     0%, 100% { opacity: 1; transform: scale(1); }
     50%       { opacity: 0.5; transform: scale(1.4); }
   }
-}
-
-/* ── Boot Loader (splash screen) ── */
-.app-boot-loader {
-  position: fixed;
-  inset: 0;
-  z-index: 10000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #040d07;
-  transition: opacity 0.55s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.55s;
-}
-
-.app-boot-loader__inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.4rem;
-  user-select: none;
-}
-
-.app-boot-loader__logo {
-  width: clamp(56px, 10vw, 72px);
-  height: auto;
-  object-fit: contain;
-  animation: psz-boot-breathe 2.4s ease-in-out infinite;
-  filter: drop-shadow(0 0 28px rgba(15, 122, 71, 0.5));
-}
-
-@keyframes psz-boot-breathe {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50%       { opacity: 0.8; transform: scale(0.96); }
-}
-
-.app-boot-loader__wordmark {
-  font-family: var(--font-display), var(--font-body), sans-serif;
-  font-size: clamp(1.55rem, 4vw, 2.1rem);
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  color: rgba(255, 255, 255, 0.9);
-  line-height: 1;
-}
-
-.app-boot-loader__wordmark span {
-  color: var(--psz-green);
-}
-
-.app-boot-loader__bar {
-  width: clamp(120px, 22vw, 180px);
-  height: 2px;
-  background: rgba(255, 255, 255, 0.07);
-  border-radius: 2px;
-  overflow: hidden;
-  margin-top: 0.4rem;
-}
-
-.app-boot-loader__bar-fill {
-  height: 100%;
-  width: 45%;
-  background: linear-gradient(90deg, transparent 0%, var(--psz-green) 50%, transparent 100%);
-  animation: psz-boot-sweep 1.6s ease-in-out infinite;
-}
-
-@keyframes psz-boot-sweep {
-  from { transform: translateX(-250%); }
-  to   { transform: translateX(400%); }
-}
-
-html.app-ready .app-boot-loader {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
 }
 
 /* Legacy spinner kept for page-level loading states */
@@ -6077,10 +5931,6 @@ html {
 }
 
 @media (max-width: 768px) {
-  .intro-overlay {
-    display: none;
-  }
-
   .hero-section > video,
   .hero-section .hero-label,
   .hero-section .hero-title,
@@ -6089,7 +5939,6 @@ html {
     transform: none;
   }
 
-  .app-boot-loader__spinner,
   .page-loading-wheel {
     width: 2.5rem;
     height: 2.5rem;
@@ -6437,7 +6286,6 @@ body.menu-open {
     scroll-behavior: auto !important;
   }
 
-  .app-boot-loader__spinner,
   .page-loading-wheel,
   .ochi-marquee-track,
   .marquee-track,
@@ -6452,10 +6300,6 @@ body.menu-open {
   .footer-action-link {
     transform: none !important;
   }
-}
-
-.motion-lite .intro-overlay {
-  display: none !important;
 }
 
 .motion-lite .ochi-marquee-track,

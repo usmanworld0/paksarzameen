@@ -520,49 +520,44 @@ export function HomeClient() {
       <section className="hero-section" data-scroll-section="hero">
         <video ref={heroVideoRef} src={VIDEOS.hero} muted loop playsInline preload="none" controls={false} autoPlay={true} poster={VIDEO_POSTERS.hero} />
         <div className="blur-overlay" aria-hidden="true" />
-        <div className="hero-content">
-          <p className="hero-label">
-            تربیت سے تعلیم
-            <span className="hero-label-en">Nurturing Character Through Education</span>
-          </p>
-          <h1 className="hero-title">
-            Pak<span className="green">Sar</span>Zameen
-          </h1>
-          <p
-            className="hero-desc"
-            style={{
-              fontSize: "var(--fs-vs)",
-              color: "rgba(255,255,255,0.85)",
-              marginTop: "2rem",
-              maxWidth: "640px",
-              lineHeight: 1.6,
-            }}
-          >
-            PakSarZameen works from Bahawalpur through education, health,
-            blood support, environmental action, animal welfare, and
-            volunteer-led community programs.
-          </p>
-          <div className="hero-buttons mt-20 flex flex-wrap gap-8 items-center justify-center pointer-events-auto relative z-20 mx-auto max-w-full">
-            <Link
-              href="/healthcare"
-              className="inline-flex items-center justify-center border-b border-white/70 pb-1.5 text-[clamp(1.4rem,1.1vw,1.6rem)] font-normal leading-none tracking-[-0.01em] text-white transition-opacity hover:opacity-70"
-            >
-              Healthcare Portal
-            </Link>
-            <Link
-              href={siteConfig.commonwealthUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center rounded-full border border-white/30 px-6 py-2.5 text-[1.1rem] uppercase tracking-[0.14em] text-white/90 transition hover:bg-white/10"
-            >
-              Paksarzameen Store
-            </Link>
-            <Link
-              href="/dog-adoption"
-              className="inline-flex items-center justify-center border-b border-white/70 pb-1.5 text-[clamp(1.4rem,1.1vw,1.6rem)] font-normal leading-none tracking-[-0.01em] text-white transition-opacity hover:opacity-70"
-            >
-              Adopt a Dog
-            </Link>
+        <div className="hero-content flex min-h-[100svh] items-center justify-center text-center">
+          <div className="flex flex-col items-center justify-center px-4">
+            <Image
+              src="/paksarzameen_logo.png"
+              alt="Paksarzameen logo"
+              width={200}
+              height={200}
+              priority
+              className="h-32 w-32 object-contain md:h-36 md:w-36"
+            />
+            <p className="mt-6 text-[clamp(2rem,2.8vw,3rem)] font-normal leading-tight tracking-[-0.03em] text-white" dir="rtl" lang="ur">
+              تربیت سے تعلیم
+            </p>
+            <p className="mt-3 text-[clamp(1.3rem,1.35vw,1.7rem)] font-normal leading-tight tracking-[-0.01em] text-white">
+              Reorganising Every Day Living
+            </p>
+            <div className="hero-buttons mt-16 flex flex-wrap items-center justify-center gap-8 pointer-events-auto relative z-20 mx-auto max-w-full">
+              <Link
+                href="/healthcare"
+                className="inline-flex items-center justify-center border-b border-white/70 pb-1.5 text-[clamp(1.4rem,1.1vw,1.6rem)] font-normal leading-none tracking-[-0.01em] text-white transition-opacity hover:opacity-70"
+              >
+                Healthcare
+              </Link>
+              <Link
+                href={siteConfig.commonwealthUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center rounded-full border border-white/30 px-6 py-2.5 text-[1.1rem] uppercase tracking-[0.14em] text-white/90 transition hover:bg-white/10"
+              >
+                Store
+              </Link>
+              <Link
+                href="/dog-adoption"
+                className="inline-flex items-center justify-center border-b border-white/70 pb-1.5 text-[clamp(1.4rem,1.1vw,1.6rem)] font-normal leading-none tracking-[-0.01em] text-white transition-opacity hover:opacity-70"
+              >
+                Shelter
+              </Link>
+            </div>
           </div>
         </div>
       </section>
@@ -616,7 +611,7 @@ export function HomeClient() {
       {/* ════════════════════════════════════════════════ */}
       {/* SPLIT — Our Story                               */}
       {/* ════════════════════════════════════════════════ */}
-      <section className="split-section ochi-section-reveal" data-scroll-section="story">
+      <section id="home-problem" className="split-section ochi-section-reveal" data-scroll-section="story">
         <div className="split-inner">
           <div className="split-left">
             <h2 className="split-left-heading">Building Community Wealth.</h2>
@@ -648,7 +643,7 @@ export function HomeClient() {
  {/* ════════════════════════════════════════════════ */}
       {/* OUR APPROACH                                    */}
       {/* ════════════════════════════════════════════════ */}
-      <section className="approach-section ochi-section-reveal" data-scroll-section="approach">
+      <section id="home-solution" className="approach-section ochi-section-reveal" data-scroll-section="approach">
         {/* Single full-team background image — optimized with next/image */}
         <div className="approach-bg-full" aria-hidden="true">
           <Image
@@ -906,7 +901,7 @@ export function HomeClient() {
       {/* ════════════════════════════════════════════════ */}
       {/* HEART OF PAKSARZAMEEN — Cover with hover-to-play video */}
       {/* ════════════════════════════════════════════════ */}
-      <section className="heart-section heart-media-section" ref={heartSectionRef}>
+      <section id="home-life-at-psz" className="heart-section heart-media-section" ref={heartSectionRef}>
         <div className="heart-full-video-container">
           {/* Auto-playing members video */}
           <video

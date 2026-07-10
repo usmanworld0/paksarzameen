@@ -8,7 +8,7 @@ import { NavigationOverlay } from "./NavigationOverlay";
 import { navigationEntries } from "./navigation-data";
 
 const NAV_UTILITIES = [
-  { label: "Call Us", href: "/contact" },
+  { label: "Call Us", href: "/contact", external: false },
   { label: "Store", href: "https://store.paksarzameenwfo.com", external: true },
 ] as const;
 

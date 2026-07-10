@@ -6,8 +6,6 @@ import { type RefObject, useEffect, useLayoutEffect, useRef, useState } from "re
 import gsap from "gsap";
 import { ArrowUpRight, Search, X } from "lucide-react";
 
-import { siteConfig } from "@/config/site";
-
 import type { NavigationEntry } from "./navigation-data";
 
 type NavigationOverlayProps = {

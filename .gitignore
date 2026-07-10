@@ -28,3 +28,4 @@ store/.env
 # typescript
 *.tsbuildinfo
 node_modules
+*.temp.webp

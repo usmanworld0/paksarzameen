@@ -2,8 +2,8 @@
 
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { Box, ImageIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Box } from "lucide-react";
+import { useState } from "react";
 import type { ProductImage } from "@prisma/client";
 import { normalizeImageSrc } from "@/lib/utils";
 
@@ -18,191 +18,79 @@ interface ProductGalleryProps {
   model3DUrl?: string | null;
 }
 
-export function ProductGallery({
-  images,
-  productName,
-  model3DUrl,
-}: ProductGalleryProps) {
+export function ProductGallery({ images, productName, model3DUrl }: ProductGalleryProps) {
   const normalizedImages = images.map((image) => ({
     ...image,
     imageUrl: normalizeImageSrc(image.imageUrl),
   }));
   const hasImages = normalizedImages.length > 0;
   const has3DModel = Boolean(model3DUrl);
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const [viewMode, setViewMode] = useState<"image" | "3d">(
-    () => (!hasImages && has3DModel ? "3d" : "image")
-  );
-  const [viewerReady, setViewerReady] = useState(false);
+  const [showModel, setShowModel] = useState(!hasImages && has3DModel);
   const [viewerError, setViewerError] = useState<string | null>(null);
-  const selectedImage = normalizedImages[selectedIndex] ?? null;
-
-  useEffect(() => {
-    if (!hasImages && has3DModel) {
-      setViewMode("3d");
-      return;
-    }
-
-    if (!has3DModel) {
-      setViewMode("image");
-    }
-  }, [has3DModel, hasImages]);
-
-  useEffect(() => {
-    setViewerReady(false);
-  }, [model3DUrl, viewMode]);
-
-  useEffect(() => {
-    setViewerError(null);
-  }, [model3DUrl]);
 
   if (!hasImages && !has3DModel) {
     return (
-      <div className="flex aspect-[4/5] items-center justify-center rounded-[28px] border border-black/8 bg-[#f7f4ef]">
+      <div className="flex aspect-[4/5] items-center justify-center bg-[#f7f4ef]">
         <span className="text-neutral-400">No image available</span>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[88px_minmax(0,1fr)] lg:items-start">
-      {normalizedImages.length > 1 && (
-        <div className="order-2 flex gap-3 overflow-x-auto pb-1 lg:order-1 lg:max-h-[860px] lg:flex-col lg:overflow-y-auto lg:overflow-x-hidden lg:pb-0 scrollbar-thin">
-          {normalizedImages.map((img, index) => (
-            <button
-              key={img.id}
-              type="button"
-              onClick={() => setSelectedIndex(index)}
-              className={`relative aspect-square w-20 shrink-0 overflow-hidden rounded-[18px] border transition-all duration-300 lg:w-full ${
-                index === selectedIndex
-                  ? "border-neutral-950 shadow-[0_16px_34px_rgba(17,17,17,0.08)]"
-                  : "border-black/8 opacity-70 hover:opacity-100"
-              }`}
-              aria-label={`View image ${index + 1}`}
-              aria-pressed={index === selectedIndex}
-            >
-              <Image
-                src={img.imageUrl}
-                alt={img.altText || `${productName} thumbnail ${index + 1}`}
-                fill
-                sizes="88px"
-                className="object-cover"
-                quality={68}
-                unoptimized={img.imageUrl.startsWith("http")}
-              />
-            </button>
-          ))}
+    <div className="space-y-2 lg:space-y-3">
+      {has3DModel ? (
+        <div className="flex justify-end">
+          <button
+            type="button"
+            onClick={() => {
+              setViewerError(null);
+              setShowModel((previous) => !previous);
+            }}
+            className="inline-flex items-center gap-2 border border-black/15 bg-white px-3 py-2 text-[10px] font-medium uppercase tracking-[0.18em] text-neutral-800 transition-colors hover:bg-neutral-950 hover:text-white"
+          >
+            <Box className="h-3.5 w-3.5" />
+            {showModel ? "Show images" : "Explore in 3D"}
+          </button>
         </div>
-      )}
+      ) : null}
 
-      <div className="order-1 space-y-4 lg:order-2">
-        {has3DModel ? (
-          <div className="flex flex-wrap gap-2">
-            {hasImages ? (
-              <button
-                type="button"
-                onClick={() => setViewMode("image")}
-                className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] transition ${
-                  viewMode === "image"
-                    ? "border-neutral-950 bg-neutral-950 text-white"
-                    : "border-black/10 bg-white text-neutral-700 hover:border-neutral-950 hover:text-neutral-950"
-                }`}
-              >
-                <ImageIcon className="h-3.5 w-3.5" />
-                Image View
-              </button>
-            ) : null}
-            <button
-              type="button"
-              onClick={() => {
-                setViewerError(null);
-                setViewMode("3d");
-              }}
-              className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] transition ${
-                viewMode === "3d"
-                  ? "border-neutral-950 bg-neutral-950 text-white"
-                  : "border-black/10 bg-white text-neutral-700 hover:border-neutral-950 hover:text-neutral-950"
-              }`}
-            >
-              <Box className="h-3.5 w-3.5" />
-              3D View
-            </button>
-          </div>
-        ) : null}
-
-        {viewerError ? (
-          <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-800">
-            {viewerError}
-          </div>
-        ) : null}
-
-        <div className="relative aspect-[4/5] min-h-[430px] w-full overflow-hidden rounded-[32px] border border-black/8 bg-[#f7f4ef] sm:min-h-[560px] lg:min-h-[760px]">
-          {viewMode === "3d" && model3DUrl ? (
-            <>
-              {selectedImage ? (
-                <Image
-                  src={selectedImage.imageUrl}
-                  alt={selectedImage.altText || productName}
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 56vw"
-                  className={`object-cover transition-opacity duration-500 ${
-                    viewerReady ? "opacity-0" : "opacity-100"
-                  }`}
-                  priority
-                  quality={90}
-                  unoptimized={selectedImage.imageUrl.startsWith("http")}
-                />
-              ) : null}
-
-              {!viewerReady ? (
-                <div className="absolute left-4 top-4 z-10 rounded-full border border-white/25 bg-white/86 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.28em] text-neutral-600 backdrop-blur-md">
-                  Loading 3D
-                </div>
-              ) : (
-                <div className="absolute left-4 top-4 z-10 rounded-full border border-white/25 bg-white/86 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.28em] text-neutral-600 backdrop-blur-md">
-                  3D View
-                </div>
-              )}
-
-              <div className="absolute inset-0">
-                <Product3DViewer
-                  modelUrl={model3DUrl}
-                  posterUrl={selectedImage?.imageUrl}
-                  alt={productName}
-                  onReady={() => setViewerReady(true)}
-                  onError={() => {
-                    setViewerReady(false);
-                    if (normalizedImages.length > 0) {
-                      setViewMode("image");
-                    }
-                    setViewerError("The 3D model could not be loaded, so image view is shown instead.");
-                  }}
-                />
-              </div>
-            </>
-          ) : selectedImage ? (
-            <>
-              <Image
-                src={selectedImage.imageUrl}
-                alt={selectedImage.altText || productName}
-                fill
-                sizes="(max-width: 1024px) 100vw, 56vw"
-                className="object-cover transition-opacity duration-500"
-                priority
-                quality={90}
-                unoptimized={selectedImage.imageUrl.startsWith("http")}
-              />
-              <div className="absolute right-4 top-4 rounded-full border border-white/25 bg-white/82 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.28em] text-neutral-600 backdrop-blur-md">
-                {selectedIndex + 1} / {normalizedImages.length}
-              </div>
-            </>
-          ) : (
-            <div className="flex h-full items-center justify-center text-sm text-neutral-500">
-              No image available
-            </div>
-          )}
+      {viewerError ? (
+        <div className="border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-800">
+          {viewerError}
         </div>
-      </div>
+      ) : null}
+
+      {showModel && model3DUrl ? (
+        <div className="relative aspect-[4/5] min-h-[430px] overflow-hidden bg-[#f7f4ef] sm:min-h-[560px]">
+          <Product3DViewer
+            modelUrl={model3DUrl}
+            posterUrl={normalizedImages[0]?.imageUrl}
+            alt={productName}
+            onError={() => {
+              setShowModel(false);
+              setViewerError("The 3D model could not be loaded, so product images are shown instead.");
+            }}
+          />
+        </div>
+      ) : null}
+
+      {!showModel && normalizedImages.map((image, index) => (
+        <figure key={image.id} className="relative aspect-[4/5] overflow-hidden bg-[#f7f4ef]">
+          <Image
+            src={image.imageUrl}
+            alt={image.altText || `${productName} image ${index + 1}`}
+            fill
+            sizes="(max-width: 1024px) 100vw, 50vw"
+            className="object-cover"
+            priority={index === 0}
+            quality={90}
+            unoptimized={image.imageUrl.startsWith("http")}
+          />
+          <figcaption className="absolute right-3 top-3 border border-white/30 bg-white/85 px-2.5 py-1 text-[9px] font-medium uppercase tracking-[0.22em] text-neutral-600 backdrop-blur-sm">
+            {index + 1} / {normalizedImages.length}
+          </figcaption>
+        </figure>
+      ))}
     </div>
   );
 }

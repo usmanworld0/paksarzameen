@@ -91,10 +91,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
         </section>
 
-        <section className="store-section bg-white !pt-10">
-          <div className="store-container">
-            <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1.08fr)_minmax(360px,0.92fr)] lg:gap-16">
-              <div className="lg:sticky lg:top-24 lg:h-fit">
+        <section className="bg-white lg:h-[calc(100vh-144px)] lg:overflow-hidden">
+          <div className="grid grid-cols-1 lg:h-full lg:grid-cols-[minmax(0,1.08fr)_minmax(400px,0.92fr)]">
+              <div className="px-5 py-5 sm:px-8 lg:h-full lg:overflow-y-auto lg:px-0 lg:py-0 scrollbar-thin">
                 <ProductGallery
                   images={product.images}
                   productName={product.name}
@@ -102,9 +101,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 />
               </div>
 
-              <div className="max-w-xl">
+              <div className="max-w-xl px-5 py-10 sm:px-8 lg:h-full lg:max-w-none lg:overflow-y-auto lg:px-[clamp(2.5rem,6vw,7rem)] lg:py-[clamp(3rem,9vh,7rem)] scrollbar-thin">
                 <p className="store-kicker">{product.category.name}</p>
-                <h1 className="mt-4 text-[clamp(2.8rem,6vw,5.4rem)] leading-[0.88] tracking-[-0.08em] text-neutral-950">
+                <h1 className="mt-3 text-[clamp(2.4rem,4.4vw,4.6rem)] leading-[0.9] tracking-[-0.07em] text-neutral-950">
                   {product.name}
                 </h1>
 
@@ -209,7 +208,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 </div>
               </div>
             </div>
-          </div>
         </section>
 
         <ProductAccordion

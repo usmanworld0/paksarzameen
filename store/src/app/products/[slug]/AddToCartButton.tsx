@@ -27,6 +27,7 @@ interface AddToCartButtonProps {
     region: StoreRegion;
   };
   customizationOptions: CustomizationOption[];
+  selectedArtist?: { id: string; name: string };
   onLayeredPreviewChange?: (state: LayeredPreviewState) => void;
 }
 
@@ -62,6 +63,7 @@ const uploadButtonClassName =
 export function AddToCartButton({
   product,
   customizationOptions,
+  selectedArtist,
   onLayeredPreviewChange,
 }: AddToCartButtonProps) {
   const addItem = useCartStore((state) => state.addItem);
@@ -214,6 +216,17 @@ export function AddToCartButton({
         valueLabel: selection.valueLabel,
         priceAdjustment: selection.priceAdjustment,
       }));
+
+    if (selectedArtist) {
+      customizations.push({
+        key: "__selected_artist",
+        optionName: "Selected Artist",
+        groupLabel: "Artist",
+        value: selectedArtist.id,
+        valueLabel: selectedArtist.name,
+        priceAdjustment: 0,
+      });
+    }
 
     if (referenceImageUrl) {
       customizations.push({

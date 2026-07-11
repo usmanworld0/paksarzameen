@@ -5,6 +5,7 @@ import { Footer } from "@/components/storefront/Footer";
 import { ProductGallery } from "@/components/storefront/ProductGallery";
 import { ProductCard } from "@/components/storefront/ProductCard";
 import { getProductBySlug, getProducts } from "@/actions/products";
+import { getArtists } from "@/actions/artists";
 import { getProductDiscount } from "@/actions/sales";
 import {
   formatRegionalPrice,
@@ -21,6 +22,7 @@ export const dynamic = 'force-dynamic';
 
 interface ProductPageProps {
   params: { slug: string };
+  searchParams?: { artist?: string };
 }
 
 export async function generateMetadata({
@@ -42,10 +44,15 @@ export async function generateMetadata({
   };
 }
 
-export default async function ProductPage({ params }: ProductPageProps) {
+export default async function ProductPage({ params, searchParams }: ProductPageProps) {
   const region = await getRequestRegion();
   const product = await getProductBySlug(params.slug);
   if (!product) notFound();
+
+  const artists = await getArtists();
+  const selectedArtist = searchParams?.artist
+    ? artists.find((artist) => artist.id === searchParams.artist) ?? null
+    : null;
 
   const regionalPricing = resolveProductRegionalPricing(product, region);
 
@@ -101,14 +108,14 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 />
               </div>
 
-              <div className="max-w-xl px-5 py-10 sm:px-8 lg:h-full lg:max-w-none lg:overflow-y-auto lg:px-[clamp(2.5rem,6vw,7rem)] lg:py-[clamp(3rem,9vh,7rem)] scrollbar-thin">
-                <p className="store-kicker">{product.category.name}</p>
-                <h1 className="mt-3 text-[clamp(2.4rem,4.4vw,4.6rem)] leading-[0.9] tracking-[-0.07em] text-neutral-950">
+              <div className="max-w-xl px-5 py-10 sm:px-8 lg:h-full lg:max-w-[560px] lg:justify-self-center lg:overflow-y-auto lg:px-10 lg:py-[clamp(3rem,9vh,7rem)] scrollbar-thin">
+                <p className="store-kicker text-center">{product.category.name}</p>
+                <h1 className="mt-3 text-center text-[clamp(2.4rem,4.4vw,4.6rem)] leading-[0.9] tracking-[-0.07em] text-neutral-950">
                   {product.name}
                 </h1>
 
                 {product.artist && (
-                  <p className="mt-4 text-sm text-neutral-500">
+                  <p className="mt-4 text-center text-sm text-neutral-500">
                     By{" "}
                     <Link
                       href={`/artists/${product.artist.id}`}
@@ -119,11 +126,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
                   </p>
                 )}
 
-                <div className="mt-8 border-b border-black/8 pb-8">
+                <div className="mt-8 border-b border-black/10 pb-8 text-center">
                   <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-neutral-400">
                     {getRegionBadgeLabel(region)}
                   </p>
-                  <div className="mt-3 flex flex-wrap items-end gap-3">
+                  <div className="mt-3 flex flex-wrap items-end justify-center gap-3">
                     <span className="text-3xl font-semibold tracking-[-0.05em] text-neutral-950 sm:text-[2.3rem]">
                       {formatRegionalPrice(discountedPrice ?? regionalPricing.price, region)}
                     </span>
@@ -146,59 +153,55 @@ export default async function ProductPage({ params }: ProductPageProps) {
                   </p>
                 )}
 
-                <div className="mt-8 grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-[22px] border border-black/8 bg-white p-4">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-neutral-400">
-                      Availability
-                    </p>
-                    <p className="mt-2 text-base leading-relaxed text-neutral-950">
-                      {product.stock > 0 ? "Ready to order" : "Currently sold out"}
-                    </p>
-                  </div>
-                  <div className="rounded-[22px] border border-black/8 bg-white p-4">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-neutral-400">
-                      Craft
-                    </p>
-                    <p className="mt-2 text-base leading-relaxed text-neutral-950">
-                      Hand-finished by skilled artisans using heritage techniques.
-                    </p>
-                  </div>
-                  <div className="rounded-[22px] border border-black/8 bg-white p-4">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-neutral-400">
-                      Checkout
-                    </p>
-                    <p className="mt-2 text-base leading-relaxed text-neutral-950">
-                      Review in cart first, then complete payment securely with Stripe.
-                    </p>
-                  </div>
-                  <div className="rounded-[22px] border border-black/8 bg-white p-4">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-neutral-400">
-                      Impact
-                    </p>
-                    <p className="mt-2 text-base leading-relaxed text-neutral-950">
-                      Your purchase supports artisan livelihoods and PSZ programmes.
-                    </p>
-                  </div>
+                <div className="mt-8 border-y border-black/10 py-4 text-sm text-neutral-700">
+                  <p className="py-1.5">{product.stock > 0 ? "Available to order" : "Currently sold out"}</p>
+                  <p className="py-1.5">Hand-finished by skilled Paksarzameen artisans.</p>
+                  <p className="py-1.5">Secure checkout after cart review.</p>
+                  <p className="py-1.5">Your purchase supports artisan livelihoods and PSZ programmes.</p>
                 </div>
 
-                <div className="mt-8 border-t border-black/8 pt-8">
-                  <AddToCartButton
-                    product={{
-                      id: product.id,
-                      name: product.name,
-                      slug: product.slug,
-                      price: regionalPricing.price,
-                      discountedPrice: discountedPrice ?? undefined,
-                      image: firstImage,
-                      available: product.stock > 0,
-                      region,
-                    }}
-                    customizationOptions={
-                      product.customizable
-                        ? product.category.customizationOptions
-                        : []
-                    }
-                  />
+                <div className="mt-8 border-t border-black/10 pt-7">
+                  {selectedArtist ? (
+                    <>
+                      <div className="mb-5 flex items-center justify-between border-b border-black/10 pb-4">
+                        <div>
+                          <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-neutral-400">Selected artist</p>
+                          <p className="mt-1 text-sm font-medium text-neutral-950">{selectedArtist.name}</p>
+                        </div>
+                        <Link
+                          href={`/products/${product.slug}/choose-artist`}
+                          className="text-[10px] font-medium uppercase tracking-[0.18em] text-neutral-500 transition-colors hover:text-neutral-950"
+                        >
+                          Change
+                        </Link>
+                      </div>
+                      <AddToCartButton
+                        product={{
+                          id: product.id,
+                          name: product.name,
+                          slug: product.slug,
+                          price: regionalPricing.price,
+                          discountedPrice: discountedPrice ?? undefined,
+                          image: firstImage,
+                          available: product.stock > 0,
+                          region,
+                        }}
+                        customizationOptions={
+                          product.customizable
+                            ? product.category.customizationOptions
+                            : []
+                        }
+                        selectedArtist={{ id: selectedArtist.id, name: selectedArtist.name }}
+                      />
+                    </>
+                  ) : (
+                    <Link
+                      href={`/products/${product.slug}/choose-artist`}
+                      className="flex h-14 w-full items-center justify-between bg-neutral-950 px-5 text-[11px] font-medium uppercase tracking-[0.2em] text-white transition-colors hover:bg-neutral-700"
+                    >
+                      Choose artist <span aria-hidden>&rarr;</span>
+                    </Link>
+                  )}
                 </div>
 
                 <div className="mt-6 flex flex-wrap gap-3">

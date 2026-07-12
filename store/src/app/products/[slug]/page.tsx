@@ -147,12 +147,6 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
                   </div>
                 </div>
 
-                {product.description && (
-                  <p className="mt-8 text-[15px] leading-8 text-neutral-600">
-                    {product.description}
-                  </p>
-                )}
-
                 <div className="mt-8 border-y border-black/10 py-4 text-sm text-neutral-700">
                   <p className="py-1.5">{product.stock > 0 ? "Available to order" : "Currently sold out"}</p>
                   <p className="py-1.5">Hand-finished by skilled Paksarzameen artisans.</p>
@@ -209,16 +203,20 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
                     View Cart
                   </Link>
                 </div>
+
+                <div className="mt-7">
+                  <ProductAccordion
+                    variant="compact"
+                    description={product.description}
+                    materials={product.materials}
+                    careInstructions={product.careInstructions}
+                    heritageStory={product.heritageStory}
+                  />
+                </div>
               </div>
             </div>
         </section>
 
-        <ProductAccordion
-          description={product.description}
-          materials={product.materials}
-          careInstructions={product.careInstructions}
-          heritageStory={product.heritageStory}
-        />
 
         {relatedProducts.length > 0 && (
           <section className="store-section-soft border-t border-black/6">

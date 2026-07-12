@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
 import Image from "next/image";
 import { useMemo, useState } from "react";
-import { Check, Loader2, Palette, ScanLine, Shield, Type } from "lucide-react";
+import { Check, Loader2, Shield, Type } from "lucide-react";
 
 import type { DogRecord, EarTagGlobalConfigRecord } from "@/lib/dog-adoption";
 
@@ -12,34 +12,17 @@ type MyPetPersonalizationPanelProps = {
   showHeader?: boolean;
 };
 
-function normalizeTitle(value: string | null | undefined, fallback: string) {
+function optionTitle(value: string | null | undefined, fallback: string) {
   return typeof value === "string" && value.trim() ? value.trim() : fallback;
 }
 
-export function MyPetPersonalizationPanel({
-  dog,
-  earTagConfig,
-  showHeader = true,
-}: MyPetPersonalizationPanelProps) {
+export function MyPetPersonalizationPanel({ dog, earTagConfig }: MyPetPersonalizationPanelProps) {
   const styleOptions = useMemo(
-    () =>
-      earTagConfig.styleOptions.length > 0
-        ? earTagConfig.styleOptions
-        : earTagConfig.styleImages.map((imageUrl, index) => ({
-            title: `Style ${index + 1}`,
-            imageUrl,
-          })),
+    () => earTagConfig.styleOptions.length ? earTagConfig.styleOptions : earTagConfig.styleImages.map((imageUrl, index) => ({ title: `Style ${index + 1}`, imageUrl })),
     [earTagConfig.styleImages, earTagConfig.styleOptions]
   );
-
   const boundaryOptions = useMemo(
-    () =>
-      earTagConfig.boundaryOptions.length > 0
-        ? earTagConfig.boundaryOptions
-        : earTagConfig.boundaryImages.map((imageUrl, index) => ({
-            title: `Boundary ${index + 1}`,
-            imageUrl,
-          })),
+    () => earTagConfig.boundaryOptions.length ? earTagConfig.boundaryOptions : earTagConfig.boundaryImages.map((imageUrl, index) => ({ title: `Boundary ${index + 1}`, imageUrl })),
     [earTagConfig.boundaryImages, earTagConfig.boundaryOptions]
   );
 
@@ -52,298 +35,76 @@ export function MyPetPersonalizationPanel({
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  const hasConfig = useMemo(
-    () => styleOptions.length > 0 && earTagConfig.colorOptions.length > 0 && boundaryOptions.length > 0,
-    [boundaryOptions.length, earTagConfig.colorOptions.length, styleOptions.length]
-  );
-
+  const hasConfig = styleOptions.length > 0 && earTagConfig.colorOptions.length > 0 && boundaryOptions.length > 0;
   const selectedStyle = styleOptions.find((item) => item.imageUrl === styleImageUrl) ?? styleOptions[0] ?? null;
-  const selectedColor =
-    earTagConfig.colorOptions.find((item) => item.title === colorTitle) ?? earTagConfig.colorOptions[0] ?? null;
+  const selectedColor = earTagConfig.colorOptions.find((item) => item.title === colorTitle) ?? earTagConfig.colorOptions[0] ?? null;
   const selectedBoundary = boundaryOptions.find((item) => item.imageUrl === boundaryImageUrl) ?? boundaryOptions[0] ?? null;
 
-  const engravingValue = savedPetName ?? (petNameDraft.trim() || dog.name);
-
   async function applyChanges() {
-    setSaving(true);
-    setError(null);
-    setSuccess(null);
-
+    setSaving(true); setError(null); setSuccess(null);
     try {
       let latestPetName = savedPetName;
-
       if (!latestPetName) {
         const nextPetName = petNameDraft.trim();
-        if (!nextPetName) {
-          throw new Error("Please enter an engraving name before applying changes.");
-        }
-
-        const response = await fetch(`/api/my-pets/${dog.dogId}/pet-name`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ petName: nextPetName }),
-        });
-
+        if (!nextPetName) throw new Error("Please enter an engraving name before applying changes.");
+        const response = await fetch(`/api/my-pets/${dog.dogId}/pet-name`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ petName: nextPetName }) });
         const payload = (await response.json()) as { error?: string; data?: DogRecord };
-        if (!response.ok) {
-          throw new Error(payload.error ?? "Failed to assign pet name.");
-        }
-
+        if (!response.ok) throw new Error(payload.error ?? "Failed to assign pet name.");
         latestPetName = payload.data?.petName ?? nextPetName;
-        setSavedPetName(latestPetName);
-        setPetNameDraft(latestPetName);
+        setSavedPetName(latestPetName); setPetNameDraft(latestPetName);
       }
-
       if (hasConfig) {
-        const response = await fetch(`/api/my-pets/${dog.dogId}/ear-tag`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            styleImageUrl,
-            colorTitle,
-            boundaryImageUrl,
-          }),
-        });
-
+        const response = await fetch(`/api/my-pets/${dog.dogId}/ear-tag`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ styleImageUrl, colorTitle, boundaryImageUrl }) });
         const payload = (await response.json()) as { error?: string };
-        if (!response.ok) {
-          throw new Error(payload.error ?? "Failed to save ear tag customization.");
-        }
+        if (!response.ok) throw new Error(payload.error ?? "Failed to save ear tag customization.");
       }
-
-      setSuccess(
-        hasConfig
-          ? latestPetName && !savedPetName
-            ? "Pet name assigned and pet tag customization saved."
-            : "Pet tag customization saved successfully."
-          : latestPetName && !savedPetName
-            ? "Pet name assigned successfully."
-            : "Changes applied successfully."
-      );
+      setSuccess(hasConfig ? "Pet tag customization saved successfully." : "Pet name assigned successfully.");
     } catch (saveError) {
       setError(saveError instanceof Error ? saveError.message : "Failed to apply changes.");
-    } finally {
-      setSaving(false);
-    }
+    } finally { setSaving(false); }
   }
 
+  const previewImages = [selectedStyle?.imageUrl, selectedColor?.imageUrl, selectedBoundary?.imageUrl].filter((image): image is string => Boolean(image));
+
   return (
-    <section className="space-y-4">
-      {showHeader && (
-        <div>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#0f7a47]">Customization</p>
-          <h2 className="mt-2 text-2xl font-black tracking-tighter text-[#111111] sm:text-3xl">Customize Pet Tag</h2>
-          <p className="mt-2 max-w-3xl text-sm font-medium leading-relaxed text-[#707072]">
-            Design a unique ID tag for your buddy. All tags include premium engraving and QR tracking.
-          </p>
-        </div>
-      )}
-
-      {/* Preview + Options */}
-      <div className="rounded-2xl border border-[#E5E5E5] bg-white">
-        <div className="grid gap-0 lg:grid-cols-[minmax(0,0.95fr),minmax(0,1.05fr)]">
-          {/* Live Preview */}
-          <div className="border-b border-[#E5E5E5] p-5 lg:border-b-0 lg:border-r lg:p-6">
-            <div className="mb-4 flex items-center gap-2">
-              <ScanLine className="h-4 w-4 text-[#0f7a47]" />
-              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#0f7a47]">Live Preview</p>
-            </div>
-
-            <div className="flex min-h-[260px] items-center justify-center rounded-xl border border-[#E5E5E5] bg-[#f3f3ee] p-6 lg:min-h-[320px]">
-              <div className="relative flex h-[160px] w-[160px] items-center justify-center rounded-xl border border-[#E5E5E5] bg-white shadow-[0_8px_32px_rgba(0,0,0,0.07)] sm:h-[180px] sm:w-[180px]">
-                <div className="absolute inset-[18px] overflow-hidden rounded-lg bg-[#f3f3ee]">
-                  {selectedColor?.imageUrl ? (
-                    <Image src={selectedColor.imageUrl} alt={selectedColor.title} fill sizes="180px" className="object-cover" />
-                  ) : null}
-                  {selectedStyle?.imageUrl ? (
-                    <Image src={selectedStyle.imageUrl} alt={selectedStyle.title} fill sizes="180px" className="object-cover mix-blend-multiply" />
-                  ) : null}
-                  {selectedBoundary?.imageUrl ? (
-                    <Image src={selectedBoundary.imageUrl} alt={selectedBoundary.title} fill sizes="180px" className="object-cover mix-blend-multiply" />
-                  ) : null}
-                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-white/55 px-4 text-center">
-                    <span className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#707072]">
-                      Tag No. {dog.dogId.slice(0, 4).toUpperCase()}
-                    </span>
-                    <span className="text-2xl font-black uppercase tracking-tight text-[#111111]">{engravingValue}</span>
-                  </div>
-                </div>
-              </div>
+    <section className="bg-white lg:h-[calc(100vh-144px)] lg:overflow-hidden">
+      <div className="grid grid-cols-1 lg:h-full lg:grid-cols-[minmax(0,1.08fr)_minmax(400px,0.92fr)]">
+        <div className="space-y-4 bg-[#fcfbf8] px-5 py-5 sm:px-8 lg:h-full lg:overflow-y-auto lg:px-0 lg:py-0 scrollbar-thin">
+          <div className="relative min-h-[430px] overflow-hidden bg-[#f1f0eb] sm:min-h-[560px] lg:min-h-[calc(100vh-144px)]">
+            <Image src={dog.imageUrl} alt={dog.name} fill priority sizes="(min-width: 1024px) 56vw, 100vw" className="object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-black/5" />
+            <div className="absolute left-5 top-5 border border-white/80 bg-white/85 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-950">{dog.breed}</div>
+            <div className="absolute bottom-6 left-5 right-5 flex items-end justify-between text-white sm:bottom-8 sm:left-8 sm:right-8">
+              <div><p className="text-[10px] font-medium uppercase tracking-[0.24em] text-white/75">Pet tag for</p><p className="mt-2 text-3xl tracking-[-0.06em] sm:text-5xl">{dog.petName ?? dog.name}</p></div>
+              <p className="text-right text-xs leading-5 text-white/80">{dog.locationLabel ?? dog.city ?? "Paksarzameen Shelter"}</p>
             </div>
           </div>
+          {previewImages.length > 0 ? <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">{previewImages.map((imageUrl, index) => <div key={`${imageUrl}-${index}`} className="relative aspect-square overflow-hidden bg-[#f1f0eb]"><Image src={imageUrl} alt="Selected tag detail" fill sizes="(min-width:1024px) 19vw, 45vw" className="object-cover" /></div>)}</div> : null}
+        </div>
 
-          {/* Options */}
-          <div className="space-y-5 p-5 lg:p-6">
-            {/* Style */}
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <Palette className="h-4 w-4 text-[#0f7a47]" />
-                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#707072]">Select Style</p>
-              </div>
-              <div className="grid grid-cols-3 gap-3">
-                {styleOptions.slice(0, 3).map((item, index) => {
-                  const selected = styleImageUrl === item.imageUrl;
+        <div className="max-w-xl px-5 py-10 sm:px-8 lg:h-full lg:max-w-[560px] lg:justify-self-center lg:overflow-y-auto lg:px-10 lg:py-[clamp(3rem,7vh,5.5rem)] scrollbar-thin">
+          <p className="text-center text-[10px] font-semibold uppercase tracking-[0.25em] text-neutral-400">Personalize your pet tag</p>
+          <h1 className="mt-3 text-center text-[clamp(2.4rem,4.4vw,4.6rem)] leading-[0.9] tracking-[-0.07em] text-neutral-950">{dog.petName ?? dog.name}&apos;s tag</h1>
+          <p className="mt-5 text-center text-sm leading-6 text-neutral-500">Choose the details for a unique ID tag, engraved and prepared for your adopted companion.</p>
 
-                  return (
-                    <button
-                      key={item.imageUrl}
-                      type="button"
-                      onClick={() => setStyleImageUrl(item.imageUrl)}
-                      className={`relative flex aspect-square items-center justify-center rounded-xl border-2 transition ${
-                        selected
-                          ? "border-[#111111] bg-[#111111]/5"
-                          : "border-[#E5E5E5] bg-white hover:border-[#111111]/30"
-                      }`}
-                      aria-label={item.title || `Style ${index + 1}`}
-                    >
-                      <div className="relative h-10 w-10 overflow-hidden rounded-lg">
-                        <Image src={item.imageUrl} alt={item.title} fill sizes="40px" className="object-cover" />
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Color */}
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <Palette className="h-4 w-4 text-[#0f7a47]" />
-                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#707072]">Tag Color</p>
-              </div>
-              <div className="flex flex-wrap gap-3">
-                {earTagConfig.colorOptions.slice(0, 5).map((item) => {
-                  const selected = colorTitle === item.title;
-
-                  return (
-                    <button
-                      key={item.title}
-                      type="button"
-                      onClick={() => setColorTitle(item.title)}
-                      className={`relative h-10 w-10 overflow-hidden rounded-xl border-2 transition ${
-                        selected
-                          ? "border-[#111111]"
-                          : "border-[#E5E5E5] hover:border-[#111111]/30"
-                      }`}
-                      aria-label={item.title}
-                    >
-                      {item.imageUrl ? (
-                        <Image src={item.imageUrl} alt={item.title} fill sizes="40px" className="object-cover" />
-                      ) : (
-                        <span className="absolute inset-0 bg-[#f3f3ee]" />
-                      )}
-                      {selected && (
-                        <span className="absolute inset-0 flex items-center justify-center bg-white/70">
-                          <Check className="h-4 w-4 text-[#111111]" />
-                        </span>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Engraving */}
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <Type className="h-4 w-4 text-[#0f7a47]" />
-                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#707072]">Engraving</p>
-              </div>
-              <input
-                value={petNameDraft}
-                onChange={(event) => setPetNameDraft(event.target.value)}
-                disabled={Boolean(savedPetName) || saving}
-                placeholder="Enter pet name"
-                className="h-12 w-full rounded-xl border border-[#E5E5E5] bg-white px-4 text-base font-black uppercase tracking-wide text-[#111111] outline-none transition placeholder:text-[#bbb] focus:border-[#0f7a47] focus:ring-2 focus:ring-[#0f7a47]/10 disabled:cursor-not-allowed disabled:bg-[#f3f3ee] disabled:text-[#707072]"
-              />
-            </div>
-
-            {/* Boundary */}
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <Shield className="h-4 w-4 text-[#0f7a47]" />
-                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#707072]">Boundary</p>
-              </div>
-              <div className="flex items-center justify-between gap-3">
-                <span className="text-sm font-medium text-[#707072]">
-                  {normalizeTitle(selectedBoundary?.title, "Reflective Boundary")}
-                </span>
-                <div className="flex gap-2">
-                  {boundaryOptions.slice(0, 3).map((item, index) => {
-                    const selected = boundaryImageUrl === item.imageUrl;
-
-                    return (
-                      <button
-                        key={item.imageUrl}
-                        type="button"
-                        onClick={() => setBoundaryImageUrl(item.imageUrl)}
-                        className={`relative h-8 w-8 overflow-hidden rounded-lg border-2 transition ${
-                          selected
-                            ? "border-[#111111]"
-                            : "border-[#E5E5E5] hover:border-[#111111]/30"
-                        }`}
-                        aria-label={item.title || `Boundary ${index + 1}`}
-                      >
-                        <Image
-                          src={item.imageUrl}
-                          alt={item.title || `Boundary ${index + 1}`}
-                          fill
-                          sizes="32px"
-                          className="object-cover"
-                        />
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
+          <div className="mt-8 border-y border-black/10 py-4 text-sm text-neutral-700">
+            <p className="py-1.5">Premium engraving and QR tracking included.</p><p className="py-1.5">Handcrafted for your adopted pet.</p><p className="py-1.5">Estimated preparation: 3–5 business days.</p>
           </div>
+
+          <div className="mt-7 space-y-7">
+            <div><p className="text-[10px] font-medium uppercase tracking-[0.22em] text-neutral-400">Select style</p><div className="mt-3 grid grid-cols-3 gap-2">{styleOptions.map((item, index) => <button key={item.imageUrl} type="button" onClick={() => setStyleImageUrl(item.imageUrl)} className={`relative aspect-square overflow-hidden border transition ${styleImageUrl === item.imageUrl ? "border-neutral-950" : "border-black/10 hover:border-neutral-500"}`} aria-label={item.title || `Style ${index + 1}`}><Image src={item.imageUrl} alt={item.title} fill sizes="120px" className="object-cover" />{styleImageUrl === item.imageUrl && <span className="absolute right-2 top-2 grid h-5 w-5 place-items-center rounded-full bg-white text-neutral-950"><Check className="h-3 w-3" /></span>}</button>)}</div></div>
+            <div><p className="text-[10px] font-medium uppercase tracking-[0.22em] text-neutral-400">Tag color</p><div className="mt-3 grid grid-cols-3 gap-2">{earTagConfig.colorOptions.map((item) => <button key={item.title} type="button" onClick={() => setColorTitle(item.title)} className={`relative min-h-16 overflow-hidden border px-3 py-4 text-left transition ${colorTitle === item.title ? "border-neutral-950" : "border-black/10 hover:border-neutral-500"}`}>{item.imageUrl ? <Image src={item.imageUrl} alt="" fill sizes="120px" className="object-cover opacity-75" /> : null}<span className="relative text-[10px] font-medium uppercase tracking-[0.16em] text-neutral-950">{item.title}</span>{colorTitle === item.title && <Check className="absolute right-2 top-2 h-4 w-4 text-neutral-950" />}</button>)}</div></div>
+            <div><div className="flex items-center gap-2"><Type className="h-4 w-4 text-neutral-500" /><p className="text-[10px] font-medium uppercase tracking-[0.22em] text-neutral-400">Engraving</p></div><input value={petNameDraft} onChange={(event) => setPetNameDraft(event.target.value)} disabled={Boolean(savedPetName) || saving} placeholder="Enter pet name" className="mt-3 h-13 w-full border border-black/15 px-4 text-lg tracking-[-0.03em] text-neutral-950 outline-none transition focus:border-neutral-950 disabled:bg-neutral-100 disabled:text-neutral-500" /></div>
+            <div><div className="flex items-center gap-2"><Shield className="h-4 w-4 text-neutral-500" /><p className="text-[10px] font-medium uppercase tracking-[0.22em] text-neutral-400">Reflective boundary</p></div><div className="mt-3 grid grid-cols-3 gap-2">{boundaryOptions.map((item, index) => <button key={item.imageUrl} type="button" onClick={() => setBoundaryImageUrl(item.imageUrl)} className={`relative aspect-square overflow-hidden border transition ${boundaryImageUrl === item.imageUrl ? "border-neutral-950" : "border-black/10 hover:border-neutral-500"}`} aria-label={optionTitle(item.title, `Boundary ${index + 1}`)}><Image src={item.imageUrl} alt={item.title} fill sizes="120px" className="object-cover" />{boundaryImageUrl === item.imageUrl && <span className="absolute right-2 top-2 grid h-5 w-5 place-items-center rounded-full bg-white text-neutral-950"><Check className="h-3 w-3" /></span>}</button>)}</div></div>
+          </div>
+
+          {!hasConfig && <p className="mt-6 border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-700">Ear tag options are not configured yet. You can still assign your pet&apos;s engraving name.</p>}
+          {success && <p className="mt-6 border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs text-emerald-700">{success}</p>}
+          {error && <p className="mt-6 border border-red-200 bg-red-50 px-4 py-3 text-xs text-red-700">{error}</p>}
+          <button type="button" onClick={() => void applyChanges()} disabled={saving} className="mt-8 flex h-14 w-full items-center justify-center gap-3 bg-neutral-950 px-5 text-[11px] font-medium uppercase tracking-[0.2em] text-white transition hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-50">{saving ? <><Loader2 className="h-4 w-4 animate-spin" />Saving tag</> : <>Save pet tag <Check className="h-4 w-4" /></>}</button>
+          <p className="mt-5 text-center text-xs leading-5 text-neutral-500">Custom tags are handcrafted and final sale.</p>
         </div>
       </div>
-
-      {!hasConfig && (
-        <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs font-medium text-amber-700">
-          Ear tag options are not configured by admin yet. You can still assign your pet name here.
-        </div>
-      )}
-
-      {success && (
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs font-medium text-emerald-700">
-          {success}
-        </div>
-      )}
-
-      {error && (
-        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-xs font-medium text-red-700">
-          {error}
-        </div>
-      )}
-
-      {/* Apply Changes */}
-      <div className="rounded-2xl border border-[#E5E5E5] bg-white px-5 py-5">
-        <button
-          type="button"
-          onClick={() => void applyChanges()}
-          disabled={saving}
-          className="inline-flex w-full items-center justify-center gap-3 rounded-xl bg-[#111111] px-5 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-white transition hover:bg-[#333] disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          {saving ? (
-            <>
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Applying Changes
-            </>
-          ) : (
-            <>
-              <Check className="h-4 w-4" />
-              Apply Changes
-            </>
-          )}
-        </button>
-      </div>
-
-      <p className="text-center text-xs font-medium leading-relaxed text-[#707072]">
-        Tags are handcrafted and shipped within 3 to 5 business days. All custom designs are final sale.
-      </p>
     </section>
   );
 }

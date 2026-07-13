@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, type CSSProperties } from "react";
+import { useEffect, useRef, memo, type CSSProperties } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { HEART_MEMBERS, PROGRAM_CARDS } from "@/features/home/home.content";
@@ -22,15 +22,15 @@ const journeyLinks = [
 ] as const;
 
 const chapterVisuals = [
-  "/images/optimized/vectors/charity-set-1.webp",
-  "/images/optimized/vectors/blood bank/blood-donation-02.webp",
-  "/images/optimized/vectors/19198457.webp",
-  "/images/optimized/vectors/6432897.webp",
-  "/images/optimized/vectors/6660.webp",
-  "/images/optimized/vectors/blood bank/pq6o-qij1-220606.webp",
+  "/images/placeholders/shajarkari.png",
+  "/images/placeholders/Ehsas-ul-Haiwanat.png",
+  "/images/placeholders/room-zia.png",
+  "/images/placeholders/14.png",
+  "/images/placeholders/Tibi-Imdad.png",
+  "/images/placeholders/wajood-e-zan.png",
 ] as const;
 
-export function HomeClient() {
+export const HomeClient = memo(function HomeClient() {
   const root = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -63,22 +63,99 @@ export function HomeClient() {
         });
       });
 
-      const bookPages = gsap.utils.toArray<HTMLElement>(`.${styles.bookPage}`);
-      if (bookPages.length) {
-        gsap.timeline({
-          scrollTrigger: {
-            trigger: `.${styles.bookStage}`,
-            start: "top 74%",
-            end: "bottom 26%",
-            scrub: 0.8,
-          },
-        }).to(bookPages, {
-          rotateY: -154,
-          transformOrigin: "8% 50%",
-          ease: "none",
-          stagger: 0.16,
-        });
-      }
+      // Responsive Book Animations using matchMedia
+      const mm = gsap.matchMedia();
+
+      // Desktop animation (pinned scroll lock, horizontal double-page flip)
+      mm.add("(min-width: 821px)", () => {
+        const sheets = gsap.utils.toArray<HTMLElement>(".book-sheet-el");
+        if (sheets.length) {
+          sheets.forEach((sheet, idx) => {
+            gsap.set(sheet, {
+              zIndex: sheets.length - idx,
+              z: (sheets.length - idx) * 0.8,
+              rotateY: 0,
+            });
+          });
+
+          const tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: `.${styles.departments}`,
+              start: "top top",
+              end: `+=${sheets.length * 700}`,
+              scrub: 1,
+              pin: true,
+              anticipatePin: 1,
+            },
+          });
+
+          sheets.forEach((sheet, idx) => {
+            tl.to(sheet, {
+              rotateY: -180,
+              ease: "power1.inOut",
+              duration: 1,
+            }, idx * 1.5);
+
+            // Swap z-index halfway through the turn so the flipped sheet goes behind subsequent ones
+            // Animate z-index stepwise over the duration of the flip to prevent snapping bugs on scroll stop
+            tl.to(sheet, { zIndex: idx, ease: "power1.inOut", duration: 1 }, idx * 1.5);
+
+            tl.to(sheet, {
+              z: 22,
+              duration: 0.5,
+              yoyo: true,
+              repeat: 1,
+              ease: "power1.out",
+            }, idx * 1.5);
+          });
+        }
+      });
+
+      // Mobile animation (pinned scroll lock, single-page sweeping flip)
+      mm.add("(max-width: 820px)", () => {
+        const sheets = gsap.utils.toArray<HTMLElement>(".book-sheet-mobile-el");
+        if (sheets.length) {
+          sheets.forEach((sheet, idx) => {
+            gsap.set(sheet, {
+              zIndex: sheets.length - idx,
+              z: (sheets.length - idx) * 0.8,
+              rotateY: 0,
+            });
+          });
+
+          const tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: `.${styles.departments}`,
+              start: "top top",
+              end: `+=${sheets.length * 600}`,
+              scrub: 1,
+              pin: true,
+              anticipatePin: 1,
+            },
+          });
+
+          sheets.forEach((sheet, idx) => {
+            tl.to(sheet, {
+              rotateY: -180,
+              ease: "power1.inOut",
+              duration: 1,
+            }, idx * 1.5);
+
+            // Swap z-index halfway through the turn
+            // Animate z-index stepwise over the duration of the flip
+            tl.to(sheet, { zIndex: idx, ease: "power1.inOut", duration: 1 }, idx * 1.5);
+
+            tl.to(sheet, {
+              z: 18,
+              duration: 0.5,
+              yoyo: true,
+              repeat: 1,
+              ease: "power1.out",
+            }, idx * 1.5);
+          });
+        }
+      });
+
     }, element);
 
     return () => context.revert();
@@ -107,54 +184,220 @@ export function HomeClient() {
       </section>
 
       <section id="home-problem" className={styles.problem}>
-        <p className={styles.sectionLabel}>01 - What is PSZ?</p>
         <div className={styles.problemGrid}>
-          <h2 data-reveal>Potential is everywhere.<br /><em>Access is not.</em></h2>
-          <div data-reveal><p>PakSarZameen is a community development platform that turns local care into practical, lasting action.</p><Link href="/about" className={styles.inlineLink}>Our story <span>&rarr;</span></Link></div>
+          <h2 className={styles.appleSectionHeader} data-reveal>What is PSZ?</h2>
+          <div data-reveal>
+            <p className={styles.appleSectionDesc}>PakSarZameen is a community development platform that turns local care into practical, lasting action.</p>
+            <Link href="/about" className={styles.appleLink}>Our story &rarr;</Link>
+          </div>
         </div>
       </section>
 
       <section id="home-solution" className={styles.solution}>
-        <div className={styles.solutionCopy} data-reveal><p className={styles.sectionLabel}>02 - What We Do?</p><h2>One mission.<br /><em>Many hands.</em></h2><p>We create pathways in education, healthcare, animal welfare, environmental action, and community support.</p><Link href="/programs" className={styles.buttonDark}>Explore our work <span>&rarr;</span></Link></div>
+        <div className={styles.solutionCopy} data-reveal>
+          <h2 className={styles.appleSectionHeaderLight}>What We Do</h2>
+          <p className={styles.appleSectionDescLight}>We create pathways in education, healthcare, animal welfare, environmental action, and community support.</p>
+          <Link href="/programs" className={styles.appleButtonLight}>Explore our work &rarr;</Link>
+        </div>
         <div className={styles.solutionPhoto} data-parallax="-50"><Image src="/images/optimized/full-team.webp" alt="Paksarzameen team" fill sizes="(max-width: 820px) 100vw, 50vw" className={styles.coverImage} /></div>
       </section>
 
       <section className={styles.departments} aria-labelledby="departments-heading">
-        <div className={styles.departmentHeading} data-reveal><p className={styles.sectionLabel}>03 - Departments</p><h2 id="departments-heading">Turn a page.<br /><em>Find a way forward.</em></h2><p>Scroll through the chapters to reveal each part of the mission.</p></div>
+        <div className={styles.departmentHeading} data-reveal>
+          <h2 id="departments-heading" className={styles.appleSectionHeader}>Departments</h2>
+          <p className={styles.appleSectionDesc}>Scroll to explore the chapters of PakSarZameen and see our work in action.</p>
+        </div>
+        
         <div className={styles.bookStage} data-reveal>
-          <div className={styles.book} aria-label="Interactive visual collection of Paksarzameen departments">
-            <div className={styles.bookSpine} />
-            {PROGRAM_CARDS.map((program, index) => (
-              <div className={styles.bookPage} style={{ "--page": index } as CSSProperties} key={program.name}>
-                <Link href="/programs" className={styles.pageSurface}>
-                  <Image src={chapterVisuals[index]} alt="" fill sizes="(max-width: 820px) 78vw, 30vw" className={styles.pageImage} />
-                  <div className={styles.pageShade} />
-                  <div className={styles.pageText}><span>0{index + 1}</span><strong>{program.name}</strong><small>{program.tag}</small></div>
-                </Link>
-              </div>
-            ))}
+          {/* Desktop Double-Page Book (min-width: 821px) */}
+          <div className={styles.bookContainer} aria-label="Interactive horizontal book of Paksarzameen departments">
+            <div className={styles.bookInner}>
+              <div className={styles.leftUnderlay} />
+              <div className={styles.rightUnderlay} />
+              <div className={styles.bookSpine} />
+
+              {Array.from({ length: 7 }).map((_, index) => {
+                return (
+                  <div
+                    key={`desktop-sheet-${index}`}
+                    className={`${styles.bookSheet} book-sheet-el`}
+                  >
+                    {/* Front Face of the Sheet */}
+                    <div className={styles.pageFront}>
+                      {index === 0 ? (
+                        /* Book Cover */
+                        <div className={styles.coverPage}>
+                          <Image src="/paksarzameen_logo.png" alt="Paksarzameen" width={160} height={70} style={{ objectFit: "contain", filter: "brightness(0) invert(1)" }} />
+                          <h3 className={styles.coverTitle}>PakSarZameen</h3>
+                          <p className={styles.coverSubtitle}>Chapters of Progress</p>
+                          <span className={styles.coverPrompt}>Scroll to explore</span>
+                        </div>
+                      ) : (
+                        /* Photo Page */
+                        <div className={styles.photoPage}>
+                          <div className={styles.photoFrame}>
+                            <Image
+                              src={chapterVisuals[index - 1]}
+                              alt={PROGRAM_CARDS[index - 1].name}
+                              fill
+                              sizes="(max-width: 820px) 100vw, 40vw"
+                              style={{ objectFit: "cover" }}
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Back Face of the Sheet */}
+                    <div className={styles.pageBack}>
+                      {index === 6 ? (
+                        /* Back Cover */
+                        <div className={styles.coverPage}>
+                          <h3 className={styles.coverTitle}>Our Journey</h3>
+                          <p className={styles.coverSubtitle}>Continues with you</p>
+                          <Link href="/get-involved" className={styles.coverPrompt} style={{ display: "inline-block", textDecoration: "none", cursor: "pointer" }}>
+                            Join the mission &rarr;
+                          </Link>
+                        </div>
+                      ) : (
+                        /* Program Text Page */
+                        <div className={styles.paperPage}>
+                          <div className={styles.paperHeading}>
+                            <span className={styles.paperTag}>{PROGRAM_CARDS[index].tag}</span>
+                            <span className={styles.paperNum}>0{index + 1}</span>
+                          </div>
+                          <div className={styles.paperBody}>
+                            <h4 className={styles.paperTitle}>{PROGRAM_CARDS[index].name}</h4>
+                            <p className={styles.paperSubtitle}>{PROGRAM_CARDS[index].subtitle}</p>
+                            <p className={styles.paperDesc}>{PROGRAM_CARDS[index].desc}</p>
+                          </div>
+                          <Link href="/programs" className={styles.paperCta}>
+                            Explore program &rarr;
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Mobile Single-Page Notebook Book (max-width: 820px) */}
+          <div className={styles.bookContainerMobile} aria-label="Interactive mobile book of Paksarzameen departments">
+            <div className={styles.bookInnerMobile}>
+              <div className={styles.bookSpineMobile} />
+
+              {Array.from({ length: 8 }).map((_, index) => {
+                return (
+                  <div
+                    key={`mobile-sheet-${index}`}
+                    className={`${styles.bookSheetMobile} book-sheet-mobile-el`}
+                  >
+                    <div className={styles.pageFrontMobile}>
+                      {index === 0 ? (
+                        /* Mobile Book Cover */
+                        <div className={styles.coverPage} style={{ height: "100%" }}>
+                          <Image src="/paksarzameen_logo.png" alt="Paksarzameen" width={140} height={60} style={{ objectFit: "contain", filter: "brightness(0) invert(1)" }} />
+                          <h3 className={styles.coverTitle} style={{ fontSize: "2rem" }}>PakSarZameen</h3>
+                          <p className={styles.coverSubtitle}>Chapters of Progress</p>
+                          <span className={styles.coverPrompt}>Scroll to explore</span>
+                        </div>
+                      ) : index === 7 ? (
+                        /* Mobile Back Cover */
+                        <div className={styles.coverPage} style={{ height: "100%" }}>
+                          <h3 className={styles.coverTitle} style={{ fontSize: "2rem" }}>Our Journey</h3>
+                          <p className={styles.coverSubtitle}>Continues with you</p>
+                          <Link href="/get-involved" className={styles.coverPrompt} style={{ display: "inline-block", textDecoration: "none" }}>
+                            Join the mission &rarr;
+                          </Link>
+                        </div>
+                      ) : (
+                        /* Mobile Program Page (Photo top, Text bottom) */
+                        <>
+                          <div className={styles.mobilePhotoFrame}>
+                            <Image
+                              src={chapterVisuals[index - 1]}
+                              alt={PROGRAM_CARDS[index - 1].name}
+                              fill
+                              sizes="(max-width: 820px) 90vw, 10vw"
+                              style={{ objectFit: "cover" }}
+                            />
+                          </div>
+                          <div className={styles.mobilePageContent}>
+                            <div>
+                              <span className={styles.mobileTag}>{PROGRAM_CARDS[index - 1].tag}</span>
+                              <h4 className={styles.mobileTitle}>{PROGRAM_CARDS[index - 1].name}</h4>
+                              <p className={styles.mobileSubtitle}>{PROGRAM_CARDS[index - 1].subtitle}</p>
+                              <p className={styles.mobileDesc}>{PROGRAM_CARDS[index - 1].desc}</p>
+                            </div>
+                            <Link href="/programs" className={styles.mobileCta}>
+                              Explore program &rarr;
+                            </Link>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                    <div className={styles.pageBackMobile} />
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </section>
 
       <section id="home-life-at-psz" className={styles.life}>
-        <div className={styles.lifeVisual}><div className={styles.lifeImageOne} data-parallax="40"><Image src={HEART_MEMBERS[0].image} alt="Life at Paksarzameen" fill sizes="(max-width: 820px) 72vw, 34vw" className={styles.coverImage} /></div><div className={styles.lifeImageTwo} data-parallax="-40"><Image src={HEART_MEMBERS[1].image} alt="Paksarzameen volunteers" fill sizes="(max-width: 820px) 56vw, 23vw" className={styles.coverImage} /></div></div>
-        <div className={styles.lifeCopy} data-reveal><p className={styles.sectionLabel}>04 - Life at PSZ</p><h2>Care, in<br /><em>motion.</em></h2><p>People who listen, make, learn, and show up for each other.</p><Link href="#home-team" className={styles.inlineLink}>Meet the team <span>&rarr;</span></Link></div>
+        <div className={styles.lifeVisual}>
+          <div className={styles.lifeImageOne} data-parallax="40">
+            <Image src={HEART_MEMBERS[0].image} alt="Life at Paksarzameen" fill sizes="(max-width: 820px) 72vw, 34vw" className={styles.coverImage} />
+          </div>
+          <div className={styles.lifeImageTwo} data-parallax="-40">
+            <Image src={HEART_MEMBERS[1].image} alt="Paksarzameen volunteers" fill sizes="(max-width: 820px) 56vw, 23vw" className={styles.coverImage} />
+          </div>
+        </div>
+        <div className={styles.lifeCopy} data-reveal>
+          <h2 className={styles.appleSectionHeader}>Life at PSZ</h2>
+          <p className={styles.appleSectionDesc}>People who listen, make, learn, and show up for each other.</p>
+          <Link href="#home-team" className={styles.appleLink}>Meet the team &rarr;</Link>
+        </div>
       </section>
 
       <section id="home-team" className={styles.team} aria-labelledby="team-heading">
-        <div className={styles.teamHeading} data-reveal><p className={styles.sectionLabel}>05 - The team</p><h2 id="team-heading">The people<br /><em>behind PSZ.</em></h2></div>
+        <div className={styles.teamHeading} data-reveal>
+          <h2 id="team-heading" className={styles.appleSectionHeaderLight}>The Team</h2>
+          <p className={styles.appleSectionDescLight}>The people behind PakSarZameen bringing community-led change to life.</p>
+        </div>
         <div className={styles.teamGallery} data-reveal>
-          {HEART_MEMBERS.map((member, index) => <figure className={styles.teamMember} key={member.image}><Image src={member.image} alt={`Paksarzameen team member ${index + 1}`} fill sizes="(max-width: 820px) 47vw, 23vw" className={styles.coverImage} /><figcaption>PSZ / 0{index + 1}</figcaption></figure>)}
+          {HEART_MEMBERS.map((member, index) => (
+            <figure className={styles.teamMember} key={member.image}>
+              <Image src={member.image} alt={`Paksarzameen team member ${index + 1}`} fill sizes="(max-width: 820px) 47vw, 23vw" className={styles.coverImage} />
+              <figcaption>PSZ / 0{index + 1}</figcaption>
+            </figure>
+          ))}
         </div>
       </section>
 
       <section className={styles.outreach} aria-label="Explore Paksarzameen">
-        <p className={styles.sectionLabel}>06 - Continue the story</p>
-        <div className={styles.outreachGrid}>{journeyLinks.map(([label, href], index) => <Link key={label} href={href} target={href.startsWith("http") ? "_blank" : undefined} rel={href.startsWith("http") ? "noopener noreferrer" : undefined} className={styles.outreachLink} data-reveal><span>0{index + 1}</span><strong>{label}</strong><i></i></Link>)}</div>
+        <h2 className={styles.appleSectionHeader} data-reveal>Explore More</h2>
+        <div className={styles.outreachGrid}>
+          {journeyLinks.map(([label, href], index) => (
+            <Link key={label} href={href} target={href.startsWith("http") ? "_blank" : undefined} rel={href.startsWith("http") ? "noopener noreferrer" : undefined} className={styles.outreachLink} data-reveal>
+              <span>0{index + 1}</span>
+              <strong>{label}</strong>
+              <i></i>
+            </Link>
+          ))}
+        </div>
       </section>
 
-      <section className={styles.closing}><p className={styles.sectionLabel}>Paksarzameen</p><h2 data-reveal>Make the next<br />chapter possible.</h2><div className={styles.closingActions} data-reveal><Link href="/get-involved" className={styles.buttonDark}>Get involved <span>&rarr;</span></Link><Link href="/contact" className={styles.inlineLink}>Contact <span>&rarr;</span></Link></div></section>
+      <section className={styles.closing}>
+        <h2 data-reveal className={styles.appleSectionHeaderLight}>Make the next chapter possible</h2>
+        <div className={styles.closingActions} data-reveal>
+          <Link href="/get-involved" className={styles.appleButtonLight}>Get involved &rarr;</Link>
+          <Link href="/contact" className={styles.appleLinkLight}>Contact &rarr;</Link>
+        </div>
+      </section>
     </main>
   );
-}
+});

@@ -281,46 +281,6 @@
     },
     "blurDataURL": "data:image/webp;base64,UklGRlYAAABXRUJQVlA4IEoAAACwAwCdASoQAB0APzmGulOvKSWisAgB4CcJagC06A9QGS9ScqtTgAD9RAJMjz8cEzSe7m1sJatSqGi7eJdynR8oa7My70ueCdV4AA=="
   },
-  "/images/placeholders/10.png": {
-    "optimized": {
-      "sm": "/images/optimized/placeholders/10-sm.webp",
-      "md": "/images/optimized/placeholders/10-md.webp",
-      "lg": "/images/optimized/placeholders/10-lg.webp",
-      "xl": "/images/optimized/placeholders/10-xl.webp",
-      "full": "/images/optimized/placeholders/10.webp"
-    },
-    "blurDataURL": "data:image/webp;base64,UklGRrgAAABXRUJQVlA4WAoAAAAQAAAADwAAEwAAQUxQSGkAAAABcGPb1vHc+yu2batObTtps9Ja48nKYK0BRMQE4D/zFYIAwUcqFwTCo9wj6iVbqmjJV+4Q5ll5eTyuahPDvWg1c75etulqBAQAzcyA5giGuRq3RLbvHS883Rx4AyBsEQVLCB8kAfCZnwYAVlA4ICgAAACwAgCdASoQABQAPzmEuVOvKKWisAgB4CcJaQAAeyAA/u7hQ3HoAAAA"
-  },
-  "/images/placeholders/11.png": {
-    "optimized": {
-      "sm": "/images/optimized/placeholders/11-sm.webp",
-      "md": "/images/optimized/placeholders/11-md.webp",
-      "lg": "/images/optimized/placeholders/11-lg.webp",
-      "xl": "/images/optimized/placeholders/11-xl.webp",
-      "full": "/images/optimized/placeholders/11.webp"
-    },
-    "blurDataURL": "data:image/webp;base64,UklGRhoBAABXRUJQVlA4WAoAAAAQAAAADwAAEwAAQUxQSJgAAAABgFtt2/Lkfr4vf3p3T2pXoHN39wlIGSawfWg5mYLOVqB1dxkgIiaAPylZA8h8gPi8O9+YqrscshUHEN524/LUD67dDMIwvEL7qbs/Te+aQPSVCZ89PTyNeKYQYqEB/Z21q3Jsx4LIjUPPXnqs0GwgwJkYOXq8ve52Nj1vRGrk5Onh6Xi8gHgrqC6POEi8ZwVgDJ801or/EVZQOCBcAAAAMAMAnQEqEAAUAD85hLlTryilorAIAeAnCWkAAEqUrxwbsAD+ufpR6m3DfBq1OnXqdaPwv0bVjdeFJ98R+8443wPxs0xwlLIGKYzVj6dzLOX156HWoaQbU/OgQAA="
-  },
-  "/images/placeholders/12.png": {
-    "optimized": {
-      "sm": "/images/optimized/placeholders/12-sm.webp",
-      "md": "/images/optimized/placeholders/12-md.webp",
-      "lg": "/images/optimized/placeholders/12-lg.webp",
-      "xl": "/images/optimized/placeholders/12-xl.webp",
-      "full": "/images/optimized/placeholders/12.webp"
-    },
-    "blurDataURL": "data:image/webp;base64,UklGRsYAAABXRUJQVlA4WAoAAAAQAAAADwAAEwAAQUxQSG0AAAABcFpt27I8n/w6wV//5NWw5kzgVJpDojKB1m8BGrvYGrqA2wARMQH4k+QlKArIEwR6lCCEPAItGUpGxWOlvGmZ65Z8j6HVriymk3ET7IZjuAqSfkp07jFkj9fl7HjO3gNgicNW2PggpQClz/xVAFZQOCAyAAAAsAIAnQEqEAAUAD85iLlULyklozAIAeAnCWkAAHsgAP7vDTro9K4gqp4Wh9o22KGAAAA="
-  },
-  "/images/placeholders/13.png": {
-    "optimized": {
-      "sm": "/images/optimized/placeholders/13-sm.webp",
-      "md": "/images/optimized/placeholders/13-md.webp",
-      "lg": "/images/optimized/placeholders/13-lg.webp",
-      "xl": "/images/optimized/placeholders/13-xl.webp",
-      "full": "/images/optimized/placeholders/13.webp"
-    },
-    "blurDataURL": "data:image/webp;base64,UklGRtoAAABXRUJQVlA4WAoAAAAQAAAADwAAEwAAQUxQSIwAAAABgGPb1rLmfoLW0LOofDju0NK5zcPdndIdklRuZbrUYQhxzwAiYgLwOwljjJHPfJVCUfXZikrQ9zj8Tw+HpwD4GwJJwrE4uj+2R6XvidZ57+mdJ3ksBAHAEHm8thrODzEwACAQpJ96zae8EOQNCMHJfn4KELwHLEbDPT4pkOvVKr1M8BHhlHPKyUf/O1ZQOCAoAAAAsAIAnQEqEAAUAD85hrpTryklorAIAeAnCWkAAHsgAP7up819fOAAAA=="
-  },
   "/images/placeholders/14.png": {
     "optimized": {
       "sm": "/images/optimized/placeholders/14-sm.webp",
@@ -331,13 +291,53 @@
     },
     "blurDataURL": "data:image/webp;base64,UklGRhABAABXRUJQVlA4WAoAAAAQAAAADwAAEwAAQUxQSJAAAAABgFtt27Lmft8Xp4YZbANvnQ3YgkNJvHJP5Z4FMoFbnZOatO7uLn1ETABfrSofMAMQU3tDFHFF0l4QBcHXmKHr8X63FGr2IygLj7XVx7vHncN1AKP8eHH88Hiz/9iGgeAYfNyuP9avloIIgFAdXLwaaQ8gAEblYLyvc3hvmjeFaFYQYum3XquZ8kE1ANX3/ldWUDggWgAAABADAJ0BKhAAFAA/OYS5U68opaKwCAHgJwlpAABMhL3I+AD8XwA+TlYNZ2AI9BDxvW98+cpT16Xe6BhwW2hUoZLfQ86cHgaKLZceVfLTLJuNtcWqznlF+ljAAA=="
   },
-  "/images/placeholders/15.png": {
+  "/images/placeholders/Ehsas-ul-Haiwanat.png": {
     "optimized": {
-      "sm": "/images/optimized/placeholders/15-sm.webp",
-      "md": "/images/optimized/placeholders/15-md.webp",
-      "lg": "/images/optimized/placeholders/15-lg.webp",
-      "xl": "/images/optimized/placeholders/15-xl.webp",
-      "full": "/images/optimized/placeholders/15.webp"
+      "sm": "/images/optimized/placeholders/ehsas-ul-haiwanat-sm.webp",
+      "md": "/images/optimized/placeholders/ehsas-ul-haiwanat-md.webp",
+      "lg": "/images/optimized/placeholders/ehsas-ul-haiwanat-lg.webp",
+      "xl": "/images/optimized/placeholders/ehsas-ul-haiwanat-xl.webp",
+      "full": "/images/optimized/placeholders/ehsas-ul-haiwanat.webp"
+    },
+    "blurDataURL": "data:image/webp;base64,UklGRhoBAABXRUJQVlA4WAoAAAAQAAAADwAAEwAAQUxQSJgAAAABgFtt2/Lkfr4vf3p3T2pXoHN39wlIGSawfWg5mYLOVqB1dxkgIiaAPylZA8h8gPi8O9+YqrscshUHEN524/LUD67dDMIwvEL7qbs/Te+aQPSVCZ89PTyNeKYQYqEB/Z21q3Jsx4LIjUPPXnqs0GwgwJkYOXq8ve52Nj1vRGrk5Onh6Xi8gHgrqC6POEi8ZwVgDJ801or/EVZQOCBcAAAAMAMAnQEqEAAUAD85hLlTryilorAIAeAnCWkAAEqUrxwbsAD+ufpR6m3DfBq1OnXqdaPwv0bVjdeFJ98R+8443wPxs0xwlLIGKYzVj6dzLOX156HWoaQbU/OgQAA="
+  },
+  "/images/placeholders/room-zia.png": {
+    "optimized": {
+      "sm": "/images/optimized/placeholders/room-zia-sm.webp",
+      "md": "/images/optimized/placeholders/room-zia-md.webp",
+      "lg": "/images/optimized/placeholders/room-zia-lg.webp",
+      "xl": "/images/optimized/placeholders/room-zia-xl.webp",
+      "full": "/images/optimized/placeholders/room-zia.webp"
+    },
+    "blurDataURL": "data:image/webp;base64,UklGRsYAAABXRUJQVlA4WAoAAAAQAAAADwAAEwAAQUxQSG0AAAABcFpt27I8n/w6wV//5NWw5kzgVJpDojKB1m8BGrvYGrqA2wARMQH4k+QlKArIEwR6lCCEPAItGUpGxWOlvGmZ65Z8j6HVriymk3ET7IZjuAqSfkp07jFkj9fl7HjO3gNgicNW2PggpQClz/xVAFZQOCAyAAAAsAIAnQEqEAAUAD85iLlULyklozAIAeAnCWkAAHsgAP7vDTro9K4gqp4Wh9o22KGAAAA="
+  },
+  "/images/placeholders/shajarkari.png": {
+    "optimized": {
+      "sm": "/images/optimized/placeholders/shajarkari-sm.webp",
+      "md": "/images/optimized/placeholders/shajarkari-md.webp",
+      "lg": "/images/optimized/placeholders/shajarkari-lg.webp",
+      "xl": "/images/optimized/placeholders/shajarkari-xl.webp",
+      "full": "/images/optimized/placeholders/shajarkari.webp"
+    },
+    "blurDataURL": "data:image/webp;base64,UklGRrgAAABXRUJQVlA4WAoAAAAQAAAADwAAEwAAQUxQSGkAAAABcGPb1vHc+yu2batObTtps9Ja48nKYK0BRMQE4D/zFYIAwUcqFwTCo9wj6iVbqmjJV+4Q5ll5eTyuahPDvWg1c75etulqBAQAzcyA5giGuRq3RLbvHS883Rx4AyBsEQVLCB8kAfCZnwYAVlA4ICgAAACwAgCdASoQABQAPzmEuVOvKKWisAgB4CcJaQAAeyAA/u7hQ3HoAAAA"
+  },
+  "/images/placeholders/Tibi-Imdad.png": {
+    "optimized": {
+      "sm": "/images/optimized/placeholders/tibi-imdad-sm.webp",
+      "md": "/images/optimized/placeholders/tibi-imdad-md.webp",
+      "lg": "/images/optimized/placeholders/tibi-imdad-lg.webp",
+      "xl": "/images/optimized/placeholders/tibi-imdad-xl.webp",
+      "full": "/images/optimized/placeholders/tibi-imdad.webp"
+    },
+    "blurDataURL": "data:image/webp;base64,UklGRtoAAABXRUJQVlA4WAoAAAAQAAAADwAAEwAAQUxQSIwAAAABgGPb1rLmfoLW0LOofDju0NK5zcPdndIdklRuZbrUYQhxzwAiYgLwOwljjJHPfJVCUfXZikrQ9zj8Tw+HpwD4GwJJwrE4uj+2R6XvidZ57+mdJ3ksBAHAEHm8thrODzEwACAQpJ96zae8EOQNCMHJfn4KELwHLEbDPT4pkOvVKr1M8BHhlHPKyUf/O1ZQOCAoAAAAsAIAnQEqEAAUAD85hrpTryklorAIAeAnCWkAAHsgAP7up819fOAAAA=="
+  },
+  "/images/placeholders/wajood-e-zan.png": {
+    "optimized": {
+      "sm": "/images/optimized/placeholders/wajood-e-zan-sm.webp",
+      "md": "/images/optimized/placeholders/wajood-e-zan-md.webp",
+      "lg": "/images/optimized/placeholders/wajood-e-zan-lg.webp",
+      "xl": "/images/optimized/placeholders/wajood-e-zan-xl.webp",
+      "full": "/images/optimized/placeholders/wajood-e-zan.webp"
     },
     "blurDataURL": "data:image/webp;base64,UklGRpgAAABXRUJQVlA4WAoAAAAQAAAADwAAEwAAQUxQSE4AAAABcCTbtlmd2E7LtpNvzH9iVj8iJgCfShLPPK022iMEqv1ogr5DQLvSo/GQ7cH2WZ2+BZAMnILYCvdAUYnTzyDuEYR3qFg8TPF4mnjqbwJWUDggJAAAALACAJ0BKhAAFAA/OYa6VC8pJaMwCAHgJwlpAAB7IAD+73JAAA=="
   },

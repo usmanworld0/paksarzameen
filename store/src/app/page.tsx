@@ -69,11 +69,7 @@ export default async function HomePage() {
 
             <section className="store-section bg-white">
               <div className="store-container">
-                <div className="mb-12 text-center">
-                  <p className="store-kicker">Artisans</p>
-                  <h2 className="store-heading mt-4">Meet the Makers</h2>
-                </div>
-
+  
                 <div className="grid grid-cols-2 gap-6 sm:grid-cols-2 md:grid-cols-4">
                   {artists.slice(0, 5).map((artist) => (
                     <ArtistCard key={artist.id} artist={artist} />
@@ -107,10 +103,6 @@ export default async function HomePage() {
 
             <section id="featured" className="store-section bg-white">
               <div className="store-container">
-                <div className="mb-12 text-center">
-                  <p className="store-kicker">Products</p>
-                  <h2 className="store-heading mt-4">Featured Pieces</h2>
-                </div>
 
                 <div className="grid grid-cols-2 gap-6 sm:grid-cols-2 md:grid-cols-4">
                   {featured.map((product) => (
@@ -122,18 +114,7 @@ export default async function HomePage() {
           </>
         )}
 
-        <div className="border-y border-black/6 bg-white">
-          <div className="store-container">
-            <div className="flex flex-col gap-4 py-8 lg:flex-row lg:items-center lg:justify-between">
-              <p className="store-kicker text-neutral-500">Purposeful Commerce</p>
-              <p className="max-w-4xl text-[1.05rem] leading-8 tracking-[-0.02em] text-neutral-900 sm:text-[1.2rem]">
-                Every purchase is designed to feel premium while staying rooted
-                in impact. 100% of profits support artisan communities and
-                PakSarZameen social programmes.
-              </p>
-            </div>
-          </div>
-        </div>
+
 
         {/* Promotional card removed per request */}
       </main>

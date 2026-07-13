@@ -68,72 +68,43 @@ export default async function CategoryPage({
   return (
     <>
       <Navbar />
-      <main className="pt-[72px]">
-        <section className="store-section bg-[#fffaf6]">
+
+      {/* Slim customise-order banner */}
+      <div className="fixed inset-x-0 top-[76px] z-40 flex items-center justify-center gap-3 border-b border-black/8 bg-[#f7f5f2]/95 px-4 py-2 backdrop-blur-sm">
+        <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-neutral-500">
+          Customize your order
+        </span>
+        <span className="h-3 w-px bg-neutral-300" />
+        {hasCustomizationFlow ? (
+          <Link
+            href={`/customizations/${category.slug}`}
+            className="text-[10px] font-semibold uppercase tracking-[0.22em] text-neutral-900 underline-offset-2 hover:underline"
+          >
+            Start Customizing →
+          </Link>
+        ) : (
+          <Link
+            href="/contact"
+            className="text-[10px] font-semibold uppercase tracking-[0.22em] text-neutral-900 underline-offset-2 hover:underline"
+          >
+            Request Custom Design →
+          </Link>
+        )}
+      </div>
+
+      <main className="pt-[108px]">
+        <section className="bg-[#fffaf6] pb-16 pt-8 lg:pt-12">
           <div className="store-container max-w-[1320px]">
-            <div className="mb-12 border-b border-[#e6d9cf] pb-8 sm:mb-16 sm:pb-10">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-[#2c3d31]/70">
-                Category
-              </p>
-              <h1 className="store-heading mb-2">
-                {category.name}
-              </h1>
-              {category.description && (
-                <p className="store-subheading max-w-xl">
-                  {category.description}
-                </p>
-              )}
-              <p className="text-xs text-neutral-400 mt-3">
+            {/* Category title only */}
+            <div className="mb-6 border-b border-[#e6d9cf] pb-5">
+              <h1 className="store-heading">{category.name}</h1>
+              <p className="text-xs text-neutral-400 mt-2">
                 {total} {total === 1 ? "product" : "products"}
               </p>
             </div>
 
-            <section className="mb-10 rounded-3xl border border-[#e3d6cb] bg-gradient-to-r from-[#fff9f3] via-[#fdf8f4] to-[#faf6f2] p-6 shadow-[0_14px_45px_rgba(26,20,15,0.06)] sm:mb-14 sm:p-8">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[#2c3d31]/70">
-                Make Your Own
-              </p>
-              <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <h2 className="text-2xl leading-tight text-[#1f2d24] sm:text-3xl">
-                    Build your own {category.name} piece
-                  </h2>
-                  <p className="mt-2 max-w-2xl text-sm text-neutral-600 sm:text-base">
-                    {hasCustomizationFlow
-                      ? `Start a tailored order for ${category.name} with your preferred options, finish, and details.`
-                      : `Customization for ${category.name} is opening soon. Share your requirements and we will help you create your own design.`}
-                  </p>
-                </div>
-                {hasCustomizationFlow ? (
-                  <Link
-                    href={`/customizations/${category.slug}`}
-                    className="inline-flex items-center justify-center rounded-full bg-[#2c3d31] px-6 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-white transition-all hover:-translate-y-0.5 hover:bg-[#1f2d24]"
-                  >
-                    Start Customizing
-                  </Link>
-                ) : (
-                  <Link
-                    href="/contact"
-                    className="inline-flex items-center justify-center rounded-full border border-[#2c3d31]/20 bg-white px-6 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-[#2c3d31] transition-all hover:-translate-y-0.5 hover:border-[#2c3d31]"
-                  >
-                    Request Custom Design
-                  </Link>
-                )}
-              </div>
-            </section>
-
+            {/* Product grid */}
             <section className="mb-14 sm:mb-16">
-              <div className="mb-6 sm:mb-8">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[#2c3d31]/70">
-                  Launch Series
-                </p>
-                <h2 className="mt-2 text-3xl leading-tight text-neutral-900 sm:text-4xl">
-                  Ready-to-order collection
-                </h2>
-                <p className="mt-2 text-sm text-neutral-500 sm:text-base">
-                  Explore all currently available products in the {category.name} launch series.
-                </p>
-              </div>
-
               {products.length === 0 ? (
                 <div className="store-card rounded-[22px] py-20 text-center">
                   <p className="text-neutral-400 text-sm">
@@ -168,30 +139,6 @@ export default async function CategoryPage({
                 </>
               )}
             </section>
-
-            <section className="rounded-3xl border border-[#e7ddd5] bg-white/85 p-6 shadow-[0_12px_36px_rgba(24,18,12,0.05)] sm:p-8">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[#2c3d31]/70">
-                Designers & Collaborations
-              </p>
-              <h2 className="mt-2 text-2xl leading-tight text-neutral-900 sm:text-3xl">
-                A future space for your original designs
-              </h2>
-              <p className="mt-3 max-w-3xl text-sm leading-relaxed text-neutral-600 sm:text-base">
-                We are preparing a creator-first section where designers can submit and showcase their own designs, collaborate with artisans, and launch limited editions through PakSarZameen Store.
-              </p>
-              <div className="mt-5 flex flex-wrap gap-3">
-                <span className="rounded-full border border-[#e6dbd2] bg-[#faf7f4] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-neutral-600">
-                  Coming Soon
-                </span>
-                <Link
-                  href="/contact"
-                  className="inline-flex items-center rounded-full border border-[#2c3d31]/20 bg-white px-5 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#2c3d31] transition-colors hover:border-[#2c3d31]"
-                >
-                  Join Waitlist
-                </Link>
-              </div>
-            </section>
-
           </div>
         </section>
       </main>

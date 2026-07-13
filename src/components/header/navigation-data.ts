@@ -25,7 +25,7 @@ export const navigationEntries: NavigationEntry[] = [
         description: "Understand the context we are responding to.",
       },
       {
-        label: "What We Do (Solution)",
+        label: "What We Do? (Solution)",
         href: "/#home-solution",
         description: "See the programs and approach in action.",
       },

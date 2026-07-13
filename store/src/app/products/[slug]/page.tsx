@@ -72,31 +72,6 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
     <>
       <Navbar />
       <main className="bg-white pt-[72px]">
-        <section className="border-b border-black/6 bg-[#fcfbf8]">
-          <div className="store-container flex flex-col gap-3 py-5 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-neutral-400">
-              <Link href="/" className="transition-colors hover:text-neutral-950">
-                Home
-              </Link>
-              <span>/</span>
-              <Link href="/products" className="transition-colors hover:text-neutral-950">
-                Shop
-              </Link>
-              <span>/</span>
-              <Link
-                href={`/categories/${product.category.slug}`}
-                className="transition-colors hover:text-neutral-950"
-              >
-                {product.category.name}
-              </Link>
-              <span>/</span>
-              <span className="text-neutral-700">{product.name}</span>
-            </div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-neutral-400">
-              {getRegionBadgeLabel(region)}
-            </p>
-          </div>
-        </section>
 
         <section className="bg-white lg:h-[calc(100vh-144px)] lg:overflow-hidden">
           <div className="grid grid-cols-1 lg:h-full lg:grid-cols-[minmax(0,1.08fr)_minmax(400px,0.92fr)]">
@@ -110,12 +85,12 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
 
               <div className="max-w-xl px-5 py-10 sm:px-8 lg:h-full lg:max-w-[560px] lg:justify-self-center lg:overflow-y-auto lg:px-10 lg:py-[clamp(3rem,9vh,7rem)] scrollbar-thin">
                 <p className="store-kicker text-center">{product.category.name}</p>
-                <h1 className="mt-3 text-center text-[clamp(2.4rem,4.4vw,4.6rem)] leading-[0.9] tracking-[-0.07em] text-neutral-950">
+                <h1 className="mt-2 text-center text-3xl sm:text-4xl leading-[1.1] tracking-[-0.04em] text-neutral-950">
                   {product.name}
                 </h1>
 
                 {product.artist && (
-                  <p className="mt-4 text-center text-sm text-neutral-500">
+                  <p className="mt-2 text-center text-sm text-neutral-500">
                     By{" "}
                     <Link
                       href={`/artists/${product.artist.id}`}
@@ -126,12 +101,12 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
                   </p>
                 )}
 
-                <div className="mt-8 border-b border-black/10 pb-8 text-center">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-neutral-400">
+                <div className="mt-6 border-b border-black/10 pb-6 text-center">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-neutral-400">
                     {getRegionBadgeLabel(region)}
                   </p>
-                  <div className="mt-3 flex flex-wrap items-end justify-center gap-3">
-                    <span className="text-3xl font-semibold tracking-[-0.05em] text-neutral-950 sm:text-[2.3rem]">
+                  <div className="mt-2 flex flex-wrap items-end justify-center gap-3">
+                    <span className="text-2xl font-semibold tracking-[-0.04em] text-neutral-950 sm:text-3xl">
                       {formatRegionalPrice(discountedPrice ?? regionalPricing.price, region)}
                     </span>
                     {discountedPrice && (
@@ -147,14 +122,7 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
                   </div>
                 </div>
 
-                <div className="mt-8 border-y border-black/10 py-4 text-sm text-neutral-700">
-                  <p className="py-1.5">{product.stock > 0 ? "Available to order" : "Currently sold out"}</p>
-                  <p className="py-1.5">Hand-finished by skilled Paksarzameen artisans.</p>
-                  <p className="py-1.5">Secure checkout after cart review.</p>
-                  <p className="py-1.5">Your purchase supports artisan livelihoods and PSZ programmes.</p>
-                </div>
-
-                <div className="mt-8 border-t border-black/10 pt-7">
+                <div className="mt-6">
                   {selectedArtist ? (
                     <>
                       <div className="mb-5 flex items-center justify-between border-b border-black/10 pb-4">
@@ -196,12 +164,6 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
                       Choose artist <span aria-hidden>&rarr;</span>
                     </Link>
                   )}
-                </div>
-
-                <div className="mt-6 flex flex-wrap gap-3">
-                  <Link href="/cart" className="store-button-secondary">
-                    View Cart
-                  </Link>
                 </div>
 
                 <div className="mt-7">

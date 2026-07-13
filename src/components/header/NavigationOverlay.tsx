@@ -186,7 +186,7 @@ export function NavigationOverlay({ open, onClose, triggerRef, entries }: Naviga
     <div
       ref={overlayRef}
       id="psz-navigation-overlay"
-      className="fixed inset-0 z-[80] overflow-hidden bg-[#0b3150]"
+      className="fixed inset-0 z-[80] overflow-hidden bg-[#0b2116]"
       aria-hidden={!open}
       role="dialog"
       aria-modal="true"
@@ -198,18 +198,18 @@ export function NavigationOverlay({ open, onClose, triggerRef, entries }: Naviga
       }}
     >
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_14%,rgba(19,86,133,0.45),transparent_28%),radial-gradient(circle_at_78%_18%,rgba(255,255,255,0.08),transparent_18%),radial-gradient(circle_at_80%_82%,rgba(15,122,71,0.2),transparent_26%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_14%_8%,rgba(109,165,86,0.26),transparent_29%),radial-gradient(circle_at_83%_18%,rgba(255,255,255,0.09),transparent_16%),radial-gradient(circle_at_75%_90%,rgba(18,89,57,0.34),transparent_32%)]" />
         <div className="absolute inset-x-0 top-0 h-px bg-white/10" />
       </div>
 
-      <div className="relative mx-auto flex h-full w-full max-w-[1600px] flex-col px-[2.2rem] pb-[2.2rem] pt-[2.4rem] md:px-[4rem] md:pb-[3rem] md:pt-[3rem]">
+      <div className="relative mx-auto flex h-full w-full max-w-[1600px] flex-col px-[1.4rem] pb-[1.4rem] pt-[1.5rem] md:px-[4rem] md:pb-[3rem] md:pt-[3rem]">
         <section
           ref={leftPanelRef}
           className="flex h-full min-h-0 flex-col text-white"
         >
           <div className="flex flex-col gap-4 border-b border-white/15 pb-5 md:flex-row md:items-center md:justify-center md:gap-8">
             <form
-              className="relative mx-auto flex w-full max-w-[58rem] items-stretch overflow-hidden rounded-[1rem] border border-white/18 bg-white"
+              className="relative mx-auto flex w-full max-w-[44rem] items-stretch overflow-hidden rounded-full border border-white/18 bg-white/95 shadow-2xl"
               onSubmit={(event) => {
                 event.preventDefault();
               }}
@@ -224,12 +224,12 @@ export function NavigationOverlay({ open, onClose, triggerRef, entries }: Naviga
                   value={queryValue}
                   onChange={(event) => setQueryValue(event.target.value)}
                   placeholder="Search..."
-                  className="w-full bg-transparent text-[1.5rem] font-normal text-[#111111] outline-none placeholder:text-[#7d8693]"
+                  className="w-full bg-transparent text-[1rem] font-normal text-[#111111] outline-none placeholder:text-[#7d8693]"
                 />
               </div>
               <button
                 type="submit"
-                className="min-w-[10rem] bg-[#44b14b] px-5 py-3 text-[1.35rem] font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-[#3da445]"
+                className="min-w-[8rem] bg-[#78a857] px-5 py-3 text-[.68rem] font-semibold uppercase tracking-[0.15em] text-white transition-colors hover:bg-[#3da445]"
               >
                 Submit
               </button>
@@ -241,17 +241,17 @@ export function NavigationOverlay({ open, onClose, triggerRef, entries }: Naviga
               className="absolute right-[2.2rem] top-[2.4rem] inline-flex h-12 w-12 items-center justify-center rounded-full text-white transition-colors hover:bg-white/10 md:right-[4rem] md:top-[3rem]"
               aria-label="Close menu"
             >
-              <X className="h-8 w-8 stroke-[2.5]" />
+              <X className="h-6 w-6 stroke-[2]" />
             </button>
           </div>
-          <div className="mt-6 grid gap-8 lg:grid-cols-4">
+          <div className="mt-8 grid gap-8 lg:grid-cols-4">
             {groupedColumns.map((column) => (
               <section key={column.title} className="space-y-4">
                 <div className="pb-3">
-                  <h3 className="text-[1.8rem] font-semibold uppercase tracking-[0.03em] text-white">
+                  <h3 className="text-[.7rem] font-semibold uppercase tracking-[0.18em] text-white">
                     {column.title}
                   </h3>
-                  <div className="mt-3 h-px w-full bg-[#44b14b]" />
+                  <div className="mt-3 h-px w-full bg-[#9fc98a]" />
                 </div>
                 <div className="space-y-4">
                   {column.items.map((item, itemIndex) => {
@@ -270,7 +270,7 @@ export function NavigationOverlay({ open, onClose, triggerRef, entries }: Naviga
                         href={href}
                         target={external ? "_blank" : undefined}
                         rel={external ? "noopener noreferrer" : undefined}
-                        className={`group flex items-center justify-between gap-3 text-[1.45rem] leading-[1.15] transition-all duration-300 ${
+                        className={`group flex items-center justify-between gap-3 text-[clamp(1.25rem,2vw,2rem)] leading-[1.05] tracking-[-0.04em] transition-all duration-300 ${
                           isHovered ? "translate-x-1 text-white" : "text-white/78 hover:translate-x-1 hover:text-white"
                         }`}
                         onMouseEnter={() => setHoveredKey(`${column.title}-${itemIndex}`)}

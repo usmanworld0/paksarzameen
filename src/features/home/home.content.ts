@@ -136,7 +136,7 @@ export const storiesContent = [
 
 export const HEART_MEMBERS: readonly TeamMember[] = [
   { image: "/images/members/cover.PNG" },
-  { image: "/images/members/IMG_6435.PNG" },
+  { image: "/images/members/1.PNG" },
   { image: "/images/members/IMG_6427.PNG" },
   { image: "/images/members/IMG_6428.PNG" },
   { image: "/images/members/IMG_6431.PNG" },

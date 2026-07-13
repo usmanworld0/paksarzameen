@@ -14,13 +14,6 @@ export function CategorySection({ categories }: CategorySectionProps) {
   return (
     <section className="store-section bg-white">
       <div className="store-container">
-        <div className="mb-12 text-center">
-          <p className="store-kicker">Collections</p>
-          <h2 className="store-heading mt-4">
-            Explore a Selection of the Maison's Creations
-          </h2>
-        </div>
-
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-6">
           {categories.map((category) => {
             const imageSrc = normalizeImageSrc(category.image, "/images/store_header.png");

@@ -50,8 +50,11 @@ export function TunnelHero({ universities }: TunnelHeroProps) {
   });
 
   useEffect(() => {
+    const isTouch = typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches;
+
     // 1. Mouse movement listener for camera tilt
     const handleMouseMove = (e: MouseEvent) => {
+      if (isTouch) return;
       const rect = containerRef.current?.getBoundingClientRect();
       if (!rect) return;
       
@@ -63,12 +66,13 @@ export function TunnelHero({ universities }: TunnelHeroProps) {
     };
 
     const handleMouseLeave = () => {
+      if (isTouch) return;
       targetMouseX.current = 0;
       targetMouseY.current = 0;
     };
 
     const container = containerRef.current;
-    if (container) {
+    if (container && !isTouch) {
       container.addEventListener("mousemove", handleMouseMove);
       container.addEventListener("mouseleave", handleMouseLeave);
     }
@@ -170,15 +174,21 @@ export function TunnelHero({ universities }: TunnelHeroProps) {
               }}
               className={styles.cardWrapper}
               onMouseEnter={() => {
-                isPaused.current = true;
+                const isTouch = window.matchMedia("(pointer: coarse)").matches;
+                if (!isTouch) {
+                  isPaused.current = true;
+                }
               }}
               onMouseLeave={() => {
-                isPaused.current = false;
+                const isTouch = window.matchMedia("(pointer: coarse)").matches;
+                if (!isTouch) {
+                  isPaused.current = false;
+                }
               }}
             >
               <Link href={`/universities/${card.university.slug}`} className={styles.card}>
                 <div className={styles.cardHeader}>
-                  <div className={styles.logoBadge}>
+                  <div className={styles.logoBadge} style={{ background: card.university.logo }}>
                     {card.university.name.substring(0, 2).toUpperCase()}
                   </div>
                   <div className={styles.headerInfo}>

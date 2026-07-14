@@ -111,12 +111,10 @@
   justify-content: center;
   font-family: var(--font-serif), Georgia, serif;
   font-style: italic;
-  font-weight: 400;
+  font-weight: 600;
   font-size: 0.95rem;
-  color: #1d1d1f;
-  background: #faf9f6;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   flex-shrink: 0;
 }
 

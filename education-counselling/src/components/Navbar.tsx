@@ -1,60 +1,40 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
 
 export function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    function onScroll() {
-      setScrolled(window.scrollY > 16);
-    }
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  const chromeClassName = scrolled
-    ? "border-black/8 bg-white/95 text-black backdrop-blur-md shadow-sm"
-    : "border-transparent bg-transparent text-white";
-
-  const actionClassName = scrolled
-    ? "text-black/80 hover:text-black"
-    : "text-white/80 hover:text-white";
-
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-[90] border-b transition-all duration-500 h-[78px] flex items-center ${chromeClassName}`}
+      className="fixed inset-x-0 top-0 z-[90] h-[64px] flex items-center border-b border-black/[0.06] bg-white/80 backdrop-blur-md text-[#1d1d1f]"
     >
-      <nav className="w-full max-w-[1320px] mx-auto px-[6vw] flex justify-between items-center">
-        {/* Sub-site identifier */}
-        <Link href="/" className="flex items-center gap-2">
-          <span className={`text-[12px] font-bold tracking-[0.1em] uppercase ${actionClassName}`}>
+      <nav className="w-full max-w-[1320px] mx-auto px-[6vw] grid grid-cols-3 items-center">
+        {/* Left Column - Subsite identifier */}
+        <Link href="/" className="justify-self-start flex items-center hover:opacity-70 transition-opacity">
+          <span className="text-[11px] font-semibold tracking-[0.12em] uppercase">
             🎓 Counselling Portal
           </span>
         </Link>
 
-        {/* Brand Center Logo */}
+        {/* Center Column - Brand Logo */}
         <a
           href="https://paksarzameenwfo.com"
-          className="text-center font-normal uppercase leading-none tracking-[0.16em] transition-colors"
-          style={{ fontSize: "clamp(1.6rem, 2vw, 2.2rem)" }}
+          className="justify-self-center text-center font-normal uppercase leading-none tracking-[0.16em] text-[#1d1d1f] hover:opacity-70 transition-opacity"
+          style={{ fontSize: "clamp(1.5rem, 1.8vw, 2rem)" }}
         >
           PAKSARZAMEEN
         </a>
 
-        {/* Utilities on Right */}
-        <div className="flex items-center gap-4 sm:gap-6">
+        {/* Right Column - Utilities */}
+        <div className="justify-self-end flex items-center gap-6">
           <a
             href="https://paksarzameenwfo.com/contact"
-            className={`text-[12px] font-normal tracking-[0.01em] transition-colors ${actionClassName}`}
+            className="text-[11px] font-medium tracking-[0.02em] text-[#1d1d1f] hover:opacity-70 transition-opacity"
           >
             Call Us
           </a>
           <a
             href="https://paksarzameenwfo.com"
-            className={`hidden sm:inline-flex text-[12px] font-normal tracking-[0.01em] transition-colors ${actionClassName}`}
+            className="hidden sm:inline-flex text-[11px] font-medium tracking-[0.02em] text-[#1d1d1f] hover:opacity-70 transition-opacity"
           >
             Main Site &rarr;
           </a>

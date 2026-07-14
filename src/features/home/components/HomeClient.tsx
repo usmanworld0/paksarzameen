@@ -2,12 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, memo, useState, type CSSProperties } from "react";
+import { useEffect, useRef, memo, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import * as THREE from "three";
-// @ts-ignore
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { GLTFLoader, type GLTF } from "three/examples/jsm/loaders/GLTFLoader.js";
 import Lenis from "lenis";
 import { HEART_MEMBERS, PROGRAM_CARDS } from "@/features/home/home.content";
 import { VIDEO_POSTERS } from "@/lib/utils/media-helpers";
@@ -100,12 +99,12 @@ export const HomeClient = memo(function HomeClient() {
       // Load 3D model
       const loader = new GLTFLoader();
       let logoMesh: THREE.Group | null = null;
-      loader.load("/images/circular logo 3d model.glb", (gltf: any) => {
+      loader.load("/images/circular logo 3d model.glb", (gltf: GLTF) => {
         const mesh = gltf.scene;
         mesh.scale.set(1.4, 1.4, 1.4);
         mesh.position.set(0, 0, 0);
 
-        mesh.traverse((child: any) => {
+        mesh.traverse((child) => {
           if ((child as THREE.Mesh).isMesh) {
             const m = child as THREE.Mesh;
             if (m.material) {
@@ -118,7 +117,7 @@ export const HomeClient = memo(function HomeClient() {
         });
         scene.add(mesh);
         logoMesh = mesh;
-      }, undefined, (err: any) => {
+      }, undefined, (err: ErrorEvent | Error | unknown) => {
         console.error("Failed to load 3D model:", err);
       });
 

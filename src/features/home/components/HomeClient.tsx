@@ -9,7 +9,7 @@ import * as THREE from "three";
 import { GLTFLoader, type GLTF } from "three/examples/jsm/loaders/GLTFLoader.js";
 import Lenis from "lenis";
 import { HEART_MEMBERS, PROGRAM_CARDS } from "@/features/home/home.content";
-import { VIDEO_POSTERS } from "@/lib/utils/media-helpers";
+import { VIDEO_POSTERS, getOptimizedImagePath } from "@/lib/utils/media-helpers";
 import styles from "./HomeClient.module.css";
 
 if (typeof window !== "undefined") gsap.registerPlugin(ScrollTrigger);
@@ -132,7 +132,7 @@ export const HomeClient = memo(function HomeClient() {
       geometry = new THREE.PlaneGeometry(cardWidth, cardHeight);
 
       HEART_MEMBERS.forEach((member, idx) => {
-        const texture = textureLoader.load(member.image);
+        const texture = textureLoader.load(getOptimizedImagePath(member.image, "md"));
         const material = new THREE.MeshBasicMaterial({
           map: texture,
           side: THREE.DoubleSide,
@@ -216,13 +216,15 @@ export const HomeClient = memo(function HomeClient() {
         if (!canvas || !renderer) return;
         const width = canvas.clientWidth;
         const height = canvas.clientHeight;
-        camera.aspect = width / height;
+        const aspect = width / height;
+        camera.aspect = aspect;
 
-        if (window.innerWidth <= 820) {
-          camera.position.set(0, 0, 9);
-        } else {
-          camera.position.set(0, 0, 7.5);
+        let targetZ = 7.5;
+        if (aspect < 1.15) {
+          // Narrow or portrait screens: push camera back dynamically to fit the orbit width without cropping
+          targetZ = Math.max(7.5, (7.5 * 1.15) / aspect);
         }
+        camera.position.set(0, 0, targetZ);
 
         camera.updateProjectionMatrix();
         renderer.setSize(width, height, false);

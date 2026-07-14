@@ -2,9 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, memo, type CSSProperties } from "react";
+import { useEffect, useRef, memo, useState, type CSSProperties } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import * as THREE from "three";
+// @ts-ignore
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import Lenis from "lenis";
 import { HEART_MEMBERS, PROGRAM_CARDS } from "@/features/home/home.content";
 import { VIDEO_POSTERS } from "@/lib/utils/media-helpers";
 import styles from "./HomeClient.module.css";
@@ -32,12 +36,204 @@ const chapterVisuals = [
 
 export const HomeClient = memo(function HomeClient() {
   const root = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
     const element = root.current;
     if (!element || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
+    // Initialize Lenis smooth scroll
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      gestureOrientation: "vertical",
+      smoothWheel: true,
+    });
+
+    const raf = (time: number) => {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    };
+    requestAnimationFrame(raf);
+
+    lenis.on("scroll", ScrollTrigger.update);
+    
+    // Connect GSAP ticker
+    const tickerCallback = (time: number) => {
+      lenis.raf(time * 1000);
+    };
+    gsap.ticker.add(tickerCallback);
+    gsap.ticker.lagSmoothing(0);
+
+    const scrollState = { rotation: 0 };
+    let handleResize = () => {};
+    let animationFrameId = 0;
+    let geometry = new THREE.PlaneGeometry(1, 1);
+    const memberPlanes: THREE.Mesh[] = [];
+    let renderer: THREE.WebGLRenderer | null = null;
+
+    // 3D Canvas Team Orbit Setup
+    const canvas = canvasRef.current;
+    if (canvas) {
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color("#f3f2ec"); // Match warm off-white background
+
+      const camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 100);
+      camera.position.set(0, 0, 7.5);
+
+      renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
+
+      const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
+      scene.add(ambientLight);
+
+      const dirLight = new THREE.DirectionalLight(0xffffff, 2.5);
+      dirLight.position.set(5, 10, 7);
+      scene.add(dirLight);
+
+      const pointLight = new THREE.PointLight(0xffffff, 1.5, 20);
+      pointLight.position.set(0, 0, 3);
+      scene.add(pointLight);
+
+      // Load 3D model
+      const loader = new GLTFLoader();
+      let logoMesh: THREE.Group | null = null;
+      loader.load("/images/circular logo 3d model.glb", (gltf: any) => {
+        const mesh = gltf.scene;
+        mesh.scale.set(1.4, 1.4, 1.4);
+        mesh.position.set(0, 0, 0);
+
+        mesh.traverse((child: any) => {
+          if ((child as THREE.Mesh).isMesh) {
+            const m = child as THREE.Mesh;
+            if (m.material) {
+              if (m.material instanceof THREE.MeshStandardMaterial) {
+                m.material.roughness = 0.3;
+                m.material.metalness = 0.8;
+              }
+            }
+          }
+        });
+        scene.add(mesh);
+        logoMesh = mesh;
+      }, undefined, (err: any) => {
+        console.error("Failed to load 3D model:", err);
+      });
+
+      // Orbit Setup
+      const textureLoader = new THREE.TextureLoader();
+      const teamGroup = new THREE.Group();
+      scene.add(teamGroup);
+
+      const radius = 2.8;
+      const cardWidth = 1.35;
+      const cardHeight = 1.8;
+      geometry = new THREE.PlaneGeometry(cardWidth, cardHeight);
+
+      HEART_MEMBERS.forEach((member, idx) => {
+        const texture = textureLoader.load(member.image);
+        const material = new THREE.MeshBasicMaterial({
+          map: texture,
+          side: THREE.DoubleSide,
+          transparent: true,
+          opacity: 1.0,
+        });
+        const mesh = new THREE.Mesh(geometry, material);
+
+        const angle = (idx / HEART_MEMBERS.length) * Math.PI * 2;
+        mesh.position.set(
+          Math.cos(angle) * radius,
+          0,
+          Math.sin(angle) * radius
+        );
+
+        teamGroup.add(mesh);
+        memberPlanes.push(mesh);
+      });
+
+      let currentActiveIdx = 0;
+      const clock = new THREE.Clock();
+
+      const animate = () => {
+        animationFrameId = requestAnimationFrame(animate);
+
+        teamGroup.rotation.y = scrollState.rotation;
+
+        if (logoMesh) {
+          logoMesh.rotation.y = clock.getElapsedTime() * 0.25 - scrollState.rotation * 3.5;
+          logoMesh.position.y = Math.sin(clock.getElapsedTime() * 1.5) * 0.08;
+        }
+
+        // Active member tracking and 3D card layout effects
+        let closestIdx = 0;
+        let minDistance = Infinity;
+        const tempV = new THREE.Vector3();
+
+        memberPlanes.forEach((mesh, idx) => {
+          // Make cards face the camera directly (billboarding)
+          mesh.lookAt(camera.position);
+
+          // Get world position to measure distance
+          mesh.getWorldPosition(tempV);
+          const dist = tempV.distanceTo(camera.position);
+
+          if (dist < minDistance) {
+            minDistance = dist;
+            closestIdx = idx;
+          }
+
+          // Depth-based scaling and opacity
+          // Z ranges from -radius to +radius in world space.
+          // Normalize to [0, 1] factor where 1 is closest (most positive Z) and 0 is furthest (most negative Z)
+          const zWorld = tempV.z;
+          const factor = (zWorld + radius) / (2 * radius); // 0.0 to 1.0
+
+          // Calculate target scale: front is larger (1.3), back is smaller (0.6)
+          const targetScale = 0.6 + factor * 0.7;
+          mesh.scale.set(targetScale, targetScale, 1.0);
+
+          // Calculate target opacity: front is solid (1.0), back is faint (0.05)
+          const targetOpacity = 0.05 + factor * 0.95;
+          if (mesh.material instanceof THREE.MeshBasicMaterial) {
+            mesh.material.opacity = targetOpacity;
+            mesh.material.transparent = true;
+          }
+        });
+
+        if (closestIdx !== currentActiveIdx) {
+          currentActiveIdx = closestIdx;
+          setActiveIndex(closestIdx);
+        }
+
+        if (renderer) {
+          renderer.render(scene, camera);
+        }
+      };
+      animate();
+
+      handleResize = () => {
+        if (!canvas || !renderer) return;
+        const width = canvas.clientWidth;
+        const height = canvas.clientHeight;
+        camera.aspect = width / height;
+
+        if (window.innerWidth <= 820) {
+          camera.position.set(0, 0, 9);
+        } else {
+          camera.position.set(0, 0, 7.5);
+        }
+
+        camera.updateProjectionMatrix();
+        renderer.setSize(width, height, false);
+      };
+      window.addEventListener("resize", handleResize);
+      handleResize();
+    }
+
     const context = gsap.context(() => {
+
       gsap.to(`.${styles.heroMedia}`, {
         yPercent: 15,
         scale: 1.07,
@@ -108,6 +304,9 @@ export const HomeClient = memo(function HomeClient() {
               ease: "power1.out",
             }, idx * 1.5);
           });
+          
+          // Extend timeline to keep book closed before unpinning
+          tl.to({}, { duration: 1.5 });
         }
       });
 
@@ -153,12 +352,53 @@ export const HomeClient = memo(function HomeClient() {
               ease: "power1.out",
             }, idx * 1.5);
           });
+          
+          // Extend timeline to keep book closed before unpinning
+          tl.to({}, { duration: 1.5 });
         }
       });
 
+      // 3D Team Section Scroll Trigger (initialized after book section to ensure correct DOM scroll order and layout spacing)
+      const teamSection = document.getElementById("home-team");
+      if (teamSection) {
+        gsap.timeline({
+          scrollTrigger: {
+            trigger: teamSection,
+            start: "top top",
+            end: "+=3500",
+            scrub: 1,
+            pin: true,
+            anticipatePin: 1,
+          }
+        }).to(scrollState, {
+          rotation: Math.PI * 2,
+          ease: "none",
+          duration: 1,
+        });
+      }
+
     }, element);
 
-    return () => context.revert();
+    ScrollTrigger.refresh();
+
+    return () => {
+      context.revert();
+      lenis.destroy();
+      gsap.ticker.remove(tickerCallback);
+      if (canvas) {
+        window.removeEventListener("resize", handleResize);
+        cancelAnimationFrame(animationFrameId);
+        geometry.dispose();
+        memberPlanes.forEach((mesh) => {
+          if (mesh.material instanceof THREE.Material) {
+            mesh.material.dispose();
+          }
+        });
+        if (renderer) {
+          renderer.dispose();
+        }
+      }
+    };
   }, []);
 
   return (
@@ -347,34 +587,20 @@ export const HomeClient = memo(function HomeClient() {
         </div>
       </section>
 
-      <section id="home-life-at-psz" className={styles.life}>
-        <div className={styles.lifeVisual}>
-          <div className={styles.lifeImageOne} data-parallax="40">
-            <Image src={HEART_MEMBERS[0].image} alt="Life at Paksarzameen" fill sizes="(max-width: 820px) 72vw, 34vw" className={styles.coverImage} />
-          </div>
-          <div className={styles.lifeImageTwo} data-parallax="-40">
-            <Image src={HEART_MEMBERS[1].image} alt="Paksarzameen volunteers" fill sizes="(max-width: 820px) 56vw, 23vw" className={styles.coverImage} />
-          </div>
-        </div>
-        <div className={styles.lifeCopy} data-reveal>
-          <h2 className={styles.appleSectionHeader}>Life at PSZ</h2>
-          <p className={styles.appleSectionDesc}>People who listen, make, learn, and show up for each other.</p>
-          <Link href="#home-team" className={styles.appleLink}>Meet the team &rarr;</Link>
-        </div>
-      </section>
-
       <section id="home-team" className={styles.team} aria-labelledby="team-heading">
         <div className={styles.teamHeading} data-reveal>
-          <h2 id="team-heading" className={styles.appleSectionHeaderLight}>The Team</h2>
-          <p className={styles.appleSectionDescLight}>The people behind PakSarZameen bringing community-led change to life.</p>
+          <h2 id="team-heading" className={styles.appleSectionHeader}>The Team</h2>
+          <p className={styles.appleSectionDesc}>The people behind PakSarZameen bringing community-led change to life.</p>
+          
+          <div className={styles.activeMemberDetails}>
+            <span className={styles.activeMemberNum}>PSZ / 0{activeIndex + 1}</span>
+            <h3 className={styles.activeMemberName}>{HEART_MEMBERS[activeIndex]?.name}</h3>
+            <p className={styles.activeMemberRole}>{HEART_MEMBERS[activeIndex]?.role}</p>
+          </div>
         </div>
-        <div className={styles.teamGallery} data-reveal>
-          {HEART_MEMBERS.map((member, index) => (
-            <figure className={styles.teamMember} key={member.image}>
-              <Image src={member.image} alt={`Paksarzameen team member ${index + 1}`} fill sizes="(max-width: 820px) 47vw, 23vw" className={styles.coverImage} />
-              <figcaption>PSZ / 0{index + 1}</figcaption>
-            </figure>
-          ))}
+        
+        <div className={styles.teamStage} data-reveal>
+          <canvas ref={canvasRef} className={styles.teamCanvas} />
         </div>
       </section>
 

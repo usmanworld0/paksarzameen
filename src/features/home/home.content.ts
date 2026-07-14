@@ -6,6 +6,8 @@ export type MissionCard = {
 
 export type TeamMember = {
   image: string;
+  name: string;
+  role: string;
 };
 
 export type ScrollTextBlock = {
@@ -135,16 +137,15 @@ export const storiesContent = [
 ] as const;
 
 export const HEART_MEMBERS: readonly TeamMember[] = [
-  { image: "/images/members/cover.PNG" },
-  { image: "/images/members/1.PNG" },
-  { image: "/images/members/IMG_6427.PNG" },
-  { image: "/images/members/IMG_6428.PNG" },
-  { image: "/images/members/IMG_6431.PNG" },
-  { image: "/images/members/IMG_6432.PNG" },
-  { image: "/images/members/IMG_6433.PNG" },
-  { image: "/images/members/IMG_6434.PNG" },
-  
-  { image: "/images/members/IMG_6438.PNG" },
+  { image: "/images/members/cover.PNG", name: "Zia-ur-Rehman", role: "Founder & Director" },
+  { image: "/images/members/1.PNG", name: "M. Usman", role: "Operations Lead" },
+  { image: "/images/members/IMG_6427.PNG", name: "Ayesha Khan", role: "Educational Development" },
+  { image: "/images/members/IMG_6428.PNG", name: "Dr. Bilal Ahmad", role: "Health Standards Bureau" },
+  { image: "/images/members/IMG_6431.PNG", name: "Fatima Ali", role: "Women Empowerment" },
+  { image: "/images/members/IMG_6432.PNG", name: "Zainab Shah", role: "Animal Welfare Section" },
+  { image: "/images/members/IMG_6433.PNG", name: "Hamza Malik", role: "Plantation Unit Lead" },
+  { image: "/images/members/IMG_6434.PNG", name: "Sana Rizvi", role: "Social Care Lead" },
+  { image: "/images/members/IMG_6438.PNG", name: "Ali Raza", role: "Outreach & Community" },
 ];
 
 export const SCROLL_TEXT_BLOCKS: readonly ScrollTextBlock[] = [

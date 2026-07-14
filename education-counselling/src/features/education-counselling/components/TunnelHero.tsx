@@ -178,7 +178,7 @@ export function TunnelHero({ universities }: TunnelHeroProps) {
             >
               <Link href={`/universities/${card.university.slug}`} className={styles.card}>
                 <div className={styles.cardHeader}>
-                  <div className={styles.logoBadge} style={{ background: card.university.logo }}>
+                  <div className={styles.logoBadge}>
                     {card.university.name.substring(0, 2).toUpperCase()}
                   </div>
                   <div className={styles.headerInfo}>

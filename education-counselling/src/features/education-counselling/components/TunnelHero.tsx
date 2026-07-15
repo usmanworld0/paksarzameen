@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useMemo } from "react";
+import { useEffect, useRef, useMemo, useState } from "react";
 import Link from "next/link";
 import { University } from "@/data/universities";
 import styles from "./TunnelHero.module.css";
@@ -14,10 +14,6 @@ const RING_SPACING = 350; // Z spacing between rings (350px)
 const TOTAL_DEPTH = N_RINGS * RING_SPACING; // 4200px
 const MAX_Z = 200; // recycling threshold close to camera
 const MIN_Z = MAX_Z - TOTAL_DEPTH; // -4000px
-
-const TUNNEL_WIDTH = 1000;
-const TUNNEL_HEIGHT = 650;
-const CARD_OFFSET_INWARD = 12; // 12px offset from wall
 
 const PANEL_COLORS = ["#f5b041", "#27ae60", "#2980b9", "#8e44ad", "#e74c3c", "#e67e22"];
 
@@ -38,36 +34,90 @@ export function TunnelHero({ universities }: TunnelHeroProps) {
   const targetMouseX = useRef(0);
   const targetMouseY = useRef(0);
 
+  const [dims, setDims] = useState({
+    width: 1000,
+    height: 650,
+    cardWidth: 280,
+    cardHeight: 180,
+    staggerX: 120,
+    staggerY: 55,
+  });
+
+  const dimsRef = useRef(dims);
+  useEffect(() => {
+    dimsRef.current = dims;
+  }, [dims]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      if (w < 480) {
+        setDims({
+          width: 330,
+          height: Math.max(480, h - 300),
+          cardWidth: 140,
+          cardHeight: 90,
+          staggerX: 30,
+          staggerY: 40,
+        });
+      } else if (w < 768) {
+        setDims({
+          width: 600,
+          height: Math.max(520, h - 300),
+          cardWidth: 190,
+          cardHeight: 125,
+          staggerX: 70,
+          staggerY: 50,
+        });
+      } else {
+        setDims({
+          width: 1000,
+          height: 650,
+          cardWidth: 280,
+          cardHeight: 180,
+          staggerX: 120,
+          staggerY: 55,
+        });
+      }
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   // Build 16 longitudinal lines
   const longitudinalLines = useMemo(() => {
+    const w = dims.width;
+    const h = dims.height;
     return [
       // 4 corners
-      { x: -TUNNEL_WIDTH / 2, y: -TUNNEL_HEIGHT / 2, className: styles.cornerLine },
-      { x: TUNNEL_WIDTH / 2, y: -TUNNEL_HEIGHT / 2, className: styles.cornerLine },
-      { x: -TUNNEL_WIDTH / 2, y: TUNNEL_HEIGHT / 2, className: styles.cornerLine },
-      { x: TUNNEL_WIDTH / 2, y: TUNNEL_HEIGHT / 2, className: styles.cornerLine },
+      { x: -w / 2, y: -h / 2, className: styles.cornerLine },
+      { x: w / 2, y: -h / 2, className: styles.cornerLine },
+      { x: -w / 2, y: h / 2, className: styles.cornerLine },
+      { x: w / 2, y: h / 2, className: styles.cornerLine },
 
       // Left wall guides
-      { x: -TUNNEL_WIDTH / 2, y: -TUNNEL_HEIGHT / 4, className: styles.gridLine },
-      { x: -TUNNEL_WIDTH / 2, y: 0, className: styles.gridLine },
-      { x: -TUNNEL_WIDTH / 2, y: TUNNEL_HEIGHT / 4, className: styles.gridLine },
+      { x: -w / 2, y: -h / 4, className: styles.gridLine },
+      { x: -w / 2, y: 0, className: styles.gridLine },
+      { x: -w / 2, y: h / 4, className: styles.gridLine },
 
       // Right wall guides
-      { x: TUNNEL_WIDTH / 2, y: -TUNNEL_HEIGHT / 4, className: styles.gridLine },
-      { x: TUNNEL_WIDTH / 2, y: 0, className: styles.gridLine },
-      { x: TUNNEL_WIDTH / 2, y: TUNNEL_HEIGHT / 4, className: styles.gridLine },
+      { x: w / 2, y: -h / 4, className: styles.gridLine },
+      { x: w / 2, y: 0, className: styles.gridLine },
+      { x: w / 2, y: h / 4, className: styles.gridLine },
 
       // Ceiling guides
-      { x: -TUNNEL_WIDTH / 4, y: -TUNNEL_HEIGHT / 2, className: styles.gridLine },
-      { x: 0, y: -TUNNEL_HEIGHT / 2, className: styles.gridLine },
-      { x: TUNNEL_WIDTH / 4, y: -TUNNEL_HEIGHT / 2, className: styles.gridLine },
+      { x: -w / 4, y: -h / 2, className: styles.gridLine },
+      { x: 0, y: -h / 2, className: styles.gridLine },
+      { x: w / 4, y: -h / 2, className: styles.gridLine },
 
       // Floor guides
-      { x: -TUNNEL_WIDTH / 4, y: TUNNEL_HEIGHT / 2, className: styles.gridLine },
-      { x: 0, y: TUNNEL_HEIGHT / 2, className: styles.gridLine },
-      { x: TUNNEL_WIDTH / 4, y: TUNNEL_HEIGHT / 2, className: styles.gridLine },
+      { x: -w / 4, y: h / 2, className: styles.gridLine },
+      { x: 0, y: h / 2, className: styles.gridLine },
+      { x: w / 4, y: h / 2, className: styles.gridLine },
     ];
-  }, []);
+  }, [dims.width, dims.height]);
 
   // Build 24 cards (2 per ring index) alternating left, right, ceiling, floor
   const cards = useMemo(() => {
@@ -190,23 +240,24 @@ export function TunnelHero({ universities }: TunnelHeroProps) {
         let rx = 0;
         let ry = 0;
 
-        const inward = CARD_OFFSET_INWARD;
+        const inward = 12; // CARD_OFFSET_INWARD
+        const currentDims = dimsRef.current;
 
         if (side === "left") {
-          tx = -TUNNEL_WIDTH / 2 + inward;
-          ty = (ringIndex % 4 === 0) ? -55 : 55; // stagger vertically
+          tx = -currentDims.width / 2 + inward;
+          ty = (ringIndex % 4 === 0) ? -currentDims.staggerY : currentDims.staggerY; // stagger vertically
           ry = 90;
         } else if (side === "right") {
-          tx = TUNNEL_WIDTH / 2 - inward;
-          ty = (ringIndex % 4 === 0) ? 55 : -55; // stagger vertically
+          tx = currentDims.width / 2 - inward;
+          ty = (ringIndex % 4 === 0) ? currentDims.staggerY : -currentDims.staggerY; // stagger vertically
           ry = -90;
         } else if (side === "top") {
-          tx = (ringIndex % 4 === 1) ? -120 : 120; // stagger horizontally
-          ty = -TUNNEL_HEIGHT / 2 + inward;
+          tx = (ringIndex % 4 === 1) ? -currentDims.staggerX : currentDims.staggerX; // stagger horizontally
+          ty = -currentDims.height / 2 + inward;
           rx = -90;
         } else if (side === "bottom") {
-          tx = (ringIndex % 4 === 1) ? 120 : -120; // stagger horizontally
-          ty = TUNNEL_HEIGHT / 2 - inward;
+          tx = (ringIndex % 4 === 1) ? currentDims.staggerX : -currentDims.staggerX; // stagger horizontally
+          ty = currentDims.height / 2 - inward;
           rx = 90;
         }
 
@@ -274,6 +325,12 @@ export function TunnelHero({ universities }: TunnelHeroProps) {
                 ringRefs.current[i] = el;
               }}
               className={styles.tunnelRing}
+              style={{
+                width: `${dims.width}px`,
+                height: `${dims.height}px`,
+                marginLeft: `${-dims.width / 2}px`,
+                marginTop: `${-dims.height / 2}px`,
+              }}
             />
           ))}
 
@@ -290,6 +347,12 @@ export function TunnelHero({ universities }: TunnelHeroProps) {
                   cardRefs.current[index] = el;
                 }}
                 className={styles.cardWrapper}
+                style={{
+                  width: `${dims.cardWidth}px`,
+                  height: `${dims.cardHeight}px`,
+                  marginLeft: `${-dims.cardWidth / 2}px`,
+                  marginTop: `${-dims.cardHeight / 2}px`,
+                }}
                 onMouseEnter={() => {
                   isPaused.current = true;
                 }}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
 import { University } from "@/data/universities";
 import styles from "./TunnelHero.module.css";
@@ -9,17 +9,24 @@ interface TunnelHeroProps {
   universities: University[];
 }
 
-const N_RINGS = 6;
-const CARDS_PER_RING = 4;
-const RING_SPACING = 600; // Z spacing between rings
-const TOTAL_DEPTH = N_RINGS * RING_SPACING; // 3600px
-const MIN_Z = -3200;
+const N_RINGS = 12;
+const RING_SPACING = 350; // Z spacing between rings (350px)
+const TOTAL_DEPTH = N_RINGS * RING_SPACING; // 4200px
+const MAX_Z = 200; // recycling threshold close to camera
+const MIN_Z = MAX_Z - TOTAL_DEPTH; // -4000px
+
+const TUNNEL_WIDTH = 1000;
+const TUNNEL_HEIGHT = 650;
+const CARD_OFFSET_INWARD = 12; // 12px offset from wall
+
+const PANEL_COLORS = ["#f5b041", "#27ae60", "#2980b9", "#8e44ad", "#e74c3c", "#e67e22"];
 
 export function TunnelHero({ universities }: TunnelHeroProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const cameraRef = useRef<HTMLDivElement>(null);
+  const ringRefs = useRef<(HTMLDivElement | null)[]>([]);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
-  
+
   // Animation state refs
   const offsetZ = useRef(0);
   const isPaused = useRef(false);
@@ -31,36 +38,76 @@ export function TunnelHero({ universities }: TunnelHeroProps) {
   const targetMouseX = useRef(0);
   const targetMouseY = useRef(0);
 
-  // Build array representing the 3D grid layout
-  const cards = Array.from({ length: N_RINGS * CARDS_PER_RING }).map((_, index) => {
-    const ringIndex = Math.floor(index / CARDS_PER_RING);
-    const sideIndex = index % CARDS_PER_RING; // 0: Top, 1: Right, 2: Bottom, 3: Left
-    
-    // Cycle through universities mock data
-    const university = universities[index % universities.length];
-    
-    return {
-      index,
-      ringIndex,
-      sideIndex,
-      university,
-      // Base initial Z coordinate
-      baseZ: -ringIndex * RING_SPACING,
-    };
-  });
+  // Build 16 longitudinal lines
+  const longitudinalLines = useMemo(() => {
+    return [
+      // 4 corners
+      { x: -TUNNEL_WIDTH / 2, y: -TUNNEL_HEIGHT / 2, className: styles.cornerLine },
+      { x: TUNNEL_WIDTH / 2, y: -TUNNEL_HEIGHT / 2, className: styles.cornerLine },
+      { x: -TUNNEL_WIDTH / 2, y: TUNNEL_HEIGHT / 2, className: styles.cornerLine },
+      { x: TUNNEL_WIDTH / 2, y: TUNNEL_HEIGHT / 2, className: styles.cornerLine },
+
+      // Left wall guides
+      { x: -TUNNEL_WIDTH / 2, y: -TUNNEL_HEIGHT / 4, className: styles.gridLine },
+      { x: -TUNNEL_WIDTH / 2, y: 0, className: styles.gridLine },
+      { x: -TUNNEL_WIDTH / 2, y: TUNNEL_HEIGHT / 4, className: styles.gridLine },
+
+      // Right wall guides
+      { x: TUNNEL_WIDTH / 2, y: -TUNNEL_HEIGHT / 4, className: styles.gridLine },
+      { x: TUNNEL_WIDTH / 2, y: 0, className: styles.gridLine },
+      { x: TUNNEL_WIDTH / 2, y: TUNNEL_HEIGHT / 4, className: styles.gridLine },
+
+      // Ceiling guides
+      { x: -TUNNEL_WIDTH / 4, y: -TUNNEL_HEIGHT / 2, className: styles.gridLine },
+      { x: 0, y: -TUNNEL_HEIGHT / 2, className: styles.gridLine },
+      { x: TUNNEL_WIDTH / 4, y: -TUNNEL_HEIGHT / 2, className: styles.gridLine },
+
+      // Floor guides
+      { x: -TUNNEL_WIDTH / 4, y: TUNNEL_HEIGHT / 2, className: styles.gridLine },
+      { x: 0, y: TUNNEL_HEIGHT / 2, className: styles.gridLine },
+      { x: TUNNEL_WIDTH / 4, y: TUNNEL_HEIGHT / 2, className: styles.gridLine },
+    ];
+  }, []);
+
+  // Build 24 cards (2 per ring index) alternating left, right, ceiling, floor
+  const cards = useMemo(() => {
+    return Array.from({ length: N_RINGS * 2 }).map((_, index) => {
+      const ringIndex = Math.floor(index / 2);
+      const isSecondCard = index % 2 === 1;
+      const isEvenRing = ringIndex % 2 === 0;
+
+      let side: "left" | "right" | "top" | "bottom" = "left";
+      if (isEvenRing) {
+        side = isSecondCard ? "right" : "left";
+      } else {
+        side = isSecondCard ? "bottom" : "top";
+      }
+
+      // Cycle through universities mock data
+      const university = universities[index % universities.length];
+
+      return {
+        index,
+        ringIndex,
+        side,
+        university,
+        baseZ: -ringIndex * RING_SPACING,
+      };
+    });
+  }, [universities]);
 
   useEffect(() => {
     const isTouch = typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches;
 
-    // 1. Mouse movement listener for camera tilt
+    // Mouse movement listener for camera tilt
     const handleMouseMove = (e: MouseEvent) => {
       if (isTouch) return;
       const rect = containerRef.current?.getBoundingClientRect();
       if (!rect) return;
-      
+
       const x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       const y = ((e.clientY - rect.top) / rect.height) * 2 - 1;
-      
+
       targetMouseX.current = x;
       targetMouseY.current = y;
     };
@@ -77,62 +124,111 @@ export function TunnelHero({ universities }: TunnelHeroProps) {
       container.addEventListener("mouseleave", handleMouseLeave);
     }
 
-    // 2. Animation loop using requestAnimationFrame
+    // Animation loop using requestAnimationFrame
     const update = () => {
-      // Forward speed
+      // Forward camera speed
       if (!isPaused.current) {
         offsetZ.current += 1.8;
       }
 
       // Smooth camera tilt using linear interpolation (lerp)
-      mouseX.current += (targetMouseX.current - mouseX.current) * 0.08;
-      mouseY.current += (targetMouseY.current - mouseY.current) * 0.08;
+      mouseX.current += (targetMouseX.current - mouseX.current) * 0.05;
+      mouseY.current += (targetMouseY.current - mouseY.current) * 0.05;
+
+      const time = Date.now() * 0.0008;
+      // Gentle circular float for camera drone effect
+      const floatX = Math.sin(time) * 15;
+      const floatY = Math.cos(time * 0.8) * 10;
+      const floatRotZ = Math.sin(time * 0.5) * 0.4; // Z-axis camera roll
 
       if (cameraRef.current) {
-        const rx = -mouseY.current * 10;
-        const ry = mouseX.current * 10;
-        const tx = -mouseX.current * 25;
-        const ty = -mouseY.current * 25;
-        cameraRef.current.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg) translate3d(${tx}px, ${ty}px, 0)`;
+        const rx = -mouseY.current * 8 + Math.sin(time * 0.6) * 0.5;
+        const ry = mouseX.current * 8 + Math.cos(time * 0.5) * 0.5;
+        const rz = floatRotZ;
+        const tx = -mouseX.current * 25 + floatX;
+        const ty = -mouseY.current * 20 + floatY;
+        cameraRef.current.style.transform = `translate3d(${tx}px, ${ty}px, 0) rotateX(${rx}deg) rotateY(${ry}deg) rotateZ(${rz}deg)`;
       }
+
+      // Update positions of rings
+      ringRefs.current.forEach((ringEl, idx) => {
+        if (!ringEl) return;
+        const baseZ = -idx * RING_SPACING;
+        let z = baseZ + offsetZ.current;
+        z = ((z - MIN_Z) % TOTAL_DEPTH);
+        if (z < 0) z += TOTAL_DEPTH;
+        z += MIN_Z;
+
+        ringEl.style.transform = `translate3d(0, 0, ${z}px)`;
+
+        // Fade out rings when they get close to camera (z > 0) or very far (z < -2800)
+        let opacity = 1;
+        if (z > 0) {
+          opacity = Math.max(0, 1 - z / MAX_Z);
+        } else if (z < -2800) {
+          opacity = Math.max(0, (z - MIN_Z) / (-2800 - MIN_Z));
+        }
+
+        ringEl.style.opacity = opacity.toString();
+      });
 
       // Update positions of cards individually in 3D space
       cardRefs.current.forEach((cardEl, idx) => {
         if (!cardEl) return;
 
         const cardData = cards[idx];
-        const { baseZ, sideIndex } = cardData;
+        const { baseZ, side, ringIndex } = cardData;
 
         let z = baseZ + offsetZ.current;
         z = ((z - MIN_Z) % TOTAL_DEPTH);
         if (z < 0) z += TOTAL_DEPTH;
         z += MIN_Z;
 
-        const offsetDist = 280;
+        // Position on walls based on orientation
         let tx = 0;
         let ty = 0;
         let rx = 0;
         let ry = 0;
 
-        if (sideIndex === 0) {
-          ty = -offsetDist;
-          rx = 90;
-        } else if (sideIndex === 1) {
-          tx = offsetDist;
-          ry = -90;
-        } else if (sideIndex === 2) {
-          ty = offsetDist;
-          rx = -90;
-        } else if (sideIndex === 3) {
-          tx = -offsetDist;
+        const inward = CARD_OFFSET_INWARD;
+
+        if (side === "left") {
+          tx = -TUNNEL_WIDTH / 2 + inward;
+          ty = (ringIndex % 4 === 0) ? -55 : 55; // stagger vertically
           ry = 90;
+        } else if (side === "right") {
+          tx = TUNNEL_WIDTH / 2 - inward;
+          ty = (ringIndex % 4 === 0) ? 55 : -55; // stagger vertically
+          ry = -90;
+        } else if (side === "top") {
+          tx = (ringIndex % 4 === 1) ? -120 : 120; // stagger horizontally
+          ty = -TUNNEL_HEIGHT / 2 + inward;
+          rx = -90;
+        } else if (side === "bottom") {
+          tx = (ringIndex % 4 === 1) ? 120 : -120; // stagger horizontally
+          ty = TUNNEL_HEIGHT / 2 - inward;
+          rx = 90;
         }
 
-        const opacity = z > 150 ? Math.max(0, 1 - (z - 150) / 250) : z < -2400 ? Math.max(0, (z + 3200) / 800) : 1;
+        // Breathing float & dynamic tilt per card
+        const breatheTime = Date.now() * 0.0015;
+        const floatZ = Math.sin(breatheTime + idx * 0.5) * 8; // 8px breathing float
+        const tiltX = Math.sin(breatheTime * 0.8 + idx) * 1.5;
+        const tiltY = Math.cos(breatheTime * 0.6 + idx) * 1.5;
 
-        cardEl.style.transform = `translate3d(${tx}px, ${ty}px, ${z}px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+        cardEl.style.transform = `translate3d(${tx}px, ${ty}px, ${z}px) rotateX(${rx + tiltX}deg) rotateY(${ry + tiltY}deg) translateZ(${floatZ}px)`;
+
+        // Opacity fading
+        let opacity = 1;
+        if (z > 0) {
+          opacity = Math.max(0, 1 - z / MAX_Z);
+        } else if (z < -3500) {
+          opacity = Math.max(0.4, (z - MIN_Z) / (-4000 - MIN_Z));
+        }
         cardEl.style.opacity = opacity.toString();
-        cardEl.style.pointerEvents = z > 100 ? "none" : "auto";
+
+        // Enable interaction when card is in readable range
+        cardEl.style.pointerEvents = (z > 100 || z < -3500) ? "none" : "auto";
       });
 
       animationFrameId.current = requestAnimationFrame(update);
@@ -149,68 +245,82 @@ export function TunnelHero({ universities }: TunnelHeroProps) {
         cancelAnimationFrame(animationFrameId.current);
       }
     };
-  }, [cards, universities.length]);
+  }, [cards]);
 
   return (
     <section ref={containerRef} className={styles.heroContainer}>
       <div className={styles.viewport}>
-        <div className={styles.tunnelGrid} aria-hidden="true">
-          <div className={styles.diagonalLine} style={{ transform: "rotate(45deg)" }} />
-          <div className={styles.diagonalLine} style={{ transform: "rotate(-45deg)" }} />
-          
-          <div className={styles.gridSegment} style={{ transform: "translateZ(-600px)" }} />
-          <div className={styles.gridSegment} style={{ transform: "translateZ(-1200px)" }} />
-          <div className={styles.gridSegment} style={{ transform: "translateZ(-1800px)" }} />
-          <div className={styles.gridSegment} style={{ transform: "translateZ(-2400px)" }} />
-          <div className={styles.gridSegment} style={{ transform: "translateZ(-3000px)" }} />
+        <div ref={cameraRef} className={styles.camera}>
+          {/* Longitudinal guides forming the tunnel wireframe */}
+          {longitudinalLines.map((line, index) => {
+            const transformString = `translate3d(${line.x}px, ${line.y}px, ${-TOTAL_DEPTH / 2}px) rotateX(90deg)`;
+            return (
+              <div
+                key={`line-${index}`}
+                className={`${styles.longitudinalLine} ${line.className}`}
+                style={{
+                  transform: transformString,
+                  height: `${TOTAL_DEPTH}px`,
+                }}
+              />
+            );
+          })}
+
+          {/* Transverse moving wireframe rings */}
+          {Array.from({ length: N_RINGS }).map((_, i) => (
+            <div
+              key={`ring-${i}`}
+              ref={(el) => {
+                ringRefs.current[i] = el;
+              }}
+              className={styles.tunnelRing}
+            />
+          ))}
+
+          {/* University Cards on walls, ceiling, and floor */}
+          {cards.map((card, index) => {
+            // Alternate between colorful panel and university photo panel
+            const isImagePanel = index % 2 === 1;
+            const panelColor = PANEL_COLORS[Math.floor(index / 2) % PANEL_COLORS.length];
+
+            return (
+              <div
+                key={`tunnel-card-${index}`}
+                ref={(el) => {
+                  cardRefs.current[index] = el;
+                }}
+                className={styles.cardWrapper}
+                onMouseEnter={() => {
+                  isPaused.current = true;
+                }}
+                onMouseLeave={() => {
+                  isPaused.current = false;
+                }}
+              >
+                <Link
+                  href={`/universities/${card.university.slug}`}
+                  className={styles.card}
+                  style={
+                    isImagePanel
+                      ? { backgroundImage: `url(${card.university.banner})` }
+                      : { backgroundColor: panelColor }
+                  }
+                >
+                  {/* Suggestion box (University name details) displayed by default */}
+                  <div className={styles.hoverOverlay}>
+                    <span className={styles.hoverCountry}>{card.university.country}</span>
+                    <h3 className={styles.hoverUniName}>{card.university.name}</h3>
+                    <span className={styles.hoverRank}>QS Rank: #{card.university.ranking.qs}</span>
+                    <span className={styles.hoverCta}>View Details &rarr;</span>
+                  </div>
+                </Link>
+              </div>
+            );
+          })}
         </div>
 
-        <div ref={cameraRef} className={styles.camera}>
-          {cards.map((card, index) => (
-            <div
-              key={`tunnel-card-${index}`}
-              ref={(el) => {
-                cardRefs.current[index] = el;
-              }}
-              className={styles.cardWrapper}
-              onMouseEnter={() => {
-                const isTouch = window.matchMedia("(pointer: coarse)").matches;
-                if (!isTouch) {
-                  isPaused.current = true;
-                }
-              }}
-              onMouseLeave={() => {
-                const isTouch = window.matchMedia("(pointer: coarse)").matches;
-                if (!isTouch) {
-                  isPaused.current = false;
-                }
-              }}
-            >
-              <Link href={`/universities/${card.university.slug}`} className={styles.card}>
-                <div className={styles.cardHeader}>
-                  <div className={styles.logoBadge} style={{ background: card.university.logo }}>
-                    {card.university.name.substring(0, 2).toUpperCase()}
-                  </div>
-                  <div className={styles.headerInfo}>
-                    <span className={styles.countryLabel}>{card.university.country}</span>
-                    <h3 className={styles.uniName}>{card.university.name}</h3>
-                  </div>
-                </div>
-                
-                <div className={styles.cardBadges}>
-                  <span className={styles.badge}>
-                    🏆 QS #{card.university.ranking.qs}
-                  </span>
-                  {card.university.scholarships.available && (
-                    <span className={`${styles.badge} ${styles.scholarshipBadge}`}>
-                      🎓 Scholarship
-                    </span>
-                  )}
-                </div>
-              </Link>
-            </div>
-          ))}
-        </div>
+        {/* Central fog overlay for atmospheric depth and text readability */}
+        <div className={styles.fogOverlay} aria-hidden="true" />
       </div>
 
       <div className={styles.contentOverlay}>

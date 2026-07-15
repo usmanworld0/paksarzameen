@@ -1,15 +1,14 @@
 .heroContainer {
   position: relative;
   width: 100%;
-  height: 90vh;
+  height: 100vh;
   min-height: 600px;
-  max-height: 900px;
-  background: linear-gradient(180deg, #fafafa 0%, #f4f4f6 100%);
+  background: linear-gradient(180deg, #f2ebe1 0%, #e6dccf 100%); /* warm light-beige/cream background */
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  border-bottom: 2px solid #000000; /* sharp black border bottom */
 }
 
 .viewport {
@@ -17,8 +16,10 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  perspective: 800px;
+  perspective: 550px; /* Strong, immersive depth perspective */
   overflow: hidden;
+  transform-style: preserve-3d;
+  pointer-events: none; /* Ignore pointer events on viewport to let them hit the card wrappers */
 }
 
 .camera {
@@ -30,141 +31,168 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  pointer-events: none; /* Ignore pointer events on camera */
 }
 
-.tunnelGrid {
+/* Sharp, solid geometric grid lines */
+.longitudinalLine {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform-origin: center center;
+  pointer-events: none;
+  background: #000000; /* Solid black lines */
+}
+
+.cornerLine {
+  width: 2.5px;
+  background: #000000;
+}
+
+.gridLine {
+  width: 1.5px;
+  background: rgba(0, 0, 0, 0.75);
+}
+
+/* Transverse moving wireframe rings (forming the cells of the room grid) */
+.tunnelRing {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1000px;
+  height: 650px;
+  margin-left: -500px;
+  margin-top: -325px;
+  border: 2px solid #000000; /* Solid black rings */
+  transform-style: preserve-3d;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+/* Card placement and positioning wrapper */
+.cardWrapper {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 280px;
+  height: 180px;
+  margin-left: -140px;
+  margin-top: -90px;
+  transform-origin: center center;
+  will-change: transform, opacity;
+  transform-style: preserve-3d;
+  transition: opacity 0.4s ease;
+  pointer-events: auto; /* Enable hover/clicks on cards! */
+}
+
+/* Card panel (either solid background color or banner image) */
+.card {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 2px solid #000000; /* solid black border on panels */
+  position: relative;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), 
+              box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  user-select: none;
+  background-size: cover;
+  background-position: center;
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  background-image: linear-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+  background-size: 20px 20px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Hover elevation: translates directly off the wall and adds deep shadow */
+.cardWrapper:hover .card {
+  transform: translateZ(40px) scale(1.06);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Details overlay: ALWAYS visible (revealed) by default */
+.hoverOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.45); /* translucent overlay to show color/image below */
+  backdrop-filter: blur(2px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1.5rem;
+  opacity: 1; /* always revealed */
+  transition: background 0.3s ease;
+  color: #000000;
+  text-align: center;
+  z-index: 2;
+}
+
+.cardWrapper:hover .hoverOverlay {
+  background: rgba(255, 255, 255, 0.75);
+}
+
+.hoverCountry {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: #555555;
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+}
+
+.hoverUniName {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #000000;
+  margin: 0 0 0.6rem 0;
+  line-height: 1.3;
+}
+
+.hoverRank {
+  font-size: 0.75rem;
+  color: #27ae60; /* QS rank highlight color */
+  font-weight: 700;
+  margin-bottom: 0.8rem;
+}
+
+.hoverCta {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #000000;
+  border-bottom: 2px solid #000000;
+  padding-bottom: 2px;
+  font-weight: 700;
+}
+
+/* Fog overlay situated between the 3D elements and content overlay */
+.fogOverlay {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  transform-style: preserve-3d;
   pointer-events: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  z-index: 2;
+  background: radial-gradient(
+    circle at center,
+    rgba(242, 235, 225, 0.95) 0%,
+    rgba(242, 235, 225, 0.35) 45%,
+    rgba(242, 235, 225, 0) 80%
+  );
 }
 
-.diagonalLine {
-  position: absolute;
-  width: 200%;
-  height: 1px;
-  background: linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.03) 50%, rgba(0,0,0,0) 100%);
-  transform-origin: center;
-}
-
-.gridSegment {
-  position: absolute;
-  width: 580px;
-  height: 580px;
-  border: 1px solid rgba(0, 0, 0, 0.025);
-  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.005);
-  transform-style: preserve-3d;
-  pointer-events: none;
-}
-
-.cardWrapper {
-  position: absolute;
-  width: 260px;
-  height: 160px;
-  transform-origin: center center;
-  will-change: transform, opacity;
-  transform-style: preserve-3d;
-}
-
-.card {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  width: 100%;
-  height: 100%;
-  padding: 1.6rem;
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  border-radius: 12px;
-  color: #1d1d1f;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.015);
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
-              border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  cursor: pointer;
-  user-select: none;
-}
-
-.card:hover {
-  transform: translateZ(15px);
-  border-color: #1d1d1f;
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.05);
-}
-
-.cardHeader {
-  display: flex;
-  align-items: center;
-  gap: 1.1rem;
-}
-
-.logoBadge {
-  width: 42px;
-  height: 42px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-serif), Georgia, serif;
-  font-style: italic;
-  font-weight: 600;
-  font-size: 0.95rem;
-  color: #ffffff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  flex-shrink: 0;
-}
-
-.headerInfo {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.countryLabel {
-  font-size: 0.65rem;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: #86868b;
-  font-weight: 500;
-}
-
-.uniName {
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: #1d1d1f;
-  margin: 0.15rem 0 0 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  letter-spacing: -0.01em;
-}
-
-.cardBadges {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.badge {
-  font-size: 0.65rem;
-  font-weight: 500;
-  padding: 0.3rem 0.65rem;
-  background: #f5f5f7;
-  border-radius: 4px;
-  color: #1d1d1f;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.scholarshipBadge {
-  background: #faf3e8;
-  color: #a27b3c;
-  border-color: rgba(197, 168, 128, 0.2);
-}
-
+/* Foreground content container */
 .contentOverlay {
   position: relative;
   z-index: 10;
@@ -177,12 +205,13 @@
 
 .contentOverlay h1 {
   font-family: var(--font-serif), Georgia, serif;
-  font-size: clamp(3.2rem, 7vw, 6rem);
+  font-size: clamp(3.2rem, 7vw, 5.8rem);
   font-weight: 400;
   letter-spacing: -0.03em;
   color: #1d1d1f;
   line-height: 1.1;
   margin: 0.6rem 0 1.6rem;
+  text-shadow: 0 2px 10px rgba(255, 255, 255, 0.6);
 }
 
 .pretitle {
@@ -196,9 +225,10 @@
 .contentOverlay p {
   font-size: clamp(0.95rem, 1.8vw, 1.18rem);
   line-height: 1.6;
-  color: #515154;
+  color: #434345;
   max-width: 580px;
   margin: 0 auto 2.5rem;
+  text-shadow: 0 2px 8px rgba(255, 255, 255, 0.6);
 }
 
 .actions {
@@ -227,39 +257,31 @@
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
 }
 
+/* Scaling responsive logic using CSS 3D scale transforms */
+@media (max-width: 1100px) {
+  .viewport {
+    transform: scale3d(0.85, 0.85, 0.85);
+  }
+}
+
 @media (max-width: 820px) {
   .heroContainer {
-    height: 80vh;
+    height: 100vh;
   }
-  .cardWrapper {
-    width: 220px;
-    height: 140px;
-    margin-left: -110px;
-    margin-top: -70px;
+  .viewport {
+    transform: scale3d(0.68, 0.68, 0.68);
   }
-  .card {
-    padding: 1.2rem;
-  }
-  .logoBadge {
-    width: 36px;
-    height: 36px;
-    font-size: 0.8rem;
-  }
-  .uniName {
-    font-size: 0.85rem;
-  }
-  .gridSegment {
-    width: 480px;
-    height: 480px;
+  .contentOverlay {
+    padding: 1.5rem;
   }
 }
 
 @media (max-width: 480px) {
   .heroContainer {
-    height: 75vh;
+    height: 100vh;
   }
   .viewport {
-    transform: scale3d(0.72, 0.72, 0.72);
+    transform: scale3d(0.46, 0.46, 0.46);
   }
   .contentOverlay {
     padding-inline: 1rem;

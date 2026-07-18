@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
+import { getDbStore } from "@/lib/db";
 import { CounsellingClient } from "@/features/education-counselling/components/CounsellingClient";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Education Counselling | Study Abroad & International Pathways",
@@ -18,5 +21,6 @@ export const metadata: Metadata = {
 };
 
 export default function EducationCounsellingPage() {
-  return <CounsellingClient />;
+  const store = getDbStore();
+  return <CounsellingClient initialStore={store} />;
 }

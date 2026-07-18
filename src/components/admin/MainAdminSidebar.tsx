@@ -14,6 +14,7 @@ import {
   X,
   ShieldCheck,
   Droplets,
+  GraduationCap,
 } from "lucide-react";
 import { canAccessAdminRoute, useAdminClientSession } from "@/features/auth/utils/admin-session-client";
 
@@ -24,6 +25,7 @@ const NAV_ITEMS = [
   { label: "Users & Tenants",    href: "/admin/users",             icon: Users,           group: "Management" },
   { label: "Blood Requests",     href: "/admin/blood-requests",    icon: Droplets,        group: "Management" },
   { label: "HealthCare",         href: "/admin/healthcare",        icon: HeartPulse,      group: "Management" },
+  { label: "Counselling",        href: "/admin/education-counselling", icon: GraduationCap, group: "Management" },
   { label: "Dogs",               href: "/admin/dogs",              icon: PawPrint,        group: "Dog Adoption" },
   { label: "Adoption Requests",  href: "/admin/adoption-requests", icon: ClipboardList,   group: "Dog Adoption" },
   { label: "Dog Updates",        href: "/admin/dog-updates",       icon: ImagePlus,       group: "Dog Adoption" },

@@ -52,6 +52,11 @@ const MODULE_LINKS = [
     href: "/admin/dog-updates",
   },
   {
+    title: "Education Counselling",
+    description: "Manage universities, mentors, tutoring schedules, registrations, and check broken links.",
+    href: "/admin/education-counselling",
+  },
+  {
     title: "User Management",
     description: "Open full-screen user management workspace.",
     href: "/admin/users",

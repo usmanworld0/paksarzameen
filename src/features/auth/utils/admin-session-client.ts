@@ -63,6 +63,10 @@ export function canAccessAdminRoute(session: AdminClientSession | null, href: st
     return hasClientModulePermission(session, "healthcare", "view");
   }
 
+  if (href === "/admin/education-counselling") {
+    return hasClientModulePermission(session, "education_counselling", "view");
+  }
+
   return false;
 }
 

@@ -6,21 +6,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   Search,
-  MapPin,
-  Award,
-  BookOpen,
-  Calendar,
   Star,
-  ChevronRight,
-  ShieldCheck,
-  GraduationCap,
-  MessageCircle,
-  ExternalLink,
   CheckCircle2,
-  ArrowRight,
-  Sparkles,
 } from "lucide-react";
 import { DbStore } from "@/lib/db";
+import { TunnelHero } from "./TunnelHero";
 import {
   FreeConsultationModal,
   CourseApplicationModal,
@@ -54,7 +44,8 @@ export function CounsellingClient({ initialStore }: CounsellingClientProps) {
   // FAQ Accordion State
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
 
-  const featuredUnis = (initialStore.universities || []).slice(0, 6);
+  const universities = initialStore.universities || [];
+  const featuredUnis = universities.slice(0, 6);
   const mentors = initialStore.mentors || [];
   const tutoringCourses = initialStore.tutoring || [];
 
@@ -141,56 +132,18 @@ export function CounsellingClient({ initialStore }: CounsellingClientProps) {
   return (
     <div className="w-full bg-white text-[#111111] antialiased">
       
-      {/* 1. CINEMATIC HERO SECTION (STORE DESIGN) */}
-      <section className="relative isolate min-h-[92vh] overflow-hidden bg-black text-white flex items-end justify-center">
-        <Image
-          src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=2000&auto=format&fit=crop"
-          alt="Global University Campus"
-          fill
-          sizes="100vw"
-          className="object-cover opacity-60 filter brightness-90"
-          priority
-        />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.18)_0%,rgba(0,0,0,0.1)_30%,rgba(0,0,0,0.55)_70%,rgba(0,0,0,0.78)_100%)]" />
-
-        <div className="relative z-10 flex min-h-[92vh] items-end justify-center px-6 pb-16 pt-32 text-center sm:pb-20 lg:pb-24">
-          <div className="max-w-[760px]">
-            <p className="text-[11px] font-normal uppercase tracking-[0.28em] text-white/90">
-              PakSarZameen Global Academic Advisory
-            </p>
-            <h1 className="mt-4 text-[clamp(1.4rem,3vw,2.4rem)] font-normal leading-[1.04] tracking-[-0.03em] text-white">
-              Transparent, Merit-Driven Pathways to Top Global Universities
-            </h1>
-            <p className="mx-auto mt-4 max-w-xl text-[13px] leading-7 text-white/80 sm:text-sm">
-              Comprehensive guidance for undergraduate and graduate candidates. Zero agency commission bias, verified admissions requirements, and dedicated scholarship structuring.
-            </p>
-
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
-              <Link
-                href="/universities"
-                className="inline-flex items-center justify-center border-b border-white/72 pb-1 text-[clamp(0.88rem,1vw,1.02rem)] font-normal leading-none tracking-[-0.01em] text-white transition-opacity hover:opacity-70"
-              >
-                Explore Featured Universities &rarr;
-              </Link>
-
-              <button
-                type="button"
-                onClick={() => setConsultModalOpen(true)}
-                className="inline-flex items-center justify-center rounded-full border border-white/35 px-4 py-2 text-[0.78rem] uppercase tracking-[0.14em] text-white/90 transition hover:bg-white/15"
-              >
-                Book Free Consultation
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* 1. 3D PERSPECTIVE TUNNEL HERO (STORE DESIGN ENHANCED) */}
+      <TunnelHero
+        universities={universities}
+        onBookConsultation={() => setConsultModalOpen(true)}
+      />
 
       {/* 2. MINIMALIST SEARCH PANEL */}
-      <section className="relative z-20 -mt-7 sm:-mt-9">
+      <section id="search-section" className="relative z-20 -mt-6 sm:-mt-8 scroll-mt-24">
         <div className="store-container">
           <form
             onSubmit={handleSearchSubmit}
-            className="store-panel rounded-2xl p-3.5 sm:p-5 grid gap-3 sm:grid-cols-[1fr_180px_180px_auto] items-center"
+            className="store-panel rounded-2xl p-4 sm:p-5 grid gap-3 sm:grid-cols-[1fr_180px_180px_auto] items-center"
           >
             <div className="relative">
               <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-neutral-400" />
@@ -244,10 +197,10 @@ export function CounsellingClient({ initialStore }: CounsellingClientProps) {
       {/* 3. FEATURED UNIVERSITIES SECTION (STORE CARD GRID) */}
       <section className="store-section">
         <div className="store-container">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between pb-8 sm:pb-12 gap-4 border-b border-black/6">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between pb-6 sm:pb-10 gap-3 border-b border-black/6">
             <div>
               <p className="store-kicker">Global Institution Profiles</p>
-              <h2 className="mt-2 store-heading">Featured Global Universities</h2>
+              <h2 className="mt-1.5 store-heading">Featured Global Universities</h2>
             </div>
             <Link
               href="/universities"
@@ -257,7 +210,7 @@ export function CounsellingClient({ initialStore }: CounsellingClientProps) {
             </Link>
           </div>
 
-          <div className="mt-10 grid gap-6 sm:gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-8 sm:mt-10 grid gap-6 sm:gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {featuredUnis.map((uni) => (
               <article key={uni.slug} className="group flex h-full flex-col">
                 <Link
@@ -275,41 +228,41 @@ export function CounsellingClient({ initialStore }: CounsellingClientProps) {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
 
-                    <div className="absolute left-4 top-4 flex flex-wrap gap-2">
-                      <span className="rounded-full border border-white/35 bg-white/86 px-2.5 py-1 text-[9px] font-normal uppercase tracking-[0.16em] text-neutral-950 backdrop-blur-md">
+                    <div className="absolute left-3.5 top-3.5 flex flex-wrap gap-1.5">
+                      <span className="rounded-full border border-white/35 bg-white/86 px-2.5 py-0.5 text-[8.5px] font-normal uppercase tracking-[0.16em] text-neutral-950 backdrop-blur-md">
                         QS #{uni.ranking.qs}
                       </span>
                       {uni.scholarships.available && (
-                        <span className="rounded-full border border-white/35 bg-neutral-950 px-2.5 py-1 text-[9px] font-normal uppercase tracking-[0.16em] text-white">
+                        <span className="rounded-full border border-white/35 bg-neutral-950 px-2.5 py-0.5 text-[8.5px] font-normal uppercase tracking-[0.16em] text-white">
                           Scholarship Available
                         </span>
                       )}
                     </div>
 
-                    <div className="absolute bottom-4 left-4 right-4 text-white">
-                      <p className="text-[10px] font-normal uppercase tracking-[0.18em] text-white/80">
+                    <div className="absolute bottom-3.5 left-3.5 right-3.5 text-white">
+                      <p className="text-[9.5px] font-normal uppercase tracking-[0.18em] text-white/80">
                         📍 {uni.country}
                       </p>
-                      <h3 className="mt-1 text-[1.1rem] font-normal leading-tight tracking-[-0.02em] text-white truncate">
+                      <h3 className="mt-0.5 text-[1.05rem] font-normal leading-snug tracking-[-0.02em] text-white truncate">
                         {uni.name}
                       </h3>
                     </div>
                   </div>
                 </Link>
 
-                <div className="mt-3.5 flex flex-col justify-between flex-1 space-y-3 px-1">
-                  <p className="text-[13px] leading-relaxed text-neutral-600 line-clamp-2">
+                <div className="mt-3 flex flex-col justify-between flex-1 space-y-2.5 px-1">
+                  <p className="text-[12.5px] sm:text-[13px] leading-relaxed text-neutral-600 line-clamp-2">
                     {uni.overview?.about}
                   </p>
 
-                  <div className="pt-2 border-t border-black/6 flex items-center justify-between text-[12px] text-neutral-700">
+                  <div className="pt-2 border-t border-black/6 flex items-center justify-between text-xs text-neutral-700">
                     <div>
-                      <span className="text-neutral-400 block text-[10px] uppercase tracking-wider">Tuition Est.</span>
+                      <span className="text-neutral-400 block text-[9.5px] uppercase tracking-wider">Tuition Est.</span>
                       <strong className="font-normal text-neutral-900">{uni.fees.tuition}</strong>
                     </div>
                     <Link
                       href={`/universities/${uni.slug}`}
-                      className="store-link-inline font-normal"
+                      className="store-link-inline font-normal text-[10px]"
                     >
                       View Details &rarr;
                     </Link>
@@ -324,55 +277,55 @@ export function CounsellingClient({ initialStore }: CounsellingClientProps) {
       {/* 4. ADVISORY PATHWAYS (EDITORIAL SPLIT PANELS) */}
       <section className="store-section-soft border-y border-black/6">
         <div className="store-container">
-          <div className="text-center max-w-xl mx-auto pb-12 sm:pb-16">
+          <div className="text-center max-w-xl mx-auto pb-10 sm:pb-14">
             <p className="store-kicker">Specialized Advisory</p>
-            <h2 className="mt-2 store-heading">Structured Counselling Services</h2>
-            <p className="mt-3 store-subheading">
+            <h2 className="mt-1.5 store-heading">Structured Counselling Services</h2>
+            <p className="mt-2.5 store-subheading">
               Tailored assistance designed to maximize candidate competitiveness at every academic phase.
             </p>
           </div>
 
-          <div className="grid gap-8 lg:grid-cols-2">
+          <div className="grid gap-6 sm:gap-8 lg:grid-cols-2">
             {/* Undergraduate Panel */}
-            <div className="store-card rounded-2xl p-7 sm:p-10 flex flex-col justify-between space-y-6">
+            <div className="store-card rounded-2xl p-6 sm:p-10 flex flex-col justify-between space-y-6">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="store-pill-label">Pathway 01</span>
-                  <span className="text-[10px] uppercase tracking-[0.2em] text-neutral-400">High School &bull; A-Levels &bull; F.Sc</span>
+                  <span className="text-[10px] uppercase tracking-[0.2em] text-neutral-400">High School &bull; A-Levels</span>
                 </div>
 
-                <h3 className="text-[1.4rem] sm:text-[1.6rem] font-normal leading-tight tracking-[-0.03em] text-neutral-950">
+                <h3 className="text-[1.3rem] sm:text-[1.55rem] font-normal leading-snug tracking-[-0.03em] text-neutral-950">
                   Undergraduate Admissions Advisory
                 </h3>
 
-                <p className="text-sm leading-7 text-neutral-600">
+                <p className="text-xs sm:text-sm leading-relaxed sm:leading-7 text-neutral-600">
                   End-to-end guidance for high school graduates targeting Bachelor&apos;s degrees in the US, UK, Canada, and Australia.
                 </p>
 
-                <ul className="space-y-2.5 pt-2 text-sm text-neutral-700">
-                  <li className="flex items-center gap-2.5">
-                    <span className="h-1.5 w-1.5 rounded-full bg-neutral-900" />
-                    <span>Common App, UCAS, and direct portal strategy</span>
+                <ul className="space-y-2 pt-2 text-xs sm:text-sm text-neutral-700">
+                  <li className="flex items-start gap-2.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-neutral-900 mt-2 shrink-0" />
+                    <span>Common App, UCAS, and direct university portal strategy</span>
                   </li>
-                  <li className="flex items-center gap-2.5">
-                    <span className="h-1.5 w-1.5 rounded-full bg-neutral-900" />
+                  <li className="flex items-start gap-2.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-neutral-900 mt-2 shrink-0" />
                     <span>Personal Statement &amp; supplemental essay brainstorming</span>
                   </li>
-                  <li className="flex items-center gap-2.5">
-                    <span className="h-1.5 w-1.5 rounded-full bg-neutral-900" />
+                  <li className="flex items-start gap-2.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-neutral-900 mt-2 shrink-0" />
                     <span>Extra-curricular profile building &amp; honours formatting</span>
                   </li>
-                  <li className="flex items-center gap-2.5">
-                    <span className="h-1.5 w-1.5 rounded-full bg-neutral-900" />
+                  <li className="flex items-start gap-2.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-neutral-900 mt-2 shrink-0" />
                     <span>CSS Profile &amp; international financial aid filings</span>
                   </li>
                 </ul>
               </div>
 
-              <div className="pt-6 border-t border-black/6 flex items-center justify-between">
+              <div className="pt-5 border-t border-black/6 flex items-center justify-between">
                 <Link
                   href="/counselling#undergrad"
-                  className="store-link-inline"
+                  className="store-link-inline text-[10px]"
                 >
                   Learn More &rarr;
                 </Link>
@@ -387,45 +340,45 @@ export function CounsellingClient({ initialStore }: CounsellingClientProps) {
             </div>
 
             {/* Graduate Panel */}
-            <div className="store-card rounded-2xl p-7 sm:p-10 flex flex-col justify-between space-y-6">
+            <div className="store-card rounded-2xl p-6 sm:p-10 flex flex-col justify-between space-y-6">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="store-pill-label">Pathway 02</span>
-                  <span className="text-[10px] uppercase tracking-[0.2em] text-neutral-400">Masters &bull; Ph.D. &bull; Research</span>
+                  <span className="text-[10px] uppercase tracking-[0.2em] text-neutral-400">Masters &bull; Ph.D. &bull; Labs</span>
                 </div>
 
-                <h3 className="text-[1.4rem] sm:text-[1.6rem] font-normal leading-tight tracking-[-0.03em] text-neutral-950">
+                <h3 className="text-[1.3rem] sm:text-[1.55rem] font-normal leading-snug tracking-[-0.03em] text-neutral-950">
                   Graduate Mentorship &amp; Lab Placement
                 </h3>
 
-                <p className="text-sm leading-7 text-neutral-600">
-                  Specialized support for Master&apos;s and Doctoral candidates seeking fully funded research assistantships and prestigious grants.
+                <p className="text-xs sm:text-sm leading-relaxed sm:leading-7 text-neutral-600">
+                  Specialized support for Master&apos;s and Doctoral candidates seeking fully funded research assistantships and grants.
                 </p>
 
-                <ul className="space-y-2.5 pt-2 text-sm text-neutral-700">
-                  <li className="flex items-center gap-2.5">
-                    <span className="h-1.5 w-1.5 rounded-full bg-neutral-900" />
-                    <span>Faculty supervisor matching &amp; cold outreach emails</span>
+                <ul className="space-y-2 pt-2 text-xs sm:text-sm text-neutral-700">
+                  <li className="flex items-start gap-2.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-neutral-900 mt-2 shrink-0" />
+                    <span>Faculty supervisor matching &amp; cold outreach correspondence</span>
                   </li>
-                  <li className="flex items-center gap-2.5">
-                    <span className="h-1.5 w-1.5 rounded-full bg-neutral-900" />
-                    <span>Statement of Purpose (SOP) line-by-line review</span>
+                  <li className="flex items-start gap-2.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-neutral-900 mt-2 shrink-0" />
+                    <span>Statement of Purpose (SOP) line-by-line editorial review</span>
                   </li>
-                  <li className="flex items-center gap-2.5">
-                    <span className="h-1.5 w-1.5 rounded-full bg-neutral-900" />
+                  <li className="flex items-start gap-2.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-neutral-900 mt-2 shrink-0" />
                     <span>Research proposal structuring &amp; academic CV formatting</span>
                   </li>
-                  <li className="flex items-center gap-2.5">
-                    <span className="h-1.5 w-1.5 rounded-full bg-neutral-900" />
+                  <li className="flex items-start gap-2.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-neutral-900 mt-2 shrink-0" />
                     <span>Fulbright, DAAD, &amp; Chevening scholarship mentoring</span>
                   </li>
                 </ul>
               </div>
 
-              <div className="pt-6 border-t border-black/6 flex items-center justify-between">
+              <div className="pt-5 border-t border-black/6 flex items-center justify-between">
                 <Link
                   href="/counselling#graduate"
-                  className="store-link-inline"
+                  className="store-link-inline text-[10px]"
                 >
                   Learn More &rarr;
                 </Link>
@@ -445,29 +398,29 @@ export function CounsellingClient({ initialStore }: CounsellingClientProps) {
       {/* 5. TEST PREPARATION (TUTORING COURSES) */}
       <section className="store-section">
         <div className="store-container">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between pb-8 sm:pb-12 gap-4 border-b border-black/6">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between pb-6 sm:pb-10 gap-3 border-b border-black/6">
             <div>
               <p className="store-kicker">Standardized Testing</p>
-              <h2 className="mt-2 store-heading">Tutoring &amp; Test Preparation</h2>
+              <h2 className="mt-1.5 store-heading">Tutoring &amp; Test Preparation</h2>
             </div>
             <Link href="/tutoring" className="store-link-inline self-start sm:self-auto">
               View Tutoring Schedules &rarr;
             </Link>
           </div>
 
-          <div className="mt-10 grid gap-6 sm:gap-8 md:grid-cols-3">
+          <div className="mt-8 sm:mt-10 grid gap-6 sm:gap-8 md:grid-cols-3">
             {tutoringCourses.map((course) => (
               <div
                 key={course.id}
-                className="store-card rounded-2xl p-7 flex flex-col justify-between space-y-5"
+                className="store-card rounded-2xl p-6 sm:p-7 flex flex-col justify-between space-y-5"
               >
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="store-pill-label">{course.format}</span>
-                    <span className="text-[11px] font-normal text-neutral-500">{course.duration}</span>
+                    <span className="text-xs text-neutral-500">{course.duration}</span>
                   </div>
 
-                  <h3 className="text-[1.25rem] font-normal leading-tight tracking-[-0.02em] text-neutral-950">
+                  <h3 className="text-[1.2rem] font-normal leading-snug tracking-[-0.02em] text-neutral-950">
                     {course.name}
                   </h3>
 
@@ -478,7 +431,7 @@ export function CounsellingClient({ initialStore }: CounsellingClientProps) {
                   <div className="space-y-1.5 pt-3 border-t border-black/6 text-xs text-neutral-700">
                     <div className="flex justify-between">
                       <span className="text-neutral-400">Timings:</span>
-                      <strong className="font-normal text-neutral-900">{course.schedule}</strong>
+                      <strong className="font-normal text-neutral-900 text-right truncate max-w-[170px]">{course.schedule}</strong>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-neutral-400">Tuition Fee:</span>
@@ -506,16 +459,15 @@ export function CounsellingClient({ initialStore }: CounsellingClientProps) {
       {/* 6. MENTORS & ETHICAL PHILOSOPHY (ABOUT SECTION) */}
       <section className="store-section-soft border-y border-black/6">
         <div className="store-container">
-          <div className="grid gap-12 lg:grid-cols-[1.1fr_1.3fr] items-center">
+          <div className="grid gap-10 lg:grid-cols-[1.1fr_1.3fr] items-center">
             
-            {/* Left: Organization Philosophy */}
-            <div className="space-y-6">
+            <div className="space-y-5">
               <p className="store-kicker">The PakSarZameen Standard</p>
               <h2 className="store-heading">
                 Advising with radical transparency, ethics, and zero commission bias.
               </h2>
               
-              <div className="space-y-4 text-sm leading-7 text-neutral-600">
+              <div className="space-y-3.5 text-xs sm:text-sm leading-relaxed sm:leading-7 text-neutral-600">
                 <p>
                   PakSarZameen was created to dismantle the deceptive commercial agency model. We do not sell quotas to low-tier private colleges. We work exclusively to position ambitious Pakistani students for top global institutions matching their true academic potential.
                 </p>
@@ -524,7 +476,7 @@ export function CounsellingClient({ initialStore }: CounsellingClientProps) {
                 </p>
               </div>
 
-              <div className="pt-2 flex flex-wrap gap-4">
+              <div className="pt-2 flex flex-wrap gap-3 sm:gap-4">
                 <Link href="/about" className="store-button-primary">
                   <span className="btn-label">Read Full Mission</span>
                   <span className="btn-icon">&rarr;</span>
@@ -535,7 +487,6 @@ export function CounsellingClient({ initialStore }: CounsellingClientProps) {
               </div>
             </div>
 
-            {/* Right: Mentors Grid */}
             <div className="grid gap-4 sm:grid-cols-3">
               {mentors.slice(0, 3).map((m) => (
                 <div
@@ -553,8 +504,8 @@ export function CounsellingClient({ initialStore }: CounsellingClientProps) {
                       />
                     </div>
                     <div>
-                      <h4 className="text-sm font-normal text-neutral-950">{m.name}</h4>
-                      <p className="text-[11px] text-neutral-500">{m.role}</p>
+                      <h4 className="text-sm font-normal text-neutral-950 truncate">{m.name}</h4>
+                      <p className="text-[11px] text-neutral-500 truncate">{m.role}</p>
                     </div>
                     <p className="text-[11px] leading-relaxed text-neutral-600 line-clamp-3">
                       &ldquo;{m.bio}&rdquo;
@@ -565,9 +516,9 @@ export function CounsellingClient({ initialStore }: CounsellingClientProps) {
                     href={m.linkedin}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider text-blue-600 hover:underline pt-2 border-t border-black/6"
+                    className="inline-flex items-center gap-1 text-[9.5px] uppercase tracking-wider text-blue-600 hover:underline pt-2 border-t border-black/6"
                   >
-                    LinkedIn &rarr;
+                    LinkedIn Profile &rarr;
                   </a>
                 </div>
               ))}
@@ -580,10 +531,10 @@ export function CounsellingClient({ initialStore }: CounsellingClientProps) {
       {/* 7. STUDENT VOICES & TESTIMONIALS */}
       <section className="store-section">
         <div className="store-container">
-          <div className="text-center max-w-xl mx-auto pb-12 sm:pb-16">
+          <div className="text-center max-w-xl mx-auto pb-10 sm:pb-14">
             <p className="store-kicker">Student Outcomes</p>
-            <h2 className="mt-2 store-heading">Success Stories</h2>
-            <p className="mt-3 store-subheading">
+            <h2 className="mt-1.5 store-heading">Success Stories</h2>
+            <p className="mt-2 store-subheading">
               Read how our candidates secured admissions and full funding at elite institutions.
             </p>
           </div>
@@ -592,7 +543,7 @@ export function CounsellingClient({ initialStore }: CounsellingClientProps) {
             {testimonials.map((t, idx) => (
               <div
                 key={idx}
-                className="store-panel rounded-2xl p-7 flex flex-col justify-between space-y-4"
+                className="store-panel rounded-2xl p-6 sm:p-7 flex flex-col justify-between space-y-4"
               >
                 <div className="space-y-3">
                   <div className="flex gap-1 text-amber-500">
@@ -600,12 +551,12 @@ export function CounsellingClient({ initialStore }: CounsellingClientProps) {
                       <Star key={i} className="h-3.5 w-3.5 fill-current" />
                     ))}
                   </div>
-                  <p className="text-sm leading-relaxed text-neutral-700 italic">
+                  <p className="text-xs sm:text-sm leading-relaxed text-neutral-700 italic">
                     &ldquo;{t.quote}&rdquo;
                   </p>
                 </div>
 
-                <div className="pt-4 border-t border-black/6">
+                <div className="pt-3 border-t border-black/6">
                   <strong className="block text-sm font-normal text-neutral-950">{t.name}</strong>
                   <span className="block text-[11px] text-emerald-800">{t.degree}</span>
                   <span className="block text-[10px] text-neutral-500">{t.destination}</span>
@@ -619,28 +570,28 @@ export function CounsellingClient({ initialStore }: CounsellingClientProps) {
       {/* 8. FREQUENTLY ASKED QUESTIONS */}
       <section className="store-section-soft border-t border-black/6">
         <div className="store-container max-w-[840px]">
-          <div className="text-center pb-12">
+          <div className="text-center pb-10">
             <p className="store-kicker">Information Center</p>
-            <h2 className="mt-2 store-heading">Frequently Asked Questions</h2>
+            <h2 className="mt-1.5 store-heading">Frequently Asked Questions</h2>
           </div>
 
           <div className="border-t border-black/10 divide-y divide-black/10">
             {faqs.map((faq, idx) => {
               const isOpen = openFaqIndex === idx;
               return (
-                <div key={idx} className="py-5">
+                <div key={idx} className="py-4 sm:py-5">
                   <button
                     type="button"
                     onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
-                    className="flex w-full items-center justify-between text-left text-[15px] sm:text-[16px] font-normal text-neutral-950"
+                    className="flex w-full items-center justify-between text-left text-sm sm:text-base font-normal text-neutral-950"
                   >
-                    <span>{faq.q}</span>
-                    <span className="text-lg leading-none text-neutral-400 pl-4">
+                    <span className="pr-3">{faq.q}</span>
+                    <span className="text-lg leading-none text-neutral-400 shrink-0">
                       {isOpen ? "−" : "+"}
                     </span>
                   </button>
                   {isOpen && (
-                    <div className="mt-3 text-sm leading-7 text-neutral-600 pr-8">
+                    <div className="mt-3 text-xs sm:text-sm leading-relaxed sm:leading-7 text-neutral-600 pr-6">
                       {faq.a}
                     </div>
                   )}
@@ -654,16 +605,16 @@ export function CounsellingClient({ initialStore }: CounsellingClientProps) {
       {/* 9. BOTTOM CONTACT & INQUIRY BANNER */}
       <section className="store-section border-t border-black/6 bg-white">
         <div className="store-container">
-          <div className="grid gap-12 lg:grid-cols-2 items-center">
+          <div className="grid gap-10 lg:grid-cols-2 items-center">
             
-            <div className="space-y-6">
+            <div className="space-y-5">
               <p className="store-kicker">Ready to Start?</p>
               <h2 className="store-heading">Book your initial direct assessment.</h2>
-              <p className="text-sm leading-7 text-neutral-600">
+              <p className="text-xs sm:text-sm leading-relaxed sm:leading-7 text-neutral-600">
                 Speak directly with an academic counsellor to evaluate your transcripts, test scores, and study abroad budget.
               </p>
 
-              <div className="flex flex-wrap gap-4 pt-2">
+              <div className="flex flex-wrap gap-3 pt-2">
                 <a
                   href="https://wa.me/923001234567"
                   target="_blank"
@@ -684,11 +635,11 @@ export function CounsellingClient({ initialStore }: CounsellingClientProps) {
             </div>
 
             {/* Quick Inquiry Form */}
-            <div className="store-card rounded-2xl p-7 sm:p-9">
-              <h3 className="text-[1.2rem] font-normal leading-tight tracking-[-0.02em] text-neutral-950 mb-2">
+            <div className="store-card rounded-2xl p-6 sm:p-9">
+              <h3 className="text-lg sm:text-xl font-normal leading-snug text-neutral-950 mb-1.5">
                 Send a Direct Inquiry
               </h3>
-              <p className="text-xs text-neutral-500 mb-6">
+              <p className="text-xs text-neutral-500 mb-5">
                 Leave your query and our team will get back to you within 24 hours.
               </p>
 
@@ -706,7 +657,7 @@ export function CounsellingClient({ initialStore }: CounsellingClientProps) {
                   </button>
                 </div>
               ) : (
-                <form onSubmit={handleInquirySubmit} className="space-y-4">
+                <form onSubmit={handleInquirySubmit} className="space-y-3.5">
                   <div>
                     <input
                       type="text"

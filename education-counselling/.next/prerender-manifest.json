@@ -25,7 +25,8 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/scholarships": {
+    "/_not-found": {
+      "initialStatus": 404,
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -38,8 +39,8 @@
         }
       ],
       "initialRevalidateSeconds": false,
-      "srcRoute": "/scholarships",
-      "dataRoute": "/scholarships.rsc",
+      "srcRoute": "/_not-found",
+      "dataRoute": "/_not-found.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -73,8 +74,7 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/_not-found": {
-      "initialStatus": 404,
+    "/scholarships": {
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -87,8 +87,8 @@
         }
       ],
       "initialRevalidateSeconds": false,
-      "srcRoute": "/_not-found",
-      "dataRoute": "/_not-found.rsc",
+      "srcRoute": "/scholarships",
+      "dataRoute": "/scholarships.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -328,8 +328,8 @@
   },
   "notFoundRoutes": [],
   "preview": {
-    "previewModeId": "dfdd382514b39f871fce093281181565",
-    "previewModeSigningKey": "2a59a749221d907df2f690dcbcd7ca4165fa8bd2232f18f7a0a6f6d7a405e25b",
-    "previewModeEncryptionKey": "816689b26f5d25d24b6c030b4b986c1adb28bcc41eff30b1debda4d1e55b95c0"
+    "previewModeId": "1e8b5bafc8ec29b796b8abfce723e583",
+    "previewModeSigningKey": "a21b1c3a807edff87c00b903a47d89de62e1e441c3da33e6eb8f1def3f108403",
+    "previewModeEncryptionKey": "0bb9757c4f7c3cefd8e1f9eb1d13d4beb926c6be984277ac241bf6941c2bf861"
   }
 }

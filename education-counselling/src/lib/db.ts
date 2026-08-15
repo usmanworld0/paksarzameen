@@ -146,51 +146,102 @@ export interface DbStore {
 }
 
 const STORE_PATH = path.join(process.cwd(), "src/data/db_store.json");
+const IS_VERCEL = !!process.env.VERCEL;
 
-// Helper to determine the path when called from the main app workspace
+// Global cache to persist state in-memory within the serverless container instance
+const globalRef = global as unknown as { memoryDb: DbStore | undefined };
+
 function getStorePath(): string {
-  if (fs.existsSync(STORE_PATH)) {
-    return STORE_PATH;
+  if (IS_VERCEL) {
+    return "/tmp/db_store.json";
   }
-  // Try parent folder lookups if running from main admin workspace
+  
+  try {
+    if (fs.existsSync(STORE_PATH)) {
+      return STORE_PATH;
+    }
+  } catch {}
+
   const alternativePath = path.join(process.cwd(), "education-counselling/src/data/db_store.json");
-  if (fs.existsSync(alternativePath) || process.cwd().endsWith("paksarzameen")) {
-    return alternativePath;
-  }
+  try {
+    if (fs.existsSync(alternativePath) || process.cwd().endsWith("paksarzameen")) {
+      return alternativePath;
+    }
+  } catch {}
+
   return STORE_PATH;
 }
 
 export function getDbStore(): DbStore {
-  const storeFile = getStorePath();
-  
-  // Make sure directory exists
-  const dir = path.dirname(storeFile);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
+  // If memory cache exists, return it immediately to avoid filesystem hits
+  if (globalRef.memoryDb) {
+    return globalRef.memoryDb;
   }
 
-  if (fs.existsSync(storeFile)) {
+  const storeFile = getStorePath();
+
+  // If on Vercel and the /tmp file does not exist yet, initialize it
+  if (IS_VERCEL) {
     try {
-      const content = fs.readFileSync(storeFile, "utf-8");
-      return JSON.parse(content) as DbStore;
+      if (!fs.existsSync(storeFile)) {
+        // Try reading from original read-only location in bundle
+        const possiblePaths = [
+          path.join(process.cwd(), "src/data/db_store.json"),
+          path.join(process.cwd(), "education-counselling/src/data/db_store.json"),
+          STORE_PATH
+        ];
+        let initialized = false;
+        for (const p of possiblePaths) {
+          if (fs.existsSync(p)) {
+            const data = fs.readFileSync(p, "utf-8");
+            fs.writeFileSync(storeFile, data, "utf-8");
+            initialized = true;
+            console.log(`Initialized /tmp database from bundled asset: ${p}`);
+            break;
+          }
+        }
+        if (!initialized) {
+          console.log("No bundled asset found, initializing default data in /tmp");
+          const defaultStore = generateDefaultStore();
+          fs.writeFileSync(storeFile, JSON.stringify(defaultStore, null, 2), "utf-8");
+        }
+      }
     } catch (e) {
-      console.error("Failed to read JSON DB store, using fallback", e);
+      console.error("Vercel /tmp database initialization failed:", e);
     }
   }
 
-  // Generate and return initial default DB store
-  const store = generateDefaultStore();
-  saveDbStore(store);
-  return store;
+  // Load from file if it exists
+  try {
+    if (fs.existsSync(storeFile)) {
+      const content = fs.readFileSync(storeFile, "utf-8");
+      globalRef.memoryDb = JSON.parse(content) as DbStore;
+      return globalRef.memoryDb;
+    }
+  } catch (e) {
+    console.error("Failed to read JSON DB store:", e);
+  }
+
+  // Fallback to generating in-memory store
+  console.log("Using in-memory generated default database");
+  globalRef.memoryDb = generateDefaultStore();
+  return globalRef.memoryDb;
 }
 
 export function saveDbStore(store: DbStore): void {
+  globalRef.memoryDb = store;
   const storeFile = getStorePath();
-  const dir = path.dirname(storeFile);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
+  
+  try {
+    const dir = path.dirname(storeFile);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    fs.writeFileSync(storeFile, JSON.stringify(store, null, 2), "utf-8");
+    console.log(`Saved database to: ${storeFile}`);
+  } catch (e) {
+    console.error("Failed to write to JSON DB store (updates kept in-memory):", e);
   }
-  fs.writeFileSync(storeFile, JSON.stringify(store, null, 2), "utf-8");
 }
 
 function generateDefaultStore(): DbStore {

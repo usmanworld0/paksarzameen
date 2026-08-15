@@ -4,28 +4,77 @@ import path from "path";
 import { requireAdminUser } from "@/lib/supabase/authorization";
 
 const STORE_PATH = path.join(process.cwd(), "education-counselling/src/data/db_store.json");
+const IS_VERCEL = !!process.env.VERCEL;
+const VERCEL_STORE_PATH = "/tmp/db_store.json";
+
+const globalRef = global as unknown as { adminMemoryDb: any };
+
+function getStorePath(): string {
+  if (IS_VERCEL) {
+    return VERCEL_STORE_PATH;
+  }
+  return STORE_PATH;
+}
 
 // Safe helper to read the store
 function readStore() {
-  if (fs.existsSync(STORE_PATH)) {
+  if (globalRef.adminMemoryDb) {
+    return globalRef.adminMemoryDb;
+  }
+
+  const storeFile = getStorePath();
+
+  if (IS_VERCEL) {
     try {
-      const content = fs.readFileSync(STORE_PATH, "utf-8");
-      return JSON.parse(content);
+      if (!fs.existsSync(storeFile)) {
+        // Look in multiple locations in the workspace bundle
+        const possibleBundledPaths = [
+          STORE_PATH,
+          path.join(process.cwd(), "src/data/db_store.json"),
+          path.join(process.cwd(), "education-counselling/src/data/db_store.json")
+        ];
+        for (const p of possibleBundledPaths) {
+          if (fs.existsSync(p)) {
+            const content = fs.readFileSync(p, "utf-8");
+            fs.writeFileSync(storeFile, content, "utf-8");
+            console.log(`Admin API initialized /tmp database from: ${p}`);
+            break;
+          }
+        }
+      }
     } catch (e) {
-      console.error("Admin API failed to read store", e);
+      console.error("Admin API failed to copy db to /tmp:", e);
     }
   }
-  // If not found in default dev place, check relative paths
+
+  try {
+    if (fs.existsSync(storeFile)) {
+      const content = fs.readFileSync(storeFile, "utf-8");
+      globalRef.adminMemoryDb = JSON.parse(content);
+      return globalRef.adminMemoryDb;
+    }
+  } catch (e) {
+    console.error("Admin API failed to read store", e);
+  }
+  
   return null;
 }
 
 // Safe helper to write the store
 function writeStore(data: any) {
-  const dir = path.dirname(STORE_PATH);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
+  globalRef.adminMemoryDb = data;
+  const storeFile = getStorePath();
+
+  try {
+    const dir = path.dirname(storeFile);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    fs.writeFileSync(storeFile, JSON.stringify(data, null, 2), "utf-8");
+    console.log(`Admin API saved database to: ${storeFile}`);
+  } catch (e) {
+    console.error("Admin API failed to write store (updated in memory only):", e);
   }
-  fs.writeFileSync(STORE_PATH, JSON.stringify(data, null, 2), "utf-8");
 }
 
 export async function GET() {

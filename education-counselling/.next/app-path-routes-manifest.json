@@ -4,8 +4,8 @@
   "/contact/page": "/contact",
   "/counselling/page": "/counselling",
   "/scholarships/page": "/scholarships",
-  "/about/page": "/about",
   "/page": "/",
+  "/about/page": "/about",
   "/universities/page": "/universities",
   "/universities/[slug]/page": "/universities/[slug]",
   "/tutoring/page": "/tutoring"

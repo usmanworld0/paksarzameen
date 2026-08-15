@@ -46,13 +46,6 @@
       "static/chunks/471-89a3b4886d5e36da.js",
       "static/chunks/app/scholarships/page-bab6a724c824359f.js"
     ],
-    "/about/page": [
-      "static/chunks/webpack-dd796cd41c9a37e2.js",
-      "static/chunks/4bd1b696-c023c6e3521b1417.js",
-      "static/chunks/255-3981a3d1f3561bd8.js",
-      "static/chunks/main-app-59752f49fa145b6f.js",
-      "static/chunks/app/about/page-1322432bf5ad408a.js"
-    ],
     "/page": [
       "static/chunks/webpack-dd796cd41c9a37e2.js",
       "static/chunks/4bd1b696-c023c6e3521b1417.js",
@@ -62,6 +55,13 @@
       "static/chunks/297-7295b248ad97a1e5.js",
       "static/chunks/471-89a3b4886d5e36da.js",
       "static/chunks/app/page-19e9e67805638182.js"
+    ],
+    "/about/page": [
+      "static/chunks/webpack-dd796cd41c9a37e2.js",
+      "static/chunks/4bd1b696-c023c6e3521b1417.js",
+      "static/chunks/255-3981a3d1f3561bd8.js",
+      "static/chunks/main-app-59752f49fa145b6f.js",
+      "static/chunks/app/about/page-1322432bf5ad408a.js"
     ],
     "/universities/page": [
       "static/chunks/webpack-dd796cd41c9a37e2.js",

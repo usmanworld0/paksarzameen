@@ -4,8 +4,8 @@
   "/contact/page": "app/contact/page.js",
   "/counselling/page": "app/counselling/page.js",
   "/scholarships/page": "app/scholarships/page.js",
-  "/about/page": "app/about/page.js",
   "/page": "app/page.js",
+  "/about/page": "app/about/page.js",
   "/universities/page": "app/universities/page.js",
   "/universities/[slug]/page": "app/universities/[slug]/page.js",
   "/tutoring/page": "app/tutoring/page.js"

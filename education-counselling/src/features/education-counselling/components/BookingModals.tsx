@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, Send, CheckCircle2, Loader2, Sparkles, Calendar, BookOpen, User } from "lucide-react";
+import { X, CheckCircle2, Sparkles } from "lucide-react";
 
 interface ModalProps {
   isOpen: boolean;
@@ -46,164 +46,156 @@ export function FreeConsultationModal({ isOpen, onClose, onSuccess }: ModalProps
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 animate-in fade-in duration-200">
-      <div className="relative w-full max-w-lg rounded-3xl bg-white border border-black/[0.08] p-6 sm:p-8 shadow-2xl flex flex-col max-h-[90vh] overflow-y-auto">
-        <button onClick={onClose} className="absolute top-5 right-5 p-1 rounded-lg text-gray-400 hover:bg-gray-50 hover:text-black transition">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/48 backdrop-blur-[2px] p-4 animate-fade-in">
+      <div className="relative w-full max-w-lg rounded-2xl bg-white border border-black/10 p-7 sm:p-9 shadow-[0_24px_64px_rgba(0,0,0,0.18)] flex flex-col max-h-[90vh] overflow-y-auto">
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute top-6 right-6 text-neutral-400 hover:text-black transition"
+        >
           <X className="h-5 w-5" />
         </button>
 
         {success ? (
           <div className="text-center py-8 space-y-4">
-            <CheckCircle2 className="h-14 w-14 text-[#0f7a47] mx-auto animate-bounce" />
-            <h3 className="text-xl font-black text-[#111111] tracking-tight">Consultation Scheduled!</h3>
-            <p className="text-xs text-[#707072] max-w-xs mx-auto leading-relaxed">
-              We have received your request. An academic counselor will contact you on WhatsApp/Email within 24 hours to confirm your Zoom link.
+            <CheckCircle2 className="h-12 w-12 text-emerald-700 mx-auto" />
+            <h3 className="text-xl font-normal tracking-[-0.02em] text-neutral-950">
+              Consultation Scheduled
+            </h3>
+            <p className="text-xs text-neutral-600 max-w-xs mx-auto leading-relaxed">
+              We have received your request. An academic counsellor will contact you on WhatsApp/Email within 24 hours to confirm your Zoom link.
             </p>
-            <button onClick={onClose} className="mt-4 rounded-xl bg-[#0f7a47] px-6 py-2.5 text-xs font-bold text-white uppercase tracking-wider hover:bg-[#0c6239] transition">
+            <button
+              type="button"
+              onClick={onClose}
+              className="store-pill-outline text-xs mt-4"
+            >
               Close Window
             </button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-1">
-              <span className="text-[10px] font-black uppercase tracking-widest text-[#0f7a47] flex items-center gap-1">
-                <Sparkles className="h-3.5 w-3.5" />
-                Service Program
-              </span>
-              <h2 className="text-xl font-black tracking-tight text-[#111111]">Book Free 30-Min Consultation</h2>
-              <p className="text-xs text-[#707072]">Get initial guidance, country pathways, and timeline evaluations.</p>
+              <span className="store-kicker">Free Assessment</span>
+              <h2 className="text-xl font-normal tracking-[-0.02em] text-neutral-950">
+                Book 30-Min Consultation
+              </h2>
+              <p className="text-xs text-neutral-500">
+                Initial profile evaluation, country pathways, and timeline guidance.
+              </p>
             </div>
 
-            <div className="space-y-3.5 pt-2">
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-[#707072]">Student Full Name</label>
+            <div className="space-y-3.5 pt-1">
+              <div>
+                <label className="text-[10px] uppercase tracking-wider text-neutral-400 block mb-1">
+                  Student Full Name
+                </label>
                 <input
                   type="text"
                   required
                   value={formData.studentName}
                   onChange={(e) => setFormData({ ...formData, studentName: e.target.value })}
-                  className="w-full rounded-xl border border-black/[0.08] px-3.5 py-2.5 text-xs font-semibold placeholder-gray-400 outline-none focus:border-[#111111] transition"
+                  className="store-control text-xs"
                   placeholder="e.g. Usman Khan"
                 />
               </div>
 
               <div className="grid gap-3 sm:grid-cols-2">
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-[#707072]">Email Address</label>
+                <div>
+                  <label className="text-[10px] uppercase tracking-wider text-neutral-400 block mb-1">
+                    Email Address
+                  </label>
                   <input
                     type="email"
                     required
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full rounded-xl border border-black/[0.08] px-3.5 py-2.5 text-xs font-semibold placeholder-gray-400 outline-none focus:border-[#111111] transition"
+                    className="store-control text-xs"
                     placeholder="usman@example.com"
                   />
                 </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-[#707072]">Phone / WhatsApp</label>
+                <div>
+                  <label className="text-[10px] uppercase tracking-wider text-neutral-400 block mb-1">
+                    WhatsApp Phone
+                  </label>
                   <input
                     type="tel"
                     required
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full rounded-xl border border-black/[0.08] px-3.5 py-2.5 text-xs font-semibold placeholder-gray-400 outline-none focus:border-[#111111] transition"
-                    placeholder="e.g. +92 300 1234567"
+                    className="store-control text-xs"
+                    placeholder="+92 300 1234567"
                   />
                 </div>
               </div>
 
               <div className="grid gap-3 sm:grid-cols-2">
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-[#707072]">Current Education Level</label>
+                <div>
+                  <label className="text-[10px] uppercase tracking-wider text-neutral-400 block mb-1">
+                    Current Qualification
+                  </label>
                   <input
                     type="text"
                     required
                     value={formData.currentQualification}
                     onChange={(e) => setFormData({ ...formData, currentQualification: e.target.value })}
-                    className="w-full rounded-xl border border-black/[0.08] px-3.5 py-2.5 text-xs font-semibold placeholder-gray-400 outline-none"
-                    placeholder="e.g. A-Levels, HSSC, Bachelor"
+                    className="store-control text-xs"
+                    placeholder="e.g. A-Levels / F.Sc"
                   />
                 </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-[#707072]">Intended Degree Level</label>
+                <div>
+                  <label className="text-[10px] uppercase tracking-wider text-neutral-400 block mb-1">
+                    Intended Degree
+                  </label>
                   <input
                     type="text"
                     required
                     value={formData.intendedDegree}
                     onChange={(e) => setFormData({ ...formData, intendedDegree: e.target.value })}
-                    className="w-full rounded-xl border border-black/[0.08] px-3.5 py-2.5 text-xs font-semibold placeholder-gray-400 outline-none"
-                    placeholder="e.g. Bachelor's, Master's"
+                    className="store-control text-xs"
+                    placeholder="e.g. B.S. CS / M.S. Data"
                   />
                 </div>
               </div>
 
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-[#707072]">Preferred Country / Countries</label>
+              <div>
+                <label className="text-[10px] uppercase tracking-wider text-neutral-400 block mb-1">
+                  Target Destination Countries
+                </label>
                 <input
                   type="text"
                   required
                   value={formData.preferredCountries}
                   onChange={(e) => setFormData({ ...formData, preferredCountries: e.target.value })}
-                  className="w-full rounded-xl border border-black/[0.08] px-3.5 py-2.5 text-xs font-semibold placeholder-gray-400 outline-none"
+                  className="store-control text-xs"
                   placeholder="e.g. United States, Germany, Canada"
                 />
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-[#707072]">Preferred Date</label>
-                  <input
-                    type="date"
-                    required
-                    value={formData.preferredDate}
-                    onChange={(e) => setFormData({ ...formData, preferredDate: e.target.value })}
-                    className="w-full rounded-xl border border-black/[0.08] px-3.5 py-2.5 text-xs font-semibold outline-none"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-[#707072]">Preferred Time Slot</label>
-                  <select
-                    value={formData.preferredTime}
-                    onChange={(e) => setFormData({ ...formData, preferredTime: e.target.value })}
-                    className="w-full rounded-xl border border-black/[0.08] px-3.5 py-2.5 text-xs font-semibold bg-white outline-none"
-                  >
-                    <option value="11:00 AM - 11:30 AM">11:00 AM - 11:30 AM</option>
-                    <option value="02:00 PM - 02:30 PM">02:00 PM - 02:30 PM</option>
-                    <option value="04:30 PM - 05:00 PM">04:30 PM - 05:00 PM</option>
-                    <option value="06:00 PM - 06:30 PM">06:00 PM - 06:30 PM</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-[#707072]">Short Description of Assistance Required</label>
+              <div>
+                <label className="text-[10px] uppercase tracking-wider text-neutral-400 block mb-1">
+                  Additional Notes (Optional)
+                </label>
                 <textarea
                   rows={2}
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full rounded-xl border border-black/[0.08] px-3.5 py-2.5 text-xs font-semibold placeholder-gray-400 outline-none"
-                  placeholder="Tell us about your courses, universities, or scholarship queries..."
+                  className="store-control text-xs py-2.5 h-auto"
+                  placeholder="Any specific questions regarding budgets, test scores, etc."
                 />
               </div>
             </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full flex items-center justify-center gap-1.5 mt-4 rounded-xl bg-[#0f7a47] py-3 text-xs font-black uppercase tracking-wider text-white hover:bg-[#0c6239] transition disabled:bg-gray-400"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Booking Slot...
-                </>
-              ) : (
-                <>
-                  <Send className="h-3.5 w-3.5" />
-                  Schedule Consultation
-                </>
-              )}
-            </button>
+            <div className="pt-2">
+              <button
+                type="submit"
+                disabled={loading}
+                className="store-button-primary w-full py-3.5 text-xs"
+              >
+                <span className="btn-label">{loading ? "Submitting..." : "Confirm Booking"}</span>
+                <span className="btn-icon">&rarr;</span>
+              </button>
+            </div>
           </form>
         )}
       </div>
@@ -211,22 +203,15 @@ export function FreeConsultationModal({ isOpen, onClose, onSuccess }: ModalProps
   );
 }
 
-export function CourseRegistrationModal({ isOpen, onClose, onSuccess }: ModalProps) {
+export function CourseApplicationModal({ isOpen, onClose, onSuccess }: ModalProps) {
   const [formData, setFormData] = useState({
     studentName: "",
-    parentName: "",
     email: "",
     phone: "",
-    currentSchool: "",
     currentQualification: "",
-    intendedDegree: "Undergraduate",
-    preferredField: "",
-    preferredCountries: "",
-    expectedIntake: "Fall 2027",
-    scholarshipRequired: false,
     academicGrades: "",
     englishTestStatus: "Not Taken Yet",
-    preferredBatchTiming: "Saturday Afternoon",
+    preferredBatchTiming: "Weekend Batch (Sat & Sun)",
   });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -244,7 +229,7 @@ export function CourseRegistrationModal({ isOpen, onClose, onSuccess }: ModalPro
       setSuccess(true);
       if (onSuccess) onSuccess();
     } catch {
-      alert("Registration failed. Please try again.");
+      alert("Failed to submit. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -253,201 +238,129 @@ export function CourseRegistrationModal({ isOpen, onClose, onSuccess }: ModalPro
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 animate-in fade-in duration-200">
-      <div className="relative w-full max-w-2xl rounded-3xl bg-white border border-black/[0.08] p-6 sm:p-8 shadow-2xl flex flex-col max-h-[90vh] overflow-y-auto">
-        <button onClick={onClose} className="absolute top-5 right-5 p-1 rounded-lg text-gray-400 hover:bg-gray-50 hover:text-black transition">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/48 backdrop-blur-[2px] p-4 animate-fade-in">
+      <div className="relative w-full max-w-lg rounded-2xl bg-white border border-black/10 p-7 sm:p-9 shadow-[0_24px_64px_rgba(0,0,0,0.18)] flex flex-col max-h-[90vh] overflow-y-auto">
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute top-6 right-6 text-neutral-400 hover:text-black transition"
+        >
           <X className="h-5 w-5" />
         </button>
 
         {success ? (
           <div className="text-center py-8 space-y-4">
-            <CheckCircle2 className="h-14 w-14 text-[#0f7a47] mx-auto animate-bounce" />
-            <h3 className="text-xl font-black text-[#111111] tracking-tight">Course Registration Received!</h3>
-            <p className="text-xs text-[#707072] max-w-sm mx-auto leading-relaxed">
-              Congratulations! Your course registration is registered. Since this course includes intensive in-person training (max 20 students per batch), we will coordinate to schedule your intake interview.
+            <CheckCircle2 className="h-12 w-12 text-emerald-700 mx-auto" />
+            <h3 className="text-xl font-normal tracking-[-0.02em] text-neutral-950">
+              Registration Recorded
+            </h3>
+            <p className="text-xs text-neutral-600 max-w-xs mx-auto leading-relaxed">
+              We will contact you via WhatsApp with the batch timetable and onboarding details.
             </p>
-            <button onClick={onClose} className="mt-4 rounded-xl bg-[#0f7a47] px-6 py-2.5 text-xs font-bold text-white uppercase tracking-wider hover:bg-[#0c6239] transition">
+            <button
+              type="button"
+              onClick={onClose}
+              className="store-pill-outline text-xs mt-4"
+            >
               Close Window
             </button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-1">
-              <span className="text-[10px] font-black uppercase tracking-widest text-[#0f7a47] flex items-center gap-1">
-                <BookOpen className="h-3.5 w-3.5" />
-                Intensive Program (28 July - 15 Dec)
-              </span>
-              <h2 className="text-xl font-black tracking-tight text-[#111111]">Join 5-Month Applications &amp; Scholarships Course</h2>
-              <p className="text-xs text-[#707072]">Complete guided pathway to essays, college matches, SOP drafts, and visa applications.</p>
+              <span className="store-kicker">Cohort Enrollment</span>
+              <h2 className="text-xl font-normal tracking-[-0.02em] text-neutral-950">
+                Application Mentorship Course
+              </h2>
+              <p className="text-xs text-neutral-500">
+                5-Month guided admissions cohort for Fall intake cycles.
+              </p>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2 pt-2">
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-[#707072]">Student Full Name</label>
+            <div className="space-y-3.5 pt-1">
+              <div>
+                <label className="text-[10px] uppercase tracking-wider text-neutral-400 block mb-1">
+                  Full Name
+                </label>
                 <input
                   type="text"
                   required
                   value={formData.studentName}
                   onChange={(e) => setFormData({ ...formData, studentName: e.target.value })}
-                  className="w-full rounded-xl border border-black/[0.08] px-3.5 py-2 text-xs font-semibold"
-                  placeholder="e.g. Ahmad Shah"
+                  className="store-control text-xs"
+                  placeholder="e.g. Bilal Ahmed"
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-[#707072]">Parent / Guardian Name</label>
-                <input
-                  type="text"
-                  required
-                  value={formData.parentName}
-                  onChange={(e) => setFormData({ ...formData, parentName: e.target.value })}
-                  className="w-full rounded-xl border border-black/[0.08] px-3.5 py-2 text-xs font-semibold"
-                  placeholder="e.g. Shah Jahan"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-[#707072]">Email Address</label>
-                <input
-                  type="email"
-                  required
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full rounded-xl border border-black/[0.08] px-3.5 py-2 text-xs font-semibold"
-                  placeholder="ahmad@example.com"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-[#707072]">Phone / WhatsApp</label>
-                <input
-                  type="tel"
-                  required
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full rounded-xl border border-black/[0.08] px-3.5 py-2 text-xs font-semibold"
-                  placeholder="e.g. +92 321 9876543"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-[#707072]">Current School / College / Uni</label>
-                <input
-                  type="text"
-                  required
-                  value={formData.currentSchool}
-                  onChange={(e) => setFormData({ ...formData, currentSchool: e.target.value })}
-                  className="w-full rounded-xl border border-black/[0.08] px-3.5 py-2 text-xs font-semibold"
-                  placeholder="e.g. Beaconhouse, Punjab College"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-[#707072]">Current Qualification &amp; Grades</label>
-                <input
-                  type="text"
-                  required
-                  value={formData.currentQualification}
-                  onChange={(e) => setFormData({ ...formData, currentQualification: e.target.value })}
-                  className="w-full rounded-xl border border-black/[0.08] px-3.5 py-2 text-xs font-semibold"
-                  placeholder="e.g. A-Levels (2A*, 1A) / FSC (940/1100)"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-[#707072]">Intended Degree Level</label>
-                <select
-                  value={formData.intendedDegree}
-                  onChange={(e) => setFormData({ ...formData, intendedDegree: e.target.value })}
-                  className="w-full rounded-xl border border-black/[0.08] px-3.5 py-2 text-xs font-semibold bg-white outline-none"
-                >
-                  <option value="Undergraduate">Undergraduate (Bachelors)</option>
-                  <option value="Graduate">Graduate (Masters / PhD)</option>
-                </select>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-[#707072]">Preferred Field of Study</label>
-                <input
-                  type="text"
-                  required
-                  value={formData.preferredField}
-                  onChange={(e) => setFormData({ ...formData, preferredField: e.target.value })}
-                  className="w-full rounded-xl border border-black/[0.08] px-3.5 py-2 text-xs font-semibold"
-                  placeholder="e.g. Computer Science, Mechanical Eng."
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-[#707072]">Preferred Countries</label>
-                <input
-                  type="text"
-                  required
-                  value={formData.preferredCountries}
-                  onChange={(e) => setFormData({ ...formData, preferredCountries: e.target.value })}
-                  className="w-full rounded-xl border border-black/[0.08] px-3.5 py-2 text-xs font-semibold"
-                  placeholder="e.g. United States, Germany"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-[#707072]">English Language Test Status</label>
-                <select
-                  value={formData.englishTestStatus}
-                  onChange={(e) => setFormData({ ...formData, englishTestStatus: e.target.value })}
-                  className="w-full rounded-xl border border-black/[0.08] px-3.5 py-2 text-xs font-semibold bg-white outline-none"
-                >
-                  <option value="Not Taken Yet">Not Taken Yet</option>
-                  <option value="Registered / Booking In Progress">Registered / Booking In Progress</option>
-                  <option value="IELTS Taken (Band 7.0+)">IELTS Taken (Band 7.0+)</option>
-                  <option value="IELTS Taken (Band below 7.0)">IELTS Taken (Band below 7.0)</option>
-                  <option value="TOEFL/Duolingo Taken">TOEFL/Duolingo Taken</option>
-                </select>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-[#707072]">Preferred Batch Timings</label>
-                <select
-                  value={formData.preferredBatchTiming}
-                  onChange={(e) => setFormData({ ...formData, preferredBatchTiming: e.target.value })}
-                  className="w-full rounded-xl border border-black/[0.08] px-3.5 py-2 text-xs font-semibold bg-white outline-none"
-                >
-                  <option value="Saturday Afternoon (2:00 PM - 5:00 PM)">Saturday Afternoon (2:00 PM - 5:00 PM)</option>
-                  <option value="Sunday Morning (10:00 AM - 1:00 PM)">Sunday Morning (10:00 AM - 1:00 PM)</option>
-                  <option value="Weekday Evening (5:00 PM - 8:00 PM)">Weekday Evening (5:00 PM - 8:00 PM)</option>
-                </select>
-              </div>
-
-              <div className="flex items-center gap-3 pt-6">
-                <label className="text-xs font-bold text-[#111111] flex items-center gap-2 cursor-pointer">
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div>
+                  <label className="text-[10px] uppercase tracking-wider text-neutral-400 block mb-1">
+                    Email Address
+                  </label>
                   <input
-                    type="checkbox"
-                    checked={formData.scholarshipRequired}
-                    onChange={(e) => setFormData({ ...formData, scholarshipRequired: e.target.checked })}
-                    className="h-4 w-4 rounded border-gray-300"
+                    type="email"
+                    required
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="store-control text-xs"
+                    placeholder="bilal@example.com"
                   />
-                  I Require Scholarship Support
-                </label>
+                </div>
+                <div>
+                  <label className="text-[10px] uppercase tracking-wider text-neutral-400 block mb-1">
+                    WhatsApp Phone
+                  </label>
+                  <input
+                    type="tel"
+                    required
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    className="store-control text-xs"
+                    placeholder="+92 300 1234567"
+                  />
+                </div>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div>
+                  <label className="text-[10px] uppercase tracking-wider text-neutral-400 block mb-1">
+                    Academic Background
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.currentQualification}
+                    onChange={(e) => setFormData({ ...formData, currentQualification: e.target.value })}
+                    className="store-control text-xs"
+                    placeholder="e.g. A-Levels / F.Sc / Bachelors"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] uppercase tracking-wider text-neutral-400 block mb-1">
+                    Grades / GPA
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.academicGrades}
+                    onChange={(e) => setFormData({ ...formData, academicGrades: e.target.value })}
+                    className="store-control text-xs"
+                    placeholder="e.g. 3.7 GPA / 3 As"
+                  />
+                </div>
               </div>
             </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full flex items-center justify-center gap-1.5 mt-6 rounded-xl bg-[#0f7a47] py-3 text-xs font-black uppercase tracking-wider text-white hover:bg-[#0c6239] transition disabled:bg-gray-400"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Submitting Registration...
-                </>
-              ) : (
-                <>
-                  <Send className="h-3.5 w-3.5" />
-                  Submit Course Registration
-                </>
-              )}
-            </button>
+            <div className="pt-2">
+              <button
+                type="submit"
+                disabled={loading}
+                className="store-button-primary w-full py-3.5 text-xs"
+              >
+                <span className="btn-label">{loading ? "Submitting..." : "Apply for Cohort"}</span>
+                <span className="btn-icon">&rarr;</span>
+              </button>
+            </div>
           </form>
         )}
       </div>
@@ -460,11 +373,9 @@ export function PrivateCounsellingModal({ isOpen, onClose, onSuccess }: ModalPro
     studentName: "",
     email: "",
     phone: "",
-    requiredService: "Academic Profile Evaluation",
+    requiredService: "Undergraduate Essay Review",
+    sessionDuration: "60 Minutes (Deep Dive)",
     preferredDate: "",
-    preferredTime: "",
-    meetingFormat: "Online Meeting (Zoom)",
-    sessionDuration: "60 Minutes",
     description: "",
   });
   const [loading, setLoading] = useState(false);
@@ -483,7 +394,7 @@ export function PrivateCounsellingModal({ isOpen, onClose, onSuccess }: ModalPro
       setSuccess(true);
       if (onSuccess) onSuccess();
     } catch {
-      alert("Failed to book session. Please try again.");
+      alert("Failed to submit. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -492,166 +403,129 @@ export function PrivateCounsellingModal({ isOpen, onClose, onSuccess }: ModalPro
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 animate-in fade-in duration-200">
-      <div className="relative w-full max-w-lg rounded-3xl bg-white border border-black/[0.08] p-6 sm:p-8 shadow-2xl flex flex-col max-h-[90vh] overflow-y-auto">
-        <button onClick={onClose} className="absolute top-5 right-5 p-1 rounded-lg text-gray-400 hover:bg-gray-50 hover:text-black transition">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/48 backdrop-blur-[2px] p-4 animate-fade-in">
+      <div className="relative w-full max-w-lg rounded-2xl bg-white border border-black/10 p-7 sm:p-9 shadow-[0_24px_64px_rgba(0,0,0,0.18)] flex flex-col max-h-[90vh] overflow-y-auto">
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute top-6 right-6 text-neutral-400 hover:text-black transition"
+        >
           <X className="h-5 w-5" />
         </button>
 
         {success ? (
           <div className="text-center py-8 space-y-4">
-            <CheckCircle2 className="h-14 w-14 text-[#0f7a47] mx-auto animate-bounce" />
-            <h3 className="text-xl font-black text-[#111111] tracking-tight">Private Session Requested!</h3>
-            <p className="text-xs text-[#707072] max-w-xs mx-auto leading-relaxed">
-              Your request for a private session with our Head Counsellor is received. We will check availability and send you calendar slots on WhatsApp.
+            <CheckCircle2 className="h-12 w-12 text-emerald-700 mx-auto" />
+            <h3 className="text-xl font-normal tracking-[-0.02em] text-neutral-950">
+              Session Booked
+            </h3>
+            <p className="text-xs text-neutral-600 max-w-xs mx-auto leading-relaxed">
+              We have received your 1-on-1 private session request. Our advisory team will confirm your dedicated time slot shortly.
             </p>
-            <button onClick={onClose} className="mt-4 rounded-xl bg-[#0f7a47] px-6 py-2.5 text-xs font-bold text-white uppercase tracking-wider hover:bg-[#0c6239] transition">
+            <button
+              type="button"
+              onClick={onClose}
+              className="store-pill-outline text-xs mt-4"
+            >
               Close Window
             </button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-1">
-              <span className="text-[10px] font-black uppercase tracking-widest text-[#0f7a47] flex items-center gap-1">
-                <User className="h-3.5 w-3.5" />
-                1-on-1 Personalized Session
-              </span>
-              <h2 className="text-xl font-black tracking-tight text-[#111111]">Book Private Counselling Session</h2>
-              <p className="text-xs text-[#707072]">Targeted discussion on essays, college list reviews, interview prep, or visa filings.</p>
+              <span className="store-kicker">1-on-1 Mentorship</span>
+              <h2 className="text-xl font-normal tracking-[-0.02em] text-neutral-950">
+                Book Private Advisory Session
+              </h2>
+              <p className="text-xs text-neutral-500">
+                Detailed essay editing, research proposal review, or mock visa interview.
+              </p>
             </div>
 
-            <div className="space-y-3.5 pt-2">
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-[#707072]">Student Full Name</label>
+            <div className="space-y-3.5 pt-1">
+              <div>
+                <label className="text-[10px] uppercase tracking-wider text-neutral-400 block mb-1">
+                  Full Name
+                </label>
                 <input
                   type="text"
                   required
                   value={formData.studentName}
                   onChange={(e) => setFormData({ ...formData, studentName: e.target.value })}
-                  className="w-full rounded-xl border border-black/[0.08] px-3.5 py-2.5 text-xs font-semibold"
-                  placeholder="e.g. Fatima Ali"
+                  className="store-control text-xs"
+                  placeholder="e.g. Ayesha Siddiqui"
                 />
               </div>
 
               <div className="grid gap-3 sm:grid-cols-2">
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-[#707072]">Email Address</label>
+                <div>
+                  <label className="text-[10px] uppercase tracking-wider text-neutral-400 block mb-1">
+                    Email Address
+                  </label>
                   <input
                     type="email"
                     required
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full rounded-xl border border-black/[0.08] px-3.5 py-2.5 text-xs font-semibold"
-                    placeholder="fatima@example.com"
+                    className="store-control text-xs"
+                    placeholder="ayesha@example.com"
                   />
                 </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-[#707072]">Phone / WhatsApp</label>
+                <div>
+                  <label className="text-[10px] uppercase tracking-wider text-neutral-400 block mb-1">
+                    WhatsApp Phone
+                  </label>
                   <input
                     type="tel"
                     required
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full rounded-xl border border-black/[0.08] px-3.5 py-2.5 text-xs font-semibold"
-                    placeholder="e.g. +92 300 7654321"
+                    className="store-control text-xs"
+                    placeholder="+92 300 1234567"
                   />
                 </div>
               </div>
 
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-[#707072]">Required Counselling Service</label>
+              <div>
+                <label className="text-[10px] uppercase tracking-wider text-neutral-400 block mb-1">
+                  Advisory Focus
+                </label>
                 <select
                   value={formData.requiredService}
                   onChange={(e) => setFormData({ ...formData, requiredService: e.target.value })}
-                  className="w-full rounded-xl border border-black/[0.08] px-3.5 py-2.5 text-xs font-semibold bg-white outline-none"
+                  className="store-control text-xs font-normal"
                 >
-                  <option value="Academic Profile Evaluation">Academic Profile Evaluation</option>
-                  <option value="Career and Degree Selection">Career and Degree Selection</option>
-                  <option value="Country and University Selection">Country and University Selection</option>
-                  <option value="Application Strategy & Deadline Management">Application Strategy & Deadline Management</option>
-                  <option value="Personal Statement Brainstorming & Review">Personal Statement Brainstorming & Review</option>
-                  <option value="Supplementary Essay Writing Review">Supplementary Essay Writing Review</option>
-                  <option value="Interview Preparation (Mock Sessions)">Interview Preparation (Mock Sessions)</option>
-                  <option value="Visa Application Filing Guidance">Visa Application Filing Guidance</option>
+                  <option value="Undergraduate Essay Review">Undergraduate Essay &amp; Common App Review</option>
+                  <option value="Graduate Research & SOP">Graduate Statement of Purpose (SOP) &amp; Proposal</option>
+                  <option value="Scholarship Application">Scholarship Application (Fulbright/Chevening/DAAD)</option>
+                  <option value="Visa Mock Interview">Embassy Visa Mock Interview</option>
                 </select>
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-[#707072]">Meeting Mode</label>
-                  <select
-                    value={formData.meetingFormat}
-                    onChange={(e) => setFormData({ ...formData, meetingFormat: e.target.value })}
-                    className="w-full rounded-xl border border-black/[0.08] px-3.5 py-2.5 text-xs font-semibold bg-white outline-none"
-                  >
-                    <option value="Online Meeting (Zoom)">Online Meeting (Zoom)</option>
-                    <option value="In-Person (Bahawalpur Office)">In-Person (Bahawalpur Office)</option>
-                  </select>
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-[#707072]">Session Duration</label>
-                  <select
-                    value={formData.sessionDuration}
-                    onChange={(e) => setFormData({ ...formData, sessionDuration: e.target.value })}
-                    className="w-full rounded-xl border border-black/[0.08] px-3.5 py-2.5 text-xs font-semibold bg-white outline-none"
-                  >
-                    <option value="45 Minutes">45 Minutes</option>
-                    <option value="60 Minutes">60 Minutes</option>
-                    <option value="90 Minutes">90 Minutes</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-[#707072]">Preferred Date</label>
-                  <input
-                    type="date"
-                    required
-                    value={formData.preferredDate}
-                    onChange={(e) => setFormData({ ...formData, preferredDate: e.target.value })}
-                    className="w-full rounded-xl border border-black/[0.08] px-3.5 py-2.5 text-xs font-semibold outline-none"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-[#707072]">Preferred Time</label>
-                  <input
-                    type="time"
-                    required
-                    value={formData.preferredTime}
-                    onChange={(e) => setFormData({ ...formData, preferredTime: e.target.value })}
-                    className="w-full rounded-xl border border-black/[0.08] px-3.5 py-2.5 text-xs font-semibold outline-none"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-[#707072]">Relevant Documents to Upload (Optional)</label>
-                <input
-                  type="file"
-                  className="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-green-50 file:text-[#0f7a47] hover:file:bg-green-100"
+              <div>
+                <label className="text-[10px] uppercase tracking-wider text-neutral-400 block mb-1">
+                  Topic Details / Specific Questions
+                </label>
+                <textarea
+                  rows={2}
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  className="store-control text-xs py-2.5 h-auto"
+                  placeholder="Tell us what you would like to review in this session..."
                 />
-                <span className="text-[10px] text-gray-400 block mt-1">Upload transcripts, CVs, or essay drafts for counselor review.</span>
               </div>
             </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full flex items-center justify-center gap-1.5 mt-4 rounded-xl bg-[#0f7a47] py-3 text-xs font-black uppercase tracking-wider text-white hover:bg-[#0c6239] transition disabled:bg-gray-400"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Requesting Private Session...
-                </>
-              ) : (
-                <>
-                  <Send className="h-3.5 w-3.5" />
-                  Request Private Session
-                </>
-              )}
-            </button>
+            <div className="pt-2">
+              <button
+                type="submit"
+                disabled={loading}
+                className="store-button-primary w-full py-3.5 text-xs"
+              >
+                <span className="btn-label">{loading ? "Submitting..." : "Confirm Private Session"}</span>
+                <span className="btn-icon">&rarr;</span>
+              </button>
+            </div>
           </form>
         )}
       </div>

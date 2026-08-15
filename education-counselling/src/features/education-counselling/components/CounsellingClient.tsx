@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -9,64 +10,61 @@ import {
   Award,
   BookOpen,
   Calendar,
-  User,
   Star,
-  ChevronDown,
-  ChevronUp,
-  Mail,
-  Phone,
-  MessageCircle,
-  FileText,
-  Clock,
-  Briefcase,
-  ArrowRight,
+  ChevronRight,
   ShieldCheck,
-  CheckCircle2
+  GraduationCap,
+  MessageCircle,
+  ExternalLink,
+  CheckCircle2,
+  ArrowRight,
+  Sparkles,
 } from "lucide-react";
-import { TunnelHero } from "./TunnelHero";
+import { DbStore } from "@/lib/db";
 import {
   FreeConsultationModal,
-  CourseRegistrationModal,
+  CourseApplicationModal,
   PrivateCounsellingModal,
 } from "./BookingModals";
-import styles from "./CounsellingClient.module.css";
 
 interface CounsellingClientProps {
-  initialStore: {
-    universities: any[];
-    mentors: any[];
-    tutoring: any[];
-    articles: any[];
-  };
+  initialStore: DbStore;
 }
 
 export function CounsellingClient({ initialStore }: CounsellingClientProps) {
   const router = useRouter();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
 
-  // Modal visibility states
+  // Search filter states
+  const [selectedCountry, setSelectedCountry] = useState("All");
+  const [selectedLevel, setSelectedLevel] = useState("All");
+  const [searchKeyword, setSearchKeyword] = useState("");
+
+  // Modal states
   const [consultModalOpen, setConsultModalOpen] = useState(false);
   const [courseModalOpen, setCourseModalOpen] = useState(false);
   const [privateModalOpen, setPrivateModalOpen] = useState(false);
 
-  // Inquiry form states
+  // Quick inquiry form state
   const [inquiryName, setInquiryName] = useState("");
   const [inquiryEmail, setInquiryEmail] = useState("");
   const [inquiryMsg, setInquiryMsg] = useState("");
-  const [inquirySuccess, setInquirySuccess] = useState(false);
   const [inquiryLoading, setInquiryLoading] = useState(false);
+  const [inquirySuccess, setInquirySuccess] = useState(false);
 
-  // Extract featured universities (exactly 3)
-  const featuredUnis = useMemo(() => {
-    return (initialStore.universities || []).filter(u => u.featured).slice(0, 3);
-  }, [initialStore.universities]);
+  // FAQ Accordion State
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
+
+  const featuredUnis = (initialStore.universities || []).slice(0, 6);
+  const mentors = initialStore.mentors || [];
+  const tutoringCourses = initialStore.tutoring || [];
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (searchTerm.trim() !== "") {
-      router.push(`/universities?search=${encodeURIComponent(searchTerm)}`);
-    }
+    const params = new URLSearchParams();
+    if (searchKeyword.trim()) params.set("search", searchKeyword.trim());
+    if (selectedCountry !== "All") params.set("country", selectedCountry);
+    if (selectedLevel !== "All") params.set("level", selectedLevel);
+    router.push(`/universities?${params.toString()}`);
   };
 
   const handleInquirySubmit = async (e: React.FormEvent) => {
@@ -80,7 +78,7 @@ export function CounsellingClient({ initialStore }: CounsellingClientProps) {
           type: "inquiry",
           studentName: inquiryName,
           email: inquiryEmail,
-          phone: "N/A (General Inquiry)",
+          phone: "Web Inquiry Form",
           description: inquiryMsg,
         }),
       });
@@ -91,620 +89,682 @@ export function CounsellingClient({ initialStore }: CounsellingClientProps) {
         setInquiryMsg("");
       }
     } catch {
-      alert("Inquiry failed. Please try again.");
+      alert("Failed to submit inquiry. Please try again.");
     } finally {
       setInquiryLoading(false);
     }
   };
 
-  const toggleFaq = (index: number) => {
-    setOpenFaq(openFaq === index ? null : index);
-  };
-
-  const dummyTestimonials = [
+  const faqs = [
     {
-      name: "Ayesha Fatima",
-      destination: "University of Melbourne, Australia",
-      degree: "Master of Public Health",
-      quote: "PakSarZameen's course was a game changer for me. The SOP review was extremely detailed, and I secured a 50% tuition scholarship!",
+      q: "Does PakSarZameen charge initial consultation fees?",
+      a: "No. Our initial 30-minute profile assessment and eligibility evaluation is 100% free of charge for students and families.",
+    },
+    {
+      q: "Do you guarantee student visas or university admissions?",
+      a: "No ethical counsellor can guarantee admission or visa issuance, as final decisions lie strictly with university admission boards and embassy officers. We build the highest-strength academic applications to maximize selection probability.",
+    },
+    {
+      q: "What countries and universities do you cover?",
+      a: "We advise on leading universities across the United States (Ivy League & Top 50), United Kingdom (Russell Group), Canada (U15), Australia (Group of Eight), Europe (DAAD Germany & Scandinavian public tuition waivers), the Middle East, and East Asia.",
+    },
+    {
+      q: "Can you assist with need-based financial aid and external scholarships?",
+      a: "Yes. We specialize in CSS Profile submissions, university institutional aid packages, and premier government awards including the US Fulbright, UK Chevening, Commonwealth, and German DAAD programs.",
+    },
+  ];
+
+  const testimonials = [
+    {
+      name: "Fatima Noor",
+      degree: "B.S. Computer Science",
+      destination: "University of Toronto, Canada",
+      quote: "The personalized guidance on my supplemental essays and high school profile structure was invaluable. I secured admission with an entrance scholarship.",
       rating: 5,
     },
     {
-      name: "Bilal Hassan",
-      destination: "University of Toronto, Canada",
-      degree: "B.S. Computer Science",
-      quote: "Thanks to Usama's guidance, I structured my application essays perfectly. The visa guidance was spot-on, and I got my permit in just 3 weeks.",
+      name: "Ahmed Raza",
+      degree: "M.S. Mechanical Engineering",
+      destination: "TU Munich, Germany (DAAD)",
+      quote: "PakSarZameen helped me refine my research proposal and connect with the right faculty lab in Germany. I was awarded full DAAD funding.",
       rating: 5,
     },
     {
       name: "Zainab Malik",
-      destination: "Harvard University, United States",
-      degree: "Master of Business Administration (MBA)",
-      quote: "The 1-on-1 private counselling sessions with the Head Counsellor prepared me for the rigorous interview process. Outstanding support!",
+      degree: "Digital SAT & Common App",
+      destination: "Harvard College, USA",
+      quote: "The SAT tutoring methodology and line-by-line personal statement reviews transformed my application. Highly transparent and supportive advisors.",
       rating: 5,
     },
   ];
 
-  const faqs = [
-    {
-      q: "What is covered in the Free 30-Minute Consultation?",
-      a: "The session includes a comprehensive academic profile assessment, initial suggestions on universities/countries that fit your budget, timeline plans, and guidance on next steps.",
-    },
-    {
-      q: "Is the Five-Month course conducted online or physically?",
-      a: "It is a hybrid program. Students attend weekly or bi-weekly physical sessions in Bahawalpur (max 20 students per batch) for personal mentoring, with digital follow-ups and draft edits done online.",
-    },
-    {
-      q: "How does the outbound link status work?",
-      a: "Our administration actively monitors university outbound links. We display checked statuses and verify links are up-to-date. Deadlines are reviewed regularly for accuracy.",
-    },
-    {
-      q: "Can I get help with scholarship applications?",
-      a: "Yes. Both our 5-Month course and Private Counselling options offer exhaustive guides for university, government, and external scholarships (Commonwealth, DAAD, Fulbright, etc.).",
-    },
-  ];
-
   return (
-    <div className="w-full pt-[72px]">
+    <div className="w-full bg-white text-[#111111] antialiased">
       
-      {/* SECTION 1: Immersive University Banner (3D Tunnel) */}
-      <TunnelHero universities={initialStore.universities || []} />
+      {/* 1. CINEMATIC HERO SECTION (STORE DESIGN) */}
+      <section className="relative isolate min-h-[92vh] overflow-hidden bg-black text-white flex items-end justify-center">
+        <Image
+          src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=2000&auto=format&fit=crop"
+          alt="Global University Campus"
+          fill
+          sizes="100vw"
+          className="object-cover opacity-60 filter brightness-90"
+          priority
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.18)_0%,rgba(0,0,0,0.1)_30%,rgba(0,0,0,0.55)_70%,rgba(0,0,0,0.78)_100%)]" />
 
-      {/* SECTION 2: Search Bar */}
-      <section className="bg-white py-12 border-b border-black/[0.04]">
-        <div className="max-w-[1320px] mx-auto px-[6vw]">
-          <div className="max-w-2xl mx-auto text-center space-y-4">
-            <span className="text-[10px] font-black uppercase tracking-[0.24em] text-[#0f7a47] block">Explore Global Pathways</span>
-            <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-[#111111]">Which university are you aiming for?</h2>
-            <p className="text-xs text-[#707072] leading-relaxed">Search through leading institutions across the US, UK, Canada, Australia, and Europe.</p>
-            
-            <form onSubmit={handleSearchSubmit} className="mt-6 flex gap-2 relative">
-              <div className="relative flex-1">
-                <Search className="absolute left-4 top-3.5 h-4 w-4 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search by university name or program (e.g. Harvard)..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full rounded-2xl border border-black/[0.08] bg-[#FAFAFA] pl-11 pr-4 py-3.5 text-xs font-semibold placeholder-gray-400 outline-none focus:border-[#111111] transition"
-                />
-              </div>
-              <button
-                type="submit"
-                className="rounded-2xl bg-[#111111] hover:bg-[#0f7a47] px-6 text-xs font-black uppercase tracking-wider text-white transition-colors duration-200"
+        <div className="relative z-10 flex min-h-[92vh] items-end justify-center px-6 pb-16 pt-32 text-center sm:pb-20 lg:pb-24">
+          <div className="max-w-[760px]">
+            <p className="text-[11px] font-normal uppercase tracking-[0.28em] text-white/90">
+              PakSarZameen Global Academic Advisory
+            </p>
+            <h1 className="mt-4 text-[clamp(1.4rem,3vw,2.4rem)] font-normal leading-[1.04] tracking-[-0.03em] text-white">
+              Transparent, Merit-Driven Pathways to Top Global Universities
+            </h1>
+            <p className="mx-auto mt-4 max-w-xl text-[13px] leading-7 text-white/80 sm:text-sm">
+              Comprehensive guidance for undergraduate and graduate candidates. Zero agency commission bias, verified admissions requirements, and dedicated scholarship structuring.
+            </p>
+
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
+              <Link
+                href="/universities"
+                className="inline-flex items-center justify-center border-b border-white/72 pb-1 text-[clamp(0.88rem,1vw,1.02rem)] font-normal leading-none tracking-[-0.01em] text-white transition-opacity hover:opacity-70"
               >
-                Search
+                Explore Featured Universities &rarr;
+              </Link>
+
+              <button
+                type="button"
+                onClick={() => setConsultModalOpen(true)}
+                className="inline-flex items-center justify-center rounded-full border border-white/35 px-4 py-2 text-[0.78rem] uppercase tracking-[0.14em] text-white/90 transition hover:bg-white/15"
+              >
+                Book Free Consultation
               </button>
-            </form>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* SECTION 3: Featured Universities Section */}
-      <section className="py-16 bg-[#FAFAFA]">
-        <div className="max-w-[1320px] mx-auto px-[6vw] space-y-10">
-          <div className="text-center space-y-2">
-            <span className="text-[10px] font-black uppercase tracking-[0.22em] text-[#0f7a47] block">Selected Institutions</span>
-            <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-[#111111]">Featured Global Universities</h2>
-            <p className="text-xs text-[#707072] max-w-md mx-auto">Explore requirements and scholarship guidelines for some of the world&apos;s most prestigious universities.</p>
+      {/* 2. MINIMALIST SEARCH PANEL */}
+      <section className="relative z-20 -mt-7 sm:-mt-9">
+        <div className="store-container">
+          <form
+            onSubmit={handleSearchSubmit}
+            className="store-panel rounded-2xl p-3.5 sm:p-5 grid gap-3 sm:grid-cols-[1fr_180px_180px_auto] items-center"
+          >
+            <div className="relative">
+              <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-neutral-400" />
+              <input
+                type="text"
+                value={searchKeyword}
+                onChange={(e) => setSearchKeyword(e.target.value)}
+                placeholder="Search university name, country, or major..."
+                className="store-control pl-10 text-xs sm:text-sm placeholder:text-neutral-400"
+              />
+            </div>
+
+            <div>
+              <select
+                value={selectedCountry}
+                onChange={(e) => setSelectedCountry(e.target.value)}
+                className="store-control text-xs sm:text-sm font-normal text-neutral-800"
+              >
+                <option value="All">All Countries</option>
+                <option value="United States">United States</option>
+                <option value="United Kingdom">United Kingdom</option>
+                <option value="Canada">Canada</option>
+                <option value="Australia">Australia</option>
+                <option value="Europe">Europe / Germany</option>
+              </select>
+            </div>
+
+            <div>
+              <select
+                value={selectedLevel}
+                onChange={(e) => setSelectedLevel(e.target.value)}
+                className="store-control text-xs sm:text-sm font-normal text-neutral-800"
+              >
+                <option value="All">All Degrees</option>
+                <option value="Undergraduate">Undergraduate (Bachelors)</option>
+                <option value="Graduate">Graduate (Masters / PhD)</option>
+              </select>
+            </div>
+
+            <button
+              type="submit"
+              className="store-button-primary h-12 px-6 rounded-xl"
+            >
+              <span className="btn-label">Search</span>
+              <span className="btn-icon">&rarr;</span>
+            </button>
+          </form>
+        </div>
+      </section>
+
+      {/* 3. FEATURED UNIVERSITIES SECTION (STORE CARD GRID) */}
+      <section className="store-section">
+        <div className="store-container">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between pb-8 sm:pb-12 gap-4 border-b border-black/6">
+            <div>
+              <p className="store-kicker">Global Institution Profiles</p>
+              <h2 className="mt-2 store-heading">Featured Global Universities</h2>
+            </div>
+            <Link
+              href="/universities"
+              className="store-link-inline self-start sm:self-auto"
+            >
+              View All Universities &rarr;
+            </Link>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-3">
+          <div className="mt-10 grid gap-6 sm:gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {featuredUnis.map((uni) => (
-              <div 
-                key={uni.slug}
-                className="group relative flex flex-col justify-between rounded-3xl border border-black/[0.06] bg-white overflow-hidden shadow-sm hover:shadow-xl hover:border-black/10 transition-all duration-300 hover:-translate-y-1 cursor-pointer"
-                onClick={() => router.push(`/universities/${uni.slug}`)}
-              >
-                {/* Banner & Logo */}
-                <div className="relative h-44 w-full bg-gray-100 overflow-hidden">
-                  <img
-                    src={uni.banner}
-                    alt={uni.name}
-                    className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-                  
-                  <div className="absolute bottom-4 left-4 flex items-center gap-3">
-                    <div 
-                      className="h-10 w-10 rounded-xl flex items-center justify-center text-xs font-black text-white shadow-md"
-                      style={{ background: uni.logo }}
-                    >
-                      {uni.name.substring(0, 2).toUpperCase()}
+              <article key={uni.slug} className="group flex h-full flex-col">
+                <Link
+                  href={`/universities/${uni.slug}`}
+                  className="relative block overflow-hidden rounded-xl border border-black/6 bg-neutral-100"
+                >
+                  <div className="relative aspect-[16/10] w-full overflow-hidden">
+                    <Image
+                      src={uni.banner}
+                      alt={uni.name}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                      quality={85}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+
+                    <div className="absolute left-4 top-4 flex flex-wrap gap-2">
+                      <span className="rounded-full border border-white/35 bg-white/86 px-2.5 py-1 text-[9px] font-normal uppercase tracking-[0.16em] text-neutral-950 backdrop-blur-md">
+                        QS #{uni.ranking.qs}
+                      </span>
+                      {uni.scholarships.available && (
+                        <span className="rounded-full border border-white/35 bg-neutral-950 px-2.5 py-1 text-[9px] font-normal uppercase tracking-[0.16em] text-white">
+                          Scholarship Available
+                        </span>
+                      )}
                     </div>
-                    <div>
-                      <span className="text-[10px] font-black uppercase tracking-wider text-[#FAFAFA] block">📍 {uni.country}</span>
-                      <h3 className="text-sm font-black text-white tracking-tight line-clamp-1">{uni.name}</h3>
+
+                    <div className="absolute bottom-4 left-4 right-4 text-white">
+                      <p className="text-[10px] font-normal uppercase tracking-[0.18em] text-white/80">
+                        📍 {uni.country}
+                      </p>
+                      <h3 className="mt-1 text-[1.1rem] font-normal leading-tight tracking-[-0.02em] text-white truncate">
+                        {uni.name}
+                      </h3>
                     </div>
                   </div>
-                  <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-xs rounded-full px-3 py-1 text-[9px] font-black uppercase tracking-wider text-[#1d1d1f] shadow-sm">
-                    🏆 QS #{uni.ranking.qs}
+                </Link>
+
+                <div className="mt-3.5 flex flex-col justify-between flex-1 space-y-3 px-1">
+                  <p className="text-[13px] leading-relaxed text-neutral-600 line-clamp-2">
+                    {uni.overview?.about}
+                  </p>
+
+                  <div className="pt-2 border-t border-black/6 flex items-center justify-between text-[12px] text-neutral-700">
+                    <div>
+                      <span className="text-neutral-400 block text-[10px] uppercase tracking-wider">Tuition Est.</span>
+                      <strong className="font-normal text-neutral-900">{uni.fees.tuition}</strong>
+                    </div>
+                    <Link
+                      href={`/universities/${uni.slug}`}
+                      className="store-link-inline font-normal"
+                    >
+                      View Details &rarr;
+                    </Link>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 4. ADVISORY PATHWAYS (EDITORIAL SPLIT PANELS) */}
+      <section className="store-section-soft border-y border-black/6">
+        <div className="store-container">
+          <div className="text-center max-w-xl mx-auto pb-12 sm:pb-16">
+            <p className="store-kicker">Specialized Advisory</p>
+            <h2 className="mt-2 store-heading">Structured Counselling Services</h2>
+            <p className="mt-3 store-subheading">
+              Tailored assistance designed to maximize candidate competitiveness at every academic phase.
+            </p>
+          </div>
+
+          <div className="grid gap-8 lg:grid-cols-2">
+            {/* Undergraduate Panel */}
+            <div className="store-card rounded-2xl p-7 sm:p-10 flex flex-col justify-between space-y-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="store-pill-label">Pathway 01</span>
+                  <span className="text-[10px] uppercase tracking-[0.2em] text-neutral-400">High School &bull; A-Levels &bull; F.Sc</span>
+                </div>
+
+                <h3 className="text-[1.4rem] sm:text-[1.6rem] font-normal leading-tight tracking-[-0.03em] text-neutral-950">
+                  Undergraduate Admissions Advisory
+                </h3>
+
+                <p className="text-sm leading-7 text-neutral-600">
+                  End-to-end guidance for high school graduates targeting Bachelor&apos;s degrees in the US, UK, Canada, and Australia.
+                </p>
+
+                <ul className="space-y-2.5 pt-2 text-sm text-neutral-700">
+                  <li className="flex items-center gap-2.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-neutral-900" />
+                    <span>Common App, UCAS, and direct portal strategy</span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-neutral-900" />
+                    <span>Personal Statement &amp; supplemental essay brainstorming</span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-neutral-900" />
+                    <span>Extra-curricular profile building &amp; honours formatting</span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-neutral-900" />
+                    <span>CSS Profile &amp; international financial aid filings</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="pt-6 border-t border-black/6 flex items-center justify-between">
+                <Link
+                  href="/counselling#undergrad"
+                  className="store-link-inline"
+                >
+                  Learn More &rarr;
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => setPrivateModalOpen(true)}
+                  className="store-pill-outline text-xs"
+                >
+                  Book 1-on-1 Session
+                </button>
+              </div>
+            </div>
+
+            {/* Graduate Panel */}
+            <div className="store-card rounded-2xl p-7 sm:p-10 flex flex-col justify-between space-y-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="store-pill-label">Pathway 02</span>
+                  <span className="text-[10px] uppercase tracking-[0.2em] text-neutral-400">Masters &bull; Ph.D. &bull; Research</span>
+                </div>
+
+                <h3 className="text-[1.4rem] sm:text-[1.6rem] font-normal leading-tight tracking-[-0.03em] text-neutral-950">
+                  Graduate Mentorship &amp; Lab Placement
+                </h3>
+
+                <p className="text-sm leading-7 text-neutral-600">
+                  Specialized support for Master&apos;s and Doctoral candidates seeking fully funded research assistantships and prestigious grants.
+                </p>
+
+                <ul className="space-y-2.5 pt-2 text-sm text-neutral-700">
+                  <li className="flex items-center gap-2.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-neutral-900" />
+                    <span>Faculty supervisor matching &amp; cold outreach emails</span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-neutral-900" />
+                    <span>Statement of Purpose (SOP) line-by-line review</span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-neutral-900" />
+                    <span>Research proposal structuring &amp; academic CV formatting</span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-neutral-900" />
+                    <span>Fulbright, DAAD, &amp; Chevening scholarship mentoring</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="pt-6 border-t border-black/6 flex items-center justify-between">
+                <Link
+                  href="/counselling#graduate"
+                  className="store-link-inline"
+                >
+                  Learn More &rarr;
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => setPrivateModalOpen(true)}
+                  className="store-pill-outline text-xs"
+                >
+                  Book Research Review
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 5. TEST PREPARATION (TUTORING COURSES) */}
+      <section className="store-section">
+        <div className="store-container">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between pb-8 sm:pb-12 gap-4 border-b border-black/6">
+            <div>
+              <p className="store-kicker">Standardized Testing</p>
+              <h2 className="mt-2 store-heading">Tutoring &amp; Test Preparation</h2>
+            </div>
+            <Link href="/tutoring" className="store-link-inline self-start sm:self-auto">
+              View Tutoring Schedules &rarr;
+            </Link>
+          </div>
+
+          <div className="mt-10 grid gap-6 sm:gap-8 md:grid-cols-3">
+            {tutoringCourses.map((course) => (
+              <div
+                key={course.id}
+                className="store-card rounded-2xl p-7 flex flex-col justify-between space-y-5"
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="store-pill-label">{course.format}</span>
+                    <span className="text-[11px] font-normal text-neutral-500">{course.duration}</span>
+                  </div>
+
+                  <h3 className="text-[1.25rem] font-normal leading-tight tracking-[-0.02em] text-neutral-950">
+                    {course.name}
+                  </h3>
+
+                  <p className="text-xs sm:text-sm leading-relaxed text-neutral-600 min-h-[50px]">
+                    {course.description}
+                  </p>
+
+                  <div className="space-y-1.5 pt-3 border-t border-black/6 text-xs text-neutral-700">
+                    <div className="flex justify-between">
+                      <span className="text-neutral-400">Timings:</span>
+                      <strong className="font-normal text-neutral-900">{course.schedule}</strong>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-neutral-400">Tuition Fee:</span>
+                      <strong className="font-normal text-neutral-900">{course.fee}</strong>
+                    </div>
                   </div>
                 </div>
 
-                {/* Content */}
-                <div className="p-5 flex-1 flex flex-col justify-between gap-4">
-                  <div className="space-y-3">
-                    <p className="text-xs text-[#707072] leading-relaxed line-clamp-3 italic">
-                      &ldquo;{uni.overview?.about || "View entry requirements, intakes and costs."}&rdquo;
-                    </p>
-
-                    <div className="space-y-1.5 pt-2 text-[11px] text-[#1d1d1f]">
-                      <div className="flex justify-between">
-                        <span className="text-[#707072]">University Type:</span>
-                        <strong>Research Institution</strong>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-[#707072]">Intake Timelines:</span>
-                        <strong>{uni.intakes?.join(", ") || "Fall / Spring"}</strong>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-[#707072]">Scholarships:</span>
-                        <strong className="text-[#0f7a47]">{uni.scholarships?.available ? "Available" : "Limited"}</strong>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="pt-4 border-t border-black/[0.04] flex items-center justify-between">
-                    <span className="text-[10px] text-gray-400 font-bold uppercase">Updated: {uni.lastUpdated || "Recently"}</span>
-                    <Link
-                      href={`/universities/${uni.slug}`}
-                      className="inline-flex items-center gap-1 text-[11px] font-black uppercase tracking-wider text-[#0f7a47] group-hover:translate-x-1 transition-transform"
-                    >
-                      View Requirements
-                      <ArrowRight className="h-3.5 w-3.5" />
-                    </Link>
-                  </div>
+                <div className="pt-4 border-t border-black/6">
+                  <a
+                    href={`https://wa.me/923001234567?text=Hi%20PakSarZameen%2C%20I%20would%20like%20to%20register%20for%20the%20${encodeURIComponent(course.name)}%20batch.`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="store-button-secondary w-full text-center"
+                  >
+                    Register via WhatsApp &rarr;
+                  </a>
                 </div>
               </div>
             ))}
           </div>
-
-          <div className="text-center pt-4">
-            <Link
-              href="/universities"
-              className="inline-flex h-12 items-center justify-center rounded-2xl border border-black/10 bg-white hover:bg-gray-50 px-8 text-xs font-black uppercase tracking-wider text-[#111111] transition-all"
-            >
-              View All Universities
-            </Link>
-          </div>
         </div>
       </section>
 
-      {/* SECTION 4: Our Services */}
-      <section id="services" className="py-16 bg-white border-b border-black/[0.04]">
-        <div className="max-w-[1320px] mx-auto px-[6vw] space-y-12">
-          <div className="text-center space-y-2">
-            <span className="text-[10px] font-black uppercase tracking-[0.22em] text-[#0f7a47] block">Admissions Pathways</span>
-            <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-[#111111]">Our Educational Counselling Services</h2>
-            <p className="text-xs text-[#707072] max-w-sm mx-auto">Get structured support, from initial consultations to drafting essays and securing visas.</p>
-          </div>
-
-          <div className="grid gap-8 lg:grid-cols-3">
-            {/* Service 1 */}
-            <div className="rounded-3xl border border-black/[0.06] p-6 sm:p-8 flex flex-col justify-between bg-[#FAFAFA] hover:border-black/10 hover:shadow-xl transition-all duration-300">
-              <div className="space-y-4">
-                <div className="h-12 w-12 rounded-2xl bg-blue-50 text-blue-700 flex items-center justify-center">
-                  <Clock className="h-6 w-6" />
-                </div>
-                <h3 className="text-lg font-black text-[#111111] tracking-tight">Free 30-Minute Online Consultation</h3>
-                <p className="text-xs text-[#707072] leading-relaxed">
-                  Ideal for parents and students starting their study abroad journey. Get immediate feedback on eligibility.
-                </p>
-                <ul className="space-y-2 text-xs font-semibold text-[#1d1d1f] pt-2">
-                  <li className="flex items-center gap-2">✓ General study abroad pathways</li>
-                  <li className="flex items-center gap-2">✓ Initial academic profile assessment</li>
-                  <li className="flex items-center gap-2">✓ Match countries &amp; universities</li>
-                  <li className="flex items-center gap-2">✓ Admissions timeline breakdown</li>
-                  <li className="flex items-center gap-2">✓ Action recommendations</li>
-                </ul>
-              </div>
-              <button
-                onClick={() => setConsultModalOpen(true)}
-                className="w-full mt-8 inline-flex h-11 items-center justify-center rounded-xl bg-[#111111] hover:bg-[#0f7a47] text-xs font-black uppercase tracking-wider text-white transition"
-              >
-                Schedule a Free Consultation
-              </button>
-            </div>
-
-            {/* Service 2 */}
-            <div className="rounded-3xl border-2 border-[#0f7a47] p-6 sm:p-8 flex flex-col justify-between bg-white relative hover:shadow-xl transition-all duration-300">
-              <div className="absolute -top-3.5 left-6 bg-[#0f7a47] rounded-full px-3 py-1 text-[8px] font-black uppercase tracking-widest text-white">
-                Best Value
-              </div>
-              <div className="space-y-4">
-                <div className="h-12 w-12 rounded-2xl bg-green-50 text-[#0f7a47] flex items-center justify-center">
-                  <BookOpen className="h-6 w-6" />
-                </div>
-                <h3 className="text-lg font-black text-[#111111] tracking-tight">5-Month Applications &amp; Scholarships Course</h3>
-                <p className="text-xs text-[#707072] leading-relaxed">
-                  A structured classroom program guiding you step-by-step from zero to university submission.
-                </p>
-                <div className="text-[10px] font-bold text-[#0f7a47] bg-green-50 rounded-xl px-3 py-2">
-                  📅 Dates: 28th July 2026 - 15th December 2026
-                </div>
-                <ul className="space-y-2 text-xs font-semibold text-[#1d1d1f] pt-2">
-                  <li className="flex items-center gap-2">✓ Max 20 students per batch</li>
-                  <li className="flex items-center gap-2">✓ Complete essay &amp; statement drafts</li>
-                  <li className="flex items-center gap-2">✓ Scholarship matching &amp; filings</li>
-                  <li className="flex items-center gap-2">✓ Career mapping &amp; course filters</li>
-                  <li className="flex items-center gap-2">✓ Visa &amp; document filing</li>
-                </ul>
-              </div>
-              <button
-                onClick={() => setCourseModalOpen(true)}
-                className="w-full mt-8 inline-flex h-11 items-center justify-center rounded-xl bg-[#0f7a47] hover:bg-[#0c6239] text-xs font-black uppercase tracking-wider text-white transition"
-              >
-                Join the Five-Month Course
-              </button>
-            </div>
-
-            {/* Service 3 */}
-            <div className="rounded-3xl border border-black/[0.06] p-6 sm:p-8 flex flex-col justify-between bg-[#FAFAFA] hover:border-black/10 hover:shadow-xl transition-all duration-300">
-              <div className="space-y-4">
-                <div className="h-12 w-12 rounded-2xl bg-purple-50 text-purple-700 flex items-center justify-center">
-                  <User className="h-6 w-6" />
-                </div>
-                <h3 className="text-lg font-black text-[#111111] tracking-tight">Private Personalized Counselling Sessions</h3>
-                <p className="text-xs text-[#707072] leading-relaxed">
-                  Book direct, focused meetings with our Head Counsellor according to your custom timeline requirements.
-                </p>
-                <ul className="space-y-2 text-xs font-semibold text-[#1d1d1f] pt-2">
-                  <li className="flex items-center gap-2">✓ Personal Statement diagnostics</li>
-                  <li className="flex items-center gap-2">✓ Academic profile boosting</li>
-                  <li className="flex items-center gap-2">✓ Recommendation letter structuring</li>
-                  <li className="flex items-center gap-2">✓ Mock admission interviews</li>
-                  <li className="flex items-center gap-2">✓ Secure document upload audits</li>
-                </ul>
-              </div>
-              <button
-                onClick={() => setPrivateModalOpen(true)}
-                className="w-full mt-8 inline-flex h-11 items-center justify-center rounded-xl bg-[#111111] hover:bg-[#0f7a47] text-xs font-black uppercase tracking-wider text-white transition"
-              >
-                Book a Private Counselling Session
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* SECTION 5: Mentors and About Us Section */}
-      <section className="py-16 bg-[#FAFAFA]">
-        <div className="max-w-[1320px] mx-auto px-[6vw] space-y-16">
-          
-          {/* Who We Are (About Us) */}
-          <div className="grid gap-10 lg:grid-cols-2 items-center">
+      {/* 6. MENTORS & ETHICAL PHILOSOPHY (ABOUT SECTION) */}
+      <section className="store-section-soft border-y border-black/6">
+        <div className="store-container">
+          <div className="grid gap-12 lg:grid-cols-[1.1fr_1.3fr] items-center">
+            
+            {/* Left: Organization Philosophy */}
             <div className="space-y-6">
-              <div className="space-y-2">
-                <span className="text-[10px] font-black uppercase tracking-[0.22em] text-[#0f7a47] block">Who We Are</span>
-                <h2 className="text-3xl font-black tracking-tight text-[#111111]">Advising with integrity, transparency &amp; ethics.</h2>
-              </div>
+              <p className="store-kicker">The PakSarZameen Standard</p>
+              <h2 className="store-heading">
+                Advising with radical transparency, ethics, and zero commission bias.
+              </h2>
               
-              <div className="space-y-4 text-xs text-[#707072] leading-relaxed">
+              <div className="space-y-4 text-sm leading-7 text-neutral-600">
                 <p>
-                  PakSarZameen is dedicated to providing accessible, high-quality, and ethical educational counselling to students aspiring to pursue global qualifications. We believe in providing customized academic pathways that match each student&apos;s career objectives and budget.
+                  PakSarZameen was created to dismantle the deceptive commercial agency model. We do not sell quotas to low-tier private colleges. We work exclusively to position ambitious Pakistani students for top global institutions matching their true academic potential.
                 </p>
                 <p>
-                  Our coordinators cover all major global study destinations—including the United States, Canada, United Kingdom, Australia, Europe, Middle East, and East Asia—guiding candidates across both undergraduate and graduate levels.
+                  Our advisory team consists of alumni and graduates who have walked the same path, offering direct feedback on personal essays, lab correspondence, and visa applications.
                 </p>
               </div>
 
-              <div className="grid gap-4 sm:grid-cols-2 pt-2">
-                <div className="flex items-start gap-3">
-                  <div className="h-8 w-8 rounded-lg bg-green-50 text-[#0f7a47] flex items-center justify-center shrink-0">
-                    <ShieldCheck className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <strong className="text-xs text-[#111111] block font-bold">Ethical Support</strong>
-                    <span className="text-[11px] text-[#707072]">No false promises or fake links.</span>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="h-8 w-8 rounded-lg bg-green-50 text-[#0f7a47] flex items-center justify-center shrink-0">
-                    <Award className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <strong className="text-xs text-[#111111] block font-bold">Elite Network</strong>
-                    <span className="text-[11px] text-[#707072]">Mentors from Ivy League &amp; top schools.</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="relative rounded-3xl overflow-hidden shadow-lg border border-black/[0.04] bg-white p-6">
-              <span className="text-[10px] font-black uppercase tracking-wider text-[#0f7a47] block mb-2">Our Mission Statement</span>
-              <h3 className="text-lg font-black tracking-tight text-[#111111] mb-3">To empower underrepresented students by making elite university admissions transparent and accessible.</h3>
-              <p className="text-xs text-[#707072] leading-relaxed">
-                We work to dismantle the information barrier that limits student potentials, providing systematic guidance on financial aid packaging, need-based scholarships, and research-track graduations.
-              </p>
-              <div className="mt-6 flex justify-end">
-                <Link href="/about" className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-[#0f7a47] hover:underline">
-                  More About PakSarZameen
-                  <ArrowRight className="h-4 w-4" />
+              <div className="pt-2 flex flex-wrap gap-4">
+                <Link href="/about" className="store-button-primary">
+                  <span className="btn-label">Read Full Mission</span>
+                  <span className="btn-icon">&rarr;</span>
+                </Link>
+                <Link href="/contact" className="store-pill-outline text-xs">
+                  Visit Bahawalpur Office
                 </Link>
               </div>
             </div>
-          </div>
 
-          {/* Meet Our Mentors */}
-          <div className="space-y-8 pt-6">
-            <div className="text-center space-y-2">
-              <span className="text-[10px] font-black uppercase tracking-[0.22em] text-[#0f7a47] block">Advisory Board</span>
-              <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-[#111111]">Meet Our Mentors</h2>
-              <p className="text-xs text-[#707072] max-w-sm mx-auto">Get guidance from professionals who have walked the same path.</p>
-            </div>
-
-            <div className="grid gap-6 md:grid-cols-3">
-              {(initialStore.mentors || []).map((m) => (
-                <div key={m.id} className="rounded-3xl border border-black/[0.06] bg-white p-6 flex flex-col justify-between hover:border-black/10 hover:shadow-lg transition-all duration-300">
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-4">
-                      <img
+            {/* Right: Mentors Grid */}
+            <div className="grid gap-4 sm:grid-cols-3">
+              {mentors.slice(0, 3).map((m) => (
+                <div
+                  key={m.id}
+                  className="store-card rounded-2xl p-4 flex flex-col justify-between space-y-3"
+                >
+                  <div className="space-y-2.5">
+                    <div className="relative aspect-square w-full rounded-xl overflow-hidden bg-neutral-100">
+                      <Image
                         src={m.image}
                         alt={m.name}
-                        className="h-16 w-16 rounded-2xl object-cover border border-black/[0.06]"
+                        fill
+                        sizes="(max-width: 640px) 100vw, 33vw"
+                        className="object-cover"
                       />
-                      <div>
-                        <h3 className="text-sm font-black text-[#111111] tracking-tight">{m.name}</h3>
-                        <span className="text-[10px] font-bold text-[#0f7a47] block">{m.role}</span>
-                        <span className="text-[9px] text-[#707072] block">{m.organization}</span>
-                      </div>
                     </div>
-
-                    <p className="text-xs text-[#707072] leading-relaxed line-clamp-4">
+                    <div>
+                      <h4 className="text-sm font-normal text-neutral-950">{m.name}</h4>
+                      <p className="text-[11px] text-neutral-500">{m.role}</p>
+                    </div>
+                    <p className="text-[11px] leading-relaxed text-neutral-600 line-clamp-3">
                       &ldquo;{m.bio}&rdquo;
                     </p>
-
-                    <div className="space-y-1.5 text-[10px] font-semibold text-[#1d1d1f] pt-2">
-                      <div>
-                        <span className="text-[#707072]">Expertise:</span> {m.expertise}
-                      </div>
-                      <div>
-                        <span className="text-[#707072]">Destinations:</span> {m.countries}
-                      </div>
-                    </div>
                   </div>
 
-                  <div className="pt-4 border-t border-black/[0.04] mt-4 flex items-center justify-between">
-                    <a
-                      href={m.linkedin}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[10px] font-black uppercase tracking-wider text-blue-600 hover:underline"
-                    >
-                      LinkedIn Profile
-                    </a>
-                  </div>
+                  <a
+                    href={m.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider text-blue-600 hover:underline pt-2 border-t border-black/6"
+                  >
+                    LinkedIn &rarr;
+                  </a>
                 </div>
               ))}
             </div>
 
-            <div className="text-center pt-4">
-              <Link
-                href="/about"
-                className="inline-flex h-11 items-center justify-center rounded-xl border border-black/10 bg-white hover:bg-gray-50 px-6 text-xs font-black uppercase tracking-wider text-[#111111]"
+          </div>
+        </div>
+      </section>
+
+      {/* 7. STUDENT VOICES & TESTIMONIALS */}
+      <section className="store-section">
+        <div className="store-container">
+          <div className="text-center max-w-xl mx-auto pb-12 sm:pb-16">
+            <p className="store-kicker">Student Outcomes</p>
+            <h2 className="mt-2 store-heading">Success Stories</h2>
+            <p className="mt-3 store-subheading">
+              Read how our candidates secured admissions and full funding at elite institutions.
+            </p>
+          </div>
+
+          <div className="grid gap-6 sm:gap-8 md:grid-cols-3">
+            {testimonials.map((t, idx) => (
+              <div
+                key={idx}
+                className="store-panel rounded-2xl p-7 flex flex-col justify-between space-y-4"
               >
-                View Full Mentor Details
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* SECTION 6: Student Testimonials */}
-      <section className="py-16 bg-white border-b border-black/[0.04]">
-        <div className="max-w-[1320px] mx-auto px-[6vw] space-y-10">
-          <div className="text-center space-y-2">
-            <span className="text-[10px] font-black uppercase tracking-[0.22em] text-[#0f7a47] block">Student Voices</span>
-            <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-[#111111]">Student Testimonials</h2>
-            <p className="text-xs text-[#707072] max-w-xs mx-auto">Success stories of candidates who secured admission and funding.</p>
-          </div>
-
-          <div className="grid gap-6 md:grid-cols-3">
-            {dummyTestimonials.map((t, idx) => (
-              <div key={idx} className="rounded-3xl border border-black/[0.06] bg-[#FAFAFA] p-6 space-y-4 hover:shadow-md transition">
-                <div className="flex gap-0.5 text-amber-500">
-                  {Array.from({ length: t.rating }).map((_, i) => (
-                    <Star key={i} className="h-4 w-4 fill-current" />
-                  ))}
-                </div>
-                
-                <p className="text-xs text-[#707072] leading-relaxed italic">
-                  &ldquo;{t.quote}&rdquo;
-                </p>
-
-                <div className="pt-2">
-                  <strong className="text-sm text-[#111111] block font-black">{t.name}</strong>
-                  <span className="text-[10px] text-[#0f7a47] font-semibold block">{t.degree}</span>
-                  <span className="text-[9px] text-[#707072] block">{t.destination}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* SECTION 7: Frequently Asked Questions */}
-      <section className="py-16 bg-[#FAFAFA]">
-        <div className="max-w-[800px] mx-auto px-[6vw] space-y-8">
-          <div className="text-center space-y-2">
-            <span className="text-[10px] font-black uppercase tracking-[0.22em] text-[#0f7a47] block">Information Center</span>
-            <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-[#111111]">Frequently Asked Questions</h2>
-          </div>
-
-          <div className="space-y-3">
-            {faqs.map((faq, idx) => (
-              <div key={idx} className="rounded-2xl border border-black/[0.05] bg-white overflow-hidden shadow-xs">
-                <button
-                  onClick={() => toggleFaq(idx)}
-                  className="w-full flex items-center justify-between p-5 text-left font-bold text-xs uppercase tracking-wider text-[#1d1d1f] hover:bg-gray-50 transition-colors"
-                >
-                  <span>{faq.q}</span>
-                  {openFaq === idx ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                </button>
-                {openFaq === idx && (
-                  <div className="p-5 border-t border-black/[0.04] text-xs text-[#707072] leading-relaxed bg-[#FAFAFA]">
-                    {faq.a}
+                <div className="space-y-3">
+                  <div className="flex gap-1 text-amber-500">
+                    {Array.from({ length: t.rating }).map((_, i) => (
+                      <Star key={i} className="h-3.5 w-3.5 fill-current" />
+                    ))}
                   </div>
-                )}
+                  <p className="text-sm leading-relaxed text-neutral-700 italic">
+                    &ldquo;{t.quote}&rdquo;
+                  </p>
+                </div>
+
+                <div className="pt-4 border-t border-black/6">
+                  <strong className="block text-sm font-normal text-neutral-950">{t.name}</strong>
+                  <span className="block text-[11px] text-emerald-800">{t.degree}</span>
+                  <span className="block text-[10px] text-neutral-500">{t.destination}</span>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* SECTION 8: Contact and Registration Call-To-Action */}
-      <section id="consultation-form" className="py-16 bg-white">
-        <div className="max-w-[1320px] mx-auto px-[6vw] grid gap-10 lg:grid-cols-2">
-          
-          {/* Contact Details */}
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <span className="text-[10px] font-black uppercase tracking-[0.22em] text-[#0f7a47] block">Get In Touch</span>
-              <h2 className="text-3xl font-black tracking-tight text-[#111111]">Have questions? Ask our counsellors directly.</h2>
-              <p className="text-xs text-[#707072] leading-relaxed">
-                Contact our office in Bahawalpur, send us an email query, or connect instantly on WhatsApp.
-              </p>
-            </div>
-
-            <div className="space-y-4 text-xs">
-              <div className="flex items-center gap-3">
-                <div className="h-9 w-9 rounded-xl bg-green-50 text-[#0f7a47] flex items-center justify-center">
-                  <Phone className="h-4 w-4" />
-                </div>
-                <div>
-                  <span className="text-[#707072] block font-bold text-[9px] uppercase tracking-wider">Call Office</span>
-                  <a href="tel:+923001234567" className="font-semibold hover:underline text-[#111111]">+92 300 1234567</a>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <div className="h-9 w-9 rounded-xl bg-green-50 text-[#0f7a47] flex items-center justify-center">
-                  <Mail className="h-4 w-4" />
-                </div>
-                <div>
-                  <span className="text-[#707072] block font-bold text-[9px] uppercase tracking-wider">Email Query</span>
-                  <a href="mailto:counselling@paksarzameenwfo.com" className="font-semibold hover:underline text-[#111111]">counselling@paksarzameenwfo.com</a>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <div className="h-9 w-9 rounded-xl bg-green-50 text-[#0f7a47] flex items-center justify-center">
-                  <MapPin className="h-4 w-4" />
-                </div>
-                <div>
-                  <span className="text-[#707072] block font-bold text-[9px] uppercase tracking-wider">Office Address</span>
-                  <span className="font-semibold text-[#111111]">Model Town B, Bahawalpur, Punjab, Pakistan</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="pt-4 flex flex-wrap gap-3">
-              <a
-                href="https://wa.me/923001234567?text=Hi%20PakSarZameen%2C%20I%20would%20like%20to%20inquire%20about%20study%20abroad%20counselling."
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#25D366] px-6 text-xs font-black uppercase tracking-wider text-white hover:bg-[#20ba59] transition"
-              >
-                <MessageCircle className="h-4 w-4" />
-                WhatsApp Us
-              </a>
-              <button
-                onClick={() => setConsultModalOpen(true)}
-                className="inline-flex h-11 items-center justify-center rounded-xl bg-[#0f7a47] px-6 text-xs font-black uppercase tracking-wider text-white hover:bg-[#0c6239] transition"
-              >
-                Book Consultation Slot
-              </button>
-            </div>
+      {/* 8. FREQUENTLY ASKED QUESTIONS */}
+      <section className="store-section-soft border-t border-black/6">
+        <div className="store-container max-w-[840px]">
+          <div className="text-center pb-12">
+            <p className="store-kicker">Information Center</p>
+            <h2 className="mt-2 store-heading">Frequently Asked Questions</h2>
           </div>
 
-          {/* Quick General Inquiry Form */}
-          <div className="rounded-3xl border border-black/[0.06] bg-[#FAFAFA] p-6 sm:p-8 shadow-sm">
-            <h3 className="text-base font-black text-[#111111] tracking-tight mb-2">Send a General Inquiry</h3>
-            <p className="text-xs text-[#707072] mb-4">Have a fast question? Leave your details and query below.</p>
-
-            {inquirySuccess ? (
-              <div className="text-center py-8 space-y-3">
-                <CheckCircle2 className="h-12 w-12 text-[#0f7a47] mx-auto" />
-                <strong className="text-sm text-[#111111] block font-bold">Query Received!</strong>
-                <p className="text-xs text-[#707072]">We will get back to you shortly.</p>
-                <button
-                  onClick={() => setInquirySuccess(false)}
-                  className="mt-4 rounded-xl border border-black/10 bg-white px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#111111]"
-                >
-                  Send Another
-                </button>
-              </div>
-            ) : (
-              <form onSubmit={handleInquirySubmit} className="space-y-4">
-                <div className="space-y-1">
-                  <label className="text-[9px] font-bold uppercase tracking-wider text-[#707072]">Your Name</label>
-                  <input
-                    type="text"
-                    required
-                    value={inquiryName}
-                    onChange={(e) => setInquiryName(e.target.value)}
-                    className="w-full rounded-xl border border-black/[0.08] bg-white px-3.5 py-2.5 text-xs font-semibold placeholder-gray-400 outline-none"
-                    placeholder="e.g. Ayesha"
-                  />
+          <div className="border-t border-black/10 divide-y divide-black/10">
+            {faqs.map((faq, idx) => {
+              const isOpen = openFaqIndex === idx;
+              return (
+                <div key={idx} className="py-5">
+                  <button
+                    type="button"
+                    onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
+                    className="flex w-full items-center justify-between text-left text-[15px] sm:text-[16px] font-normal text-neutral-950"
+                  >
+                    <span>{faq.q}</span>
+                    <span className="text-lg leading-none text-neutral-400 pl-4">
+                      {isOpen ? "−" : "+"}
+                    </span>
+                  </button>
+                  {isOpen && (
+                    <div className="mt-3 text-sm leading-7 text-neutral-600 pr-8">
+                      {faq.a}
+                    </div>
+                  )}
                 </div>
-                
-                <div className="space-y-1">
-                  <label className="text-[9px] font-bold uppercase tracking-wider text-[#707072]">Email Address</label>
-                  <input
-                    type="email"
-                    required
-                    value={inquiryEmail}
-                    onChange={(e) => setInquiryEmail(e.target.value)}
-                    className="w-full rounded-xl border border-black/[0.08] bg-white px-3.5 py-2.5 text-xs font-semibold placeholder-gray-400 outline-none"
-                    placeholder="ayesha@example.com"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-[9px] font-bold uppercase tracking-wider text-[#707072]">Your Message / Question</label>
-                  <textarea
-                    rows={3}
-                    required
-                    value={inquiryMsg}
-                    onChange={(e) => setInquiryMsg(e.target.value)}
-                    className="w-full rounded-xl border border-black/[0.08] bg-white px-3.5 py-2.5 text-xs font-semibold placeholder-gray-400 outline-none"
-                    placeholder="I want to know if I am eligible for Swedish universities with a CGPA of 3.2..."
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={inquiryLoading}
-                  className="w-full flex items-center justify-center gap-1.5 mt-2 rounded-xl bg-[#111111] hover:bg-[#0f7a47] py-3 text-xs font-black uppercase tracking-wider text-white transition disabled:bg-gray-400"
-                >
-                  {inquiryLoading ? "Sending Query..." : "Send Message"}
-                </button>
-              </form>
-            )}
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* FOOTER NOTE */}
-      <div className="bg-[#FAFAFA] py-8 text-center text-xs text-[#707072] border-t border-black/[0.03]">
-        <div className="max-w-[1320px] mx-auto px-[6vw]">
-          Disclaimer: Admission criteria, fee guidelines, and application opening/closing deadlines are provided for illustrative purposes. Always confirm through the official pages before applying.
-        </div>
-      </div>
+      {/* 9. BOTTOM CONTACT & INQUIRY BANNER */}
+      <section className="store-section border-t border-black/6 bg-white">
+        <div className="store-container">
+          <div className="grid gap-12 lg:grid-cols-2 items-center">
+            
+            <div className="space-y-6">
+              <p className="store-kicker">Ready to Start?</p>
+              <h2 className="store-heading">Book your initial direct assessment.</h2>
+              <p className="text-sm leading-7 text-neutral-600">
+                Speak directly with an academic counsellor to evaluate your transcripts, test scores, and study abroad budget.
+              </p>
 
-      {/* Modals Mounting */}
-      <FreeConsultationModal 
-        isOpen={consultModalOpen} 
-        onClose={() => setConsultModalOpen(false)} 
+              <div className="flex flex-wrap gap-4 pt-2">
+                <a
+                  href="https://wa.me/923001234567"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="store-button-primary"
+                >
+                  <span className="btn-label">WhatsApp Advisory Desk</span>
+                  <span className="btn-icon">&rarr;</span>
+                </a>
+                <button
+                  type="button"
+                  onClick={() => setConsultModalOpen(true)}
+                  className="store-pill-outline text-xs"
+                >
+                  Book 30-Min Call
+                </button>
+              </div>
+            </div>
+
+            {/* Quick Inquiry Form */}
+            <div className="store-card rounded-2xl p-7 sm:p-9">
+              <h3 className="text-[1.2rem] font-normal leading-tight tracking-[-0.02em] text-neutral-950 mb-2">
+                Send a Direct Inquiry
+              </h3>
+              <p className="text-xs text-neutral-500 mb-6">
+                Leave your query and our team will get back to you within 24 hours.
+              </p>
+
+              {inquirySuccess ? (
+                <div className="text-center py-6 space-y-3">
+                  <CheckCircle2 className="h-10 w-10 text-emerald-700 mx-auto" />
+                  <strong className="block text-sm font-normal text-neutral-950">Inquiry Received</strong>
+                  <p className="text-xs text-neutral-600">We have recorded your details and will reply via email.</p>
+                  <button
+                    type="button"
+                    onClick={() => setInquirySuccess(false)}
+                    className="store-pill-outline text-xs mt-2"
+                  >
+                    Submit Another
+                  </button>
+                </div>
+              ) : (
+                <form onSubmit={handleInquirySubmit} className="space-y-4">
+                  <div>
+                    <input
+                      type="text"
+                      required
+                      value={inquiryName}
+                      onChange={(e) => setInquiryName(e.target.value)}
+                      placeholder="Your Full Name"
+                      className="store-control text-xs"
+                    />
+                  </div>
+                  <div>
+                    <input
+                      type="email"
+                      required
+                      value={inquiryEmail}
+                      onChange={(e) => setInquiryEmail(e.target.value)}
+                      placeholder="Your Email Address"
+                      className="store-control text-xs"
+                    />
+                  </div>
+                  <div>
+                    <textarea
+                      rows={3}
+                      required
+                      value={inquiryMsg}
+                      onChange={(e) => setInquiryMsg(e.target.value)}
+                      placeholder="Your academic background &amp; questions..."
+                      className="store-control text-xs py-3 h-auto"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={inquiryLoading}
+                    className="store-button-primary w-full py-3 text-xs"
+                  >
+                    <span className="btn-label">{inquiryLoading ? "Submitting..." : "Send Message"}</span>
+                    <span className="btn-icon">&rarr;</span>
+                  </button>
+                </form>
+              )}
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* Modals Mount */}
+      <FreeConsultationModal
+        isOpen={consultModalOpen}
+        onClose={() => setConsultModalOpen(false)}
       />
-      <CourseRegistrationModal 
-        isOpen={courseModalOpen} 
-        onClose={() => setCourseModalOpen(false)} 
+      <CourseApplicationModal
+        isOpen={courseModalOpen}
+        onClose={() => setCourseModalOpen(false)}
       />
-      <PrivateCounsellingModal 
-        isOpen={privateModalOpen} 
-        onClose={() => setPrivateModalOpen(false)} 
+      <PrivateCounsellingModal
+        isOpen={privateModalOpen}
+        onClose={() => setPrivateModalOpen(false)}
       />
     </div>
   );

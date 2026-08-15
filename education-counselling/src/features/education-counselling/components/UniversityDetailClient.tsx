@@ -3,25 +3,20 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { 
-  GraduationCap, 
-  MapPin, 
-  Award, 
-  Users, 
-  Calendar, 
-  FileText, 
-  DollarSign, 
-  CheckCircle2, 
-  AlertCircle, 
-  BookOpen, 
-  ChevronRight,
-  ExternalLink 
+import {
+  ExternalLink,
+  AlertCircle,
+  CheckCircle2,
+  Calendar,
+  DollarSign,
+  BookOpen,
+  GraduationCap,
+  Sparkles,
 } from "lucide-react";
 import { FreeConsultationModal } from "./BookingModals";
-import styles from "./UniversityDetailClient.module.css";
 
 interface UniversityDetailClientProps {
-  university: any; // Dynamic from JSON store
+  university: any;
 }
 
 type TabType = "overview" | "programs" | "undergrad" | "grad" | "tuition" | "scholarships";
@@ -31,546 +26,509 @@ export function UniversityDetailClient({ university }: UniversityDetailClientPro
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
   const [consultModalOpen, setConsultModalOpen] = useState(false);
 
-  const toggleFaq = (index: number) => {
-    setOpenFaqIndex(openFaqIndex === index ? null : index);
-  };
-
   return (
-    <article className={styles.wrapper}>
-      {/* HERO SECTION */}
-      <section className={styles.heroSection}>
-        <div className={styles.bannerContainer}>
-          <Image
-            src={university.banner}
-            alt={`${university.name} Campus`}
-            fill
-            priority
-            sizes="100vw"
-            className={styles.bannerImage}
-            style={{ objectFit: "cover" }}
-          />
-          <div className={styles.bannerOverlay} />
-        </div>
+    <article className="w-full bg-white text-[#111111] antialiased">
+      
+      {/* 1. CINEMATIC HERO */}
+      <section className="relative isolate min-h-[50vh] sm:min-h-[58vh] overflow-hidden bg-black text-white flex items-end">
+        <Image
+          src={university.banner}
+          alt={`${university.name} Campus`}
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover opacity-60 filter brightness-90"
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.2)_0%,rgba(0,0,0,0.1)_25%,rgba(0,0,0,0.6)_75%,rgba(0,0,0,0.85)_100%)]" />
 
-        <div className={styles.heroInner}>
-          <Link href="/universities" className={styles.backBtn}>
+        <div className="store-container relative z-10 py-12 sm:py-16 space-y-6">
+          <Link
+            href="/universities"
+            className="inline-flex items-center gap-2 text-[11px] font-normal uppercase tracking-[0.2em] text-white/80 hover:text-white transition"
+          >
             &larr; Back to Directory
           </Link>
-          
-          <div className={styles.heroHeader}>
-            <div className={styles.logoBadge} style={{ background: university.logo }}>
-              {university.name.substring(0, 2).toUpperCase()}
+
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
+            <div className="space-y-2">
+              <p className="text-[11px] font-normal uppercase tracking-[0.24em] text-white/90">
+                📍 {university.country} &bull; Updated: {university.lastUpdated || "Recently"}
+              </p>
+              <h1 className="text-[clamp(1.6rem,3.4vw,2.8rem)] font-normal leading-[1.05] tracking-[-0.03em] text-white">
+                {university.name}
+              </h1>
             </div>
-            
-            <div className={styles.heroMainInfo}>
-              <span className={styles.countryLabel}>
-                📍 {university.country} | Last Updated: {university.lastUpdated || "Recently"}
-              </span>
-              <h1>{university.name}</h1>
-              
-              <div className={styles.statsRow}>
-                <div className={styles.statBadge}>
-                  <span className={styles.statLabel}>QS Global Rank</span>
-                  <strong className={styles.statVal}>#{university.ranking?.qs || "N/A"}</strong>
-                </div>
-                <div className={styles.statBadge}>
-                  <span className={styles.statLabel}>World Rank</span>
-                  <strong className={styles.statVal}>#{university.ranking?.world || "N/A"}</strong>
-                </div>
-                <div className={styles.statBadge}>
-                  <span className={styles.statLabel}>Int. Students</span>
-                  <strong className={styles.statVal}>{university.overview?.internationalStudents || "10%"}</strong>
-                </div>
+
+            <div className="flex flex-wrap gap-2.5">
+              <div className="rounded-full border border-white/30 bg-white/10 backdrop-blur-md px-4 py-1.5 text-xs text-white">
+                <span className="text-white/60 text-[10px] uppercase tracking-wider mr-1.5">QS Rank</span>
+                <strong>#{university.ranking?.qs || "N/A"}</strong>
+              </div>
+              <div className="rounded-full border border-white/30 bg-white/10 backdrop-blur-md px-4 py-1.5 text-xs text-white">
+                <span className="text-white/60 text-[10px] uppercase tracking-wider mr-1.5">World</span>
+                <strong>#{university.ranking?.world || "N/A"}</strong>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* CONTENT GRID */}
-      <section className={styles.contentSection}>
-        <div className={styles.gridContainer}>
+      {/* 2. CONTENT SECTION & TABS */}
+      <section className="store-section py-12 sm:py-16">
+        <div className="store-container grid gap-12 lg:grid-cols-[1fr_340px] items-start">
           
-          {/* MAIN PANEL */}
-          <div className={styles.mainPanel}>
-            <nav className={styles.tabNav}>
-              <button
-                onClick={() => setActiveTab("overview")}
-                className={`${styles.tabBtn} ${activeTab === "overview" ? styles.activeTab : ""}`}
-              >
-                Overview
-              </button>
-              <button
-                onClick={() => setActiveTab("programs")}
-                className={`${styles.tabBtn} ${activeTab === "programs" ? styles.activeTab : ""}`}
-              >
-                Programs
-              </button>
-              <button
-                onClick={() => setActiveTab("undergrad")}
-                className={`${styles.tabBtn} ${activeTab === "undergrad" ? styles.activeTab : ""}`}
-              >
-                Undergraduate Reqs
-              </button>
-              <button
-                onClick={() => setActiveTab("grad")}
-                className={`${styles.tabBtn} ${activeTab === "grad" ? styles.activeTab : ""}`}
-              >
-                Graduate Reqs
-              </button>
-              <button
-                onClick={() => setActiveTab("tuition")}
-                className={`${styles.tabBtn} ${activeTab === "tuition" ? styles.activeTab : ""}`}
-              >
-                Tuition &amp; Apply
-              </button>
-              <button
-                onClick={() => setActiveTab("scholarships")}
-                className={`${styles.tabBtn} ${activeTab === "scholarships" ? styles.activeTab : ""}`}
-              >
-                Scholarships
-              </button>
+          {/* Main Content Area */}
+          <div className="space-y-8">
+            
+            {/* Minimalist Horizontal Tab Bar */}
+            <nav className="flex items-center gap-2 sm:gap-6 border-b border-black/8 overflow-x-auto pb-px">
+              {[
+                { id: "overview", label: "Overview" },
+                { id: "programs", label: "Programs" },
+                { id: "undergrad", label: "Undergraduate Reqs" },
+                { id: "grad", label: "Graduate Reqs" },
+                { id: "tuition", label: "Tuition & Apply" },
+                { id: "scholarships", label: "Scholarships" },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveTab(tab.id as TabType)}
+                  className={`pb-3 text-xs sm:text-sm font-normal uppercase tracking-[0.14em] whitespace-nowrap transition-colors border-b-2 ${
+                    activeTab === tab.id
+                      ? "border-black text-black"
+                      : "border-transparent text-neutral-400 hover:text-black"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
             </nav>
 
-            <div className={styles.tabContent}>
-              
-              {/* Tab 1: Overview */}
-              {activeTab === "overview" && (
-                <div className={styles.tabPanel}>
-                  <h3>About the University</h3>
-                  <p className={styles.richText}>{university.overview?.about}</p>
+            {/* Tab 1: Overview */}
+            {activeTab === "overview" && (
+              <div className="space-y-8 animate-fade-in">
+                <div className="space-y-3">
+                  <h3 className="store-heading">About the Institution</h3>
+                  <p className="store-subheading leading-8">{university.overview?.about}</p>
+                </div>
 
-                  <h3 className={styles.subHeading}>Campus Life</h3>
-                  <p className={styles.richText}>{university.overview?.campusLife}</p>
+                <div className="space-y-3 pt-4 border-t border-black/6">
+                  <h3 className="store-heading">Campus Life &amp; Student Culture</h3>
+                  <p className="store-subheading leading-8">{university.overview?.campusLife}</p>
+                </div>
 
-                  <div className={styles.detailsGrid}>
-                    <div className={styles.detailItem}>
-                      <strong>Student Population</strong>
-                      <span>{university.overview?.population}</span>
-                    </div>
-                    <div className={styles.detailItem}>
-                      <strong>International Students</strong>
-                      <span>{university.overview?.internationalStudents}</span>
-                    </div>
+                <div className="grid gap-6 sm:grid-cols-2 pt-4 border-t border-black/6">
+                  <div className="store-card rounded-2xl p-6 space-y-1">
+                    <span className="store-kicker">Total Enrollment</span>
+                    <strong className="block text-xl font-normal text-neutral-950">{university.overview?.population}</strong>
+                  </div>
+                  <div className="store-card rounded-2xl p-6 space-y-1">
+                    <span className="store-kicker">International Ratio</span>
+                    <strong className="block text-xl font-normal text-neutral-950">{university.overview?.internationalStudents}</strong>
                   </div>
                 </div>
-              )}
+              </div>
+            )}
 
-              {/* Tab 2: Programs */}
-              {activeTab === "programs" && (
-                <div className={styles.tabPanel}>
-                  <h3>Academic Program Pathways</h3>
-                  <p className="text-xs text-[#707072] mb-6">Explore the featured course offerings at {university.name}.</p>
-                  
-                  <div className={styles.programsGroup}>
-                    <h4 className={styles.levelHeading}>🎓 Undergraduate Degrees</h4>
-                    <ul className={styles.list}>
+            {/* Tab 2: Programs */}
+            {activeTab === "programs" && (
+              <div className="space-y-8 animate-fade-in">
+                <div className="space-y-2">
+                  <h3 className="store-heading">Academic Program Pathways</h3>
+                  <p className="store-subheading">Featured courses offered at {university.name}.</p>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="store-card rounded-2xl p-6 sm:p-8 space-y-4">
+                    <h4 className="text-base font-normal text-neutral-950 flex items-center gap-2">
+                      <GraduationCap className="h-5 w-5 text-neutral-700" />
+                      Undergraduate Degrees
+                    </h4>
+                    <ul className="grid gap-2 sm:grid-cols-2 text-sm text-neutral-600">
                       {(university.programs?.undergraduate || []).map((p: string) => (
-                        <li key={p}>{p}</li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className={styles.programsGroup}>
-                    <h4 className={styles.levelHeading}>👔 Master&apos;s Degrees</h4>
-                    <ul className={styles.list}>
-                      {(university.programs?.masters || []).map((p: string) => (
-                        <li key={p}>{p}</li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className={styles.programsGroup}>
-                    <h4 className={styles.levelHeading}>🔬 Doctoral (Ph.D.) Programs</h4>
-                    <ul className={styles.list}>
-                      {(university.programs?.phd || []).map((p: string) => (
-                        <li key={p}>{p}</li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              )}
-
-              {/* Tab 3: Undergraduate Requirements */}
-              {activeTab === "undergrad" && (
-                <div className={styles.tabPanel} style={{ gap: "2rem", display: "flex", flexDirection: "column" }}>
-                  <div>
-                    <h3>Undergraduate Admission Requirements</h3>
-                    <p className="text-xs text-[#707072] mt-1">Review the basic qualifications, language criteria, and documents checklists needed for Bachelor applicants.</p>
-                  </div>
-
-                  <div className="grid gap-6 sm:grid-cols-2">
-                    <div className="bg-[#FAFAFA] rounded-2xl border border-black/[0.04] p-5 space-y-2">
-                      <span className="text-[9px] font-black uppercase text-[#0f7a47] tracking-wider">Required Credential</span>
-                      <strong className="text-sm text-[#111111] block font-bold">Academic Qualification</strong>
-                      <p className="text-xs text-[#707072] leading-relaxed">{university.undergradRequirements?.qualification}</p>
-                    </div>
-
-                    <div className="bg-[#FAFAFA] rounded-2xl border border-black/[0.04] p-5 space-y-2">
-                      <span className="text-[9px] font-black uppercase text-[#0f7a47] tracking-wider">Academic Grades</span>
-                      <strong className="text-sm text-[#111111] block font-bold">Minimum Grades / GPA</strong>
-                      <p className="text-xs text-[#707072] leading-relaxed">{university.undergradRequirements?.gradesGpa}</p>
-                    </div>
-
-                    <div className="bg-[#FAFAFA] rounded-2xl border border-black/[0.04] p-5 space-y-2">
-                      <span className="text-[9px] font-black uppercase text-[#0f7a47] tracking-wider">Language Score</span>
-                      <strong className="text-sm text-[#111111] block font-bold">English Competency</strong>
-                      <p className="text-xs text-[#707072] leading-relaxed">{university.undergradRequirements?.english}</p>
-                    </div>
-
-                    <div className="bg-[#FAFAFA] rounded-2xl border border-black/[0.04] p-5 space-y-2">
-                      <span className="text-[9px] font-black uppercase text-[#0f7a47] tracking-wider">Standardized Testing</span>
-                      <strong className="text-sm text-[#111111] block font-bold">SAT or ACT Requirements</strong>
-                      <p className="text-xs text-[#707072] leading-relaxed">{university.undergradRequirements?.satAct}</p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-3 pt-2">
-                    <h4 className="text-xs font-black uppercase tracking-wider text-[#111111]">Required Documents Checklist</h4>
-                    <ul className={styles.checkboxList}>
-                      {(university.undergradRequirements?.documents || university.admission?.documents || []).map((doc: string, idx: number) => (
-                        <li key={`ug-doc-${idx}`} className={styles.checkboxItem}>
-                          <span className={styles.checkIcon}>✓</span>
-                          <span>{doc}</span>
+                        <li key={p} className="flex items-center gap-2">
+                          <span className="h-1.5 w-1.5 rounded-full bg-neutral-400" />
+                          <span>{p}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
 
-                  <div className="border-t border-black/[0.04] pt-4 space-y-4 text-xs">
-                    <div>
-                      <strong className="text-xs text-[#111111] font-black block">Personal Statement Requirements:</strong>
-                      <p className="text-[#707072] mt-1 leading-relaxed">{university.undergradRequirements?.statement}</p>
-                    </div>
-                    <div>
-                      <strong className="text-xs text-[#111111] font-black block">Recommendation Letter Guidelines:</strong>
-                      <p className="text-[#707072] mt-1 leading-relaxed">{university.undergradRequirements?.recommendations}</p>
-                    </div>
-                    {university.undergradRequirements?.portfolioInterview && (
-                      <div>
-                        <strong className="text-xs text-[#111111] font-black block">Portfolio or Interview Requirements:</strong>
-                        <p className="text-[#707072] mt-1 leading-relaxed">{university.undergradRequirements?.portfolioInterview}</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Tab 4: Graduate Requirements */}
-              {activeTab === "grad" && (
-                <div className={styles.tabPanel} style={{ gap: "2rem", display: "flex", flexDirection: "column" }}>
-                  <div>
-                    <h3>Graduate Admission Requirements</h3>
-                    <p className="text-xs text-[#707072] mt-1">Review criteria for postgraduate candidates aiming for Master&apos;s or Doctoral programs.</p>
-                  </div>
-
-                  <div className="grid gap-6 sm:grid-cols-2">
-                    <div className="bg-[#FAFAFA] rounded-2xl border border-black/[0.04] p-5 space-y-2">
-                      <span className="text-[9px] font-black uppercase text-[#0f7a47] tracking-wider">Required Credential</span>
-                      <strong className="text-sm text-[#111111] block font-bold">Undergraduate Qualification</strong>
-                      <p className="text-xs text-[#707072] leading-relaxed">{university.gradRequirements?.qualification}</p>
-                    </div>
-
-                    <div className="bg-[#FAFAFA] rounded-2xl border border-black/[0.04] p-5 space-y-2">
-                      <span className="text-[9px] font-black uppercase text-[#0f7a47] tracking-wider">Academic Grade</span>
-                      <strong className="text-sm text-[#111111] block font-bold">Minimum GPA Requirement</strong>
-                      <p className="text-xs text-[#707072] leading-relaxed">{university.gradRequirements?.gradesGpa}</p>
-                    </div>
-
-                    <div className="bg-[#FAFAFA] rounded-2xl border border-black/[0.04] p-5 space-y-2">
-                      <span className="text-[9px] font-black uppercase text-[#0f7a47] tracking-wider">Standardized Testing</span>
-                      <strong className="text-sm text-[#111111] block font-bold">GRE or GMAT Score Requirements</strong>
-                      <p className="text-xs text-[#707072] leading-relaxed">{university.gradRequirements?.greGmat}</p>
-                    </div>
-
-                    <div className="bg-[#FAFAFA] rounded-2xl border border-black/[0.04] p-5 space-y-2">
-                      <span className="text-[9px] font-black uppercase text-[#0f7a47] tracking-wider">Language Score</span>
-                      <strong className="text-sm text-[#111111] block font-bold">English Proficiency Standard</strong>
-                      <p className="text-xs text-[#707072] leading-relaxed">{university.gradRequirements?.english}</p>
-                    </div>
-                  </div>
-
-                  <div className="border-t border-black/[0.04] pt-4 space-y-4 text-xs">
-                    <div>
-                      <strong className="text-xs text-[#111111] font-black block">Statement of Purpose (SOP) Requirements:</strong>
-                      <p className="text-[#707072] mt-1 leading-relaxed">{university.gradRequirements?.statementPurpose}</p>
-                    </div>
-                    <div>
-                      <strong className="text-xs text-[#111111] font-black block">Recommendation Letter Requirements:</strong>
-                      <p className="text-[#707072] mt-1 leading-relaxed">{university.gradRequirements?.recommendations}</p>
-                    </div>
-                    <div>
-                      <strong className="text-xs text-[#111111] font-black block">Academic CV / Resume Guidelines:</strong>
-                      <p className="text-[#707072] mt-1 leading-relaxed">{university.gradRequirements?.resumeCv}</p>
-                    </div>
-                    {university.gradRequirements?.researchProposal && (
-                      <div>
-                        <strong className="text-xs text-[#111111] font-black block">Research Proposal or Writing Sample:</strong>
-                        <p className="text-[#707072] mt-1 leading-relaxed">{university.gradRequirements?.researchProposal}</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Tab 5: Tuition & Apply */}
-              {activeTab === "tuition" && (
-                <div className={styles.tabPanel} style={{ gap: "2rem", display: "flex", flexDirection: "column" }}>
-                  <div>
-                    <h3>Estimated Costs &amp; Deadlines</h3>
-                    <p className="text-xs text-[#707072] mt-1">Check financial requirements, intake dates, and official outbound application links.</p>
-                  </div>
-
-                  <div className={styles.feesLayout}>
-                    <div className={styles.feeRow}>
-                      <span>Estimated Annual Tuition:</span>
-                      <strong>{university.fees?.tuition}</strong>
-                    </div>
-                    <div className={styles.feeRow}>
-                      <span>On-Campus Accommodation:</span>
-                      <strong>{university.fees?.accommodation}</strong>
-                    </div>
-                    <div className={styles.feeRow}>
-                      <span>General Living Expenses:</span>
-                      <strong>{university.fees?.livingExpenses}</strong>
-                    </div>
-                    <div className={styles.feeRow}>
-                      <span>Sovereign Student Visa Fees:</span>
-                      <strong>{university.fees?.visaCost}</strong>
-                    </div>
-                  </div>
-
-                  <div className="grid gap-6 sm:grid-cols-3 text-xs border-t border-b border-black/[0.04] py-6">
-                    <div className="space-y-1">
-                      <span className="text-[#707072] block font-bold uppercase tracking-wider text-[9px]">Priority Deadline</span>
-                      <strong className="text-[#1d1d1f] text-sm font-black">{university.applicationInfo?.priorityDeadline || "November 1"}</strong>
-                    </div>
-                    <div className="space-y-1">
-                      <span className="text-[#707072] block font-bold uppercase tracking-wider text-[9px]">Final Deadline</span>
-                      <strong className="text-[#1d1d1f] text-sm font-black text-red-600">{university.applicationInfo?.finalDeadline || "January 15"}</strong>
-                    </div>
-                    <div className="space-y-1">
-                      <span className="text-[#707072] block font-bold uppercase tracking-wider text-[9px]">Intake Timelines</span>
-                      <div className="flex gap-1.5 flex-wrap mt-1">
-                        {(university.intakes || []).map((intake: string) => (
-                          <span key={intake} className="bg-gray-100 rounded-full px-2.5 py-0.5 text-[10px] font-bold">
-                            {intake}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* OFFICIAL UNIVERSITY LINKS */}
-                  <div className="space-y-4 pt-2">
-                    <h4 className="text-xs font-black uppercase tracking-wider text-[#1d1d1f]">Official University Resource Links</h4>
-                    
-                    <div className="grid gap-3 sm:grid-cols-2">
-                      <a
-                        href={university.officialLinks?.undergradRequirements}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-between rounded-xl border border-black/[0.06] bg-white p-3.5 text-xs font-bold text-[#1d1d1f] hover:bg-gray-50 transition"
-                      >
-                        View Official Undergraduate Requirements
-                        <ExternalLink className="h-4 w-4 text-gray-400" />
-                      </a>
-
-                      <a
-                        href={university.officialLinks?.gradRequirements}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-between rounded-xl border border-black/[0.06] bg-white p-3.5 text-xs font-bold text-[#1d1d1f] hover:bg-gray-50 transition"
-                      >
-                        View Official Graduate Requirements
-                        <ExternalLink className="h-4 w-4 text-gray-400" />
-                      </a>
-
-                      <a
-                        href={university.officialLinks?.internationalStudents}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-between rounded-xl border border-black/[0.06] bg-white p-3.5 text-xs font-bold text-[#1d1d1f] hover:bg-gray-50 transition"
-                      >
-                        View International Student Requirements
-                        <ExternalLink className="h-4 w-4 text-gray-400" />
-                      </a>
-
-                      <a
-                        href={university.officialLinks?.tuitionFees}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-between rounded-xl border border-black/[0.06] bg-white p-3.5 text-xs font-bold text-[#1d1d1f] hover:bg-gray-50 transition"
-                      >
-                        View Official Tuition and Fees
-                        <ExternalLink className="h-4 w-4 text-gray-400" />
-                      </a>
-
-                      <a
-                        href={university.officialLinks?.scholarshipInfo}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-between rounded-xl border border-black/[0.06] bg-white p-3.5 text-xs font-bold text-[#1d1d1f] hover:bg-gray-50 transition"
-                      >
-                        View Official Scholarship Information
-                        <ExternalLink className="h-4 w-4 text-gray-400" />
-                      </a>
-
-                      <a
-                        href={university.officialLinks?.applyWebsite}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-between rounded-xl border border-black/[0.08] bg-[#111111] hover:bg-[#0f7a47] p-3.5 text-xs font-bold text-white transition"
-                      >
-                        Apply on the University Website
-                        <ExternalLink className="h-4 w-4 text-white/80" />
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Tab 6: Scholarships */}
-              {activeTab === "scholarships" && (
-                <div className={styles.tabPanel}>
-                  <h3>Scholarships &amp; Financial Aid Packaging</h3>
-
-                  {university.scholarships?.available ? (
-                    <div className={styles.scholarshipsList}>
-                      {university.scholarships.details.map((sch: any, index: number) => (
-                        <div key={`scholarship-${index}`} className={styles.scholarshipCard}>
-                          <h4 className={styles.schTitle}>{sch.name}</h4>
-                          
-                          <div className={styles.schDetailsGrid}>
-                            <div>
-                              <strong>Eligibility Criteria:</strong>
-                              <p>{sch.eligibility}</p>
-                            </div>
-                            <div>
-                              <strong>Financial Coverage:</strong>
-                              <p>{sch.coverage}</p>
-                            </div>
-                            <div>
-                              <strong>Academic Prerequisites:</strong>
-                              <p>GPA: {sch.gpa} | English: {sch.ielts}</p>
-                            </div>
-                            <div>
-                              <strong>Scholarship Deadline:</strong>
-                              <p className={styles.deadlineHighlight}>{sch.deadline}</p>
-                            </div>
-                          </div>
-
-                          <div className={styles.schApplyWorkflow}>
-                            <strong>Application Procedure:</strong>
-                            <p>{sch.procedure}</p>
-                          </div>
-                        </div>
+                  <div className="store-card rounded-2xl p-6 sm:p-8 space-y-4">
+                    <h4 className="text-base font-normal text-neutral-950 flex items-center gap-2">
+                      <BookOpen className="h-5 w-5 text-neutral-700" />
+                      Master&apos;s Degrees
+                    </h4>
+                    <ul className="grid gap-2 sm:grid-cols-2 text-sm text-neutral-600">
+                      {(university.programs?.masters || []).map((p: string) => (
+                        <li key={p} className="flex items-center gap-2">
+                          <span className="h-1.5 w-1.5 rounded-full bg-neutral-400" />
+                          <span>{p}</span>
+                        </li>
                       ))}
-                    </div>
-                  ) : (
-                    <div className={styles.noScholarshipNotice}>
-                      <p>There are no global entry scholarships currently active in our mock system for this university. Financial aid packets may still be available through direct institution channels.</p>
-                    </div>
-                  )}
-                </div>
-              )}
+                    </ul>
+                  </div>
 
-            </div>
-
-            {/* Campus Gallery */}
-            {university.gallery?.length > 0 && (
-              <div className={styles.gallerySection}>
-                <h3>Campus Gallery</h3>
-                <div className={styles.galleryGrid}>
-                  {university.gallery.map((img: string, idx: number) => (
-                    <div key={`gallery-${idx}`} className={styles.galleryFrame}>
-                      <Image
-                        src={img}
-                        alt={`${university.name} Scene ${idx + 1}`}
-                        fill
-                        sizes="(max-width: 820px) 100vw, 30vw"
-                        style={{ objectFit: "cover" }}
-                      />
-                    </div>
-                  ))}
+                  <div className="store-card rounded-2xl p-6 sm:p-8 space-y-4">
+                    <h4 className="text-base font-normal text-neutral-950 flex items-center gap-2">
+                      <Sparkles className="h-5 w-5 text-neutral-700" />
+                      Doctoral (Ph.D.) Programs
+                    </h4>
+                    <ul className="grid gap-2 sm:grid-cols-2 text-sm text-neutral-600">
+                      {(university.programs?.phd || []).map((p: string) => (
+                        <li key={p} className="flex items-center gap-2">
+                          <span className="h-1.5 w-1.5 rounded-full bg-neutral-400" />
+                          <span>{p}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
               </div>
             )}
 
-            {/* FAQs */}
-            {university.faq?.length > 0 && (
-              <div className={styles.faqSection}>
-                <h3>Frequently Asked Questions</h3>
-                <div className={styles.faqContainer}>
-                  {university.faq.map((item: any, idx: number) => (
-                    <div key={`faq-${idx}`} className={styles.faqItem}>
-                      <button
-                        onClick={() => toggleFaq(idx)}
-                        className={styles.faqQuestion}
-                        aria-expanded={openFaqIndex === idx}
-                      >
-                        <span>{item.q}</span>
-                        <span className={styles.faqIndicator}>
-                          {openFaqIndex === idx ? "−" : "+"}
-                        </span>
-                      </button>
-                      <div
-                        className={`${styles.faqAnswer} ${
-                          openFaqIndex === idx ? styles.faqOpen : ""
-                        }`}
-                      >
-                        <p>{item.a}</p>
-                      </div>
-                    </div>
-                  ))}
+            {/* Tab 3: Undergraduate Requirements */}
+            {activeTab === "undergrad" && (
+              <div className="space-y-8 animate-fade-in">
+                <div className="space-y-2">
+                  <h3 className="store-heading">Undergraduate Admission Requirements</h3>
+                  <p className="store-subheading">Essential criteria for Bachelor degree candidates.</p>
                 </div>
+
+                <div className="grid gap-6 sm:grid-cols-2">
+                  <div className="store-card rounded-2xl p-6 space-y-2">
+                    <span className="store-kicker">Academic Qualification</span>
+                    <strong className="block text-base font-normal text-neutral-950">Credential Requirement</strong>
+                    <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed">{university.undergradRequirements?.qualification}</p>
+                  </div>
+
+                  <div className="store-card rounded-2xl p-6 space-y-2">
+                    <span className="store-kicker">Grade Point Average</span>
+                    <strong className="block text-base font-normal text-neutral-950">Minimum Grades / GPA</strong>
+                    <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed">{university.undergradRequirements?.gradesGpa}</p>
+                  </div>
+
+                  <div className="store-card rounded-2xl p-6 space-y-2">
+                    <span className="store-kicker">Language Standards</span>
+                    <strong className="block text-base font-normal text-neutral-950">English Proficiency</strong>
+                    <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed">{university.undergradRequirements?.english}</p>
+                  </div>
+
+                  <div className="store-card rounded-2xl p-6 space-y-2">
+                    <span className="store-kicker">Standardized Tests</span>
+                    <strong className="block text-base font-normal text-neutral-950">SAT or ACT Policy</strong>
+                    <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed">{university.undergradRequirements?.satAct}</p>
+                  </div>
+                </div>
+
+                <div className="store-panel rounded-2xl p-7 space-y-4">
+                  <h4 className="text-sm font-normal uppercase tracking-[0.2em] text-neutral-950">
+                    Required Documents Checklist
+                  </h4>
+                  <ul className="space-y-2.5 text-xs sm:text-sm text-neutral-700">
+                    {(university.undergradRequirements?.documents || university.admission?.documents || []).map((doc: string, idx: number) => (
+                      <li key={idx} className="flex items-center gap-2.5">
+                        <CheckCircle2 className="h-4 w-4 text-neutral-900 shrink-0" />
+                        <span>{doc}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="space-y-4 text-xs sm:text-sm leading-relaxed text-neutral-600 pt-4 border-t border-black/6">
+                  <div>
+                    <strong className="text-neutral-950 block mb-1">Personal Statement Requirements:</strong>
+                    <p>{university.undergradRequirements?.statement}</p>
+                  </div>
+                  <div>
+                    <strong className="text-neutral-950 block mb-1">Recommendation Guidelines:</strong>
+                    <p>{university.undergradRequirements?.recommendations}</p>
+                  </div>
+                  {university.undergradRequirements?.portfolioInterview && (
+                    <div>
+                      <strong className="text-neutral-950 block mb-1">Portfolio &amp; Interview Guidelines:</strong>
+                      <p>{university.undergradRequirements?.portfolioInterview}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Tab 4: Graduate Requirements */}
+            {activeTab === "grad" && (
+              <div className="space-y-8 animate-fade-in">
+                <div className="space-y-2">
+                  <h3 className="store-heading">Graduate Admission Requirements</h3>
+                  <p className="store-subheading">Criteria for Master&apos;s and Ph.D. research candidates.</p>
+                </div>
+
+                <div className="grid gap-6 sm:grid-cols-2">
+                  <div className="store-card rounded-2xl p-6 space-y-2">
+                    <span className="store-kicker">Undergraduate Degree</span>
+                    <strong className="block text-base font-normal text-neutral-950">Bachelor Qualification</strong>
+                    <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed">{university.gradRequirements?.qualification}</p>
+                  </div>
+
+                  <div className="store-card rounded-2xl p-6 space-y-2">
+                    <span className="store-kicker">Academic Standing</span>
+                    <strong className="block text-base font-normal text-neutral-950">Minimum GPA Standard</strong>
+                    <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed">{university.gradRequirements?.gradesGpa}</p>
+                  </div>
+
+                  <div className="store-card rounded-2xl p-6 space-y-2">
+                    <span className="store-kicker">Testing Policy</span>
+                    <strong className="block text-base font-normal text-neutral-950">GRE / GMAT Requirements</strong>
+                    <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed">{university.gradRequirements?.greGmat}</p>
+                  </div>
+
+                  <div className="store-card rounded-2xl p-6 space-y-2">
+                    <span className="store-kicker">Language Standards</span>
+                    <strong className="block text-base font-normal text-neutral-950">English Proficiency</strong>
+                    <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed">{university.gradRequirements?.english}</p>
+                  </div>
+                </div>
+
+                <div className="space-y-4 text-xs sm:text-sm leading-relaxed text-neutral-600 pt-4 border-t border-black/6">
+                  <div>
+                    <strong className="text-neutral-950 block mb-1">Statement of Purpose (SOP):</strong>
+                    <p>{university.gradRequirements?.statementPurpose}</p>
+                  </div>
+                  <div>
+                    <strong className="text-neutral-950 block mb-1">Recommendation Guidelines:</strong>
+                    <p>{university.gradRequirements?.recommendations}</p>
+                  </div>
+                  <div>
+                    <strong className="text-neutral-950 block mb-1">Academic CV / Resume Format:</strong>
+                    <p>{university.gradRequirements?.resumeCv}</p>
+                  </div>
+                  {university.gradRequirements?.researchProposal && (
+                    <div>
+                      <strong className="text-neutral-950 block mb-1">Research Proposal &amp; Writing Sample:</strong>
+                      <p>{university.gradRequirements?.researchProposal}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Tab 5: Tuition & Apply */}
+            {activeTab === "tuition" && (
+              <div className="space-y-8 animate-fade-in">
+                <div className="space-y-2">
+                  <h3 className="store-heading">Estimated Costs &amp; Deadlines</h3>
+                  <p className="store-subheading">Financial breakdowns and official resource links.</p>
+                </div>
+
+                <div className="store-card rounded-2xl p-7 space-y-4">
+                  <div className="flex justify-between text-sm py-2 border-b border-black/6">
+                    <span className="text-neutral-500">Estimated Annual Tuition:</span>
+                    <strong className="font-normal text-neutral-950">{university.fees?.tuition}</strong>
+                  </div>
+                  <div className="flex justify-between text-sm py-2 border-b border-black/6">
+                    <span className="text-neutral-500">Accommodation:</span>
+                    <strong className="font-normal text-neutral-950">{university.fees?.accommodation}</strong>
+                  </div>
+                  <div className="flex justify-between text-sm py-2 border-b border-black/6">
+                    <span className="text-neutral-500">General Living Expenses:</span>
+                    <strong className="font-normal text-neutral-950">{university.fees?.livingExpenses}</strong>
+                  </div>
+                  <div className="flex justify-between text-sm py-2">
+                    <span className="text-neutral-500">Student Visa Costs:</span>
+                    <strong className="font-normal text-neutral-950">{university.fees?.visaCost}</strong>
+                  </div>
+                </div>
+
+                <div className="grid gap-6 sm:grid-cols-3 store-panel rounded-2xl p-6 text-xs">
+                  <div>
+                    <span className="store-kicker block mb-1">Priority Deadline</span>
+                    <strong className="block text-sm font-normal text-neutral-950">{university.applicationInfo?.priorityDeadline || "November 1"}</strong>
+                  </div>
+                  <div>
+                    <span className="store-kicker block mb-1">Final Deadline</span>
+                    <strong className="block text-sm font-normal text-red-600">{university.applicationInfo?.finalDeadline || "January 15"}</strong>
+                  </div>
+                  <div>
+                    <span className="store-kicker block mb-1">Intake Timelines</span>
+                    <strong className="block text-sm font-normal text-neutral-950">{university.intakes?.join(", ") || "Fall / Spring"}</strong>
+                  </div>
+                </div>
+
+                {/* OFFICIAL UNIVERSITY LINKS */}
+                <div className="space-y-4 pt-4 border-t border-black/6">
+                  <h4 className="text-xs uppercase tracking-[0.2em] text-neutral-950 font-normal">
+                    Official University Outbound Links
+                  </h4>
+                  
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <a
+                      href={university.officialLinks?.undergradRequirements}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-between store-card rounded-xl p-4 text-xs font-normal text-neutral-900 hover:bg-neutral-50 transition"
+                    >
+                      <span>Official Undergraduate Requirements</span>
+                      <ExternalLink className="h-3.5 w-3.5 text-neutral-400" />
+                    </a>
+
+                    <a
+                      href={university.officialLinks?.gradRequirements}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-between store-card rounded-xl p-4 text-xs font-normal text-neutral-900 hover:bg-neutral-50 transition"
+                    >
+                      <span>Official Graduate Requirements</span>
+                      <ExternalLink className="h-3.5 w-3.5 text-neutral-400" />
+                    </a>
+
+                    <a
+                      href={university.officialLinks?.internationalStudents}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-between store-card rounded-xl p-4 text-xs font-normal text-neutral-900 hover:bg-neutral-50 transition"
+                    >
+                      <span>International Student Policies</span>
+                      <ExternalLink className="h-3.5 w-3.5 text-neutral-400" />
+                    </a>
+
+                    <a
+                      href={university.officialLinks?.tuitionFees}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-between store-card rounded-xl p-4 text-xs font-normal text-neutral-900 hover:bg-neutral-50 transition"
+                    >
+                      <span>Official Tuition &amp; Costs</span>
+                      <ExternalLink className="h-3.5 w-3.5 text-neutral-400" />
+                    </a>
+
+                    <a
+                      href={university.officialLinks?.scholarshipInfo}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-between store-card rounded-xl p-4 text-xs font-normal text-neutral-900 hover:bg-neutral-50 transition"
+                    >
+                      <span>Official Scholarship Guidelines</span>
+                      <ExternalLink className="h-3.5 w-3.5 text-neutral-400" />
+                    </a>
+
+                    <a
+                      href={university.officialLinks?.applyWebsite}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-between store-button-primary rounded-xl p-4 text-xs font-normal"
+                    >
+                      <span>Apply on University Portal</span>
+                      <ExternalLink className="h-3.5 w-3.5 text-white/80" />
+                    </a>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Tab 6: Scholarships */}
+            {activeTab === "scholarships" && (
+              <div className="space-y-8 animate-fade-in">
+                <div className="space-y-2">
+                  <h3 className="store-heading">Scholarships &amp; Financial Aid</h3>
+                  <p className="store-subheading">Opportunities available for international applicants.</p>
+                </div>
+
+                {university.scholarships?.available ? (
+                  <div className="space-y-6">
+                    {university.scholarships.details.map((sch: any, idx: number) => (
+                      <div key={idx} className="store-card rounded-2xl p-7 space-y-4">
+                        <h4 className="text-base font-normal text-neutral-950">{sch.name}</h4>
+                        
+                        <div className="grid gap-4 sm:grid-cols-2 text-xs sm:text-sm text-neutral-600">
+                          <div>
+                            <span className="store-kicker block mb-1">Financial Coverage</span>
+                            <p>{sch.coverage}</p>
+                          </div>
+                          <div>
+                            <span className="store-kicker block mb-1">Eligibility Criteria</span>
+                            <p>{sch.eligibility}</p>
+                          </div>
+                          <div>
+                            <span className="store-kicker block mb-1">Prerequisites</span>
+                            <p>GPA: {sch.gpa} &bull; English: {sch.ielts}</p>
+                          </div>
+                          <div>
+                            <span className="store-kicker block mb-1">Deadline</span>
+                            <strong className="text-red-600 font-normal">{sch.deadline}</strong>
+                          </div>
+                        </div>
+
+                        <div className="pt-3 border-t border-black/6 text-xs text-neutral-600">
+                          <strong className="text-neutral-950 block mb-1">Application Procedure:</strong>
+                          <p>{sch.procedure}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="store-panel rounded-2xl p-8 text-center text-xs text-neutral-500">
+                    No active institutional scholarships are recorded for this specific profile. General need-based aid packaging may still apply through direct admissions channels.
+                  </div>
+                )}
               </div>
             )}
 
           </div>
 
-          {/* SIDEBAR PANEL */}
-          <aside className={styles.sidebar}>
-            <div className={styles.stickyCard} style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+          {/* Sticky Sidebar */}
+          <aside className="sticky top-28 store-card rounded-2xl p-7 space-y-6">
+            <div>
+              <span className="store-kicker">Admissions Mentorship</span>
+              <h3 className="text-lg font-normal text-neutral-950 mt-1">Study in {university.country}</h3>
+              <p className="text-xs text-neutral-600 mt-1.5 leading-relaxed">
+                Connect with our advisory mentors for independent profile assessment and essay review.
+              </p>
+            </div>
+
+            <ul className="space-y-2 text-xs text-neutral-700">
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="h-3.5 w-3.5 text-neutral-900" />
+                <span>1-on-1 Profile assessment</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="h-3.5 w-3.5 text-neutral-900" />
+                <span>Essay brainstorming &amp; editing</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="h-3.5 w-3.5 text-neutral-900" />
+                <span>Financial aid filing support</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="h-3.5 w-3.5 text-neutral-900" />
+                <span>Visa filing checklist</span>
+              </li>
+            </ul>
+
+            <button
+              type="button"
+              onClick={() => setConsultModalOpen(true)}
+              className="store-button-primary w-full py-3 text-xs"
+            >
+              <span className="btn-label">Book Free Consultation</span>
+              <span className="btn-icon">&rarr;</span>
+            </button>
+
+            {/* DISCLAIMER */}
+            <div className="rounded-xl border border-black/6 bg-neutral-50 p-4 text-[11px] leading-relaxed text-neutral-600 flex gap-2.5">
+              <AlertCircle className="h-4 w-4 text-neutral-400 shrink-0 mt-0.5" />
               <div>
-                <span className="text-[10px] font-black uppercase text-[#0f7a47] tracking-wider block">Pathway Guidance</span>
-                <h3 className="text-lg font-black tracking-tight text-[#111111] mt-1">Study in {university.country}</h3>
-                <p className="text-xs text-[#707072] mt-1">Get professional guidance to secure admissions at {university.name}.</p>
+                <strong>Disclaimer:</strong> Admission criteria, tuition fees, deadlines, and scholarship details may change over time. Students must confirm all details directly on the university&apos;s official website before applying.
               </div>
-              
-              <ul className={styles.checklist} style={{ margin: 0, padding: 0 }}>
-                <li>✓ 1-on-1 Profile assessment</li>
-                <li>✓ Essay brainstorming &amp; drafts</li>
-                <li>✓ Need-based financial aid filing</li>
-                <li>✓ Student visa filing assistance</li>
-              </ul>
-
-              <button
-                onClick={() => setConsultModalOpen(true)}
-                className="w-full inline-flex h-11 items-center justify-center rounded-xl bg-[#0f7a47] hover:bg-[#0c6239] text-xs font-black uppercase tracking-wider text-white transition shadow-sm"
-              >
-                Book Consultation
-              </button>
-
-              {/* WEBSITE-WIDE ADMISSIONS INFORMATION DISCLAIMER */}
-              <div className="rounded-xl bg-amber-50 border border-amber-100 p-4 text-[11px] leading-relaxed text-[#7c5e10] flex gap-2">
-                <AlertCircle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
-                <div>
-                  <strong>Disclaimer:</strong> Admission requirements, tuition fees, application deadlines, and scholarship criteria are subject to change. Students are strictly advised to double-confirm all details through the university&apos;s official webpages before submitting applications.
-                </div>
-              </div>
-              
-              <p className={styles.fineprint} style={{ margin: 0 }}>* Initial direct entry assessment is completely free.</p>
             </div>
           </aside>
 
         </div>
       </section>
 
-      {/* Free Consultation Modal Mount */}
-      <FreeConsultationModal 
-        isOpen={consultModalOpen} 
-        onClose={() => setConsultModalOpen(false)} 
+      {/* Consultation Modal */}
+      <FreeConsultationModal
+        isOpen={consultModalOpen}
+        onClose={() => setConsultModalOpen(false)}
       />
     </article>
   );

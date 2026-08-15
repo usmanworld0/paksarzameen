@@ -2,62 +2,212 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  font-size: 62.5%; /* 1rem = 10px base for clamp calculations */
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --font-serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Baskerville, Georgia, serif;
-  
-  --psz-green: #0f7a47;
-  --psz-green-dark: #081c10;
-  --white: #fff;
-  --black: #111111;
+@layer base {
+  :root {
+    --brand-green: 40 56 45;
+    --brand-green-dark: 22 33 28;
+    --brand-cream: 250 245 240;
+    --brand-charcoal: 24 24 24;
+    --background: 255 255 255;
+    --foreground: 17 17 17;
+    --muted: 248 247 244;
+    --muted-foreground: 111 111 111;
+    --border: 229 227 222;
+    --ring: 17 17 17;
+    --radius: 1rem;
+    --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --font-serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Baskerville, Georgia, serif;
+    --store-accent: 181 159 130;
+    --store-accent-soft: 245 241 236;
+  }
+
+  * {
+    box-sizing: border-box;
+    border-color: rgba(17, 17, 17, 0.08);
+  }
+
+  html {
+    background: rgb(var(--background));
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply antialiased;
+    background: linear-gradient(180deg, #ffffff 0%, #fbfaf8 56%, #f8f6f2 100%);
+    color: rgb(var(--foreground));
+    font-family: var(--font-sans);
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-sans);
+    font-weight: 400;
+    letter-spacing: -0.03em;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background: rgba(var(--store-accent), 0.22);
+    color: rgb(var(--foreground));
+  }
+
+  a,
+  button,
+  input,
+  textarea,
+  select {
+    -webkit-tap-highlight-color: transparent;
+  }
 }
 
-*,
-*::before,
-*::after {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+@layer components {
+  .store-container {
+    @apply mx-auto w-full max-w-[1380px] px-5 sm:px-8 lg:px-12;
+  }
 
-html {
-  overflow-x: hidden;
-  scroll-behavior: smooth;
-}
+  .store-pill-label {
+    @apply inline-flex items-center rounded-full border px-3 py-1.5 text-[10px] font-normal uppercase tracking-[0.34em];
+    border-color: rgba(17, 17, 17, 0.08);
+    color: rgba(17, 17, 17, 0.52);
+    background: rgba(255, 255, 255, 0.84);
+  }
 
-body {
-  font-family: var(--font-sans);
-  font-size: 1.6rem; /* 16px base */
-  background: linear-gradient(180deg, #ffffff 0%, #fbfaf8 56%, #f8f6f2 100%);
-  color: #111111;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
-}
+  .store-section {
+    @apply py-16 sm:py-24 lg:py-32;
+  }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-sans);
-  font-weight: 400;
-  letter-spacing: -0.03em;
-  color: #111111;
-}
+  .store-section-soft {
+    @apply store-section;
+    background: linear-gradient(180deg, #ffffff 0%, #fbfaf8 46%, #f7f4ee 100%);
+  }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
+  .store-heading {
+    font-size: clamp(1.2rem, 2.6vw, 1.85rem);
+    line-height: 1.04;
+    letter-spacing: -0.035em;
+    color: #111111;
+    font-weight: 400;
+  }
 
-img {
-  max-width: 100%;
-  display: block;
-}
+  .store-subheading {
+    @apply text-[14px] leading-7 text-neutral-600 sm:text-[15px];
+  }
 
-/* Base storefront classes matching root project styling */
-.store-container {
-  width: 100%;
-  max-width: 1320px;
-  margin: 0 auto;
-  padding: 0 6vw;
-  box-sizing: border-box;
+  .store-button {
+    @apply inline-flex items-center justify-center rounded-xl px-6 py-3 text-[10px] font-normal uppercase tracking-[0.24em] transition-all duration-500;
+  }
+
+  .store-button-primary {
+    @apply store-button text-white;
+    background: #111111;
+    box-shadow: 0 18px 38px rgba(17, 17, 17, 0.08);
+  }
+
+  .store-button-primary:hover {
+    transform: translateY(-1px);
+    background: #262626;
+    box-shadow: 0 22px 42px rgba(17, 17, 17, 0.11);
+  }
+
+  .store-button-primary {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .store-button-primary .btn-label {
+    display: inline-block;
+    transition: transform 220ms cubic-bezier(.2,.9,.2,1);
+  }
+
+  .store-button-primary .btn-icon {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 0.5rem;
+    opacity: 0;
+    transform: translateX(6px);
+    transition: opacity 220ms cubic-bezier(.2,.9,.2,1), transform 220ms cubic-bezier(.2,.9,.2,1);
+  }
+
+  .store-button-primary:hover .btn-label {
+    transform: translateX(-4px);
+  }
+
+  .store-button-primary:hover .btn-icon {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .store-button-secondary {
+    @apply store-button border text-neutral-800;
+    border-color: rgba(17, 17, 17, 0.12);
+    background: rgba(255, 255, 255, 0.92);
+  }
+
+  .store-button-secondary:hover {
+    transform: translateY(-1px);
+    border-color: rgba(17, 17, 17, 0.26);
+    background: rgb(var(--store-accent-soft));
+  }
+
+  .store-pill-outline {
+    @apply inline-flex items-center justify-center rounded-full border px-6 py-2 text-[0.92rem] font-normal;
+    border-color: rgba(17, 17, 17, 0.6);
+    color: #111111;
+    background: transparent;
+    transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease, transform 160ms ease;
+  }
+
+  .store-pill-outline:hover {
+    background: #111111;
+    color: #ffffff;
+    border-color: #111111;
+    transform: translateY(-1px);
+  }
+
+  .store-card {
+    border: 1px solid rgba(17, 17, 17, 0.08);
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 18px 48px rgba(17, 17, 17, 0.045);
+  }
+
+  .store-panel {
+    border: 1px solid rgba(17, 17, 17, 0.08);
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: 0 14px 36px rgba(17, 17, 17, 0.035);
+  }
+
+  .store-mesh-bg {
+    background:
+      radial-gradient(circle at 82% 16%, rgba(181, 159, 130, 0.16) 0%, transparent 28%),
+      radial-gradient(circle at 18% 86%, rgba(17, 17, 17, 0.04) 0%, transparent 34%),
+      linear-gradient(180deg, #ffffff 0%, #fbfaf7 54%, #f6f2ec 100%);
+  }
+
+  .store-kicker {
+    @apply text-[9px] font-normal uppercase tracking-[0.28em];
+    color: rgba(17, 17, 17, 0.46);
+  }
+
+  .store-link-inline {
+    @apply inline-flex items-center gap-2 text-[10px] font-normal uppercase tracking-[0.22em] transition-colors duration-300;
+    color: #111111;
+  }
+
+  .store-link-inline:hover {
+    color: rgb(var(--store-accent));
+  }
+
+  .store-control {
+    @apply h-12 w-full rounded-xl border bg-white px-4 text-sm text-neutral-900 outline-none transition-all duration-300;
+    border-color: rgba(17, 17, 17, 0.1);
+  }
+
+  .store-control:focus {
+    border-color: #111111;
+  }
 }

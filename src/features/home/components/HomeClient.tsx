@@ -268,9 +268,10 @@ export const HomeClient = memo(function HomeClient() {
         const sheets = gsap.utils.toArray<HTMLElement>(".book-sheet-el");
         if (sheets.length) {
           sheets.forEach((sheet, idx) => {
+            const startZ = (sheets.length - idx) * 0.8;
             gsap.set(sheet, {
               zIndex: sheets.length - idx,
-              z: (sheets.length - idx) * 0.8,
+              z: startZ,
               rotateY: 0,
             });
           });
@@ -287,23 +288,34 @@ export const HomeClient = memo(function HomeClient() {
           });
 
           sheets.forEach((sheet, idx) => {
+            const endZ = (idx + 1) * 0.8;
+            const peakZ = 24;
+
             tl.to(sheet, {
               rotateY: -180,
               ease: "power1.inOut",
               duration: 1,
             }, idx * 1.5);
 
-            // Swap z-index halfway through the turn so the flipped sheet goes behind subsequent ones
-            // Animate z-index stepwise over the duration of the flip to prevent snapping bugs on scroll stop
-            tl.to(sheet, { zIndex: idx, ease: "power1.inOut", duration: 1 }, idx * 1.5);
+            // Arc Z up during first half of flip, then land at endZ on top of previous left-side sheets
+            tl.to(sheet, {
+              z: peakZ,
+              ease: "power1.out",
+              duration: 0.5,
+            }, idx * 1.5);
 
             tl.to(sheet, {
-              z: 22,
+              z: endZ,
+              ease: "power1.in",
               duration: 0.5,
-              yoyo: true,
-              repeat: 1,
-              ease: "power1.out",
-            }, idx * 1.5);
+            }, idx * 1.5 + 0.5);
+
+            // Swap z-index halfway through the turn so flipped sheet stacks above earlier left sheets
+            tl.to(sheet, {
+              zIndex: idx + 1,
+              duration: 0.01,
+              ease: "none",
+            }, idx * 1.5 + 0.5);
           });
           
           // Extend timeline to keep book closed before unpinning
@@ -316,9 +328,10 @@ export const HomeClient = memo(function HomeClient() {
         const sheets = gsap.utils.toArray<HTMLElement>(".book-sheet-mobile-el");
         if (sheets.length) {
           sheets.forEach((sheet, idx) => {
+            const startZ = (sheets.length - idx) * 0.8;
             gsap.set(sheet, {
               zIndex: sheets.length - idx,
-              z: (sheets.length - idx) * 0.8,
+              z: startZ,
               rotateY: 0,
             });
           });
@@ -335,23 +348,34 @@ export const HomeClient = memo(function HomeClient() {
           });
 
           sheets.forEach((sheet, idx) => {
+            const endZ = (idx + 1) * 0.8;
+            const peakZ = 20;
+
             tl.to(sheet, {
               rotateY: -180,
               ease: "power1.inOut",
               duration: 1,
             }, idx * 1.5);
 
-            // Swap z-index halfway through the turn
-            // Animate z-index stepwise over the duration of the flip
-            tl.to(sheet, { zIndex: idx, ease: "power1.inOut", duration: 1 }, idx * 1.5);
+            // Arc Z up during first half of flip, then land at endZ on top of previous left-side sheets
+            tl.to(sheet, {
+              z: peakZ,
+              ease: "power1.out",
+              duration: 0.5,
+            }, idx * 1.5);
 
             tl.to(sheet, {
-              z: 18,
+              z: endZ,
+              ease: "power1.in",
               duration: 0.5,
-              yoyo: true,
-              repeat: 1,
-              ease: "power1.out",
-            }, idx * 1.5);
+            }, idx * 1.5 + 0.5);
+
+            // Swap z-index halfway through the turn
+            tl.to(sheet, {
+              zIndex: idx + 1,
+              duration: 0.01,
+              ease: "none",
+            }, idx * 1.5 + 0.5);
           });
           
           // Extend timeline to keep book closed before unpinning
@@ -404,23 +428,61 @@ export const HomeClient = memo(function HomeClient() {
 
   return (
     <main ref={root} className={styles.home}>
-      <section className={styles.hero} aria-labelledby="home-title">
-        <div className={styles.heroMedia} aria-hidden="true">
-          <video autoPlay loop muted playsInline preload="metadata" poster={VIDEO_POSTERS.hero}>
-            <source src="/videos/hero_video.webm" type="video/webm" />
-          </video>
-        </div>
-        <div className={styles.heroShade} aria-hidden="true" />
+      <section id="home-hero" className={styles.hero} aria-labelledby="home-title">
         <div className={styles.heroInner}>
-          <Image className={styles.heroLogo} src="/paksarzameen_logo.png" alt="Paksarzameen" width={270} height={110} priority />
-          <p className={styles.eyebrowLight}>Pakistan - community-led change</p>
-          <h1 id="home-title">Building<br />Community Wealth.</h1>
-          <p className={styles.heroCopy}>Education, health, welfare, and opportunity shaped with communities across Pakistan.</p>
-          <div className={styles.heroActions}>
-            <Link href="#home-solution" className={styles.buttonLight}>Explore PSZ <span>&rarr;</span></Link>
-            <Link href="/get-involved" className={styles.textLight}>Join the mission <span>&rarr;</span></Link>
+          {/* Top Metadata Row (like Awwwards: Site of the Day | Aug 16, 2026 | Score 7.17 of 10) */}
+          <div className={styles.heroMetaRow}>
+            <span className={styles.metaLabel}>Community Platform</span>
+            <span className={styles.metaDatePill}>Non-Profit</span>
+            <span className={styles.metaScore}>Guinness Record Holder</span>
           </div>
-          <p className={styles.scrollPrompt}>Scroll to begin <span>&rarr;</span></p>
+
+          {/* Massive Display Title (like SSTR - FRICTION REDUCTION / NOMINEES) */}
+          <h1 id="home-title" className={styles.heroMainTitle}>
+            BUILDING COMMUNITY WEALTH.
+          </h1>
+
+          {/* Author / Community Line (like Dmitry Golub) */}
+          <div className={styles.heroAuthorRow}>
+            <div className={styles.authorAvatar}>
+              <Image
+                src="/images/members/abdullah_tanseer.jpg"
+                alt="Abdullah Tanseer"
+                width={28}
+                height={28}
+                style={{ objectFit: "cover", borderRadius: "50%" }}
+              />
+            </div>
+            <span className={styles.authorName}>Abdullah Tanseer</span>
+          </div>
+
+          <p className={styles.heroSubCopy}>
+            Education, health, welfare, and opportunity shaped with communities across Pakistan.
+          </p>
+
+          <div className={styles.heroActionRow}>
+            <Link href="#home-solution" className={styles.awwwardsBtnPrimary}>
+              Explore PSZ
+            </Link>
+            <Link href="/get-involved" className={styles.awwwardsBtnSecondary}>
+              Join the mission
+            </Link>
+          </div>
+
+          {/* Featured SOTD Video Showcase Card */}
+          <div className={styles.heroShowcaseCard}>
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="metadata"
+              poster={VIDEO_POSTERS.hero}
+              className={styles.showcaseVideo}
+            >
+              <source src="/videos/hero_video.webm" type="video/webm" />
+            </video>
+          </div>
         </div>
       </section>
 
@@ -605,7 +667,7 @@ export const HomeClient = memo(function HomeClient() {
         </div>
       </section>
 
-      <section className={styles.outreach} aria-label="Explore Paksarzameen">
+      <section id="home-outreach" className={styles.outreach} aria-label="Explore Paksarzameen">
         <h2 className={styles.appleSectionHeader} data-reveal>Explore More</h2>
         <div className={styles.outreachGrid}>
           {journeyLinks.map(([label, href], index) => (

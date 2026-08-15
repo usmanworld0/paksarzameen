@@ -1,112 +1,166 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
+import { ChevronDown, Search } from "lucide-react";
 
 import { NavigationOverlay } from "./NavigationOverlay";
 import { navigationEntries } from "./navigation-data";
-
-const NAV_UTILITIES = [
-  { label: "Call Us", href: "/contact", external: false },
-  { label: "Store", href: "https://store.paksarzameenwfo.com", external: true },
-] as const;
+import { siteConfig } from "@/config/site";
 
 export function Navbar() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const buttonRef = useRef<HTMLButtonElement | null>(null);
-
-  const isHome = pathname === "/";
-  const darkChrome = isHome && !scrolled && !menuOpen;
-
-  useEffect(() => {
-    function onScroll() {
-      setScrolled(window.scrollY > 16);
-    }
-
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   useEffect(() => {
     setMenuOpen(false);
   }, [pathname]);
 
-  const chromeClassName = darkChrome
-    ? "border-transparent bg-transparent text-white"
-    : "border-black/8 bg-white/95 text-black backdrop-blur-md";
-
-  const actionClassName = darkChrome ? "text-white/92 hover:text-white" : "text-black/86 hover:text-black";
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setMenuOpen(true);
+  };
 
   return (
     <>
-      <header
-        className={`fixed inset-x-0 top-0 z-[90] border-b transition-all duration-500 ${chromeClassName} ${
-          menuOpen ? "pointer-events-none -translate-y-4 opacity-0" : "pointer-events-auto translate-y-0 opacity-100"
-        }`}
-      >
-        <nav className="store-container grid h-[78px] grid-cols-[auto_1fr_auto] items-center gap-4">
-          <button
-            ref={buttonRef}
-            type="button"
-            onClick={() => setMenuOpen((value) => !value)}
-            className={`group inline-flex items-center gap-3 justify-self-start text-[1.25rem] font-normal tracking-[0.01em] transition-colors duration-300 ${actionClassName}`}
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
-            aria-expanded={menuOpen}
-            aria-controls="psz-navigation-overlay"
-          >
-            <span className="relative flex h-4 w-5 flex-col justify-between">
-              <span className={`block h-px w-full origin-center transition-all duration-300 ${menuOpen ? "translate-y-[7px] rotate-45 bg-current" : "bg-current"}`} />
-              <span className={`block h-px w-full transition-all duration-300 ${menuOpen ? "scale-x-0 opacity-0 bg-current" : "bg-current"}`} />
-              <span className={`block h-px w-full origin-center transition-all duration-300 ${menuOpen ? "-translate-y-[6px] -rotate-45 bg-current" : "bg-current"}`} />
-            </span>
-            <span className="relative overflow-hidden">
-              <span className={`block transition-all duration-300 ${menuOpen ? "-translate-y-full opacity-0" : "translate-y-0 opacity-100"}`}>Menu</span>
-              <span className={`absolute inset-0 block transition-all duration-300 ${menuOpen ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"}`}>Close</span>
-            </span>
-          </button>
+      <header className="fixed inset-x-0 top-0 z-[90] h-[70px] border-b border-[#e5e5e5] bg-[#f8f8f8]/95 backdrop-blur-md text-[#1a1a1a] transition-all">
+        <div className="mx-auto flex h-full max-w-[1720px] items-center justify-between px-4 sm:px-6 lg:px-8">
+          {/* Left: Brand Logo & Primary Links */}
+          <div className="flex items-center gap-6 lg:gap-8">
+            {/* Awwwards-style Brand Mark */}
+            <Link
+              href="/"
+              aria-label="PakSarZameen home"
+              className="flex items-center transition-opacity hover:opacity-80"
+            >
+              <Image
+                src="/paksarzameen_logo.png"
+                alt="PakSarZameen"
+                width={130}
+                height={40}
+                style={{ height: "40px", width: "auto", objectFit: "contain" }}
+                priority
+              />
+            </Link>
 
-          <div className="min-w-0 justify-self-center">
-            <Link href="/" aria-label="Paksarzameen home" className="text-center">
-              <span
-                className={
-                  "block truncate font-normal uppercase leading-none tracking-[0.16em] transition-colors duration-300 " +
-                  (darkChrome ? "text-white" : "text-black")
-                }
-                style={{ fontSize: "clamp(1.8rem, 2vw, 2.4rem)" }}
+            {/* Navigation links group */}
+            <nav className="flex items-center gap-5 lg:gap-6 text-[14px] font-medium tracking-tight text-[#222222]">
+              {/* Menu (Explore-style) Button */}
+              <button
+                ref={buttonRef}
+                type="button"
+                onClick={() => setMenuOpen((v) => !v)}
+                className="group inline-flex items-center gap-1 text-[14px] font-medium text-[#111111] transition-colors hover:text-black"
+                aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
+                aria-expanded={menuOpen}
+                aria-controls="psz-navigation-overlay"
               >
-                PAKSARZAMEEN
-              </span>
+                <span>Menu</span>
+                <ChevronDown className={`h-3.5 w-3.5 text-[#555] transition-transform duration-200 ${menuOpen ? "rotate-180" : "group-hover:translate-y-0.5"}`} />
+              </button>
+
+              {/* Direct Route Links (Dog, Health, Store, Education) */}
+              <Link
+                href="/dog-adoption"
+                className="hidden transition-colors hover:text-black sm:inline-block"
+              >
+                Dog
+              </Link>
+
+              <Link
+                href="/healthcare"
+                className="hidden transition-colors hover:text-black sm:inline-block"
+              >
+                Health
+              </Link>
+
+              <a
+                href={siteConfig.commonwealthUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hidden transition-colors hover:text-black md:inline-block"
+              >
+                Store
+              </a>
+
+              <a
+                href="https://education.paksarzameenwfo.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hidden items-center gap-1.5 transition-colors hover:text-black md:inline-flex"
+              >
+                <span>Education</span>
+                <span className="rounded-[4px] bg-[#111111] px-1.5 py-[1px] text-[10px] font-bold uppercase tracking-wider text-white">
+                  New
+                </span>
+              </a>
+
+              <Link
+                href="/impact"
+                className="hidden transition-colors hover:text-black lg:inline-block"
+              >
+                Impact
+              </Link>
+            </nav>
+          </div>
+
+          {/* Center: Search by Inspiration Input */}
+          <div className="hidden lg:flex flex-1 max-w-[340px] xl:max-w-[420px] mx-6">
+            <form
+              onSubmit={handleSearchSubmit}
+              className="relative flex w-full items-center rounded-[8px] bg-[#e8e8e8] px-3.5 py-2 text-[13.5px] transition-all hover:bg-[#e0e0e0] focus-within:bg-white focus-within:ring-1 focus-within:ring-[#111111]/20 focus-within:shadow-sm"
+            >
+              <Search className="mr-2.5 h-4 w-4 text-[#777777] flex-shrink-0" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => {
+                  if (searchQuery.trim()) setMenuOpen(true);
+                }}
+                placeholder="Search by Inspiration"
+                className="w-full bg-transparent text-[13.5px] text-[#111111] outline-none placeholder:text-[#777777]"
+              />
+            </form>
+          </div>
+
+          {/* Right: Auth-style links and Action Buttons */}
+          <div className="flex items-center gap-3 sm:gap-4 text-[14px] font-medium text-[#222222]">
+            <Link
+              href="/contact"
+              className="hidden transition-colors hover:text-black sm:inline-block"
+            >
+              Contact
+            </Link>
+
+            <Link
+              href="/volunteer"
+              className="hidden transition-colors hover:text-black md:inline-block"
+            >
+              Volunteer
+            </Link>
+
+            {/* Solid Dark Pill Button (like Be Pro) */}
+            <Link
+              href="/impact"
+              className="inline-flex items-center justify-center rounded-[8px] bg-[#1a1a1a] px-3.5 py-2 text-[13.5px] font-medium text-white transition-colors hover:bg-black"
+            >
+              Our Work
+            </Link>
+
+            {/* Outlined Pill Button (like Submit Website) */}
+            <Link
+              href="/get-involved"
+              className="inline-flex items-center justify-center rounded-[8px] border border-[#1a1a1a] bg-transparent px-3.5 py-2 text-[13.5px] font-medium text-[#1a1a1a] transition-all hover:bg-[#1a1a1a] hover:text-white"
+            >
+              Get Involved
             </Link>
           </div>
-
-          <div className="flex items-center justify-self-end gap-4 sm:gap-6">
-            {NAV_UTILITIES.map((item) => (
-              item.external ? (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`hidden text-[12px] font-normal tracking-[0.01em] transition-colors sm:inline-flex ${actionClassName}`}
-                >
-                  {item.label}
-                </Link>
-              ) : (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  className={`hidden text-[12px] font-normal tracking-[0.01em] transition-colors md:inline-flex ${actionClassName}`}
-                >
-                  {item.label}
-                </Link>
-              )
-            ))}
-          </div>
-        </nav>
+        </div>
       </header>
 
       <NavigationOverlay

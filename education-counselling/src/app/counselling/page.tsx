@@ -1,83 +1,69 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { GraduationCap, BookOpen } from "lucide-react";
 import { PrivateCounsellingModal } from "@/features/education-counselling/components/BookingModals";
 
 export default function CounsellingServicesPage() {
   const [privateModalOpen, setPrivateModalOpen] = useState(false);
 
   return (
-    <div className="w-full pt-[88px] min-h-screen bg-white text-[#111111]">
-      <div className="store-container py-10 sm:py-16 space-y-16">
+    <div className="w-full pt-[80px] min-h-screen bg-white text-[#111111]">
+      <div className="store-container py-8 sm:py-12 space-y-12">
         
         {/* HEADER */}
-        <div className="border-b border-black/6 pb-8 space-y-2">
-          <p className="store-kicker">Admissions Advisory</p>
-          <h1 className="store-heading">Counselling Services &amp; Pathways</h1>
-          <p className="store-subheading max-w-2xl">
-            Get structured guidance for undergraduate admissions or fully funded graduate research programs worldwide.
+        <div className="border-b border-black/6 pb-6 space-y-1.5">
+          <p className="store-kicker">Advisory</p>
+          <h1 className="store-heading">Counselling Services</h1>
+          <p className="store-subheading">
+            Structured guidance for undergraduate admissions and graduate research assistantships.
           </p>
         </div>
 
-        {/* UNDERGRADUATE SECTION */}
-        <section id="undergrad" className="store-card rounded-2xl p-8 sm:p-12 space-y-8 scroll-mt-24">
-          <div className="flex items-center gap-3">
-            <span className="store-pill-label">Pathway 01</span>
-            <h2 className="text-xl sm:text-2xl font-normal text-neutral-950 tracking-[-0.02em]">
-              Undergraduate Counselling Services
+        {/* UNDERGRADUATE */}
+        <section id="undergrad" className="store-card rounded-2xl p-6 sm:p-10 space-y-6 scroll-mt-24">
+          <div className="flex items-center gap-2.5">
+            <span className="store-pill-label">Bachelors</span>
+            <h2 className="text-xl font-normal text-neutral-950">
+              Undergraduate Admissions
             </h2>
           </div>
 
-          <p className="text-sm sm:text-base leading-8 text-neutral-600 max-w-3xl">
-            Our undergraduate advisory supports high school candidates (A-Levels, F.Sc, High School Diploma) aiming for Bachelor&apos;s degrees in international destinations. We specialize in structuring applications that stand out in competitive applicant pools.
+          <p className="text-xs sm:text-sm text-neutral-600">
+            For high school and college graduates targeting Bachelor&apos;s degrees in the US, UK, Canada, and Australia.
           </p>
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 pt-2">
-            <div className="store-panel rounded-xl p-5 space-y-2">
-              <strong className="block text-sm font-normal text-neutral-950">Profile Development</strong>
-              <p className="text-xs text-neutral-600 leading-relaxed">
-                Strategic extra-curricular planning, research projects, and leadership initiatives to build competitive portfolios.
-              </p>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="store-panel rounded-xl p-4 space-y-1">
+              <strong className="block text-xs font-normal text-neutral-950">Profile Building</strong>
+              <p className="text-[11.5px] text-neutral-600">Extra-curricular positioning &amp; honors formatting.</p>
             </div>
-            <div className="store-panel rounded-xl p-5 space-y-2">
-              <strong className="block text-sm font-normal text-neutral-950">College &amp; Budget Matching</strong>
-              <p className="text-xs text-neutral-600 leading-relaxed">
-                Targeting 15 to 20 universities matching your academic transcripts, budget, and scholarship requirements.
-              </p>
+            <div className="store-panel rounded-xl p-4 space-y-1">
+              <strong className="block text-xs font-normal text-neutral-950">College Matching</strong>
+              <p className="text-[11.5px] text-neutral-600">Best-fit university selection according to budget.</p>
             </div>
-            <div className="store-panel rounded-xl p-5 space-y-2">
-              <strong className="block text-sm font-normal text-neutral-950">Essay Drafting &amp; Review</strong>
-              <p className="text-xs text-neutral-600 leading-relaxed">
-                Detailed brainstorming and line-by-line editing of the Common App essay, UCAS statement, and supplements.
-              </p>
+            <div className="store-panel rounded-xl p-4 space-y-1">
+              <strong className="block text-xs font-normal text-neutral-950">Essay Review</strong>
+              <p className="text-[11.5px] text-neutral-600">Line-by-line Common App &amp; UCAS statement review.</p>
             </div>
-            <div className="store-panel rounded-xl p-5 space-y-2">
-              <strong className="block text-sm font-normal text-neutral-950">Teacher Recommendations</strong>
-              <p className="text-xs text-neutral-600 leading-relaxed">
-                Guidance on acquiring impactful teacher evaluations highlighting your academic curiosity.
-              </p>
+            <div className="store-panel rounded-xl p-4 space-y-1">
+              <strong className="block text-xs font-normal text-neutral-950">Financial Aid</strong>
+              <p className="text-[11.5px] text-neutral-600">CSS Profile &amp; international grant filings.</p>
             </div>
-            <div className="store-panel rounded-xl p-5 space-y-2">
-              <strong className="block text-sm font-normal text-neutral-950">SAT &amp; Testing Timelines</strong>
-              <p className="text-xs text-neutral-600 leading-relaxed">
-                Test date schedules, mock diagnostics, and evaluating test-optional waiver eligibilities.
-              </p>
+            <div className="store-panel rounded-xl p-4 space-y-1">
+              <strong className="block text-xs font-normal text-neutral-950">Testing Plan</strong>
+              <p className="text-[11.5px] text-neutral-600">SAT schedules and test-optional evaluation.</p>
             </div>
-            <div className="store-panel rounded-xl p-5 space-y-2">
-              <strong className="block text-sm font-normal text-neutral-950">Visa Guidance</strong>
-              <p className="text-xs text-neutral-600 leading-relaxed">
-                Sponsor documentation verification, student visa appointment preparation, and mock interview practice.
-              </p>
+            <div className="store-panel rounded-xl p-4 space-y-1">
+              <strong className="block text-xs font-normal text-neutral-950">Visa Prep</strong>
+              <p className="text-[11.5px] text-neutral-600">Document checklists and mock interview practice.</p>
             </div>
           </div>
 
-          <div className="pt-6 border-t border-black/6 flex justify-end">
+          <div className="pt-4 border-t border-black/6 flex justify-end">
             <button
               type="button"
               onClick={() => setPrivateModalOpen(true)}
-              className="store-button-primary"
+              className="store-button-primary text-xs"
             >
               <span className="btn-label">Book Undergrad Session</span>
               <span className="btn-icon">&rarr;</span>
@@ -85,63 +71,51 @@ export default function CounsellingServicesPage() {
           </div>
         </section>
 
-        {/* GRADUATE SECTION */}
-        <section id="graduate" className="store-card rounded-2xl p-8 sm:p-12 space-y-8 scroll-mt-24">
-          <div className="flex items-center gap-3">
-            <span className="store-pill-label">Pathway 02</span>
-            <h2 className="text-xl sm:text-2xl font-normal text-neutral-950 tracking-[-0.02em]">
-              Graduate Counselling &amp; Lab Placement
+        {/* GRADUATE */}
+        <section id="graduate" className="store-card rounded-2xl p-6 sm:p-10 space-y-6 scroll-mt-24">
+          <div className="flex items-center gap-2.5">
+            <span className="store-pill-label">Masters &amp; PhD</span>
+            <h2 className="text-xl font-normal text-neutral-950">
+              Graduate &amp; Research Mentorship
             </h2>
           </div>
 
-          <p className="text-sm sm:text-base leading-8 text-neutral-600 max-w-3xl">
-            Tailored for applicants pursuing Master&apos;s (M.S. / M.A. / MBA) or Ph.D. degrees internationally. We focus heavily on research proposal drafting, lab matchings, and securing fully-funded teaching or research assistant positions.
+          <p className="text-xs sm:text-sm text-neutral-600">
+            For Master&apos;s and Doctoral candidates seeking research placements and funded assistantships.
           </p>
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 pt-2">
-            <div className="store-panel rounded-xl p-5 space-y-2">
-              <strong className="block text-sm font-normal text-neutral-950">Faculty Lab Matching</strong>
-              <p className="text-xs text-neutral-600 leading-relaxed">
-                Identify prospective research supervisors and formulate initial cold introduction emails.
-              </p>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="store-panel rounded-xl p-4 space-y-1">
+              <strong className="block text-xs font-normal text-neutral-950">Supervisor Matching</strong>
+              <p className="text-[11.5px] text-neutral-600">Faculty lab matching &amp; cold outreach emails.</p>
             </div>
-            <div className="store-panel rounded-xl p-5 space-y-2">
-              <strong className="block text-sm font-normal text-neutral-950">Statement of Purpose (SOP)</strong>
-              <p className="text-xs text-neutral-600 leading-relaxed">
-                Line-by-line editorial feedback highlighting your research milestones and career trajectory.
-              </p>
+            <div className="store-panel rounded-xl p-4 space-y-1">
+              <strong className="block text-xs font-normal text-neutral-950">SOP Editorial</strong>
+              <p className="text-[11.5px] text-neutral-600">Statement of Purpose line-by-line refinement.</p>
             </div>
-            <div className="store-panel rounded-xl p-5 space-y-2">
-              <strong className="block text-sm font-normal text-neutral-950">Research Proposal Review</strong>
-              <p className="text-xs text-neutral-600 leading-relaxed">
-                Scientific draft evaluation, hypotheses framing, methodology breakdowns, and bibliography checks.
-              </p>
+            <div className="store-panel rounded-xl p-4 space-y-1">
+              <strong className="block text-xs font-normal text-neutral-950">Research Proposals</strong>
+              <p className="text-[11.5px] text-neutral-600">Methodology structure &amp; bibliography checks.</p>
             </div>
-            <div className="store-panel rounded-xl p-5 space-y-2">
-              <strong className="block text-sm font-normal text-neutral-950">Academic CV Formatting</strong>
-              <p className="text-xs text-neutral-600 leading-relaxed">
-                Structure academic resumes highlighting publications, conference presentations, and technical tools.
-              </p>
+            <div className="store-panel rounded-xl p-4 space-y-1">
+              <strong className="block text-xs font-normal text-neutral-950">Academic CV</strong>
+              <p className="text-[11.5px] text-neutral-600">Formatting research milestones and publications.</p>
             </div>
-            <div className="store-panel rounded-xl p-5 space-y-2">
-              <strong className="block text-sm font-normal text-neutral-950">GRE / GMAT Diagnostic</strong>
-              <p className="text-xs text-neutral-600 leading-relaxed">
-                Study schedule roadmap and test waiver evaluation based on candidate work profile.
-              </p>
+            <div className="store-panel rounded-xl p-4 space-y-1">
+              <strong className="block text-xs font-normal text-neutral-950">GRE Roadmap</strong>
+              <p className="text-[11.5px] text-neutral-600">Diagnostic schedules &amp; score waiver review.</p>
             </div>
-            <div className="store-panel rounded-xl p-5 space-y-2">
-              <strong className="block text-sm font-normal text-neutral-950">Interview Preparation</strong>
-              <p className="text-xs text-neutral-600 leading-relaxed">
-                Mock faculty interview panels with critical technical and behavioral review.
-              </p>
+            <div className="store-panel rounded-xl p-4 space-y-1">
+              <strong className="block text-xs font-normal text-neutral-950">Faculty Interviews</strong>
+              <p className="text-[11.5px] text-neutral-600">Mock lab interview practice and critique.</p>
             </div>
           </div>
 
-          <div className="pt-6 border-t border-black/6 flex justify-end">
+          <div className="pt-4 border-t border-black/6 flex justify-end">
             <button
               type="button"
               onClick={() => setPrivateModalOpen(true)}
-              className="store-button-primary"
+              className="store-button-primary text-xs"
             >
               <span className="btn-label">Book Graduate Session</span>
               <span className="btn-icon">&rarr;</span>

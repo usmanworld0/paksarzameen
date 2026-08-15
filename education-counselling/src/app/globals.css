@@ -4,38 +4,38 @@
 
 @layer base {
   :root {
-    --brand-green: 40 56 45;
-    --brand-green-dark: 22 33 28;
-    --brand-cream: 250 245 240;
-    --brand-charcoal: 24 24 24;
-    --background: 255 255 255;
-    --foreground: 17 17 17;
-    --muted: 248 247 244;
-    --muted-foreground: 111 111 111;
-    --border: 229 227 222;
-    --ring: 17 17 17;
-    --radius: 1rem;
-    --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
-    --font-serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Baskerville, Georgia, serif;
-    --store-accent: 181 159 130;
-    --store-accent-soft: 245 241 236;
+    --fg: #002E21;
+    --bg: #F3F5F0;
+    --heading: #002E21;
+    --viridian: #002E21;
+    --green: #207355;
+    --orange: #FF5A26;
+    --orange-hover: #f23a00;
+    --sage: #BECCAD;
+    --graylight: #F3F5F0;
+    --rule: #BECCAD;
+    --font-sans: "PublicSans", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --font-serif: "FeatureText", Georgia, "Times New Roman", Times, serif;
   }
 
   * {
     box-sizing: border-box;
-    border-color: rgba(17, 17, 17, 0.08);
+    border-color: #BECCAD;
   }
 
   html {
-    background: rgb(var(--background));
+    background: #F3F5F0;
+    color: #002E21;
     scroll-behavior: smooth;
+    font-family: var(--font-serif);
+    font-size: 16px;
+    line-height: 1.5;
   }
 
   body {
     @apply antialiased;
-    background: linear-gradient(180deg, #ffffff 0%, #fbfaf8 56%, #f8f6f2 100%);
-    color: rgb(var(--foreground));
-    font-family: var(--font-sans);
+    background: #F3F5F0;
+    color: #002E21;
     min-height: 100vh;
     margin: 0;
     padding: 0;
@@ -43,19 +43,22 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
+    color: #002E21;
     font-family: var(--font-sans);
-    font-weight: 400;
-    letter-spacing: -0.03em;
-    line-height: 1.25;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    line-height: 1.15;
+    text-transform: uppercase;
   }
 
   p {
+    font-family: var(--font-serif);
     text-wrap: pretty;
   }
 
   ::selection {
-    background: rgba(var(--store-accent), 0.22);
-    color: rgb(var(--foreground));
+    background: #002E21;
+    color: #F3F5F0;
   }
 
   a,
@@ -68,148 +71,59 @@
 }
 
 @layer components {
-  .store-container {
-    @apply mx-auto w-full max-w-[1380px] px-4 sm:px-8 lg:px-12;
+  .ivy-container {
+    @apply mx-auto w-full max-w-[1240px] px-4 sm:px-8;
   }
 
-  .store-pill-label {
-    @apply inline-flex items-center rounded-full border px-3 py-1 text-[9.5px] sm:text-[10px] font-normal uppercase tracking-[0.28em] sm:tracking-[0.34em];
-    border-color: rgba(17, 17, 17, 0.08);
-    color: rgba(17, 17, 17, 0.55);
-    background: rgba(255, 255, 255, 0.88);
+  .ivy-btn-orange {
+    @apply inline-flex items-center justify-center bg-[#FF5A26] text-white px-6 py-3 text-[13px] font-bold uppercase tracking-wider transition-all duration-200 hover:bg-[#f23a00];
   }
 
-  .store-section {
-    @apply py-12 sm:py-20 lg:py-28;
+  .ivy-btn-dark {
+    @apply inline-flex items-center justify-center bg-[#002E21] text-white px-6 py-3 text-[13px] font-bold uppercase tracking-wider transition-all duration-200 hover:bg-black;
   }
 
-  .store-section-soft {
-    @apply store-section;
-    background: linear-gradient(180deg, #ffffff 0%, #fbfaf8 46%, #f7f4ee 100%);
+  .ivy-btn-outline {
+    @apply inline-flex items-center justify-center border-2 border-[#002E21] text-[#002E21] bg-transparent px-6 py-2.5 text-[13px] font-bold uppercase tracking-wider transition-all duration-200 hover:bg-[#002E21] hover:text-white;
   }
 
-  .store-heading {
-    font-size: clamp(1.25rem, 2.6vw, 1.85rem);
-    line-height: 1.22;
-    letter-spacing: -0.035em;
-    color: #111111;
-    font-weight: 400;
+  .ivy-card {
+    background: #FFFFFF;
+    border: 1px solid #BECCAD;
+    transition: all 0.2s ease;
   }
 
-  .store-subheading {
-    @apply text-[13.5px] leading-relaxed text-neutral-600 sm:text-[15px] sm:leading-7;
+  .ivy-card:hover {
+    border-color: #002E21;
   }
 
-  .store-button {
-    @apply inline-flex items-center justify-center rounded-xl px-5 sm:px-6 py-3 text-[10px] font-normal uppercase tracking-[0.2em] sm:tracking-[0.24em] transition-all duration-300;
+  .ivy-control {
+    @apply h-12 w-full border border-[#002E21] bg-white px-4 text-sm text-[#002E21] outline-none transition-all duration-200 font-sans;
   }
 
-  .store-button-primary {
-    @apply store-button text-white;
-    background: #111111;
-    box-shadow: 0 14px 32px rgba(17, 17, 17, 0.08);
+  .ivy-control:focus {
+    border-color: #FF5A26;
+    outline: 2px solid #FF5A26;
   }
 
-  .store-button-primary:hover {
-    transform: translateY(-1px);
-    background: #262626;
-    box-shadow: 0 20px 38px rgba(17, 17, 17, 0.12);
-  }
-
-  .store-button-primary {
+  .underline-accent {
     position: relative;
-    overflow: hidden;
-  }
-
-  .store-button-primary .btn-label {
     display: inline-block;
-    transition: transform 220ms cubic-bezier(.2,.9,.2,1);
   }
 
-  .store-button-primary .btn-icon {
-    display: inline-flex;
-    align-items: center;
-    margin-left: 0.4rem;
-    opacity: 0;
-    transform: translateX(6px);
-    transition: opacity 220ms cubic-bezier(.2,.9,.2,1), transform 220ms cubic-bezier(.2,.9,.2,1);
+  .underline-accent::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 100%;
+    height: 3px;
+    background: #FF5A26;
   }
 
-  .store-button-primary:hover .btn-label {
-    transform: translateX(-3px);
-  }
-
-  .store-button-primary:hover .btn-icon {
-    opacity: 1;
-    transform: translateX(0);
-  }
-
-  .store-button-secondary {
-    @apply store-button border text-neutral-800;
-    border-color: rgba(17, 17, 17, 0.12);
-    background: rgba(255, 255, 255, 0.92);
-  }
-
-  .store-button-secondary:hover {
-    transform: translateY(-1px);
-    border-color: rgba(17, 17, 17, 0.26);
-    background: rgb(var(--store-accent-soft));
-  }
-
-  .store-pill-outline {
-    @apply inline-flex items-center justify-center rounded-full border px-4 sm:px-6 py-2 text-[0.85rem] sm:text-[0.92rem] font-normal;
-    border-color: rgba(17, 17, 17, 0.6);
-    color: #111111;
-    background: transparent;
-    transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease, transform 160ms ease;
-  }
-
-  .store-pill-outline:hover {
-    background: #111111;
-    color: #ffffff;
-    border-color: #111111;
-    transform: translateY(-1px);
-  }
-
-  .store-card {
-    border: 1px solid rgba(17, 17, 17, 0.08);
-    background: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 14px 40px rgba(17, 17, 17, 0.04);
-  }
-
-  .store-panel {
-    border: 1px solid rgba(17, 17, 17, 0.08);
-    background: rgba(255, 255, 255, 0.94);
-    box-shadow: 0 10px 30px rgba(17, 17, 17, 0.03);
-  }
-
-  .store-mesh-bg {
-    background:
-      radial-gradient(circle at 82% 16%, rgba(181, 159, 130, 0.16) 0%, transparent 28%),
-      radial-gradient(circle at 18% 86%, rgba(17, 17, 17, 0.04) 0%, transparent 34%),
-      linear-gradient(180deg, #ffffff 0%, #fbfaf7 54%, #f6f2ec 100%);
-  }
-
-  .store-kicker {
-    @apply text-[9px] font-normal uppercase tracking-[0.26em] sm:tracking-[0.28em];
-    color: rgba(17, 17, 17, 0.46);
-  }
-
-  .store-link-inline {
-    @apply inline-flex items-center gap-1.5 text-[9.5px] sm:text-[10px] font-normal uppercase tracking-[0.2em] transition-colors duration-300;
-    color: #111111;
-  }
-
-  .store-link-inline:hover {
-    color: rgb(var(--store-accent));
-  }
-
-  .store-control {
-    @apply h-11 sm:h-12 w-full rounded-xl border bg-white px-3.5 sm:px-4 text-xs sm:text-sm text-neutral-900 outline-none transition-all duration-300;
-    border-color: rgba(17, 17, 17, 0.1);
-  }
-
-  .store-control:focus {
-    border-color: #111111;
+  .strike-accent {
+    text-decoration: line-through;
+    text-decoration-color: #FF5A26;
+    text-decoration-thickness: 3px;
   }
 }

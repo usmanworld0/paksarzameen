@@ -15,20 +15,16 @@ const TOTAL_DEPTH = N_RINGS * RING_SPACING;
 const MAX_Z = 200;
 const MIN_Z = MAX_Z - TOTAL_DEPTH;
 
-const PANEL_COLORS = ["#f8f6f0", "#edf4ee", "#eff3f8", "#f7f1f7", "#faf0ee", "#f9f4ea"];
-
 export function TunnelHero({ universities, onBookConsultation }: TunnelHeroProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const cameraRef = useRef<HTMLDivElement>(null);
   const ringRefs = useRef<(HTMLDivElement | null)[]>([]);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  // Animation state refs
   const offsetZ = useRef(0);
   const isPaused = useRef(false);
   const animationFrameId = useRef<number | null>(null);
 
-  // Mouse coords for lerp camera movement
   const mouseX = useRef(0);
   const mouseY = useRef(0);
   const targetMouseX = useRef(0);
@@ -55,16 +51,16 @@ export function TunnelHero({ universities, onBookConsultation }: TunnelHeroProps
       if (w < 480) {
         setDims({
           width: 320,
-          height: Math.max(440, h - 280),
+          height: Math.max(420, h - 260),
           cardWidth: 130,
           cardHeight: 85,
-          staggerX: 25,
-          staggerY: 35,
+          staggerX: 20,
+          staggerY: 30,
         });
       } else if (w < 768) {
         setDims({
           width: 580,
-          height: Math.max(500, h - 280),
+          height: Math.max(480, h - 260),
           cardWidth: 180,
           cardHeight: 120,
           staggerX: 65,
@@ -251,11 +247,12 @@ export function TunnelHero({ universities, onBookConsultation }: TunnelHeroProps
 
         cardEl.style.transform = `translate3d(${tx}px, ${ty}px, ${z}px) rotateX(${rx + tiltX}deg) rotateY(${ry + tiltY}deg) translateZ(${floatZ}px)`;
 
+        // Keep cards more visible (minimum 0.6 opacity even far away)
         let opacity = 1;
         if (z > 0) {
           opacity = Math.max(0, 1 - z / MAX_Z);
         } else if (z < -3500) {
-          opacity = Math.max(0.3, (z - MIN_Z) / (-4000 - MIN_Z));
+          opacity = Math.max(0.6, (z - MIN_Z) / (-4000 - MIN_Z));
         }
         cardEl.style.opacity = opacity.toString();
         cardEl.style.pointerEvents = (z > 100 || z < -3500) ? "none" : "auto";
@@ -313,9 +310,6 @@ export function TunnelHero({ universities, onBookConsultation }: TunnelHeroProps
           ))}
 
           {cards.map((card, index) => {
-            const isImagePanel = index % 2 === 1;
-            const panelColor = PANEL_COLORS[Math.floor(index / 2) % PANEL_COLORS.length];
-
             return (
               <div
                 key={`tunnel-card-${index}`}
@@ -339,11 +333,9 @@ export function TunnelHero({ universities, onBookConsultation }: TunnelHeroProps
                 <Link
                   href={`/universities/${card.university?.slug || ""}`}
                   className={styles.card}
-                  style={
-                    isImagePanel
-                      ? { backgroundImage: `url(${card.university?.banner})` }
-                      : { backgroundColor: panelColor }
-                  }
+                  style={{
+                    backgroundImage: `url(${card.university?.banner || "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=800&auto=format&fit=crop"})`,
+                  }}
                 >
                   <div className={styles.hoverOverlay}>
                     <span className={styles.hoverCountry}>{card.university?.country}</span>
@@ -362,30 +354,29 @@ export function TunnelHero({ universities, onBookConsultation }: TunnelHeroProps
 
       <div className={styles.contentOverlay}>
         <span className={styles.pretitle}>
-          PakSarZameen Academic Initiative
+          PakSarZameen Admissions Advisory
         </span>
-        <h1>Transparent, Merit-Driven Pathways to Top Global Universities</h1>
+        <h1>&ldquo;The Premier Admissions Experts For Top Global Universities.&rdquo;</h1>
         <p>
-          Take the next step in your academic journey. Explore verified international admissions requirements, scholarship eligibility, and transparent guidance with zero commission bias.
+          Over 90% of our guided applicants earned admission to their top-choice Early Decision &amp; Early Action universities.
         </p>
         <div className={styles.actions}>
-          <a
-            href="#search-section"
-            className="store-button-primary"
-          >
-            <span className="btn-label">Explore Universities</span>
-            <span className="btn-icon">&darr;</span>
-          </a>
-
           {onBookConsultation && (
             <button
               type="button"
               onClick={onBookConsultation}
-              className="store-pill-outline text-xs"
+              className="ivy-btn-orange text-xs sm:text-[13px] px-8 py-3.5 font-black shadow-lg"
             >
-              Book Free Assessment
+              Get Started
             </button>
           )}
+
+          <a
+            href="#track-record"
+            className="inline-flex items-center justify-center border-2 border-white/80 text-white hover:bg-white hover:text-[#002E21] px-6 py-3 text-xs font-bold uppercase tracking-wider transition"
+          >
+            View Track Record &darr;
+          </a>
         </div>
       </div>
     </section>

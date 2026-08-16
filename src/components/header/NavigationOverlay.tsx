@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { type RefObject, useEffect, useState, useRef } from "react";
 import gsap from "gsap";
 import { Award, BookOpen, Globe, Heart, Link2, ArrowUpRight } from "lucide-react";
@@ -10,7 +9,7 @@ type NavigationOverlayProps = {
   open: boolean;
   onClose: () => void;
   triggerRef: RefObject<HTMLButtonElement | null>;
-  entries: any[];
+  entries: unknown[];
 };
 
 const CATEGORIES = [
@@ -59,7 +58,6 @@ const SUB_ITEMS: Record<
 };
 
 export function NavigationOverlay({ open, onClose }: NavigationOverlayProps) {
-  const pathname = usePathname();
   const [activeTab, setActiveTab] = useState<string>("explore");
   const panelRef = useRef<HTMLDivElement | null>(null);
 

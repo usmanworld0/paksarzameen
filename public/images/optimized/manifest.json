@@ -131,6 +131,14 @@
     },
     "blurDataURL": "data:image/webp;base64,UklGRkYAAABXRUJQVlA4IDoAAACwAQCdASoQAAkABUB8JYgCsAC9cvAAAMs3Hd1ksisC95QWaeltbEot0gGQNMnrqkMiXMccnrn4OKAA"
   },
+  "/images/members/abdullah_tanseer.jpg": {
+    "optimized": {
+      "sm": "/images/optimized/members/abdullah-tanseer-sm.webp",
+      "md": "/images/optimized/members/abdullah-tanseer-md.webp",
+      "full": "/images/optimized/members/abdullah-tanseer.webp"
+    },
+    "blurDataURL": "data:image/webp;base64,UklGRmIAAABXRUJQVlA4IFYAAADQAQCdASoQABAABUB8JYwAAg3Lu36+gAD995fCiYSArU0jYLQpNNBkIy9MFTmzAN5WZLWWc/KcQCLPx2+lPI2zNelfZeqP8dg9Md3Y3MezME7Ha/HkAA=="
+  },
   "/images/members/cover.PNG": {
     "optimized": {
       "sm": "/images/optimized/members/cover-sm.webp",

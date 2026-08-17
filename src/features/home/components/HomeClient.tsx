@@ -535,7 +535,12 @@ export const HomeClient = memo(function HomeClient() {
           <div className={styles.heroQuickRoutes}>
             <span className={styles.heroQuickLabel}>Explore Portals:</span>
             <div className={styles.heroQuickLinks}>
-              <Link href="/impact/education" className={styles.heroQuickBadge}>
+              <Link
+                href={siteConfig.educationUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.heroQuickBadge}
+              >
                 Education &rarr;
               </Link>
               <Link href="/dog-adoption" className={styles.heroQuickBadge}>

@@ -12,6 +12,14 @@ const DEFAULT_COMMONWEALTH_URL =
 export const commonwealthStoreUrl =
   process.env.NEXT_PUBLIC_COMMONWEALTH_URL ?? DEFAULT_COMMONWEALTH_URL;
 
+const DEFAULT_EDUCATION_URL =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:3002"
+    : "https://education.paksarzameenwfo.com";
+
+export const educationUrl =
+  process.env.NEXT_PUBLIC_EDUCATION_URL ?? DEFAULT_EDUCATION_URL;
+
 export const navLinks: NavLink[] = [
   { label: "Home", href: "/" },
   { label: "About PSZ", href: "/about" },
@@ -34,6 +42,7 @@ export const siteConfig = {
     process.env.NEXT_PUBLIC_SITE_URL ?? "https://paksarzameenwfo.com",
   commonwealthLabel: "Paksarzameen Store",
   commonwealthUrl: commonwealthStoreUrl,
+  educationUrl: educationUrl,
   contact: {
     phone: "+92 303 5763435",
     address:

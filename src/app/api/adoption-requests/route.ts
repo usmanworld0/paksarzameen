@@ -16,12 +16,22 @@ export async function POST(request: Request) {
       applicantName?: string;
       applicantPhone?: string;
       proposedPetName?: string;
+      earTagDesignId?: string;
+      earTagDesignTitle?: string;
+      earTagStyle?: string;
+      earTagColor?: string;
+      earTagBoundary?: string;
     };
 
     const dogId = String(body.dogId ?? "").trim();
     const applicantName = String(body.applicantName ?? "").trim();
     const applicantPhone = String(body.applicantPhone ?? "").trim();
     const proposedPetName = String(body.proposedPetName ?? "").trim() || null;
+    const earTagDesignId = String(body.earTagDesignId ?? "").trim() || null;
+    const earTagDesignTitle = String(body.earTagDesignTitle ?? "").trim() || null;
+    const earTagStyle = String(body.earTagStyle ?? "").trim() || null;
+    const earTagColor = String(body.earTagColor ?? "").trim() || null;
+    const earTagBoundary = String(body.earTagBoundary ?? "").trim() || null;
 
     if (!dogId) {
       return NextResponse.json({ error: "Dog ID is required." }, { status: 400 });
@@ -41,6 +51,11 @@ export async function POST(request: Request) {
       applicantName,
       applicantPhone,
       proposedPetName,
+      earTagDesignId,
+      earTagDesignTitle,
+      earTagStyleImageUrl: earTagStyle,
+      earTagColorTitle: earTagColor,
+      earTagBoundaryImageUrl: earTagBoundary,
     });
 
     return NextResponse.json(

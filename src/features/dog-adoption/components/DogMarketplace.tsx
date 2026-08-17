@@ -474,41 +474,90 @@ export function DogMarketplace({ dogs }: { dogs: DogRecord[] }) {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-x-6 gap-y-12 xl:grid-cols-4">
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {displayedDogs.map((dog) => {
               const publicStatus = getPublicDogStatus(dog.status);
-              const secondaryLine = [dog.breed, dog.age].filter(Boolean).join(" / ") || dog.age;
+              const isAvailable = publicStatus === "available";
 
               return (
-                <article key={dog.dogId} className="group flex h-full flex-col">
-                  <Link href={`/dog/${dog.dogId}`} className="relative block overflow-hidden">
-                    <div className="relative aspect-[4/5] w-full overflow-hidden bg-neutral-100">
-                      <Image
-                        src={dog.imageUrl}
-                        alt={dog.name}
-                        fill
-                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                        className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-                      />
-                      <div className="absolute left-4 top-4">
-                        <span className="rounded-full border border-white/35 bg-white/86 px-2.5 py-1 text-[9px] font-normal uppercase tracking-[0.16em] text-neutral-950 backdrop-blur-md">
-                          {STATUS_LABELS[publicStatus]}
-                        </span>
-                      </div>
+                <article
+                  key={dog.dogId}
+                  className="group flex flex-col overflow-hidden rounded-[28px] border border-black/5 bg-white shadow-sm transition-all duration-500 hover:-translate-y-1.5 hover:border-black/10 hover:shadow-[0_22px_48px_rgba(17,17,17,0.06)]"
+                >
+                  <Link href={`/dog/${dog.dogId}`} className="relative block aspect-[4/5] w-full overflow-hidden bg-neutral-100">
+                    <Image
+                      src={dog.imageUrl}
+                      alt={dog.name}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                    />
+
+                    {/* Glassmorphic Status Pill with Pulse */}
+                    <div className="absolute left-4 top-4 z-10">
+                      <span
+                        className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[9px] font-bold uppercase tracking-[0.16em] backdrop-blur-md transition-all duration-300 ${
+                          isAvailable
+                            ? "border-emerald-500/20 bg-emerald-50/80 text-emerald-700"
+                            : "border-black/5 bg-white/80 text-neutral-600"
+                        }`}
+                      >
+                        <span
+                          className={`h-1.5 w-1.5 rounded-full ${
+                            isAvailable ? "bg-emerald-600 animate-pulse" : "bg-neutral-500"
+                          }`}
+                        />
+                        {STATUS_LABELS[publicStatus]}
+                      </span>
                     </div>
                   </Link>
 
-                  <Link href={`/dog/${dog.dogId}`} className="mt-4 block text-center">
-                    <h3 className="line-clamp-1 text-[1.02rem] font-normal leading-tight tracking-[-0.02em] text-neutral-900 sm:text-[1.05rem]">
-                      {dog.name}
-                    </h3>
-                    <p className="line-clamp-1 mt-1 text-[0.88rem] font-normal tracking-[-0.01em] text-neutral-700 sm:text-[0.92rem]">
-                      {secondaryLine}
-                    </p>
-                    <p className="line-clamp-1 mt-1 text-[0.78rem] font-normal uppercase tracking-[0.16em] text-neutral-400">
-                      {getLocationLabel(dog)}
-                    </p>
-                  </Link>
+                  <div className="flex flex-1 flex-col p-5">
+                    {/* Location Kicker */}
+                    <div className="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-[0.2em] text-neutral-400">
+                      <svg className="h-3 w-3 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </</svg>
+                      <span className="truncate max-w-[200px]">
+                        {getLocationLabel(dog)}
+                      </span>
+                    </div>
+
+                    <Link href={`/dog/${dog.dogId}`} className="mt-2.5 block">
+                      <h3 className="line-clamp-1 text-[1.12rem] font-semibold leading-tight tracking-[-0.03em] text-neutral-900 transition-colors group-hover:text-emerald-700">
+                        {dog.name}
+                      </h3>
+                    </Link>
+
+                    {/* Specs Tags Container */}
+                    <div className="mt-4 flex flex-wrap gap-1.5">
+                      {dog.breed && (
+                        <span className="rounded-xl bg-neutral-50 border border-black/5 px-2.5 py-1 text-[10px] font-medium text-neutral-600 truncate max-w-[120px]">
+                          {dog.breed}
+                        </span>
+                      )}
+                      {dog.age && (
+                        <span className="rounded-xl bg-neutral-50 border border-black/5 px-2.5 py-1 text-[10px] font-medium text-neutral-600">
+                          {dog.age}
+                        </span>
+                      )}
+                      {dog.gender && (
+                        <span className="rounded-xl bg-neutral-50 border border-black/5 px-2.5 py-1 text-[10px] font-medium text-neutral-600">
+                          {dog.gender}
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="mt-5 border-t border-black/5 pt-4">
+                      <Link
+                        href={`/dog/${dog.dogId}`}
+                        className="inline-flex w-full items-center justify-center rounded-xl bg-neutral-900 py-3.5 text-[10px] font-bold uppercase tracking-[0.18em] text-white transition-all hover:bg-emerald-700 group-hover:shadow-[0_10px_20px_rgba(15,122,71,0.08)]"
+                      >
+                        {isAvailable ? "Personalize & Adopt" : "View Profile"} &rarr;
+                      </Link>
+                    </div>
+                  </div>
                 </article>
               );
             })}

@@ -166,6 +166,70 @@ export async function PUT(request: Request) {
     const formData = await request.formData();
     const current = await getEarTagGlobalConfig();
 
+    // Support designs JSON payload
+    const designsRaw = String(formData.get("designs") ?? "").trim();
+    let designs = [];
+    try {
+      designs = designsRaw ? JSON.parse(designsRaw) : (current.designs || []);
+    } catch (parseError) {
+      throw new Error("Invalid designs JSON payload.");
+    }
+
+    // Identify and perform Cloudinary uploads for designs, colors, and boundaries
+    const fileKeys = Array.from(formData.keys()).filter((key) => key.startsWith("file_"));
+
+    if (fileKeys.length && !hasCloudinaryUploadConfig()) {
+      return NextResponse.json(
+        {
+          error:
+            "Image file upload is unavailable because Cloudinary server configuration is missing. Add Cloudinary env vars or provide image URLs.",
+        },
+        { status: 400 }
+      );
+    }
+
+    for (const key of fileKeys) {
+      const file = formData.get(key);
+      if (!(file instanceof File && file.size > 0)) continue;
+
+      if (key.startsWith("file_design_")) {
+        // Syntax: file_design_{designId}
+        const designId = key.substring("file_design_".length);
+        const uploaded = await uploadImageFile(file, "dog-ear-tags/designs");
+        const design = designs.find((d) => d.id === designId);
+        if (design) {
+          design.imageUrl = uploaded.url;
+        }
+      } else if (key.startsWith("file_color_")) {
+        // Syntax: file_color_{designId}_{colorId}
+        const parts = key.substring("file_color_".length).split("_");
+        const designId = parts[0];
+        const colorId = parts.slice(1).join("_");
+        const uploaded = await uploadImageFile(file, "dog-ear-tags/colors");
+        const design = designs.find((d) => d.id === designId);
+        if (design) {
+          const color = design.colors.find((c) => c.id === colorId);
+          if (color) {
+            color.imageUrl = uploaded.url;
+          }
+        }
+      } else if (key.startsWith("file_boundary_")) {
+        // Syntax: file_boundary_{designId}_{boundaryId}
+        const parts = key.substring("file_boundary_".length).split("_");
+        const designId = parts[0];
+        const boundaryId = parts.slice(1).join("_");
+        const uploaded = await uploadImageFile(file, "dog-ear-tags/boundaries");
+        const design = designs.find((d) => d.id === designId);
+        if (design) {
+          const boundary = design.boundaries.find((b) => b.id === boundaryId);
+          if (boundary) {
+            boundary.imageUrl = uploaded.url;
+          }
+        }
+      }
+    }
+
+    // Keep flat arrays legacy support intact or sync them to default design values
     const styleOptionsInput = parseImageOptions(String(formData.get("styleOptions") ?? ""));
     const colorOptionsInput = parseColorOptions(String(formData.get("colorOptions") ?? ""));
     const boundaryOptionsInput = parseImageOptions(String(formData.get("boundaryOptions") ?? ""));
@@ -179,16 +243,6 @@ export async function PUT(request: Request) {
     const styleUploads = formData.getAll("styleImageFiles").filter((item): item is File => item instanceof File && item.size > 0);
     const colorUploads = formData.getAll("colorImageFiles").filter((item): item is File => item instanceof File && item.size > 0);
     const boundaryUploads = formData.getAll("boundaryImageFiles").filter((item): item is File => item instanceof File && item.size > 0);
-
-    if ((styleUploads.length || colorUploads.length || boundaryUploads.length) && !hasCloudinaryUploadConfig()) {
-      return NextResponse.json(
-        {
-          error:
-            "Image file upload is unavailable because Cloudinary server configuration is missing. Add Cloudinary env vars or provide image URLs.",
-        },
-        { status: 400 }
-      );
-    }
 
     const uploadedStyleOptions: EarTagImageOption[] = [];
     for (const [index, file] of styleUploads.entries()) {
@@ -249,6 +303,7 @@ export async function PUT(request: Request) {
         ...boundaryOptionsInput,
         ...uploadedBoundaryOptions,
       ]),
+      designs,
       updatedBy: session.email,
     });
 

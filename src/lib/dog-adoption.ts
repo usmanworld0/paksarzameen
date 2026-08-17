@@ -24,6 +24,8 @@ export type DogRecord = {
   imageUrl: string;
   adoptedByUserId: string | null;
   petNamedByUserId: string | null;
+  earTagDesignId: string | null;
+  earTagDesignTitle: string | null;
   earTagStyleImageUrl: string | null;
   earTagColorTitle: string | null;
   earTagBoundaryImageUrl: string | null;
@@ -49,6 +51,11 @@ export type AdoptionRequestRecord = {
   whatsappNumber: string | null;
   status: AdoptionRequestStatus;
   requestedAt: string;
+  earTagDesignId: string | null;
+  earTagDesignTitle: string | null;
+  earTagStyleImageUrl: string | null;
+  earTagColorTitle: string | null;
+  earTagBoundaryImageUrl: string | null;
 };
 
 export type DogPostAdoptionUpdateRecord = {
@@ -91,16 +98,41 @@ export type EarTagImageOption = {
 export type ColorOption = {
   title: string;
   imageUrl: string;
-  textColor?: string; // optional text label color
+  textColor?: string;
+};
+
+export type EarTagColorVariant = {
+  id: string;
+  title: string;
+  imageUrl: string;
+  hexCode?: string;
+  textColor?: string;
+};
+
+export type EarTagBoundaryVariant = {
+  id: string;
+  title: string;
+  imageUrl: string;
+};
+
+export type EarTagDesignItem = {
+  id: string;
+  title: string;
+  imageUrl: string;
+  description?: string;
+  colors: EarTagColorVariant[];
+  boundaries: EarTagBoundaryVariant[];
+  createdAt?: string;
 };
 
 export type EarTagGlobalConfigRecord = {
   styleOptions: EarTagImageOption[];
   styleImages: string[];
   colorOptions: ColorOption[];
-  legacyColorOptions?: string[]; // backward compatibility
+  legacyColorOptions?: string[];
   boundaryOptions: EarTagImageOption[];
   boundaryImages: string[];
+  designs: EarTagDesignItem[];
   updatedAt: string;
   updatedBy: string | null;
 };
@@ -112,10 +144,13 @@ export type UpdateEarTagGlobalConfigInput = {
   legacyColorOptions?: string[];
   boundaryOptions?: EarTagImageOption[];
   boundaryImages?: string[];
+  designs?: EarTagDesignItem[];
   updatedBy: string | null;
 };
 
 export type UpdateDogEarTagCustomizationInput = {
+  designId?: string;
+  designTitle?: string;
   styleImageUrl: string;
   colorTitle: string;
   boundaryImageUrl: string;
@@ -362,6 +397,8 @@ export async function ensureDogAdoptionSchema() {
   await pool.query(`ALTER TABLE dogs ADD COLUMN IF NOT EXISTS ear_tag_color text;`);
   await pool.query(`ALTER TABLE dogs ADD COLUMN IF NOT EXISTS ear_tag_boundary_image_url text;`);
   await pool.query(`ALTER TABLE dogs ADD COLUMN IF NOT EXISTS ear_tag_customized_at timestamptz;`);
+  await pool.query(`ALTER TABLE dogs ADD COLUMN IF NOT EXISTS ear_tag_design_id text;`);
+  await pool.query(`ALTER TABLE dogs ADD COLUMN IF NOT EXISTS ear_tag_design_title text;`);
   await pool.query(`UPDATE dogs SET rescue_name = name WHERE rescue_name IS NULL OR rescue_name = '';`);
   await pool.query(`UPDATE dogs SET color = 'Unknown' WHERE color IS NULL OR color = '';`);
 
@@ -371,10 +408,12 @@ export async function ensureDogAdoptionSchema() {
       style_images jsonb NOT NULL DEFAULT '[]'::jsonb,
       color_options jsonb NOT NULL DEFAULT '[]'::jsonb,
       boundary_images jsonb NOT NULL DEFAULT '[]'::jsonb,
+      designs jsonb NOT NULL DEFAULT '[]'::jsonb,
       updated_by text,
       updated_at timestamptz NOT NULL DEFAULT now()
     );
   `);
+  await pool.query(`ALTER TABLE dog_ear_tag_global_config ADD COLUMN IF NOT EXISTS designs jsonb NOT NULL DEFAULT '[]'::jsonb;`);
 
   await pool.query(
     `
@@ -407,6 +446,11 @@ export async function ensureDogAdoptionSchema() {
   await pool.query(`ALTER TABLE adoption_requests ADD COLUMN IF NOT EXISTS applicant_phone text;`);
   // Proposed nickname the adopter wants to give the dog
   await pool.query(`ALTER TABLE adoption_requests ADD COLUMN IF NOT EXISTS proposed_pet_name text;`);
+  await pool.query(`ALTER TABLE adoption_requests ADD COLUMN IF NOT EXISTS ear_tag_design_id text;`);
+  await pool.query(`ALTER TABLE adoption_requests ADD COLUMN IF NOT EXISTS ear_tag_design_title text;`);
+  await pool.query(`ALTER TABLE adoption_requests ADD COLUMN IF NOT EXISTS ear_tag_style_image_url text;`);
+  await pool.query(`ALTER TABLE adoption_requests ADD COLUMN IF NOT EXISTS ear_tag_color text;`);
+  await pool.query(`ALTER TABLE adoption_requests ADD COLUMN IF NOT EXISTS ear_tag_boundary_image_url text;`);
 
   await pool.query(`
     CREATE TABLE IF NOT EXISTS dog_post_adoption_updates (
@@ -721,6 +765,11 @@ export async function createAdoptionRequest(
     applicantName: string;
     applicantPhone: string;
     proposedPetName?: string | null;
+    earTagDesignId?: string | null;
+    earTagDesignTitle?: string | null;
+    earTagStyleImageUrl?: string | null;
+    earTagColorTitle?: string | null;
+    earTagBoundaryImageUrl?: string | null;
   }
 ) {
   await ensureDogAdoptionSchema();
@@ -730,6 +779,11 @@ export async function createAdoptionRequest(
   const applicantName = normalizedText(applicantInput.applicantName);
   const applicantPhone = normalizedText(applicantInput.applicantPhone);
   const proposedPetName = normalizedText(applicantInput.proposedPetName ?? "") || null;
+  const earTagDesignId = normalizedText(applicantInput.earTagDesignId) || null;
+  const earTagDesignTitle = normalizedText(applicantInput.earTagDesignTitle) || null;
+  const earTagStyleImageUrl = normalizedText(applicantInput.earTagStyleImageUrl) || null;
+  const earTagColorTitle = normalizedText(applicantInput.earTagColorTitle) || null;
+  const earTagBoundaryImageUrl = normalizedText(applicantInput.earTagBoundaryImageUrl) || null;
   const userId = applicantInput.userId ?? null;
 
   if (!applicantName) throw new Error("Full name is required.");
@@ -785,11 +839,18 @@ export async function createAdoptionRequest(
 
     const requestResult = await client.query(
       `
-      INSERT INTO adoption_requests (id, dog_id, user_id, applicant_name, applicant_phone, proposed_pet_name, status)
-      VALUES ($1, $2, $3, $4, $5, $6, 'pending')
-      RETURNING id, dog_id, user_id, applicant_name, applicant_phone, proposed_pet_name, status, requested_at;
+      INSERT INTO adoption_requests (
+        id, dog_id, user_id, applicant_name, applicant_phone, proposed_pet_name, status,
+        ear_tag_design_id, ear_tag_design_title, ear_tag_style_image_url, ear_tag_color, ear_tag_boundary_image_url
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, 'pending', $7, $8, $9, $10, $11)
+      RETURNING id, dog_id, user_id, applicant_name, applicant_phone, proposed_pet_name, status, requested_at,
+                ear_tag_design_id, ear_tag_design_title, ear_tag_style_image_url, ear_tag_color, ear_tag_boundary_image_url;
       `,
-      [randomUUID(), dogId, userId, applicantName, applicantPhone, proposedPetName]
+      [
+        randomUUID(), dogId, userId, applicantName, applicantPhone, proposedPetName,
+        earTagDesignId, earTagDesignTitle, earTagStyleImageUrl, earTagColorTitle, earTagBoundaryImageUrl
+      ]
     );
 
     await client.query("COMMIT");
@@ -920,15 +981,37 @@ export async function reviewAdoptionRequest(
     );
 
     if (status === "approved") {
+      const requestDetails = await client.query(
+        `SELECT proposed_pet_name, ear_tag_design_id, ear_tag_design_title, ear_tag_style_image_url, ear_tag_color, ear_tag_boundary_image_url
+         FROM adoption_requests WHERE id = $1 LIMIT 1`,
+        [requestId]
+      );
+      const details = requestDetails.rows[0];
+      const pName = details?.proposed_pet_name || null;
+      const dId = details?.ear_tag_design_id || null;
+      const dTitle = details?.ear_tag_design_title || null;
+      const styleImg = details?.ear_tag_style_image_url || null;
+      const colorVal = details?.ear_tag_color || null;
+      const boundaryImg = details?.ear_tag_boundary_image_url || null;
+
       await client.query(
         `
         UPDATE dogs
         SET status = 'adopted',
             adopted_by_user_id = $2,
+            pet_name = COALESCE(NULLIF($3, ''), pet_name),
+            pet_named_at = CASE WHEN NULLIF($3, '') IS NOT NULL THEN now() ELSE pet_named_at END,
+            pet_named_by_user_id = CASE WHEN NULLIF($3, '') IS NOT NULL THEN $2 ELSE pet_named_by_user_id END,
+            ear_tag_design_id = COALESCE(NULLIF($4, ''), ear_tag_design_id),
+            ear_tag_design_title = COALESCE(NULLIF($5, ''), ear_tag_design_title),
+            ear_tag_style_image_url = COALESCE(NULLIF($6, ''), ear_tag_style_image_url),
+            ear_tag_color = COALESCE(NULLIF($7, ''), ear_tag_color),
+            ear_tag_boundary_image_url = COALESCE(NULLIF($8, ''), ear_tag_boundary_image_url),
+            ear_tag_customized_at = CASE WHEN NULLIF($6, '') IS NOT NULL THEN now() ELSE ear_tag_customized_at END,
             updated_at = now()
         WHERE id = $1;
         `,
-        [dogId, requestUserId]
+        [dogId, requestUserId, pName, dId, dTitle, styleImg, colorVal, boundaryImg]
       );
 
       await client.query(
@@ -1285,7 +1368,7 @@ export async function getEarTagGlobalConfig(): Promise<EarTagGlobalConfigRecord>
 
   const result = await pool.query(
     `
-      SELECT style_images, color_options, boundary_images, updated_at, updated_by
+      SELECT style_images, color_options, boundary_images, designs, updated_at, updated_by
       FROM dog_ear_tag_global_config
       WHERE id = $1
       LIMIT 1;
@@ -1297,6 +1380,7 @@ export async function getEarTagGlobalConfig(): Promise<EarTagGlobalConfigRecord>
     style_images: [],
     color_options: [],
     boundary_images: [],
+    designs: [],
     updated_at: new Date().toISOString(),
     updated_by: null,
   };
@@ -1304,6 +1388,33 @@ export async function getEarTagGlobalConfig(): Promise<EarTagGlobalConfigRecord>
   const styleOptions = parseJsonImageOptions(row.style_images);
   const boundaryOptions = parseJsonImageOptions(row.boundary_images);
   const colorOptions = parseColorOptions(row.color_options);
+  let designs = [];
+  try {
+    designs = typeof row.designs === "string" ? JSON.parse(row.designs) : (row.designs || []);
+  } catch {
+    designs = [];
+  }
+
+  // Backwards compatibility mapping if designs is empty but legacy options exist
+  if (designs.length === 0 && (styleOptions.length > 0 || colorOptions.length > 0 || boundaryOptions.length > 0)) {
+    designs.push({
+      id: "default-design",
+      title: "Classic Design",
+      imageUrl: styleOptions[0]?.imageUrl || "/images/placeholders/10.png",
+      description: "Our signature ear tag design.",
+      colors: colorOptions.map((c, i) => ({
+        id: `c-${i}`,
+        title: c.title,
+        imageUrl: c.imageUrl,
+        textColor: c.textColor,
+      })),
+      boundaries: boundaryOptions.map((b, i) => ({
+        id: `b-${i}`,
+        title: b.title,
+        imageUrl: b.imageUrl,
+      })),
+    });
+  }
 
   return {
     styleOptions,
@@ -1311,6 +1422,7 @@ export async function getEarTagGlobalConfig(): Promise<EarTagGlobalConfigRecord>
     colorOptions,
     boundaryOptions,
     boundaryImages: boundaryOptions.map((option) => option.imageUrl),
+    designs,
     updatedAt: new Date(String(row.updated_at)).toISOString(),
     updatedBy: row.updated_by ? String(row.updated_by) : null,
   };
@@ -1323,6 +1435,7 @@ export async function updateEarTagGlobalConfig(input: UpdateEarTagGlobalConfigIn
   const styleOptions = normalizeEarTagImageOptions(input.styleOptions, input.styleImages ?? []);
   const colorOptions = normalizeColorOptions(input.colorOptions);
   const boundaryOptions = normalizeEarTagImageOptions(input.boundaryOptions, input.boundaryImages ?? []);
+  const designs = input.designs || [];
 
   const result = await pool.query(
     `
@@ -1331,31 +1444,41 @@ export async function updateEarTagGlobalConfig(input: UpdateEarTagGlobalConfigIn
         style_images = $2::jsonb,
         color_options = $3::jsonb,
         boundary_images = $4::jsonb,
-        updated_by = $5,
+        designs = $5::jsonb,
+        updated_by = $6,
         updated_at = now()
       WHERE id = $1
-      RETURNING style_images, color_options, boundary_images, updated_at, updated_by;
+      RETURNING style_images, color_options, boundary_images, designs, updated_at, updated_by;
     `,
     [
       EAR_TAG_CONFIG_ID,
       JSON.stringify(styleOptions),
       JSON.stringify(colorOptions),
       JSON.stringify(boundaryOptions),
+      JSON.stringify(designs),
       input.updatedBy,
     ]
   );
 
-  const savedStyleOptions = parseJsonImageOptions(result.rows[0]?.style_images);
-  const savedBoundaryOptions = parseJsonImageOptions(result.rows[0]?.boundary_images);
+  const row = result.rows[0];
+  const savedStyleOptions = parseJsonImageOptions(row?.style_images);
+  const savedBoundaryOptions = parseJsonImageOptions(row?.boundary_images);
+  let savedDesigns = [];
+  try {
+    savedDesigns = typeof row?.designs === "string" ? JSON.parse(row.designs) : (row?.designs || []);
+  } catch {
+    savedDesigns = [];
+  }
 
   return {
     styleOptions: savedStyleOptions,
     styleImages: savedStyleOptions.map((option) => option.imageUrl),
-    colorOptions: parseColorOptions(result.rows[0]?.color_options),
+    colorOptions: parseColorOptions(row?.color_options),
     boundaryOptions: savedBoundaryOptions,
     boundaryImages: savedBoundaryOptions.map((option) => option.imageUrl),
-    updatedAt: new Date(String(result.rows[0]?.updated_at)).toISOString(),
-    updatedBy: result.rows[0]?.updated_by ? String(result.rows[0]?.updated_by) : null,
+    designs: savedDesigns,
+    updatedAt: new Date(String(row?.updated_at)).toISOString(),
+    updatedBy: row?.updated_by ? String(row?.updated_by) : null,
   } satisfies EarTagGlobalConfigRecord;
 }
 
@@ -1554,6 +1677,8 @@ function mapDogRow(row: Record<string, unknown>): DogRecord {
     imageUrl: String(row.image_url),
     adoptedByUserId: row.adopted_by_user_id ? String(row.adopted_by_user_id) : null,
     petNamedByUserId: row.pet_named_by_user_id ? String(row.pet_named_by_user_id) : null,
+    earTagDesignId: row.ear_tag_design_id ? String(row.ear_tag_design_id) : null,
+    earTagDesignTitle: row.ear_tag_design_title ? String(row.ear_tag_design_title) : null,
     earTagStyleImageUrl: row.ear_tag_style_image_url ? String(row.ear_tag_style_image_url) : null,
     earTagColorTitle: row.ear_tag_color ? String(row.ear_tag_color) : null,
     earTagBoundaryImageUrl: row.ear_tag_boundary_image_url ? String(row.ear_tag_boundary_image_url) : null,
@@ -1580,6 +1705,11 @@ function mapAdoptionRequestRow(row: Record<string, unknown>): AdoptionRequestRec
     whatsappNumber: row.whatsapp_number ? String(row.whatsapp_number) : null,
     status: String(row.status) as AdoptionRequestStatus,
     requestedAt: new Date(String(row.requested_at)).toISOString(),
+    earTagDesignId: row.ear_tag_design_id ? String(row.ear_tag_design_id) : null,
+    earTagDesignTitle: row.ear_tag_design_title ? String(row.ear_tag_design_title) : null,
+    earTagStyleImageUrl: row.ear_tag_style_image_url ? String(row.ear_tag_style_image_url) : null,
+    earTagColorTitle: row.ear_tag_color ? String(row.ear_tag_color) : null,
+    earTagBoundaryImageUrl: row.ear_tag_boundary_image_url ? String(row.ear_tag_boundary_image_url) : null,
   };
 }
 

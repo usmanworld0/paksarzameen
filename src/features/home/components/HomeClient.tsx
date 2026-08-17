@@ -2,12 +2,14 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, memo, useState } from "react";
+import { useEffect, useRef, memo, useState, useCallback } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import * as THREE from "three";
 import { GLTFLoader, type GLTF } from "three/examples/jsm/loaders/GLTFLoader.js";
 import Lenis from "lenis";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { siteConfig } from "@/config/site";
 import { HEART_MEMBERS, PROGRAM_CARDS } from "@/features/home/home.content";
 import { VIDEO_POSTERS, getOptimizedImagePath } from "@/lib/utils/media-helpers";
 import styles from "./HomeClient.module.css";
@@ -37,6 +39,199 @@ export const HomeClient = memo(function HomeClient() {
   const root = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+
+  const [flippedCount, setFlippedCount] = useState(0);
+  const [flippedCountMobile, setFlippedCountMobile] = useState(0);
+  const isAnimatingDesktopRef = useRef(false);
+  const isAnimatingMobileRef = useRef(false);
+  const desktopSheetsRef = useRef<(HTMLDivElement | null)[]>([]);
+  const mobileSheetsRef = useRef<(HTMLDivElement | null)[]>([]);
+
+  const goToDesktopPage = useCallback((targetFlipped: number) => {
+    if (isAnimatingDesktopRef.current) return;
+    const sheets = desktopSheetsRef.current.filter(Boolean) as HTMLDivElement[];
+    if (!sheets.length) return;
+
+    const clampedTarget = Math.max(0, Math.min(sheets.length, targetFlipped));
+    if (clampedTarget === flippedCount) return;
+
+    isAnimatingDesktopRef.current = true;
+    const currentFlipped = flippedCount;
+    setFlippedCount(clampedTarget);
+
+    if (clampedTarget > currentFlipped) {
+      for (let i = currentFlipped; i < clampedTarget; i++) {
+        const sheet = sheets[i];
+        const stepIndex = i - currentFlipped;
+        const delay = stepIndex * 0.1;
+        const finalZ = (i + 1) * 1.5;
+        const finalZIndex = i + 1;
+
+        const tl = gsap.timeline({
+          delay,
+          onComplete: () => {
+            if (i === clampedTarget - 1) {
+              isAnimatingDesktopRef.current = false;
+            }
+          },
+        });
+
+        tl.to(sheet, {
+          rotateY: -180,
+          duration: 0.7,
+          ease: "power2.inOut",
+        }, 0);
+
+        tl.to(sheet, {
+          z: 28,
+          duration: 0.35,
+          ease: "power1.out",
+        }, 0);
+
+        tl.to(sheet, {
+          z: finalZ,
+          duration: 0.35,
+          ease: "power1.in",
+        }, 0.35);
+
+        tl.set(sheet, {
+          zIndex: finalZIndex,
+        }, 0.35);
+      }
+    } else {
+      for (let i = currentFlipped - 1; i >= clampedTarget; i--) {
+        const sheet = sheets[i];
+        const stepIndex = currentFlipped - 1 - i;
+        const delay = stepIndex * 0.1;
+        const finalZ = (sheets.length - i) * 1.5;
+        const finalZIndex = sheets.length - i;
+
+        const tl = gsap.timeline({
+          delay,
+          onComplete: () => {
+            if (i === clampedTarget) {
+              isAnimatingDesktopRef.current = false;
+            }
+          },
+        });
+
+        tl.to(sheet, {
+          rotateY: 0,
+          duration: 0.7,
+          ease: "power2.inOut",
+        }, 0);
+
+        tl.to(sheet, {
+          z: 28,
+          duration: 0.35,
+          ease: "power1.out",
+        }, 0);
+
+        tl.to(sheet, {
+          z: finalZ,
+          duration: 0.35,
+          ease: "power1.in",
+        }, 0.35);
+
+        tl.set(sheet, {
+          zIndex: finalZIndex,
+        }, 0.35);
+      }
+    }
+  }, [flippedCount]);
+
+  const goToMobilePage = useCallback((targetFlipped: number) => {
+    if (isAnimatingMobileRef.current) return;
+    const sheets = mobileSheetsRef.current.filter(Boolean) as HTMLDivElement[];
+    if (!sheets.length) return;
+
+    const clampedTarget = Math.max(0, Math.min(sheets.length, targetFlipped));
+    if (clampedTarget === flippedCountMobile) return;
+
+    isAnimatingMobileRef.current = true;
+    const currentFlipped = flippedCountMobile;
+    setFlippedCountMobile(clampedTarget);
+
+    if (clampedTarget > currentFlipped) {
+      for (let i = currentFlipped; i < clampedTarget; i++) {
+        const sheet = sheets[i];
+        const stepIndex = i - currentFlipped;
+        const delay = stepIndex * 0.1;
+        const finalZ = (i + 1) * 1.5;
+        const finalZIndex = i + 1;
+
+        const tl = gsap.timeline({
+          delay,
+          onComplete: () => {
+            if (i === clampedTarget - 1) {
+              isAnimatingMobileRef.current = false;
+            }
+          },
+        });
+
+        tl.to(sheet, {
+          rotateY: -180,
+          duration: 0.65,
+          ease: "power2.inOut",
+        }, 0);
+
+        tl.to(sheet, {
+          z: 24,
+          duration: 0.325,
+          ease: "power1.out",
+        }, 0);
+
+        tl.to(sheet, {
+          z: finalZ,
+          duration: 0.325,
+          ease: "power1.in",
+        }, 0.325);
+
+        tl.set(sheet, {
+          zIndex: finalZIndex,
+        }, 0.325);
+      }
+    } else {
+      for (let i = currentFlipped - 1; i >= clampedTarget; i--) {
+        const sheet = sheets[i];
+        const stepIndex = currentFlipped - 1 - i;
+        const delay = stepIndex * 0.1;
+        const finalZ = (sheets.length - i) * 1.5;
+        const finalZIndex = sheets.length - i;
+
+        const tl = gsap.timeline({
+          delay,
+          onComplete: () => {
+            if (i === clampedTarget) {
+              isAnimatingMobileRef.current = false;
+            }
+          },
+        });
+
+        tl.to(sheet, {
+          rotateY: 0,
+          duration: 0.65,
+          ease: "power2.inOut",
+        }, 0);
+
+        tl.to(sheet, {
+          z: 24,
+          duration: 0.325,
+          ease: "power1.out",
+        }, 0);
+
+        tl.to(sheet, {
+          z: finalZ,
+          duration: 0.325,
+          ease: "power1.in",
+        }, 0.325);
+
+        tl.set(sheet, {
+          zIndex: finalZIndex,
+        }, 0.325);
+      }
+    }
+  }, [flippedCountMobile]);
 
   useEffect(() => {
     const element = root.current;
@@ -260,127 +455,24 @@ export const HomeClient = memo(function HomeClient() {
         });
       });
 
-      // Responsive Book Animations using matchMedia
-      const mm = gsap.matchMedia();
-
-      // Desktop animation (pinned scroll lock, horizontal double-page flip)
-      mm.add("(min-width: 821px)", () => {
-        const sheets = gsap.utils.toArray<HTMLElement>(".book-sheet-el");
-        if (sheets.length) {
-          sheets.forEach((sheet, idx) => {
-            const startZ = (sheets.length - idx) * 0.8;
-            gsap.set(sheet, {
-              zIndex: sheets.length - idx,
-              z: startZ,
-              rotateY: 0,
-            });
-          });
-
-          const tl = gsap.timeline({
-            scrollTrigger: {
-              trigger: `.${styles.departments}`,
-              start: "top top",
-              end: `+=${sheets.length * 700}`,
-              scrub: 1,
-              pin: true,
-              anticipatePin: 1,
-            },
-          });
-
-          sheets.forEach((sheet, idx) => {
-            const endZ = (idx + 1) * 0.8;
-            const peakZ = 24;
-
-            tl.to(sheet, {
-              rotateY: -180,
-              ease: "power1.inOut",
-              duration: 1,
-            }, idx * 1.5);
-
-            // Arc Z up during first half of flip, then land at endZ on top of previous left-side sheets
-            tl.to(sheet, {
-              z: peakZ,
-              ease: "power1.out",
-              duration: 0.5,
-            }, idx * 1.5);
-
-            tl.to(sheet, {
-              z: endZ,
-              ease: "power1.in",
-              duration: 0.5,
-            }, idx * 1.5 + 0.5);
-
-            // Swap z-index halfway through the turn so flipped sheet stacks above earlier left sheets
-            tl.to(sheet, {
-              zIndex: idx + 1,
-              duration: 0.01,
-              ease: "none",
-            }, idx * 1.5 + 0.5);
-          });
-          
-          // Extend timeline to keep book closed before unpinning
-          tl.to({}, { duration: 1.5 });
-        }
+      // Initialize Desktop Book sheets position
+      const desktopSheets = desktopSheetsRef.current.filter(Boolean) as HTMLDivElement[];
+      desktopSheets.forEach((sheet, idx) => {
+        gsap.set(sheet, {
+          zIndex: desktopSheets.length - idx,
+          z: (desktopSheets.length - idx) * 1.5,
+          rotateY: 0,
+        });
       });
 
-      // Mobile animation (pinned scroll lock, single-page sweeping flip)
-      mm.add("(max-width: 820px)", () => {
-        const sheets = gsap.utils.toArray<HTMLElement>(".book-sheet-mobile-el");
-        if (sheets.length) {
-          sheets.forEach((sheet, idx) => {
-            const startZ = (sheets.length - idx) * 0.8;
-            gsap.set(sheet, {
-              zIndex: sheets.length - idx,
-              z: startZ,
-              rotateY: 0,
-            });
-          });
-
-          const tl = gsap.timeline({
-            scrollTrigger: {
-              trigger: `.${styles.departments}`,
-              start: "top top",
-              end: `+=${sheets.length * 600}`,
-              scrub: 1,
-              pin: true,
-              anticipatePin: 1,
-            },
-          });
-
-          sheets.forEach((sheet, idx) => {
-            const endZ = (idx + 1) * 0.8;
-            const peakZ = 20;
-
-            tl.to(sheet, {
-              rotateY: -180,
-              ease: "power1.inOut",
-              duration: 1,
-            }, idx * 1.5);
-
-            // Arc Z up during first half of flip, then land at endZ on top of previous left-side sheets
-            tl.to(sheet, {
-              z: peakZ,
-              ease: "power1.out",
-              duration: 0.5,
-            }, idx * 1.5);
-
-            tl.to(sheet, {
-              z: endZ,
-              ease: "power1.in",
-              duration: 0.5,
-            }, idx * 1.5 + 0.5);
-
-            // Swap z-index halfway through the turn
-            tl.to(sheet, {
-              zIndex: idx + 1,
-              duration: 0.01,
-              ease: "none",
-            }, idx * 1.5 + 0.5);
-          });
-          
-          // Extend timeline to keep book closed before unpinning
-          tl.to({}, { duration: 1.5 });
-        }
+      // Initialize Mobile Book sheets position
+      const mobileSheets = mobileSheetsRef.current.filter(Boolean) as HTMLDivElement[];
+      mobileSheets.forEach((sheet, idx) => {
+        gsap.set(sheet, {
+          zIndex: mobileSheets.length - idx,
+          z: (mobileSheets.length - idx) * 1.5,
+          rotateY: 0,
+        });
       });
 
       // 3D Team Section Scroll Trigger (initialized after book section to ensure correct DOM scroll order and layout spacing)
@@ -428,61 +520,44 @@ export const HomeClient = memo(function HomeClient() {
 
   return (
     <main ref={root} className={styles.home}>
-      <section id="home-hero" className={styles.hero} aria-labelledby="home-title">
+      <section className={styles.hero} aria-labelledby="home-title">
+        <div className={styles.heroMedia} aria-hidden="true">
+          <video autoPlay loop muted playsInline preload="metadata" poster={VIDEO_POSTERS.hero}>
+            <source src="/videos/hero_video.webm" type="video/webm" />
+          </video>
+        </div>
+        <div className={styles.heroShade} aria-hidden="true" />
         <div className={styles.heroInner}>
-          {/* Top Metadata Row (like Awwwards: Site of the Day | Aug 16, 2026 | Score 7.17 of 10) */}
-          <div className={styles.heroMetaRow}>
-            <span className={styles.metaLabel}>Community Platform</span>
-            <span className={styles.metaDatePill}>Non-Profit</span>
-            <span className={styles.metaScore}>Guinness Record Holder</span>
+          <Image className={styles.heroLogo} src="/paksarzameen_logo.png" alt="Paksarzameen" width={270} height={110} priority />
+          <p className={styles.eyebrowLight}>Pakistan - community-led change</p>
+          <h1 id="home-title">Building<br />Community Wealth.</h1>
+          <p className={styles.heroCopy}>Education, health, welfare, and opportunity shaped with communities across Pakistan.</p>
+          <div className={styles.heroActions}>
+            <Link href="#home-solution" className={styles.buttonLight}>Explore PSZ <span>&rarr;</span></Link>
+            <Link href="/get-involved" className={styles.textLight}>Join the mission <span>&rarr;</span></Link>
           </div>
 
-          {/* Massive Display Title (like SSTR - FRICTION REDUCTION / NOMINEES) */}
-          <h1 id="home-title" className={styles.heroMainTitle}>
-            BUILDING COMMUNITY WEALTH.
-          </h1>
-
-          {/* Author / Community Line (like Dmitry Golub) */}
-          <div className={styles.heroAuthorRow}>
-            <div className={styles.authorAvatar}>
-              <Image
-                src="/images/members/abdullah_tanseer.jpg"
-                alt="Abdullah Tanseer"
-                width={28}
-                height={28}
-                style={{ objectFit: "cover", borderRadius: "50%" }}
-              />
+          <div className={styles.heroQuickRoutes}>
+            <span className={styles.heroQuickLabel}>Explore Portals:</span>
+            <div className={styles.heroQuickLinks}>
+              <Link href="/impact/education" className={styles.heroQuickBadge}>
+                Education &rarr;
+              </Link>
+              <Link href="/dog-adoption" className={styles.heroQuickBadge}>
+                Adopt a Dog &rarr;
+              </Link>
+              <Link
+                href={siteConfig.commonwealthUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.heroQuickBadge}
+              >
+                Store &rarr;
+              </Link>
             </div>
-            <span className={styles.authorName}>Abdullah Tanseer</span>
           </div>
 
-          <p className={styles.heroSubCopy}>
-            Education, health, welfare, and opportunity shaped with communities across Pakistan.
-          </p>
-
-          <div className={styles.heroActionRow}>
-            <Link href="#home-solution" className={styles.awwwardsBtnPrimary}>
-              Explore PSZ
-            </Link>
-            <Link href="/get-involved" className={styles.awwwardsBtnSecondary}>
-              Join the mission
-            </Link>
-          </div>
-
-          {/* Featured SOTD Video Showcase Card */}
-          <div className={styles.heroShowcaseCard}>
-            <video
-              autoPlay
-              loop
-              muted
-              playsInline
-              preload="metadata"
-              poster={VIDEO_POSTERS.hero}
-              className={styles.showcaseVideo}
-            >
-              <source src="/videos/hero_video.webm" type="video/webm" />
-            </video>
-          </div>
+          <p className={styles.scrollPrompt}>Scroll to begin <span>&rarr;</span></p>
         </div>
       </section>
 
@@ -490,8 +565,8 @@ export const HomeClient = memo(function HomeClient() {
         <div className={styles.problemGrid}>
           <h2 className={styles.appleSectionHeader} data-reveal>What is PSZ?</h2>
           <div data-reveal>
-            <p className={styles.appleSectionDesc}>PakSarZameen is a community development platform that turns local care into practical, lasting action.</p>
-            <Link href="/about" className={styles.appleLink}>Our story &rarr;</Link>
+            <p>PakSarZameen is a national movement empowering communities to lead their own change. We believe that true progress comes from within, through education, healthcare, welfare, and sustainable action.</p>
+            <Link href="/programs" className={styles.appleLink}>Learn about our framework &rarr;</Link>
           </div>
         </div>
       </section>
@@ -508,144 +583,221 @@ export const HomeClient = memo(function HomeClient() {
       <section className={styles.departments} aria-labelledby="departments-heading">
         <div className={styles.departmentHeading} data-reveal>
           <h2 id="departments-heading" className={styles.appleSectionHeader}>Departments</h2>
-          <p className={styles.appleSectionDesc}>Scroll to explore the chapters of PakSarZameen and see our work in action.</p>
+          <p className={styles.appleSectionDesc}>Explore the chapters of PakSarZameen and see our work across education, healthcare, environmental action, and welfare.</p>
         </div>
-        
-        <div className={styles.bookStage} data-reveal>
-          {/* Desktop Double-Page Book (min-width: 821px) */}
-          <div className={styles.bookContainer} aria-label="Interactive horizontal book of Paksarzameen departments">
-            <div className={styles.bookInner}>
-              <div className={styles.leftUnderlay} />
-              <div className={styles.rightUnderlay} />
-              <div className={styles.bookSpine} />
 
-              {Array.from({ length: 7 }).map((_, index) => {
-                return (
-                  <div
-                    key={`desktop-sheet-${index}`}
-                    className={`${styles.bookSheet} book-sheet-el`}
-                  >
-                    {/* Front Face of the Sheet */}
-                    <div className={styles.pageFront}>
-                      {index === 0 ? (
-                        /* Book Cover */
-                        <div className={styles.coverPage}>
-                          <Image src="/paksarzameen_logo.png" alt="Paksarzameen" width={160} height={70} style={{ objectFit: "contain", filter: "brightness(0) invert(1)" }} />
-                          <h3 className={styles.coverTitle}>PakSarZameen</h3>
-                          <p className={styles.coverSubtitle}>Chapters of Progress</p>
-                          <span className={styles.coverPrompt}>Scroll to explore</span>
-                        </div>
-                      ) : (
-                        /* Photo Page */
-                        <div className={styles.photoPage}>
-                          <div className={styles.photoFrame}>
-                            <Image
-                              src={chapterVisuals[index - 1]}
-                              alt={PROGRAM_CARDS[index - 1].name}
-                              fill
-                              sizes="(max-width: 820px) 100vw, 40vw"
-                              style={{ objectFit: "cover" }}
-                            />
-                          </div>
-                        </div>
-                      )}
-                    </div>
+        <div className={styles.bookWrapper} data-reveal>
+          {/* Left Arrow to flip back */}
+          <button
+            type="button"
+            onClick={() => {
+              goToDesktopPage(flippedCount - 1);
+              goToMobilePage(flippedCountMobile - 1);
+            }}
+            disabled={flippedCount === 0}
+            className={styles.bookSideArrow}
+            aria-label="Previous Chapter"
+            title="Previous Chapter"
+          >
+            <ChevronLeft size={28} />
+          </button>
 
-                    {/* Back Face of the Sheet */}
-                    <div className={styles.pageBack}>
-                      {index === 6 ? (
-                        /* Back Cover */
-                        <div className={styles.coverPage}>
-                          <h3 className={styles.coverTitle}>Our Journey</h3>
-                          <p className={styles.coverSubtitle}>Continues with you</p>
-                          <Link href="/get-involved" className={styles.coverPrompt} style={{ display: "inline-block", textDecoration: "none", cursor: "pointer" }}>
-                            Join the mission &rarr;
-                          </Link>
-                        </div>
-                      ) : (
-                        /* Program Text Page */
-                        <div className={styles.paperPage}>
-                          <div className={styles.paperHeading}>
-                            <span className={styles.paperTag}>{PROGRAM_CARDS[index].tag}</span>
-                            <span className={styles.paperNum}>0{index + 1}</span>
-                          </div>
-                          <div className={styles.paperBody}>
-                            <h4 className={styles.paperTitle}>{PROGRAM_CARDS[index].name}</h4>
-                            <p className={styles.paperSubtitle}>{PROGRAM_CARDS[index].subtitle}</p>
-                            <p className={styles.paperDesc}>{PROGRAM_CARDS[index].desc}</p>
-                          </div>
-                          <Link href="/programs" className={styles.paperCta}>
-                            Explore program &rarr;
-                          </Link>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+          <div className={styles.bookStage}>
+            {/* Desktop Double-Page Book (min-width: 821px) */}
+            <div className={styles.bookContainer} aria-label="Interactive horizontal book of Paksarzameen departments">
+              <div className={styles.bookInner}>
+                <div className={styles.leftUnderlay} />
+                <div className={styles.rightUnderlay} />
+                <div className={styles.bookSpine} />
 
-          {/* Mobile Single-Page Notebook Book (max-width: 820px) */}
-          <div className={styles.bookContainerMobile} aria-label="Interactive mobile book of Paksarzameen departments">
-            <div className={styles.bookInnerMobile}>
-              <div className={styles.bookSpineMobile} />
-
-              {Array.from({ length: 8 }).map((_, index) => {
-                return (
-                  <div
-                    key={`mobile-sheet-${index}`}
-                    className={`${styles.bookSheetMobile} book-sheet-mobile-el`}
-                  >
-                    <div className={styles.pageFrontMobile}>
-                      {index === 0 ? (
-                        /* Mobile Book Cover */
-                        <div className={styles.coverPage} style={{ height: "100%" }}>
-                          <Image src="/paksarzameen_logo.png" alt="Paksarzameen" width={140} height={60} style={{ objectFit: "contain", filter: "brightness(0) invert(1)" }} />
-                          <h3 className={styles.coverTitle} style={{ fontSize: "2rem" }}>PakSarZameen</h3>
-                          <p className={styles.coverSubtitle}>Chapters of Progress</p>
-                          <span className={styles.coverPrompt}>Scroll to explore</span>
-                        </div>
-                      ) : index === 7 ? (
-                        /* Mobile Back Cover */
-                        <div className={styles.coverPage} style={{ height: "100%" }}>
-                          <h3 className={styles.coverTitle} style={{ fontSize: "2rem" }}>Our Journey</h3>
-                          <p className={styles.coverSubtitle}>Continues with you</p>
-                          <Link href="/get-involved" className={styles.coverPrompt} style={{ display: "inline-block", textDecoration: "none" }}>
-                            Join the mission &rarr;
-                          </Link>
-                        </div>
-                      ) : (
-                        /* Mobile Program Page (Photo top, Text bottom) */
-                        <>
-                          <div className={styles.mobilePhotoFrame}>
-                            <Image
-                              src={chapterVisuals[index - 1]}
-                              alt={PROGRAM_CARDS[index - 1].name}
-                              fill
-                              sizes="(max-width: 820px) 90vw, 10vw"
-                              style={{ objectFit: "cover" }}
-                            />
+                {Array.from({ length: 7 }).map((_, index) => {
+                  return (
+                    <div
+                      key={`desktop-sheet-${index}`}
+                      ref={(el) => {
+                        desktopSheetsRef.current[index] = el;
+                      }}
+                      onClick={() => {
+                        if (index >= flippedCount) {
+                          goToDesktopPage(index + 1);
+                        } else {
+                          goToDesktopPage(index);
+                        }
+                      }}
+                      className={`${styles.bookSheet} book-sheet-el`}
+                    >
+                      {/* Front Face of the Sheet */}
+                      <div className={styles.pageFront}>
+                        {index === 0 ? (
+                          /* Book Cover */
+                          <div className={styles.coverPage}>
+                            <Image src="/paksarzameen_logo.png" alt="Paksarzameen" width={160} height={70} style={{ objectFit: "contain", filter: "brightness(0) invert(1)" }} />
+                            <h3 className={styles.coverTitle}>PakSarZameen</h3>
+                            <p className={styles.coverSubtitle}>Chapters of Progress</p>
+                            <span className={styles.coverPrompt}>Click arrow to open &rarr;</span>
                           </div>
-                          <div className={styles.mobilePageContent}>
-                            <div>
-                              <span className={styles.mobileTag}>{PROGRAM_CARDS[index - 1].tag}</span>
-                              <h4 className={styles.mobileTitle}>{PROGRAM_CARDS[index - 1].name}</h4>
-                              <p className={styles.mobileSubtitle}>{PROGRAM_CARDS[index - 1].subtitle}</p>
-                              <p className={styles.mobileDesc}>{PROGRAM_CARDS[index - 1].desc}</p>
+                        ) : (
+                          /* Photo Page */
+                          <div className={styles.photoPage}>
+                            <div className={styles.photoFrame}>
+                              <Image
+                                src={chapterVisuals[index - 1]}
+                                alt={PROGRAM_CARDS[index - 1].name}
+                                fill
+                                sizes="(max-width: 820px) 100vw, 40vw"
+                                style={{ objectFit: "cover" }}
+                              />
                             </div>
-                            <Link href="/programs" className={styles.mobileCta}>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Back Face of the Sheet */}
+                      <div className={styles.pageBack}>
+                        {index === 6 ? (
+                          /* Back Cover */
+                          <div className={styles.coverPage}>
+                            <h3 className={styles.coverTitle}>Our Journey</h3>
+                            <p className={styles.coverSubtitle}>Continues with you</p>
+                            <Link href="/get-involved" className={styles.coverPrompt} style={{ display: "inline-block", textDecoration: "none", cursor: "pointer" }}>
+                              Join the mission &rarr;
+                            </Link>
+                          </div>
+                        ) : (
+                          /* Program Text Page */
+                          <div className={styles.paperPage}>
+                            <div className={styles.paperHeading}>
+                              <span className={styles.paperTag}>{PROGRAM_CARDS[index].tag}</span>
+                              <span className={styles.paperNum}>0{index + 1}</span>
+                            </div>
+                            <div className={styles.paperBody}>
+                              <h4 className={styles.paperTitle}>{PROGRAM_CARDS[index].name}</h4>
+                              <p className={styles.paperSubtitle}>{PROGRAM_CARDS[index].subtitle}</p>
+                              <p className={styles.paperDesc}>{PROGRAM_CARDS[index].desc}</p>
+                            </div>
+                            <Link href="/programs" className={styles.paperCta}>
                               Explore program &rarr;
                             </Link>
                           </div>
-                        </>
-                      )}
+                        )}
+                      </div>
                     </div>
-                    <div className={styles.pageBackMobile} />
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
+
+            {/* Mobile Single-Page Notebook Book (max-width: 820px) */}
+            <div className={styles.bookContainerMobile} aria-label="Interactive mobile book of Paksarzameen departments">
+              <div className={styles.bookInnerMobile}>
+                <div className={styles.bookSpineMobile} />
+
+                {Array.from({ length: 8 }).map((_, index) => {
+                  return (
+                    <div
+                      key={`mobile-sheet-${index}`}
+                      ref={(el) => {
+                        mobileSheetsRef.current[index] = el;
+                      }}
+                      onClick={() => {
+                        if (index >= flippedCountMobile) {
+                          goToMobilePage(index + 1);
+                        } else {
+                          goToMobilePage(index);
+                        }
+                      }}
+                      className={`${styles.bookSheetMobile} book-sheet-mobile-el`}
+                    >
+                      <div className={styles.pageFrontMobile}>
+                        {index === 0 ? (
+                          /* Mobile Book Cover */
+                          <div className={styles.coverPage} style={{ height: "100%" }}>
+                            <Image src="/paksarzameen_logo.png" alt="Paksarzameen" width={140} height={60} style={{ objectFit: "contain", filter: "brightness(0) invert(1)" }} />
+                            <h3 className={styles.coverTitle} style={{ fontSize: "2rem" }}>PakSarZameen</h3>
+                            <p className={styles.coverSubtitle}>Chapters of Progress</p>
+                            <span className={styles.coverPrompt}>Tap arrow to open &rarr;</span>
+                          </div>
+                        ) : index === 7 ? (
+                          /* Mobile Back Cover */
+                          <div className={styles.coverPage} style={{ height: "100%" }}>
+                            <h3 className={styles.coverTitle} style={{ fontSize: "2rem" }}>Our Journey</h3>
+                            <p className={styles.coverSubtitle}>Continues with you</p>
+                            <Link href="/get-involved" className={styles.coverPrompt} style={{ display: "inline-block", textDecoration: "none" }}>
+                              Join the mission &rarr;
+                            </Link>
+                          </div>
+                        ) : (
+                          /* Mobile Program Page (Photo top, Text bottom) */
+                          <>
+                            <div className={styles.mobilePhotoFrame}>
+                              <Image
+                                src={chapterVisuals[index - 1]}
+                                alt={PROGRAM_CARDS[index - 1].name}
+                                fill
+                                sizes="(max-width: 820px) 90vw, 10vw"
+                                style={{ objectFit: "cover" }}
+                              />
+                            </div>
+                            <div className={styles.mobilePageContent}>
+                              <div>
+                                <span className={styles.mobileTag}>{PROGRAM_CARDS[index - 1].tag}</span>
+                                <h4 className={styles.mobileTitle}>{PROGRAM_CARDS[index - 1].name}</h4>
+                                <p className={styles.mobileSubtitle}>{PROGRAM_CARDS[index - 1].subtitle}</p>
+                                <p className={styles.mobileDesc}>{PROGRAM_CARDS[index - 1].desc}</p>
+                              </div>
+                              <Link href="/programs" className={styles.mobileCta}>
+                                Explore program &rarr;
+                              </Link>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                      <div className={styles.pageBackMobile} />
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Right Arrow to flip forward */}
+          <button
+            type="button"
+            onClick={() => {
+              goToDesktopPage(flippedCount + 1);
+              goToMobilePage(flippedCountMobile + 1);
+            }}
+            disabled={flippedCount >= 7}
+            className={styles.bookSideArrow}
+            aria-label="Next Chapter"
+            title={flippedCount === 0 ? "Open Book" : "Next Chapter"}
+          >
+            <ChevronRight size={28} />
+          </button>
+        </div>
+
+        {/* Page status label & dots indicator */}
+        <div className={styles.bookIndicator} data-reveal>
+          <span className={styles.bookStatus}>
+            {flippedCount === 0
+              ? "Cover: PakSarZameen"
+              : flippedCount <= 6
+              ? `0${flippedCount} — ${PROGRAM_CARDS[flippedCount - 1].name}`
+              : "Our Journey Continues"}
+          </span>
+          <div className={styles.bookDots}>
+            {Array.from({ length: 8 }).map((_, dotIdx) => (
+              <button
+                key={dotIdx}
+                type="button"
+                onClick={() => {
+                  goToDesktopPage(dotIdx);
+                  goToMobilePage(dotIdx);
+                }}
+                className={`${styles.bookDot} ${flippedCount === dotIdx ? styles.bookDotActive : ""}`}
+                aria-label={`Go to page ${dotIdx}`}
+              />
+            ))}
           </div>
         </div>
       </section>
@@ -667,7 +819,7 @@ export const HomeClient = memo(function HomeClient() {
         </div>
       </section>
 
-      <section id="home-outreach" className={styles.outreach} aria-label="Explore Paksarzameen">
+      <section className={styles.outreach} aria-label="Explore Paksarzameen">
         <h2 className={styles.appleSectionHeader} data-reveal>Explore More</h2>
         <div className={styles.outreachGrid}>
           {journeyLinks.map(([label, href], index) => (

@@ -1,166 +1,310 @@
 "use client";
 
 import Link from "next/link";
-import { type RefObject, useEffect, useState, useRef } from "react";
+import { usePathname } from "next/navigation";
+import { type RefObject, useEffect, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
-import { Award, BookOpen, Globe, Heart, Link2, ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Search, X } from "lucide-react";
+
+import type { NavigationEntry } from "./navigation-data";
 
 type NavigationOverlayProps = {
   open: boolean;
   onClose: () => void;
   triggerRef: RefObject<HTMLButtonElement | null>;
-  entries: unknown[];
+  entries: NavigationEntry[];
 };
 
-const CATEGORIES = [
-  { id: "explore", label: "Explore PSZ", icon: Globe },
-  { id: "departments", label: "Departments", icon: BookOpen },
-  { id: "portals", label: "Direct Portals", icon: Link2 },
-  { id: "impact", label: "Impact & Work", icon: Award },
-  { id: "involved", label: "Get Involved", icon: Heart },
-] as const;
+function isActiveLink(pathname: string, href: string) {
+  const [pathOnly] = href.split("#");
 
-const SUB_ITEMS: Record<
-  string,
-  Array<{ label: string; href: string; count?: string; badge?: string; external?: boolean }>
-> = {
-  explore: [
-    { label: "About PakSarZameen", href: "/about", count: "2026" },
-    { label: "What is PSZ? (Problem)", href: "/#home-problem", count: "1 Impact" },
-    { label: "What We Do (Solution)", href: "/#home-solution", count: "12 Initiatives" },
-    { label: "Life at PSZ & Team", href: "/#home-team", count: "12 Members" },
-  ],
-  departments: [
-    { label: "Mahkma Shajarkari", href: "/#departments-heading", count: "1.2M Trees", badge: "Live" },
-    { label: "Mahkma Taleem", href: "/#departments-heading", count: "45 Schools" },
-    { label: "Mahkma Sehat", href: "/#departments-heading", count: "12 Hubs" },
-    { label: "Mahkma Falah & Welfare", href: "/#departments-heading", count: "200+ Cases" },
-    { label: "Mahkma Khel", href: "/#departments-heading", count: "8 Fields" },
-    { label: "Mahkma Ziraat", href: "/#departments-heading", count: "2 Farms" },
-  ],
-  portals: [
-    { label: "Adopt a Dog / Shelter", href: "/dog-adoption", count: "150+ Dogs", badge: "Active" },
-    { label: "HealthCare & Medical AI", href: "/healthcare", count: "24/7 Aid" },
-    { label: "Official Commonwealth Store", href: "https://store.paksarzameenwfo.com", external: true, badge: "New" },
-    { label: "Education Counselling", href: "https://education.paksarzameenwfo.com", external: true, count: "180+ Placements" },
-  ],
-  impact: [
-    { label: "Awards & Honors", href: "/impact", count: "6 Milestones" },
-    { label: "Guinness World Record", href: "/impact", count: "1 Drive" },
-    { label: "News & Field Reports", href: "/news", count: "48 Stories" },
-  ],
-  involved: [
-    { label: "Volunteer Application", href: "/volunteer", count: "8.5K Registered" },
-    { label: "Partnerships & Support", href: "/get-involved", count: "12 Partners" },
-    { label: "FAQ & Policies", href: "/policies#faq", count: "24 Answers" },
-    { label: "Contact & Desk", href: "/contact", count: "24/7 Desk" },
-  ],
-};
+  if (pathOnly === "/") {
+    return pathname === "/";
+  }
 
-export function NavigationOverlay({ open, onClose }: NavigationOverlayProps) {
-  const [activeTab, setActiveTab] = useState<string>("explore");
-  const panelRef = useRef<HTMLDivElement | null>(null);
+  return pathname === pathOnly || pathname.startsWith(`${pathOnly}/`);
+}
+
+export function NavigationOverlay({ open, onClose, triggerRef, entries }: NavigationOverlayProps) {
+  const pathname = usePathname();
+  const overlayRef = useRef<HTMLDivElement | null>(null);
+  const leftPanelRef = useRef<HTMLElement | null>(null);
+  const timelineRef = useRef<gsap.core.Timeline | null>(null);
+  const [mounted, setMounted] = useState(open);
+  const [hoveredKey, setHoveredKey] = useState<string | null>(null);
+  const [queryValue, setQueryValue] = useState("");
+
+  const focusableSelector = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
   useEffect(() => {
-    if (open && panelRef.current) {
-      gsap.fromTo(
-        panelRef.current,
-        { y: -15, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.25, ease: "power2.out" }
-      );
+    if (open) {
+      setMounted(true);
     }
   }, [open]);
 
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && open) {
-        onClose();
-      }
+    if (!mounted) {
+      return;
+    }
+
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
     };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [open, onClose]);
+  }, [mounted, open]);
 
-  if (!open) return null;
+  useLayoutEffect(() => {
+    if (!mounted || !overlayRef.current || !leftPanelRef.current) {
+      return;
+    }
 
-  const currentItems = SUB_ITEMS[activeTab] || [];
+    const overlay = overlayRef.current;
+    const leftPanel = leftPanelRef.current;
+    const panelItems = Array.from(leftPanel.querySelectorAll("[data-menu-item]")) as HTMLElement[];
+    const visualPieces = Array.from(overlay.querySelectorAll("[data-visual-piece]")) as HTMLElement[];
+
+    gsap.set(overlay, { autoAlpha: 0 });
+    gsap.set(leftPanel, { x: -36, opacity: 0 });
+    gsap.set(panelItems, { y: 22, opacity: 0 });
+    gsap.set(visualPieces, { y: 26, opacity: 0, scale: 0.96 });
+
+    const tl = gsap.timeline({
+      paused: true,
+      defaults: { ease: "power4.out" },
+      onReverseComplete: () => {
+        setMounted(false);
+      },
+    });
+
+    tl.to(overlay, { autoAlpha: 1, duration: 0.16 }, 0)
+      .to(leftPanel, { x: 0, opacity: 1, duration: 0.8 }, 0)
+      .to(panelItems, { y: 0, opacity: 1, stagger: 0.06, duration: 0.62 }, 0.16)
+      .to(visualPieces, { y: 0, opacity: 1, scale: 1, stagger: 0.08, duration: 0.65 }, 0.24);
+
+    timelineRef.current = tl;
+
+    if (open) {
+      tl.play(0);
+      window.requestAnimationFrame(() => {
+        const focusTarget = overlay.querySelector<HTMLElement>(focusableSelector);
+        focusTarget?.focus();
+      });
+    }
+
+    return () => {
+      tl.kill();
+      timelineRef.current = null;
+    };
+  }, [focusableSelector, mounted, open]);
+
+  useEffect(() => {
+    if (!timelineRef.current) {
+      return;
+    }
+
+    if (open) {
+      timelineRef.current.play(0);
+    } else {
+      timelineRef.current.reverse();
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (!mounted) {
+      return;
+    }
+
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+        return;
+      }
+
+      if (event.key !== "Tab") {
+        return;
+      }
+
+      const overlay = overlayRef.current;
+      if (!overlay) {
+        return;
+      }
+
+      const focusable = [
+        ...Array.from(overlay.querySelectorAll<HTMLElement>(focusableSelector)),
+        ...(triggerRef.current ? [triggerRef.current] : []),
+      ].filter((element) => !element.hasAttribute("disabled"));
+
+      if (focusable.length === 0) {
+        event.preventDefault();
+        return;
+      }
+
+      const activeElement = document.activeElement as HTMLElement | null;
+      const activeIndex = activeElement ? focusable.indexOf(activeElement) : -1;
+      const lastIndex = focusable.length - 1;
+
+      if (event.shiftKey) {
+        if (activeIndex <= 0) {
+          event.preventDefault();
+          focusable[lastIndex].focus();
+        }
+      } else if (activeIndex === lastIndex) {
+        event.preventDefault();
+        focusable[0].focus();
+      }
+    }
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [focusableSelector, mounted, onClose, triggerRef]);
+
+  const groupedColumns = [
+    {
+      title: "Landing Page",
+      items: entries[0]?.children ?? [],
+    },
+    {
+      title: "Awards & Honors",
+      items: entries.slice(1, 4),
+    },
+    {
+      title: "Partnerships & Collaborations",
+      items: entries.slice(4, 7),
+    },
+    {
+      title: "Support",
+      items: entries.slice(7),
+    },
+  ];
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
-    <>
-      {/* Backdrop Overlay to close dropdown */}
-      <div
-        className="fixed inset-0 top-[70px] z-[80] bg-black/15 backdrop-blur-[2px] transition-all"
-        onClick={onClose}
-      />
-
-      {/* Awwwards Dropdown Panel Container */}
-      <div
-        ref={panelRef}
-        className="fixed top-[70px] left-0 z-[85] w-full border-b border-[#e5e5e5] bg-[#ffffff] text-[#111111] shadow-2xl transition-all"
-      >
-        <div className="mx-auto flex max-w-[1720px] flex-col md:flex-row px-6 py-8 sm:px-10 lg:px-14">
-          {/* Left Column: Awwwards Category Tabs list */}
-          <div className="w-full md:w-[280px] flex-shrink-0 flex flex-col gap-1.5 border-b md:border-b-0 md:border-r border-[#eeeeee] pb-4 md:pb-0 pr-0 md:pr-8">
-            {CATEGORIES.map((cat) => {
-              const IconComponent = cat.icon;
-              const isActive = activeTab === cat.id;
-
-              return (
-                <button
-                  key={cat.id}
-                  type="button"
-                  onMouseEnter={() => setActiveTab(cat.id)}
-                  onClick={() => setActiveTab(cat.id)}
-                  className={`flex items-center gap-3.5 px-4 py-3 text-[14px] font-semibold rounded-lg transition-all text-left ${
-                    isActive
-                      ? "bg-[#f2f2f2] text-black border border-black/5 shadow-sm"
-                      : "text-[#555555] hover:text-black hover:bg-black/[0.03] border border-transparent"
-                  }`}
-                >
-                  <IconComponent className={`h-[17px] w-[17px] ${isActive ? "text-black" : "text-[#888]"}`} />
-                  <span>{cat.label}</span>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Right Column: Sub-items detailed listing */}
-          <div className="flex-grow pt-6 md:pt-0 pl-0 md:pl-12 lg:pl-16">
-            <div className="grid gap-x-12 gap-y-4 sm:grid-cols-2 max-w-[960px]">
-              {currentItems.map((item, index) => (
-                <Link
-                  key={index}
-                  href={item.href}
-                  target={item.external ? "_blank" : undefined}
-                  rel={item.external ? "noopener noreferrer" : undefined}
-                  onClick={onClose}
-                  className="group flex items-center justify-between py-2 border-b border-[#f3f3f3] hover:border-[#111111]/25 transition-all text-[14px] font-medium text-[#222222] hover:text-black"
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="group-hover:translate-x-0.5 transition-transform duration-150">
-                      {item.label}
-                    </span>
-                    {item.badge && (
-                      <span className="rounded-[4px] bg-[#111111] px-1.5 py-[1px] text-[10px] font-bold uppercase tracking-wider text-white">
-                        {item.badge}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="flex items-center gap-2 text-[#777777] group-hover:text-black">
-                    {item.count && (
-                      <span className="text-[12.5px] font-normal opacity-85">
-                        {item.count}
-                      </span>
-                    )}
-                    <ArrowUpRight className="h-3.5 w-3.5 opacity-40 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </div>
+    <div
+      ref={overlayRef}
+      id="psz-navigation-overlay"
+      className="fixed inset-0 z-[80] overflow-hidden bg-[#0b2116]"
+      aria-hidden={!open}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Primary navigation"
+      onMouseDown={(event) => {
+        if (event.target === overlayRef.current) {
+          onClose();
+        }
+      }}
+    >
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_14%_8%,rgba(109,165,86,0.26),transparent_29%),radial-gradient(circle_at_83%_18%,rgba(255,255,255,0.09),transparent_16%),radial-gradient(circle_at_75%_90%,rgba(18,89,57,0.34),transparent_32%)]" />
+        <div className="absolute inset-x-0 top-0 h-px bg-white/10" />
       </div>
-    </>
+
+      <div className="relative mx-auto flex h-full w-full max-w-[1600px] flex-col px-[1.4rem] pb-[1.4rem] pt-[1.5rem] md:px-[4rem] md:pb-[3rem] md:pt-[3rem]">
+        <section
+          ref={leftPanelRef}
+          className="flex h-full min-h-0 flex-col text-white"
+        >
+          <div className="flex flex-col gap-4 border-b border-white/15 pb-5 md:flex-row md:items-center md:justify-center md:gap-8">
+            <form
+              className="relative mx-auto flex w-full max-w-[44rem] items-stretch overflow-hidden rounded-full border border-white/18 bg-white/95 shadow-2xl"
+              onSubmit={(event) => {
+                event.preventDefault();
+              }}
+            >
+              <label htmlFor="psz-nav-search" className="sr-only">
+                Search navigation
+              </label>
+              <div className="flex flex-1 items-center gap-3 px-4 py-3">
+                <Search className="h-5 w-5 text-[#6b7280]" />
+                <input
+                  id="psz-nav-search"
+                  value={queryValue}
+                  onChange={(event) => setQueryValue(event.target.value)}
+                  placeholder="Search..."
+                  className="w-full bg-transparent text-[1rem] font-normal text-[#111111] outline-none placeholder:text-[#7d8693]"
+                />
+              </div>
+              <button
+                type="submit"
+                className="min-w-[8rem] bg-[#78a857] px-5 py-3 text-[.68rem] font-semibold uppercase tracking-[0.15em] text-white transition-colors hover:bg-[#3da445]"
+              >
+                Submit
+              </button>
+            </form>
+
+            <button
+              type="button"
+              onClick={onClose}
+              className="absolute right-[2.2rem] top-[2.4rem] inline-flex h-12 w-12 items-center justify-center rounded-full text-white transition-colors hover:bg-white/10 md:right-[4rem] md:top-[3rem]"
+              aria-label="Close menu"
+            >
+              <X className="h-6 w-6 stroke-[2]" />
+            </button>
+          </div>
+          <div className="mt-8 grid gap-8 lg:grid-cols-4">
+            {groupedColumns.map((column) => (
+              <section key={column.title} className="space-y-4">
+                <div className="pb-3">
+                  <h3 className="text-[.7rem] font-semibold uppercase tracking-[0.18em] text-white">
+                    {column.title}
+                  </h3>
+                  <div className="mt-3 h-px w-full bg-[#9fc98a]" />
+                </div>
+                <div className="space-y-4">
+                  {column.items.map((item, itemIndex) => {
+                    const href = item.href;
+                    if (!href) {
+                      return null;
+                    }
+
+                    const active = isActiveLink(pathname, href);
+                    const external = "external" in item && Boolean(item.external);
+                    const isHovered = hoveredKey ? hoveredKey === `${column.title}-${itemIndex}` : active;
+
+                    return (
+                      <Link
+                        key={item.label}
+                        href={href}
+                        target={external ? "_blank" : undefined}
+                        rel={external ? "noopener noreferrer" : undefined}
+                        className={`group flex items-center justify-between gap-3 text-[clamp(1.25rem,2vw,2rem)] leading-[1.05] tracking-[-0.04em] transition-all duration-300 ${
+                          isHovered ? "translate-x-1 text-white" : "text-white/78 hover:translate-x-1 hover:text-white"
+                        }`}
+                        onMouseEnter={() => setHoveredKey(`${column.title}-${itemIndex}`)}
+                        onMouseLeave={() => setHoveredKey(null)}
+                        onClick={onClose}
+                        data-menu-item
+                      >
+                        <span>{item.label}</span>
+                        <ArrowUpRight className="h-4 w-4 flex-shrink-0 opacity-80 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
+                      </Link>
+                    );
+                  })}
+                </div>
+              </section>
+            ))}
+          </div>
+
+          <div className="mt-auto pt-6">
+            <svg data-visual-piece viewBox="0 0 1200 160" className="h-20 w-full opacity-70" aria-hidden="true">
+              <path
+                d="M20 120C140 38 270 34 374 88C464 134 548 126 650 78C750 28 860 32 976 92C1048 126 1120 118 1180 72"
+                stroke="#44b14b"
+                strokeWidth="2"
+                fill="none"
+              />
+              <circle cx="120" cy="90" r="4" fill="#ffffff" fillOpacity="0.9" />
+              <circle cx="322" cy="76" r="5" fill="#44b14b" />
+              <circle cx="572" cy="102" r="4" fill="#ffffff" fillOpacity="0.9" />
+              <circle cx="842" cy="82" r="5" fill="#44b14b" />
+              <circle cx="1096" cy="90" r="4" fill="#ffffff" fillOpacity="0.9" />
+            </svg>
+          </div>
+        </section>
+      </div>
+    </div>
   );
 }

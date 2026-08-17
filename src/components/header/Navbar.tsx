@@ -36,10 +36,10 @@ export function Navbar() {
   }, [pathname]);
 
   const chromeClassName = darkChrome
-    ? "border-transparent bg-transparent text-white"
+    ? "border-transparent bg-transparent text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]"
     : "border-black/8 bg-white/95 text-black backdrop-blur-md";
 
-  const actionClassName = darkChrome ? "text-white/92 hover:text-white" : "text-black/86 hover:text-black";
+  const actionClassName = darkChrome ? "text-white hover:text-white/80 drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]" : "text-black/86 hover:text-black";
 
   return (
     <>

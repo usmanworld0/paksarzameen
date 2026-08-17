@@ -529,13 +529,8 @@ export const HomeClient = memo(function HomeClient() {
         <div className={styles.heroShade} aria-hidden="true" />
         <div className={styles.heroInner}>
           <Image className={styles.heroLogo} src="/paksarzameen_logo.png" alt="Paksarzameen" width={270} height={110} priority />
-          <p className={styles.eyebrowLight}>Pakistan - community-led change</p>
           <h1 id="home-title">Building<br />Community Wealth.</h1>
           <p className={styles.heroCopy}>Education, health, welfare, and opportunity shaped with communities across Pakistan.</p>
-          <div className={styles.heroActions}>
-            <Link href="#home-solution" className={styles.buttonLight}>Explore PSZ <span>&rarr;</span></Link>
-            <Link href="/get-involved" className={styles.textLight}>Join the mission <span>&rarr;</span></Link>
-          </div>
 
           <div className={styles.heroQuickRoutes}>
             <span className={styles.heroQuickLabel}>Explore Portals:</span>
@@ -556,8 +551,6 @@ export const HomeClient = memo(function HomeClient() {
               </Link>
             </div>
           </div>
-
-          <p className={styles.scrollPrompt}>Scroll to begin <span>&rarr;</span></p>
         </div>
       </section>
 

@@ -1,0 +1,472 @@
+/* ==========================================================================
+   Minimalist Editorial Broadsheet (1-Screen Height Portrait Viewport)
+   ========================================================================== */
+
+.newspaperSection {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 660px;
+  max-height: 100vh;
+  padding: clamp(0.8rem, 2vh, 1.6rem) 0;
+  box-sizing: border-box;
+  background: #141715;
+  color: #ffffff;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.headerWrap {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 4vw;
+  box-sizing: border-box;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.sectionLabelLight {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #4ade80;
+  margin-bottom: 0.25rem;
+}
+
+.sectionHeaderLight {
+  font-size: clamp(1.6rem, 3.4vh, 2.5rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+  margin: 0 0 0.25rem 0;
+  line-height: 1.05;
+}
+
+.sectionDescLight {
+  font-size: clamp(0.75rem, 1.4vh, 0.92rem);
+  line-height: 1.4;
+  color: #9ca3af;
+  max-width: 560px;
+  margin: 0;
+}
+
+/* ─── Stack Outer Wrapper & Side Controls ─── */
+.stackOuterWrapper {
+  position: relative;
+  width: 100%;
+  max-width: 1040px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.6rem, 2.5vw, 2.5rem);
+  padding: 0.4rem 1rem;
+  box-sizing: border-box;
+  flex: 1;
+  min-height: 0;
+}
+
+.sideArrow {
+  flex-shrink: 0;
+  width: clamp(40px, 4.2vw, 50px);
+  height: clamp(40px, 4.2vw, 50px);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 50;
+  backdrop-filter: blur(8px);
+}
+
+.sideArrow:hover:not(:disabled) {
+  background: #0f7a47;
+  border-color: #4ade80;
+  transform: scale(1.1);
+  box-shadow: 0 10px 25px rgba(15, 122, 71, 0.45);
+}
+
+.sideArrow:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.sideArrow:disabled {
+  opacity: 0.15;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ─── The Physical Stack Stage (Calibrated to Portrait Ratio) ─── */
+.newspaperStage {
+  position: relative;
+  width: 100%;
+  max-width: min(540px, 82vw);
+  height: 100%;
+  max-height: clamp(460px, 66vh, 600px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  perspective: 2000px;
+}
+
+/* Decorative tilted underlay sheets */
+.pileLayer {
+  position: absolute;
+  inset: 0;
+  background: #ebe7dd;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+.pileLayer1 {
+  transform: rotate(-3.8deg) translate(-6px, 5px);
+  background: #dfdacb;
+  z-index: 1;
+}
+
+.pileLayer2 {
+  transform: rotate(2.8deg) translate(8px, -4px);
+  background: #e6e1d3;
+  z-index: 2;
+}
+
+.pileLayer3 {
+  transform: rotate(-1.2deg) translate(-2px, -5px);
+  background: #ede9dc;
+  z-index: 3;
+}
+
+/* ─── Stack of Interactive News Sheets ─── */
+.sheetsStack {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+}
+
+.newspaperSheet {
+  position: absolute;
+  inset: 0;
+  background: #f7f5ee;
+  color: #111111;
+  border-radius: 2px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+  padding: clamp(0.9rem, 2vh, 1.4rem) clamp(1.1rem, 2.4vw, 1.8rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* ─── Editorial Broadsheet Design (Confederate Style) ─── */
+.sheetHeader {
+  width: 100%;
+}
+
+.mastheadRow {
+  text-align: center;
+  padding-bottom: 0.15rem;
+}
+
+.mainMasthead {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: clamp(1.4rem, 2.8vh, 2.3rem);
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #111111;
+  margin: 0;
+  line-height: 0.95;
+}
+
+.subMasthead {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: clamp(0.55rem, 1vh, 0.72rem);
+  font-weight: 800;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: #333333;
+  margin-top: 0.2rem;
+}
+
+.datelineBar {
+  border-top: 1.5px solid #111111;
+  border-bottom: 1.5px solid #111111;
+  padding: 0.2rem 0;
+  margin-top: 0.3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: clamp(0.48rem, 0.9vh, 0.62rem);
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #222222;
+}
+
+/* Middle Area: Hero Visual taking up less relative height */
+.sheetMiddle {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 0.4rem 0;
+  min-height: 0;
+}
+
+.bigNumeral {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-family: "Times New Roman", Times, Georgia, serif;
+  font-size: clamp(1.8rem, 3.8vh, 3.2rem);
+  font-weight: 400;
+  line-height: 0.85;
+  color: #888888;
+  opacity: 0.65;
+  user-select: none;
+  pointer-events: none;
+}
+
+.heroVisualFrame {
+  position: relative;
+  width: 100%;
+  height: clamp(100px, 20vh, 160px);
+  margin: 0 auto;
+  border-radius: 2px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+.heroImage {
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.newspaperSheet:hover .heroImage {
+  transform: scale(1.02);
+}
+
+/* Bottom 3-Column Newspaper Article Grid (More vertical text space) */
+.sheetBottomColumns {
+  border-top: 1.5px solid #111111;
+  padding-top: 0.55rem;
+  display: grid;
+  grid-template-columns: 1.15fr 1fr 1fr;
+  gap: clamp(0.5rem, 1.2vw, 0.8rem);
+  align-items: start;
+  flex: 1.2;
+}
+
+.colLeft {
+  border-right: 1px solid rgba(0, 0, 0, 0.2);
+  padding-right: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.colKicker {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: clamp(0.46rem, 0.8vh, 0.58rem);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #0f7a47;
+}
+
+.colHeadline {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: clamp(0.72rem, 1.35vh, 0.9rem);
+  font-weight: 900;
+  line-height: 1.2;
+  color: #111111;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.colMiddle {
+  border-right: 1px solid rgba(0, 0, 0, 0.2);
+  padding-right: 0.5rem;
+}
+
+.colText {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(0.62rem, 1.15vh, 0.76rem);
+  line-height: 1.42;
+  color: #222222;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 6;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.colRight {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.colLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: clamp(0.55rem, 1vh, 0.68rem);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #0f7a47;
+  text-decoration: none;
+  margin-top: 0.25rem;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.colLink:hover {
+  color: #05502c;
+  transform: translateX(3px);
+}
+
+/* ─── Bottom Compact Controls Bar ─── */
+.bottomControlsRow {
+  width: 100%;
+  max-width: min(540px, 82vw);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.5rem;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.statusLabel {
+  font-size: clamp(0.68rem, 1.2vh, 0.78rem);
+  font-weight: 700;
+  color: #e5e7eb;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.dotsRow {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.dotBtn {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.dotBtn:hover {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.dotBtnActive {
+  width: 18px;
+  border-radius: 9px;
+  background: #4ade80;
+}
+
+.archiveLinkPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.archiveLinkPill:hover {
+  background: #4ade80;
+  color: #052e16;
+  border-color: #4ade80;
+}
+
+/* ─── Responsive Adjustments ─── */
+@media (max-width: 768px) {
+  .newspaperStage {
+    max-width: 90vw;
+  }
+
+  .sheetBottomColumns {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .colMiddle {
+    border-right: none;
+    padding-right: 0;
+  }
+
+  .colRight {
+    grid-column: span 2;
+    margin-top: 0.2rem;
+  }
+
+  .bottomControlsRow {
+    max-width: 90vw;
+  }
+}
+
+@media (max-width: 480px) {
+  .sheetBottomColumns {
+    grid-template-columns: 1fr;
+    gap: 0.35rem;
+  }
+
+  .colLeft {
+    border-right: none;
+    padding-right: 0;
+  }
+
+  .colRight {
+    grid-column: span 1;
+  }
+
+  .bottomControlsRow {
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+}

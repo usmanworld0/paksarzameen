@@ -126,7 +126,7 @@ export function UniversitiesDirectory({ initialUniversities }: UniversitiesDirec
               <button
                 type="button"
                 onClick={handleResetFilters}
-                className="text-[11px] font-bold uppercase text-[#FF5A26] hover:underline"
+                className="text-[11px] font-bold uppercase text-[#0f7a47] hover:underline"
               >
                 Reset
               </button>
@@ -205,7 +205,7 @@ export function UniversitiesDirectory({ initialUniversities }: UniversitiesDirec
                 id="scholarship-check"
                 checked={scholarshipOnly}
                 onChange={(e) => setScholarshipOnly(e.target.checked)}
-                className="h-4 w-4 accent-[#FF5A26]"
+                className="h-4 w-4 accent-[#0f7a47]"
               />
               <label htmlFor="scholarship-check" className="text-xs text-[#002E21] font-bold cursor-pointer">
                 Scholarships Available
@@ -221,7 +221,7 @@ export function UniversitiesDirectory({ initialUniversities }: UniversitiesDirec
                 <button
                   type="button"
                   onClick={handleResetFilters}
-                  className="text-[#FF5A26] font-bold hover:underline"
+                  className="text-[#0f7a47] font-bold hover:underline"
                 >
                   Clear Filters
                 </button>
@@ -243,7 +243,7 @@ export function UniversitiesDirectory({ initialUniversities }: UniversitiesDirec
                       QS #{uni.ranking.qs}
                     </div>
                     {uni.scholarships?.available && (
-                      <div className="absolute top-3 right-3 bg-[#FF5A26] text-white px-2 py-1 text-[9px] font-bold uppercase tracking-wider font-sans">
+                      <div className="absolute top-3 right-3 bg-[#0f7a47] text-white px-2 py-1 text-[9px] font-bold uppercase tracking-wider font-sans">
                         Scholarship
                       </div>
                     )}
@@ -264,7 +264,7 @@ export function UniversitiesDirectory({ initialUniversities }: UniversitiesDirec
 
                     <div className="pt-3 border-t border-[#BECCAD] flex items-center justify-between text-xs font-sans">
                       <span className="text-[#002E21]/70">Tuition: <strong>{uni.fees?.tuition}</strong></span>
-                      <Link href={`/universities/${uni.slug}`} className="text-[#FF5A26] font-bold hover:underline">
+                      <Link href={`/universities/${uni.slug}`} className="text-[#0f7a47] font-bold hover:underline">
                         Profile &rarr;
                       </Link>
                     </div>

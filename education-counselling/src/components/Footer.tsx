@@ -32,7 +32,7 @@ export function Footer() {
               type="email"
               required
               placeholder="Enter your email address"
-              className="h-12 w-full bg-[#002319] border border-[#BECCAD]/40 px-4 text-sm text-white placeholder:text-white/40 outline-none focus:border-[#FF5A26]"
+              className="h-12 w-full bg-[#002319] border border-[#BECCAD]/40 px-4 text-sm text-white placeholder:text-white/40 outline-none focus:border-[#0f7a47]"
             />
             <button
               type="submit"
@@ -142,7 +142,7 @@ export function Footer() {
                   href="https://wa.me/923001234567"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-[#FF5A26] font-bold hover:underline mt-1"
+                  className="inline-flex items-center gap-1 text-[#0f7a47] font-bold hover:underline mt-1"
                 >
                   WhatsApp Direct Desk &rarr;
                 </a>

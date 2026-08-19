@@ -5,21 +5,19 @@ import Link from "next/link";
 import { useEffect, useRef, memo, useState, useCallback } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import * as THREE from "three";
-import { GLTFLoader, type GLTF } from "three/examples/jsm/loaders/GLTFLoader.js";
 import Lenis from "lenis";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { siteConfig } from "@/config/site";
-import { HEART_MEMBERS, PROGRAM_CARDS } from "@/features/home/home.content";
-import { VIDEO_POSTERS, getOptimizedImagePath } from "@/lib/utils/media-helpers";
+import { PROGRAM_CARDS } from "@/features/home/home.content";
+import { VIDEO_POSTERS } from "@/lib/utils/media-helpers";
+import { AwardsHonoursShowcase } from "./AwardsHonoursShowcase";
+import { PartnershipsMarquee } from "./PartnershipsMarquee";
+import { NewsPaperShowcase } from "./NewsPaperShowcase";
 import styles from "./HomeClient.module.css";
 
 if (typeof window !== "undefined") gsap.registerPlugin(ScrollTrigger);
 
 const journeyLinks = [
-  ["Awards & Honors", "/impact"],
-  ["Partnerships & Collaborations", "/get-involved"],
-  ["News & Features", "/news"],
   ["Shop", "https://store.paksarzameenwfo.com"],
   ["Apply", "/volunteer"],
   ["FAQ", "/policies#faq"],
@@ -37,8 +35,6 @@ const chapterVisuals = [
 
 export const HomeClient = memo(function HomeClient() {
   const root = useRef<HTMLDivElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
 
   const [flippedCount, setFlippedCount] = useState(0);
   const [flippedCountMobile, setFlippedCountMobile] = useState(0);
@@ -260,176 +256,7 @@ export const HomeClient = memo(function HomeClient() {
     gsap.ticker.add(tickerCallback);
     gsap.ticker.lagSmoothing(0);
 
-    const scrollState = { rotation: 0 };
-    let handleResize = () => {};
-    let animationFrameId = 0;
-    let geometry = new THREE.PlaneGeometry(1, 1);
-    const memberPlanes: THREE.Mesh[] = [];
-    let renderer: THREE.WebGLRenderer | null = null;
-
-    // 3D Canvas Team Orbit Setup
-    const canvas = canvasRef.current;
-    if (canvas) {
-      const scene = new THREE.Scene();
-      scene.background = new THREE.Color("#f3f2ec"); // Match warm off-white background
-
-      const camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 100);
-      camera.position.set(0, 0, 7.5);
-
-      renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
-
-      const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
-      scene.add(ambientLight);
-
-      const dirLight = new THREE.DirectionalLight(0xffffff, 2.5);
-      dirLight.position.set(5, 10, 7);
-      scene.add(dirLight);
-
-      const pointLight = new THREE.PointLight(0xffffff, 1.5, 20);
-      pointLight.position.set(0, 0, 3);
-      scene.add(pointLight);
-
-      // Load 3D model
-      const loader = new GLTFLoader();
-      let logoMesh: THREE.Group | null = null;
-      loader.load("/images/circular logo 3d model.glb", (gltf: GLTF) => {
-        const mesh = gltf.scene;
-        mesh.scale.set(1.4, 1.4, 1.4);
-        mesh.position.set(0, 0, 0);
-
-        mesh.traverse((child) => {
-          if ((child as THREE.Mesh).isMesh) {
-            const m = child as THREE.Mesh;
-            if (m.material) {
-              if (m.material instanceof THREE.MeshStandardMaterial) {
-                m.material.roughness = 0.3;
-                m.material.metalness = 0.8;
-              }
-            }
-          }
-        });
-        scene.add(mesh);
-        logoMesh = mesh;
-      }, undefined, (err: ErrorEvent | Error | unknown) => {
-        console.error("Failed to load 3D model:", err);
-      });
-
-      // Orbit Setup
-      const textureLoader = new THREE.TextureLoader();
-      const teamGroup = new THREE.Group();
-      scene.add(teamGroup);
-
-      const radius = 2.8;
-      const cardWidth = 1.35;
-      const cardHeight = 1.8;
-      geometry = new THREE.PlaneGeometry(cardWidth, cardHeight);
-
-      HEART_MEMBERS.forEach((member, idx) => {
-        const texture = textureLoader.load(getOptimizedImagePath(member.image, "md"));
-        const material = new THREE.MeshBasicMaterial({
-          map: texture,
-          side: THREE.DoubleSide,
-          transparent: true,
-          opacity: 1.0,
-        });
-        const mesh = new THREE.Mesh(geometry, material);
-
-        const angle = (idx / HEART_MEMBERS.length) * Math.PI * 2;
-        mesh.position.set(
-          Math.cos(angle) * radius,
-          0,
-          Math.sin(angle) * radius
-        );
-
-        teamGroup.add(mesh);
-        memberPlanes.push(mesh);
-      });
-
-      let currentActiveIdx = 0;
-      const clock = new THREE.Clock();
-
-      const animate = () => {
-        animationFrameId = requestAnimationFrame(animate);
-
-        teamGroup.rotation.y = scrollState.rotation;
-
-        if (logoMesh) {
-          logoMesh.rotation.y = clock.getElapsedTime() * 0.25 - scrollState.rotation * 3.5;
-          logoMesh.position.y = Math.sin(clock.getElapsedTime() * 1.5) * 0.08;
-        }
-
-        // Active member tracking and 3D card layout effects
-        let closestIdx = 0;
-        let minDistance = Infinity;
-        const tempV = new THREE.Vector3();
-
-        memberPlanes.forEach((mesh, idx) => {
-          // Make cards face the camera directly (billboarding)
-          mesh.lookAt(camera.position);
-
-          // Get world position to measure distance
-          mesh.getWorldPosition(tempV);
-          const dist = tempV.distanceTo(camera.position);
-
-          if (dist < minDistance) {
-            minDistance = dist;
-            closestIdx = idx;
-          }
-
-          // Depth-based scaling and opacity
-          // Z ranges from -radius to +radius in world space.
-          // Normalize to [0, 1] factor where 1 is closest (most positive Z) and 0 is furthest (most negative Z)
-          const zWorld = tempV.z;
-          const factor = (zWorld + radius) / (2 * radius); // 0.0 to 1.0
-
-          // Calculate target scale: front is larger (1.3), back is smaller (0.6)
-          const targetScale = 0.6 + factor * 0.7;
-          mesh.scale.set(targetScale, targetScale, 1.0);
-
-          // Calculate target opacity: front is solid (1.0), back is faint (0.05)
-          const targetOpacity = 0.05 + factor * 0.95;
-          if (mesh.material instanceof THREE.MeshBasicMaterial) {
-            mesh.material.opacity = targetOpacity;
-            mesh.material.transparent = true;
-          }
-        });
-
-        if (closestIdx !== currentActiveIdx) {
-          currentActiveIdx = closestIdx;
-          setActiveIndex(closestIdx);
-        }
-
-        if (renderer) {
-          renderer.render(scene, camera);
-        }
-      };
-      animate();
-
-      handleResize = () => {
-        if (!canvas || !renderer) return;
-        const width = canvas.clientWidth;
-        const height = canvas.clientHeight;
-        const aspect = width / height;
-        camera.aspect = aspect;
-
-        let targetZ = 7.5;
-        if (aspect < 1.15) {
-          // Narrow or portrait screens: push camera back dynamically to fit the orbit width without cropping
-          targetZ = Math.max(7.5, (7.5 * 1.15) / aspect);
-        }
-        camera.position.set(0, 0, targetZ);
-
-        camera.updateProjectionMatrix();
-        renderer.setSize(width, height, false);
-      };
-      window.addEventListener("resize", handleResize);
-      handleResize();
-    }
-
     const context = gsap.context(() => {
-
       gsap.to(`.${styles.heroMedia}`, {
         yPercent: 15,
         scale: 1.07,
@@ -474,26 +301,6 @@ export const HomeClient = memo(function HomeClient() {
           rotateY: 0,
         });
       });
-
-      // 3D Team Section Scroll Trigger (initialized after book section to ensure correct DOM scroll order and layout spacing)
-      const teamSection = document.getElementById("home-team");
-      if (teamSection) {
-        gsap.timeline({
-          scrollTrigger: {
-            trigger: teamSection,
-            start: "top top",
-            end: "+=3500",
-            scrub: 1,
-            pin: true,
-            anticipatePin: 1,
-          }
-        }).to(scrollState, {
-          rotation: Math.PI * 2,
-          ease: "none",
-          duration: 1,
-        });
-      }
-
     }, element);
 
     ScrollTrigger.refresh();
@@ -502,19 +309,6 @@ export const HomeClient = memo(function HomeClient() {
       context.revert();
       lenis.destroy();
       gsap.ticker.remove(tickerCallback);
-      if (canvas) {
-        window.removeEventListener("resize", handleResize);
-        cancelAnimationFrame(animationFrameId);
-        geometry.dispose();
-        memberPlanes.forEach((mesh) => {
-          if (mesh.material instanceof THREE.Material) {
-            mesh.material.dispose();
-          }
-        });
-        if (renderer) {
-          renderer.dispose();
-        }
-      }
     };
   }, []);
 
@@ -529,8 +323,8 @@ export const HomeClient = memo(function HomeClient() {
         <div className={styles.heroShade} aria-hidden="true" />
         <div className={styles.heroInner}>
           <Image className={styles.heroLogo} src="/paksarzameen_logo.png" alt="Paksarzameen" width={270} height={110} priority />
-          <h1 id="home-title">Building<br />Community Wealth.</h1>
-          <p className={styles.heroCopy}>Education, health, welfare, and opportunity shaped with communities across Pakistan.</p>
+          <h1 id="home-title">تربیت سے تعلیم</h1>
+          <p className={styles.heroCopy}>reorganising everyday living</p>
 
           <div className={styles.heroQuickRoutes}>
             <span className={styles.heroQuickLabel}>Explore Portals:</span>
@@ -563,7 +357,7 @@ export const HomeClient = memo(function HomeClient() {
         <div className={styles.problemGrid}>
           <h2 className={styles.appleSectionHeader} data-reveal>What is PSZ?</h2>
           <div data-reveal>
-            <p>PakSarZameen is a national movement empowering communities to lead their own change. We believe that true progress comes from within, through education, healthcare, welfare, and sustainable action.</p>
+            <p className={styles.highlightText}>Systemic unequal systems of power make countries serve debt over people, treat poverty as an individual failure, allow environmental harm in one place for the benefit of another, and weaken people’s ability to shape their own knowledge, priorities, and future, which leads to underdevelopment</p>
             <Link href="/programs" className={styles.appleLink}>Learn about our framework &rarr;</Link>
           </div>
         </div>
@@ -572,10 +366,10 @@ export const HomeClient = memo(function HomeClient() {
       <section id="home-solution" className={styles.solution}>
         <div className={styles.solutionCopy} data-reveal>
           <h2 className={styles.appleSectionHeaderLight}>What We Do</h2>
-          <p className={styles.appleSectionDescLight}>We create pathways in education, healthcare, animal welfare, environmental action, and community support.</p>
+          <p className={styles.highlightTextLight}>We believe development begins when humans have the freedom to shape their own time, choices, and future. We work toward this by helping families build income, supporting students to study abroad through scholarships, giving young scholars space to share their ideas, protecting the environment through plantation and recycling and creating projects that living bodies feel seen, included, and able to grow.</p>
           <Link href="/programs" className={styles.appleButtonLight}>Explore our work &rarr;</Link>
         </div>
-        <div className={styles.solutionPhoto} data-parallax="-50"><Image src="/images/optimized/full-team.webp" alt="Paksarzameen team" fill sizes="(max-width: 820px) 100vw, 50vw" className={styles.coverImage} /></div>
+        <div className={styles.solutionPhoto}><Image src="/images/optimized/full-team.webp" alt="Paksarzameen team" fill sizes="(max-width: 820px) 100vw, 50vw" className={styles.coverImage} /></div>
       </section>
 
       <section className={styles.departments} aria-labelledby="departments-heading">
@@ -800,22 +594,14 @@ export const HomeClient = memo(function HomeClient() {
         </div>
       </section>
 
-      <section id="home-team" className={styles.team} aria-labelledby="team-heading">
-        <div className={styles.teamHeading} data-reveal>
-          <h2 id="team-heading" className={styles.appleSectionHeader}>The Team</h2>
-          <p className={styles.appleSectionDesc}>The people behind PakSarZameen bringing community-led change to life.</p>
-          
-          <div className={styles.activeMemberDetails}>
-            <span className={styles.activeMemberNum}>PSZ / 0{activeIndex + 1}</span>
-            <h3 className={styles.activeMemberName}>{HEART_MEMBERS[activeIndex]?.name}</h3>
-            <p className={styles.activeMemberRole}>{HEART_MEMBERS[activeIndex]?.role}</p>
-          </div>
-        </div>
-        
-        <div className={styles.teamStage} data-reveal>
-          <canvas ref={canvasRef} className={styles.teamCanvas} />
-        </div>
-      </section>
+      {/* Interactive Awards & Honours Showcase */}
+      <AwardsHonoursShowcase />
+
+      {/* Flowing Linear Partnerships & Collaborations Logo Row */}
+      <PartnershipsMarquee />
+
+      {/* News & Features Flippable 3D Newspaper */}
+      <NewsPaperShowcase />
 
       <section className={styles.outreach} aria-label="Explore Paksarzameen">
         <h2 className={styles.appleSectionHeader} data-reveal>Explore More</h2>

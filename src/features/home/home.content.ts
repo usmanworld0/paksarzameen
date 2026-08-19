@@ -67,9 +67,8 @@ export const PSZ_CHAPTERS: readonly Chapter[] = [
 
 export const heroContent = {
   title: "PakSarZameen",
-  subtitle: "Building Community Wealth.",
-  supportingLine:
-    "A community development platform for education, compassion, and grassroots progress across Pakistan.",
+  subtitle: "تربیت سے تعلیم",
+  supportingLine: "reorganising everyday living",
   exploreCta: "Explore Programs",
   joinCta: "Join the Mission",
   videoSrc:

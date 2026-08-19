@@ -41,23 +41,9 @@ export function Navbar() {
           {/* Desktop Navigation Links (Ivy Coach style) */}
           <nav className="hidden lg:flex items-center gap-6 text-[13px] font-bold uppercase tracking-wider text-[#002E21] font-sans">
             
-            <div className="relative group py-6">
-              <Link href="/about" className="flex items-center gap-1 hover:text-[#207355] transition">
-                <span>About</span>
-                <ChevronDown className="h-3.5 w-3.5 opacity-60 group-hover:rotate-180 transition-transform" />
-              </Link>
-              <div className="absolute top-[100%] left-0 w-64 bg-[#F3F5F0] border border-[#BECCAD] shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 p-2 space-y-1">
-                <Link href="/about" className="block px-3 py-2 text-xs font-semibold text-[#002E21] hover:bg-white transition">
-                  Our Leadership &amp; Ethics
-                </Link>
-                <Link href="/counselling" className="block px-3 py-2 text-xs font-semibold text-[#002E21] hover:bg-white transition">
-                  Why Hire Our Counselors
-                </Link>
-                <Link href="/universities" className="block px-3 py-2 text-xs font-semibold text-[#002E21] hover:bg-white transition">
-                  Admissions Results
-                </Link>
-              </div>
-            </div>
+            <Link href="/scholarships" className="hover:text-[#207355] transition py-6">
+              Scholarships
+            </Link>
 
             <div className="relative group py-6">
               <Link href="/counselling" className="flex items-center gap-1 hover:text-[#207355] transition">
@@ -101,13 +87,6 @@ export function Navbar() {
               <Search className="h-5 w-5 stroke-[2]" />
             </button>
 
-            <button
-              type="button"
-              onClick={() => setConsultModalOpen(true)}
-              className="ivy-btn-orange text-xs sm:text-[13px] px-4 sm:px-6 py-2.5 sm:py-3 font-black"
-            >
-              Get Started
-            </button>
 
             {/* Mobile Hamburger */}
             <button
@@ -155,11 +134,11 @@ export function Navbar() {
         {menuOpen && (
           <div className="lg:hidden border-t border-[#BECCAD] bg-[#F3F5F0] px-6 py-6 space-y-4 animate-fade-in font-sans">
             <Link
-              href="/about"
+              href="/scholarships"
               onClick={() => setMenuOpen(false)}
               className="block text-sm font-bold uppercase tracking-wider text-[#002E21] py-1.5 border-b border-[#BECCAD]"
             >
-              About Us
+              Scholarships
             </Link>
             <Link
               href="/counselling"
@@ -181,13 +160,6 @@ export function Navbar() {
               className="block text-sm font-bold uppercase tracking-wider text-[#002E21] py-1.5 border-b border-[#BECCAD]"
             >
               SAT &amp; IELTS Tutoring
-            </Link>
-            <Link
-              href="/scholarships"
-              onClick={() => setMenuOpen(false)}
-              className="block text-sm font-bold uppercase tracking-wider text-[#002E21] py-1.5 border-b border-[#BECCAD]"
-            >
-              Scholarships &amp; Aid
             </Link>
             <Link
               href="/contact"

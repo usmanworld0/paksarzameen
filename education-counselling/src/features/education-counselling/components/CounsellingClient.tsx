@@ -8,9 +8,15 @@ import {
   Search,
   Check,
   CheckCircle2,
+  GraduationCap,
+  BookOpen,
+  ArrowRight,
+  ArrowUpRight,
+  Award,
 } from "lucide-react";
 import { DbStore } from "@/lib/db";
 import { TunnelHero } from "./TunnelHero";
+import { ScholarshipsShowcase } from "./ScholarshipsShowcase";
 import {
   FreeConsultationModal,
   CourseApplicationModal,
@@ -82,21 +88,6 @@ export function CounsellingClient({ initialStore }: CounsellingClientProps) {
     }
   };
 
-  const admissionsStats = [
-    { school: "Harvard University", rate: "91%" },
-    { school: "Yale University", rate: "78%" },
-    { school: "Princeton University", rate: "69%" },
-    { school: "Columbia University", rate: "80%" },
-    { school: "Dartmouth College", rate: "90%" },
-    { school: "Brown University", rate: "78%" },
-    { school: "Univ. of Pennsylvania", rate: "89%" },
-    { school: "Cornell University", rate: "66%" },
-    { school: "Stanford University", rate: "87%" },
-    { school: "MIT", rate: "76%" },
-    { school: "University of Chicago", rate: "89%" },
-    { school: "Georgetown University", rate: "92%" },
-  ];
-
   const counselorServices = [
     "Avoid the common pitfalls of the college admissions process",
     "Write compelling college essays that wow admissions officers",
@@ -129,65 +120,110 @@ export function CounsellingClient({ initialStore }: CounsellingClientProps) {
         onBookConsultation={() => setConsultModalOpen(true)}
       />
 
-      {/* 2. ADMISSIONS TRACK RECORD (STATS BOARD) */}
-      <section id="track-record" className="py-16 sm:py-24 border-b border-[#BECCAD] scroll-mt-20">
-        <div className="ivy-container space-y-12">
-          
-          <div className="text-center max-w-2xl mx-auto space-y-3">
-            <h2 className="font-heading text-2xl sm:text-4xl font-black uppercase text-[#002E21]">
-              Admissions Track Record
-            </h2>
-            <p className="text-sm sm:text-base text-[#002E21]/80 font-serif">
-              The percentage of our comprehensive package candidates who earned admission to the following institutions in the Early round.
-            </p>
+      {/* 1.5. ADMISSIONS PATHWAYS: MINIMAL & EDITORIAL */}
+      <section className="border-b border-[#BECCAD] bg-[#F3F5F0] overflow-hidden">
+        {/* Subtle Marquee Accent */}
+        <div className="border-b border-[#BECCAD]/60 bg-white/70 py-2.5 overflow-hidden select-none">
+          <div className="animate-marquee whitespace-nowrap flex items-center gap-10 text-[10.5px] font-bold uppercase tracking-[0.24em] text-[#002E21]/70 font-sans">
+            <span>• Undergraduate Admissions</span>
+            <span>• Common App &amp; UCAS Advisory</span>
+            <span>• Graduate &amp; Doctoral Mentorship</span>
+            <span>• Research Placements &amp; Lab Matching</span>
+            <span>• Statement of Purpose Editorial</span>
+            <span>• Global Merit &amp; Need-Based Scholarships</span>
+            <span>• Undergraduate Admissions</span>
+            <span>• Common App &amp; UCAS Advisory</span>
+            <span>• Graduate &amp; Doctoral Mentorship</span>
+            <span>• Research Placements &amp; Lab Matching</span>
+            <span>• Statement of Purpose Editorial</span>
+            <span>• Global Merit &amp; Need-Based Scholarships</span>
           </div>
+        </div>
 
-          {/* Large Stats Grid */}
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {admissionsStats.map((item, idx) => (
-              <div
-                key={idx}
-                className="bg-white border border-[#BECCAD] p-6 text-center space-y-1.5 hover:border-[#002E21] transition shadow-xs"
-              >
-                <div className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#002E21] font-heading">
-                  {item.rate}
+        {/* Dual Cards Grid */}
+        <div className="ivy-container py-12 sm:py-16">
+          <div className="grid gap-6 md:grid-cols-2">
+            
+            {/* UNDERGRADUATE ADMISSIONS CARD */}
+            <Link
+              href="/counselling#undergrad"
+              className="group block bg-white border border-[#BECCAD] p-8 sm:p-10 transition-all duration-300 hover:border-[#002E21] hover:shadow-md relative"
+            >
+              <div className="flex items-center justify-between border-b border-[#BECCAD]/50 pb-4 mb-6">
+                <div className="flex items-center gap-2">
+                  <GraduationCap className="h-4 w-4 text-[#207355]" />
+                  <span className="text-[10.5px] uppercase tracking-[0.22em] text-[#207355] font-bold font-sans">
+                    01 / Undergraduate
+                  </span>
                 </div>
-                <div className="text-xs font-bold uppercase tracking-wider text-[#207355] font-sans">
-                  {item.school}
+                <span className="inline-flex items-center justify-center h-7 w-7 rounded-full bg-[#F3F5F0] text-[#002E21] group-hover:bg-[#002E21] group-hover:text-white transition-colors duration-200">
+                  <ArrowUpRight className="h-3.5 w-3.5" />
+                </span>
+              </div>
+
+              <div className="space-y-3">
+                <h3 className="font-heading text-xl sm:text-2xl font-black uppercase text-[#002E21] tracking-tight group-hover:text-[#207355] transition-colors">
+                  Undergraduate Admissions
+                </h3>
+                <p className="text-xs sm:text-sm font-serif text-[#002E21]/80 leading-relaxed">
+                  Strategic profile development, line-by-line essay editing, and financial aid packaging for Bachelor&apos;s candidates targeting top-tier global universities.
+                </p>
+              </div>
+
+              <div className="mt-6 pt-5 border-t border-[#BECCAD]/40 flex items-center justify-between text-xs font-sans">
+                <span className="text-[11px] text-[#002E21]/60 font-medium">
+                  Common App • UCAS • Ivy League • Aid
+                </span>
+                <span className="font-bold uppercase tracking-wider text-[#002E21] group-hover:text-[#207355] inline-flex items-center gap-1">
+                  Learn More <span className="group-hover:translate-x-0.5 transition-transform">&rarr;</span>
+                </span>
+              </div>
+            </Link>
+
+            {/* GRADUATE ADMISSIONS CARD */}
+            <Link
+              href="/counselling#graduate"
+              className="group block bg-white border border-[#BECCAD] p-8 sm:p-10 transition-all duration-300 hover:border-[#002E21] hover:shadow-md relative"
+            >
+              <div className="flex items-center justify-between border-b border-[#BECCAD]/50 pb-4 mb-6">
+                <div className="flex items-center gap-2">
+                  <BookOpen className="h-4 w-4 text-[#207355]" />
+                  <span className="text-[10.5px] uppercase tracking-[0.22em] text-[#207355] font-bold font-sans">
+                    02 / Graduate &amp; PhD
+                  </span>
                 </div>
+                <span className="inline-flex items-center justify-center h-7 w-7 rounded-full bg-[#F3F5F0] text-[#002E21] group-hover:bg-[#002E21] group-hover:text-white transition-colors duration-200">
+                  <ArrowUpRight className="h-3.5 w-3.5" />
+                </span>
               </div>
-            ))}
+
+              <div className="space-y-3">
+                <h3 className="font-heading text-xl sm:text-2xl font-black uppercase text-[#002E21] tracking-tight group-hover:text-[#207355] transition-colors">
+                  Graduate &amp; PhD Mentorship
+                </h3>
+                <p className="text-xs sm:text-sm font-serif text-[#002E21]/80 leading-relaxed">
+                  Academic laboratory matching, research proposal positioning, and Statement of Purpose editorial for Master&apos;s and Doctoral candidates.
+                </p>
+              </div>
+
+              <div className="mt-6 pt-5 border-t border-[#BECCAD]/40 flex items-center justify-between text-xs font-sans">
+                <span className="text-[11px] text-[#002E21]/60 font-medium">
+                  Faculty Outreach • SOP • Funded Placements
+                </span>
+                <span className="font-bold uppercase tracking-wider text-[#002E21] group-hover:text-[#207355] inline-flex items-center gap-1">
+                  Learn More <span className="group-hover:translate-x-0.5 transition-transform">&rarr;</span>
+                </span>
+              </div>
+            </Link>
+
           </div>
-
-          {/* Grouped Statistics Highlights */}
-          <div className="grid gap-6 md:grid-cols-2 pt-6">
-            <div className="bg-white border border-[#BECCAD] p-8 space-y-3">
-              <h3 className="text-xs uppercase tracking-[0.24em] text-[#207355] font-bold font-sans">
-                Early Decision Strategy
-              </h3>
-              <div className="text-4xl sm:text-5xl font-black text-[#002E21] font-heading">
-                14 YEARS
-              </div>
-              <p className="text-xs sm:text-sm text-[#002E21]/80 font-serif">
-                In a row, our Early Decision applicants who adhered to our strategic school list earned admission to their primary top-choice program.
-              </p>
-            </div>
-
-            <div className="bg-white border border-[#BECCAD] p-8 space-y-3">
-              <h3 className="text-xs uppercase tracking-[0.24em] text-[#207355] font-bold font-sans">
-                Deferred or Waitlisted?
-              </h3>
-              <div className="text-4xl sm:text-5xl font-black text-[#002E21] font-heading">
-                41%
-              </div>
-              <p className="text-xs sm:text-sm text-[#002E21]/80 font-serif">
-                Of students who first came to our team after being deferred earned admission in the regular round with our Letter of Continued Interest strategy.
-              </p>
-            </div>
-          </div>
-
         </div>
       </section>
+
+      {/* 2. GLOBAL SCHOLARSHIPS & FELLOWSHIPS SHOWCASE (INTERACTIVE WITH LOGOS) */}
+      <ScholarshipsShowcase
+        onOpenConsultation={() => setConsultModalOpen(true)}
+      />
 
       {/* 3. PHILOSOPHY BANNER (SINGULAR HOOK) */}
       <section className="bg-[#002E21] text-white py-16 sm:py-20 border-b border-[#BECCAD]">
@@ -298,7 +334,7 @@ export function CounsellingClient({ initialStore }: CounsellingClientProps) {
                     href={m.linkedin}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[11px] font-bold uppercase tracking-wider text-[#FF5A26] hover:underline"
+                    className="text-[11px] font-bold uppercase tracking-wider text-[#0f7a47] hover:underline"
                   >
                     LinkedIn Profile &rarr;
                   </a>
@@ -393,7 +429,7 @@ export function CounsellingClient({ initialStore }: CounsellingClientProps) {
                     QS #{uni.ranking.qs}
                   </div>
                   {uni.scholarships?.available && (
-                    <div className="absolute top-3 right-3 bg-[#FF5A26] text-white px-2 py-1 text-[9px] font-bold uppercase tracking-wider font-sans">
+                    <div className="absolute top-3 right-3 bg-[#0f7a47] text-white px-2 py-1 text-[9px] font-bold uppercase tracking-wider font-sans">
                       Scholarship
                     </div>
                   )}
@@ -414,7 +450,7 @@ export function CounsellingClient({ initialStore }: CounsellingClientProps) {
 
                   <div className="pt-3 border-t border-[#BECCAD] flex items-center justify-between text-xs font-sans">
                     <span className="text-[#002E21]/70">Tuition: <strong>{uni.fees?.tuition}</strong></span>
-                    <Link href={`/universities/${uni.slug}`} className="text-[#FF5A26] font-bold hover:underline">
+                    <Link href={`/universities/${uni.slug}`} className="text-[#0f7a47] font-bold hover:underline">
                       Profile &rarr;
                     </Link>
                   </div>

@@ -35,7 +35,7 @@ export const navLinks: NavLink[] = [
 
 export const siteConfig = {
   name: "PakSarZameen",
-  missionLine: "Building Community Wealth.",
+  missionLine: "تربیت سے تعلیم",
   description:
     "PakSarZameen is a community development organization in Pakistan focused on education, health, blood support, environmental action, and animal welfare.",
   siteUrl:

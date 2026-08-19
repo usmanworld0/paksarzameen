@@ -354,11 +354,11 @@ export function TunnelHero({ universities, onBookConsultation }: TunnelHeroProps
 
       <div className={styles.contentOverlay}>
         <span className={styles.pretitle}>
-          PakSarZameen Admissions Advisory
+          PakSarZameen Education Advisory
         </span>
-        <h1>&ldquo;The Premier Admissions Experts For Top Global Universities.&rdquo;</h1>
-        <p>
-          Over 90% of our guided applicants earned admission to their top-choice Early Decision &amp; Early Action universities.
+        <h1>Undergraduate &amp; Graduate Study Abroad Crash Course</h1>
+        <p style={{ fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase", opacity: 0.8, marginTop: "0.4rem", fontWeight: "bold" }}>
+          4th September 2026 - 15 December 2026
         </p>
         <div className={styles.actions}>
           {onBookConsultation && (
@@ -367,16 +367,9 @@ export function TunnelHero({ universities, onBookConsultation }: TunnelHeroProps
               onClick={onBookConsultation}
               className="ivy-btn-orange text-xs sm:text-[13px] px-8 py-3.5 font-black shadow-lg"
             >
-              Get Started
+              Book 30 minutes free consultation
             </button>
           )}
-
-          <a
-            href="#track-record"
-            className="inline-flex items-center justify-center border-2 border-white/80 text-white hover:bg-white hover:text-[#002E21] px-6 py-3 text-xs font-bold uppercase tracking-wider transition"
-          >
-            View Track Record &darr;
-          </a>
         </div>
       </div>
     </section>

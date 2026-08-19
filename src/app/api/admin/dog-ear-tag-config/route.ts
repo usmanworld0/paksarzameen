@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import {
   type ColorOption,
   type EarTagImageOption,
+  type EarTagDesignItem,
   getEarTagGlobalConfig,
   updateEarTagGlobalConfig,
 } from "@/lib/dog-adoption";
@@ -168,7 +169,7 @@ export async function PUT(request: Request) {
 
     // Support designs JSON payload
     const designsRaw = String(formData.get("designs") ?? "").trim();
-    let designs = [];
+    let designs: EarTagDesignItem[] = [];
     try {
       designs = designsRaw ? JSON.parse(designsRaw) : (current.designs || []);
     } catch (parseError) {

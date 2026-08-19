@@ -92,7 +92,7 @@ export function UniversityDetailClient({ university }: UniversityDetailClientPro
                   onClick={() => setActiveTab(tab.id as TabType)}
                   className={`pb-3 text-xs sm:text-sm font-bold uppercase tracking-wider whitespace-nowrap transition-colors border-b-2 ${
                     activeTab === tab.id
-                      ? "border-[#FF5A26] text-[#002E21]"
+                      ? "border-[#0f7a47] text-[#002E21]"
                       : "border-transparent text-[#002E21]/50 hover:text-[#002E21]"
                   }`}
                 >
@@ -138,7 +138,7 @@ export function UniversityDetailClient({ university }: UniversityDetailClientPro
                   <ul className="grid gap-2 sm:grid-cols-2 text-xs sm:text-sm font-serif text-[#002E21]/80">
                     {(university.programs?.undergraduate || []).map((p: string) => (
                       <li key={p} className="flex items-center gap-2">
-                        <span className="h-1.5 w-1.5 bg-[#FF5A26] shrink-0" />
+                        <span className="h-1.5 w-1.5 bg-[#0f7a47] shrink-0" />
                         <span>{p}</span>
                       </li>
                     ))}
@@ -153,7 +153,7 @@ export function UniversityDetailClient({ university }: UniversityDetailClientPro
                   <ul className="grid gap-2 sm:grid-cols-2 text-xs sm:text-sm font-serif text-[#002E21]/80">
                     {(university.programs?.masters || []).map((p: string) => (
                       <li key={p} className="flex items-center gap-2">
-                        <span className="h-1.5 w-1.5 bg-[#FF5A26] shrink-0" />
+                        <span className="h-1.5 w-1.5 bg-[#0f7a47] shrink-0" />
                         <span>{p}</span>
                       </li>
                     ))}
@@ -243,7 +243,7 @@ export function UniversityDetailClient({ university }: UniversityDetailClientPro
                   </div>
                   <div className="flex justify-between py-2">
                     <span className="text-[#002E21]/70 text-xs">Priority Deadline:</span>
-                    <strong className="text-sm font-bold text-[#FF5A26]">{university.applicationInfo?.priorityDeadline || "November 1"}</strong>
+                    <strong className="text-sm font-bold text-[#0f7a47]">{university.applicationInfo?.priorityDeadline || "November 1"}</strong>
                   </div>
                 </div>
 
@@ -286,7 +286,7 @@ export function UniversityDetailClient({ university }: UniversityDetailClientPro
                         </div>
                         <div>
                           <span className="text-[10px] uppercase text-[#207355] font-bold block">Deadline</span>
-                          <strong className="text-[#FF5A26]">{sch.deadline}</strong>
+                          <strong className="text-[#0f7a47]">{sch.deadline}</strong>
                         </div>
                       </div>
                     </div>
@@ -316,7 +316,7 @@ export function UniversityDetailClient({ university }: UniversityDetailClientPro
               onClick={() => setConsultModalOpen(true)}
               className="ivy-btn-orange w-full text-xs font-black py-3"
             >
-              Get Started &rarr;
+              Book 30 minutes free consultation &rarr;
             </button>
           </aside>
 

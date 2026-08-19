@@ -1,0 +1,235 @@
+.awardsSection {
+  max-width: 1440px;
+  margin: auto;
+  padding: clamp(5rem, 8vw, 8rem) 6vw;
+  box-sizing: border-box;
+}
+
+.awardsHeader {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 3rem;
+}
+
+.awardsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 2rem;
+}
+
+.awardCard {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 24px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.3s ease;
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+  overflow: hidden;
+}
+
+.awardCard:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px rgba(18, 61, 41, 0.09);
+  border-color: rgba(15, 122, 71, 0.4);
+}
+
+.mediaContainer {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #0d281a;
+  margin-bottom: 1.4rem;
+}
+
+.mediaElement {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.awardCard:hover .mediaElement {
+  transform: scale(1.04);
+}
+
+.mediaOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, transparent 40%, rgba(0, 0, 0, 0.5) 100%);
+  pointer-events: none;
+}
+
+.badgePill {
+  position: absolute;
+  top: 0.85rem;
+  left: 0.85rem;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(18, 61, 41, 0.88);
+  border: 1px solid rgba(210, 233, 169, 0.35);
+  backdrop-filter: blur(10px);
+  color: #d2e9a9;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.soundBtn {
+  position: absolute;
+  top: 0.85rem;
+  right: 0.85rem;
+  z-index: 2;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.soundBtn:hover {
+  background: #0f7a47;
+  transform: scale(1.1);
+}
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.tagRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.8rem;
+}
+
+.categoryTag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.28rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(15, 122, 71, 0.08);
+  color: #0f7a47;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.cardTitle {
+  font-size: 1.32rem;
+  font-weight: 600;
+  color: #10261a;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  margin: 0 0 0.6rem 0;
+}
+
+.cardDesc {
+  font-size: 0.88rem;
+  line-height: 1.65;
+  color: #5b665e;
+  margin: 0 0 1.2rem 0;
+}
+
+.statsBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: auto;
+  margin-bottom: 1.4rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.statPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 8px;
+  background: #f8f9f6;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  font-size: 0.72rem;
+  color: #10261a;
+}
+
+.statPill strong {
+  font-weight: 700;
+  color: #0f7a47;
+}
+
+.cardAction {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #0f7a47;
+  text-decoration: none;
+  transition: transform 0.2s ease;
+}
+
+.awardCard:hover .cardAction {
+  transform: translateX(4px);
+}
+
+.awardsFooter {
+  margin-top: 3.2rem;
+  display: flex;
+  align-items: center;
+}
+
+.sectionCtaLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.9rem 1.9rem;
+  border-radius: 999px;
+  background: #123d29;
+  color: #ffffff;
+  font-size: 0.84rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.sectionCtaLink:hover {
+  background: #0f7a47;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(15, 122, 71, 0.25);
+}
+
+@media (max-width: 820px) {
+  .awardsGrid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}

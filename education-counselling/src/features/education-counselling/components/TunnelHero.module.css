@@ -104,7 +104,7 @@
 .cardWrapper:hover .card {
   transform: translateZ(45px) scale(1.08);
   box-shadow: 0 28px 70px rgba(0, 0, 0, 0.7);
-  border-color: #FF5A26;
+  border-color: #0f7a47;
 }
 
 /* Details overlay: translucent scrim preserving photo vividness */
@@ -153,7 +153,7 @@
 
 .hoverRank {
   display: inline-block;
-  background: #FF5A26;
+  background: #0f7a47;
   color: #FFFFFF;
   font-size: 0.62rem;
   font-weight: 800;
@@ -177,8 +177,8 @@
 }
 
 .cardWrapper:hover .hoverCta {
-  color: #FF5A26;
-  border-color: #FF5A26;
+  color: #0f7a47;
+  border-color: #0f7a47;
 }
 
 /* Atmospheric center fog tuned to let tiles remain clearly visible */

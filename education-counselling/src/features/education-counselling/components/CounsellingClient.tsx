@@ -88,17 +88,7 @@ export function CounsellingClient({ initialStore }: CounsellingClientProps) {
     }
   };
 
-  const counselorServices = [
-    "Avoid the common pitfalls of the college admissions process",
-    "Write compelling college essays that wow admissions officers",
-    "Submit powerful letters of recommendation filled with specifics",
-    "Demonstrate a singular hook rather than generic well-roundedness",
-    "Seek out unique extracurricular research projects and summer plans",
-    "Strategize on an Early Decision / Early Action acceptance plan",
-    "Navigate need-based financial aid & CSS Profile packaging",
-    "Prep for the SAT, IELTS, and clinical language tests",
-    "Help students earn admission to top graduate schools and Ph.D. labs",
-  ];
+
 
   const pressLogos = [
     "The New York Times",
@@ -120,7 +110,7 @@ export function CounsellingClient({ initialStore }: CounsellingClientProps) {
         onBookConsultation={() => setConsultModalOpen(true)}
       />
 
-      {/* 1.5. ADMISSIONS PATHWAYS: MINIMAL & EDITORIAL */}
+{/* 1.5. ADMISSIONS PATHWAYS: MINIMAL & EDITORIAL */}
       <section className="border-b border-[#BECCAD] bg-[#F3F5F0] overflow-hidden">
         {/* Subtle Marquee Accent */}
         <div className="border-b border-[#BECCAD]/60 bg-white/70 py-2.5 overflow-hidden select-none">
@@ -220,133 +210,8 @@ export function CounsellingClient({ initialStore }: CounsellingClientProps) {
         </div>
       </section>
 
-      {/* 2. GLOBAL SCHOLARSHIPS & FELLOWSHIPS SHOWCASE (INTERACTIVE WITH LOGOS) */}
-      <ScholarshipsShowcase
-        onOpenConsultation={() => setConsultModalOpen(true)}
-      />
 
-      {/* 3. PHILOSOPHY BANNER (SINGULAR HOOK) */}
-      <section className="bg-[#002E21] text-white py-16 sm:py-20 border-b border-[#BECCAD]">
-        <div className="ivy-container text-center max-w-3xl space-y-4">
-          <h2 className="font-heading text-2xl sm:text-4xl lg:text-5xl font-black uppercase tracking-tight text-white">
-            IT&apos;S NOT JUST ABOUT <span className="strike-accent">GRADES &amp; SCORES</span>
-          </h2>
-          <p className="text-sm sm:text-base text-[#BECCAD] font-serif leading-relaxed">
-            It&apos;s about presenting compelling, truthful narratives in essays and activities that showcase a <span className="text-white font-bold underline-accent">singular hook</span>, rather than generic well-roundedness.
-          </p>
-        </div>
-      </section>
-
-      {/* 4. HOW OUR COUNSELORS HELP (CHECKLIST GRID) */}
-      <section className="py-16 sm:py-24 border-b border-[#BECCAD]">
-        <div className="ivy-container space-y-12">
-          
-          <div className="text-center max-w-2xl mx-auto">
-            <h2 className="font-heading text-2xl sm:text-4xl font-black uppercase text-[#002E21]">
-              How Our Counselors Help Students
-            </h2>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {counselorServices.map((srv, idx) => (
-              <div
-                key={idx}
-                className="bg-white border border-[#BECCAD] p-6 flex items-start gap-3.5 hover:border-[#002E21] transition"
-              >
-                <div className="h-5 w-5 rounded-full bg-[#207355] text-white flex items-center justify-center shrink-0 mt-0.5">
-                  <Check className="h-3.5 w-3.5 stroke-[3]" />
-                </div>
-                <p className="text-xs sm:text-sm font-serif text-[#002E21] leading-snug">
-                  {srv}
-                </p>
-              </div>
-            ))}
-          </div>
-
-        </div>
-      </section>
-
-      {/* 5. IN THE PRESS (MEDIA TICKER) */}
-      <section className="bg-white py-12 border-b border-[#BECCAD]">
-        <div className="ivy-container space-y-6">
-          <p className="text-center text-[11px] uppercase tracking-[0.28em] text-[#002E21]/60 font-bold font-sans">
-            In The Press &amp; Media Mentions
-          </p>
-
-          <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-12 opacity-80 text-xs sm:text-sm font-bold uppercase tracking-widest text-[#002E21]">
-            {pressLogos.map((logo, idx) => (
-              <span key={idx} className="border-b border-[#002E21]/30 pb-0.5">
-                {logo}
-              </span>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 6. FORMER ADMISSIONS OFFICERS & MENTORS */}
-      <section className="py-16 sm:py-24 border-b border-[#BECCAD]">
-        <div className="ivy-container space-y-12">
-          
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-[#BECCAD] pb-6">
-            <div>
-              <span className="text-xs uppercase tracking-[0.24em] text-[#207355] font-bold font-sans">
-                Our Advisory Team
-              </span>
-              <h2 className="font-heading text-2xl sm:text-4xl font-black uppercase text-[#002E21] mt-1">
-                Admissions Consultants &amp; Mentors
-              </h2>
-            </div>
-            <Link href="/about" className="text-xs font-bold uppercase tracking-wider text-[#002E21] hover:text-[#207355] transition">
-              Meet All Mentors &rarr;
-            </Link>
-          </div>
-
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {mentors.map((m: any) => (
-              <div
-                key={m.id}
-                className="bg-white border border-[#BECCAD] p-6 flex flex-col justify-between space-y-4 hover:border-[#002E21] transition"
-              >
-                <div className="space-y-3">
-                  <div className="relative aspect-square w-full bg-neutral-100 overflow-hidden border border-[#BECCAD]/60">
-                    <Image
-                      src={m.image}
-                      alt={m.name}
-                      fill
-                      sizes="(max-width: 640px) 100vw, 33vw"
-                      className="object-cover"
-                    />
-                  </div>
-
-                  <div>
-                    <h3 className="text-base font-bold text-[#002E21] font-sans">{m.name}</h3>
-                    <p className="text-xs text-[#207355] font-bold font-sans">{m.role}</p>
-                    <p className="text-[11px] text-[#002E21]/60 font-sans">{m.organization}</p>
-                  </div>
-
-                  <p className="text-xs font-serif text-[#002E21]/80 leading-relaxed line-clamp-3">
-                    &ldquo;{m.bio}&rdquo;
-                  </p>
-                </div>
-
-                <div className="pt-3 border-t border-[#BECCAD] flex justify-end">
-                  <a
-                    href={m.linkedin}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[11px] font-bold uppercase tracking-wider text-[#0f7a47] hover:underline"
-                  >
-                    LinkedIn Profile &rarr;
-                  </a>
-                </div>
-              </div>
-            ))}
-          </div>
-
-        </div>
-      </section>
-
-      {/* 7. SEARCH & DIRECTORY OF UNIVERSITIES */}
+{/* 7. SEARCH & DIRECTORY OF UNIVERSITIES */}
       <section className="py-16 sm:py-24 border-b border-[#BECCAD]">
         <div className="ivy-container space-y-10">
           
@@ -456,6 +321,92 @@ export function CounsellingClient({ initialStore }: CounsellingClientProps) {
                   </div>
                 </div>
               </article>
+            ))}
+          </div>
+
+        </div>
+      </section>
+
+
+      {/* 2. GLOBAL SCHOLARSHIPS & FELLOWSHIPS SHOWCASE (INTERACTIVE WITH LOGOS) */}
+      <ScholarshipsShowcase
+        onOpenConsultation={() => setConsultModalOpen(true)}
+      />
+
+      {/* 5. IN THE PRESS (MEDIA TICKER) */}
+      <section className="bg-white py-12 border-b border-[#BECCAD]">
+        <div className="ivy-container space-y-6">
+          <p className="text-center text-[11px] uppercase tracking-[0.28em] text-[#002E21]/60 font-bold font-sans">
+            In The Press &amp; Media Mentions
+          </p>
+
+          <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-12 opacity-80 text-xs sm:text-sm font-bold uppercase tracking-widest text-[#002E21]">
+            {pressLogos.map((logo, idx) => (
+              <span key={idx} className="border-b border-[#002E21]/30 pb-0.5">
+                {logo}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 6. FORMER ADMISSIONS OFFICERS & MENTORS */}
+      <section className="py-16 sm:py-24 border-b border-[#BECCAD]">
+        <div className="ivy-container space-y-12">
+          
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-[#BECCAD] pb-6">
+            <div>
+              <span className="text-xs uppercase tracking-[0.24em] text-[#207355] font-bold font-sans">
+                Our Advisory Team
+              </span>
+              <h2 className="font-heading text-2xl sm:text-4xl font-black uppercase text-[#002E21] mt-1">
+                Admissions Consultants &amp; Mentors
+              </h2>
+            </div>
+            <Link href="/about" className="text-xs font-bold uppercase tracking-wider text-[#002E21] hover:text-[#207355] transition">
+              Meet All Mentors &rarr;
+            </Link>
+          </div>
+
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {mentors.map((m: any) => (
+              <div
+                key={m.id}
+                className="bg-white border border-[#BECCAD] p-6 flex flex-col justify-between space-y-4 hover:border-[#002E21] transition"
+              >
+                <div className="space-y-3">
+                  <div className="relative aspect-square w-full bg-neutral-100 overflow-hidden border border-[#BECCAD]/60">
+                    <Image
+                      src={m.image}
+                      alt={m.name}
+                      fill
+                      sizes="(max-width: 640px) 100vw, 33vw"
+                      className="object-cover"
+                    />
+                  </div>
+
+                  <div>
+                    <h3 className="text-base font-bold text-[#002E21] font-sans">{m.name}</h3>
+                    <p className="text-xs text-[#207355] font-bold font-sans">{m.role}</p>
+                    <p className="text-[11px] text-[#002E21]/60 font-sans">{m.organization}</p>
+                  </div>
+
+                  <p className="text-xs font-serif text-[#002E21]/80 leading-relaxed line-clamp-3">
+                    &ldquo;{m.bio}&rdquo;
+                  </p>
+                </div>
+
+                <div className="pt-3 border-t border-[#BECCAD] flex justify-end">
+                  <a
+                    href={m.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[11px] font-bold uppercase tracking-wider text-[#0f7a47] hover:underline"
+                  >
+                    LinkedIn Profile &rarr;
+                  </a>
+                </div>
+              </div>
             ))}
           </div>
 

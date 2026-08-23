@@ -247,12 +247,12 @@ export function TunnelHero({ universities, onBookConsultation }: TunnelHeroProps
 
         cardEl.style.transform = `translate3d(${tx}px, ${ty}px, ${z}px) rotateX(${rx + tiltX}deg) rotateY(${ry + tiltY}deg) translateZ(${floatZ}px)`;
 
-        // Keep cards more visible (minimum 0.6 opacity even far away)
+        // Keep cards more visible (minimum 0.75 opacity even far away)
         let opacity = 1;
         if (z > 0) {
           opacity = Math.max(0, 1 - z / MAX_Z);
-        } else if (z < -3500) {
-          opacity = Math.max(0.6, (z - MIN_Z) / (-4000 - MIN_Z));
+        } else if (z < -3000) {
+          opacity = Math.max(0.75, (z - MIN_Z) / (-3000 - MIN_Z));
         }
         cardEl.style.opacity = opacity.toString();
         cardEl.style.pointerEvents = (z > 100 || z < -3500) ? "none" : "auto";

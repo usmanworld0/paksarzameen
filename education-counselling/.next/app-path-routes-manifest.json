@@ -1,0 +1,12 @@
+{
+  "/api/bookings/route": "/api/bookings",
+  "/_not-found/page": "/_not-found",
+  "/contact/page": "/contact",
+  "/scholarships/page": "/scholarships",
+  "/counselling/page": "/counselling",
+  "/page": "/",
+  "/about/page": "/about",
+  "/universities/[slug]/page": "/universities/[slug]",
+  "/universities/page": "/universities",
+  "/tutoring/page": "/tutoring"
+}

@@ -70,7 +70,7 @@ export const dummyUniversities: University[] = [
     name: "Harvard University",
     country: "United States",
     logo: "linear-gradient(135deg, #a51c30 0%, #ed1b2f 100%)",
-    banner: "https://images.unsplash.com/photo-1576085898323-218337e3e43c?q=80&w=1200&auto=format&fit=crop",
+    banner: "/images/universities/harvard-banner.webp",
     ranking: { qs: "4", world: "4" },
     scholarships: {
       available: true,
@@ -131,9 +131,9 @@ export const dummyUniversities: University[] = [
     },
     intakes: ["Fall (September)"],
     gallery: [
-      "https://images.unsplash.com/photo-1576085898323-218337e3e43c?q=80&w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1622397333309-3056849bc70b?q=80&w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1595113316349-9fa4ee24f884?q=80&w=600&auto=format&fit=crop"
+      "/images/universities/harvard-banner.webp",
+      "/images/universities/gallery-harvard-2.webp",
+      "/images/universities/ubc-banner.webp"
     ],
     faq: [
       {
@@ -151,7 +151,7 @@ export const dummyUniversities: University[] = [
     name: "University of Toronto",
     country: "Canada",
     logo: "linear-gradient(135deg, #002a5c 0%, #004b87 100%)",
-    banner: "https://images.unsplash.com/photo-1589139011550-2b5aec186be5?q=80&w=1200&auto=format&fit=crop",
+    banner: "/images/universities/toronto-banner.webp",
     ranking: { qs: "21", world: "21" },
     scholarships: {
       available: true,
@@ -211,9 +211,9 @@ export const dummyUniversities: University[] = [
     },
     intakes: ["Fall (September)", "Winter (January)"],
     gallery: [
-      "https://images.unsplash.com/photo-1589139011550-2b5aec186be5?q=80&w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=600&auto=format&fit=crop"
+      "/images/universities/toronto-banner.webp",
+      "/images/universities/monash-banner.webp",
+      "/images/universities/gallery-toronto-3.webp"
     ],
     faq: [
       {
@@ -231,7 +231,7 @@ export const dummyUniversities: University[] = [
     name: "University of Melbourne",
     country: "Australia",
     logo: "linear-gradient(135deg, #092e6e 0%, #1c499c 100%)",
-    banner: "https://images.unsplash.com/photo-1527891751199-7225231a68dd?q=80&w=1200&auto=format&fit=crop",
+    banner: "/images/universities/melbourne-banner.webp",
     ranking: { qs: "14", world: "14" },
     scholarships: {
       available: true,
@@ -291,9 +291,9 @@ export const dummyUniversities: University[] = [
     },
     intakes: ["Semester 1 (Feb/March)", "Semester 2 (July)"],
     gallery: [
-      "https://images.unsplash.com/photo-1527891751199-7225231a68dd?q=80&w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1507537297725-24a1c029d3ca?q=80&w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?q=80&w=600&auto=format&fit=crop"
+      "/images/universities/melbourne-banner.webp",
+      "/images/universities/gallery-melbourne-2.webp",
+      "/images/universities/gallery-melbourne-3.webp"
     ],
     faq: [
       {
@@ -311,7 +311,7 @@ export const dummyUniversities: University[] = [
     name: "University of Manchester",
     country: "United Kingdom",
     logo: "linear-gradient(135deg, #660099 0%, #8b00b7 100%)",
-    banner: "https://images.unsplash.com/photo-1562774053-701939374585?q=80&w=1200&auto=format&fit=crop",
+    banner: "/images/universities/manchester-banner.webp",
     ranking: { qs: "32", world: "32" },
     scholarships: {
       available: true,
@@ -371,9 +371,9 @@ export const dummyUniversities: University[] = [
     },
     intakes: ["Fall (September)"],
     gallery: [
-      "https://images.unsplash.com/photo-1562774053-701939374585?q=80&w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1498243691581-b145c3f54a5c?q=80&w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=600&auto=format&fit=crop"
+      "/images/universities/manchester-banner.webp",
+      "/images/universities/sydney-banner.webp",
+      "/images/universities/gallery-manchester-3.webp"
     ],
     faq: [
       {
@@ -391,7 +391,7 @@ export const dummyUniversities: University[] = [
     name: "Monash University",
     country: "Australia",
     logo: "linear-gradient(135deg, #006dae 0%, #0087cb 100%)",
-    banner: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=1200&auto=format&fit=crop",
+    banner: "/images/universities/monash-banner.webp",
     ranking: { qs: "42", world: "42" },
     scholarships: {
       available: true,
@@ -451,9 +451,9 @@ export const dummyUniversities: University[] = [
     },
     intakes: ["Semester 1 (February)", "Semester 2 (July)"],
     gallery: [
-      "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1492538368577-8b5fd6e0d87f?q=80&w=600&auto=format&fit=crop"
+      "/images/universities/monash-banner.webp",
+      "/images/universities/gallery-manchester-3.webp",
+      "/images/universities/gallery-monash-3.webp"
     ],
     faq: [
       {
@@ -471,7 +471,7 @@ export const dummyUniversities: University[] = [
     name: "University of Sydney",
     country: "Australia",
     logo: "linear-gradient(135deg, #e3001b 0%, #ff5c73 100%)",
-    banner: "https://images.unsplash.com/photo-1498243691581-b145c3f54a5c?q=80&w=1200&auto=format&fit=crop",
+    banner: "/images/universities/sydney-banner.webp",
     ranking: { qs: "19", world: "19" },
     scholarships: {
       available: true,
@@ -531,9 +531,9 @@ export const dummyUniversities: University[] = [
     },
     intakes: ["Semester 1 (February/March)", "Semester 2 (July)"],
     gallery: [
-      "https://images.unsplash.com/photo-1498243691581-b145c3f54a5c?q=80&w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=600&auto=format&fit=crop"
+      "/images/universities/sydney-banner.webp",
+      "/images/universities/monash-banner.webp",
+      "/images/universities/gallery-toronto-3.webp"
     ],
     faq: [
       {
@@ -551,7 +551,7 @@ export const dummyUniversities: University[] = [
     name: "University of British Columbia",
     country: "Canada",
     logo: "linear-gradient(135deg, #002145 0%, #00509d 100%)",
-    banner: "https://images.unsplash.com/photo-1595113316349-9fa4ee24f884?q=80&w=1200&auto=format&fit=crop",
+    banner: "/images/universities/ubc-banner.webp",
     ranking: { qs: "34", world: "34" },
     scholarships: {
       available: true,
@@ -611,9 +611,9 @@ export const dummyUniversities: University[] = [
     },
     intakes: ["Fall (September)"],
     gallery: [
-      "https://images.unsplash.com/photo-1595113316349-9fa4ee24f884?q=80&w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?q=80&w=600&auto=format&fit=crop"
+      "/images/universities/ubc-banner.webp",
+      "/images/universities/gallery-toronto-3.webp",
+      "/images/universities/gallery-melbourne-3.webp"
     ],
     faq: [
       {
@@ -631,7 +631,7 @@ export const dummyUniversities: University[] = [
     name: "National University of Singapore",
     country: "Singapore",
     logo: "linear-gradient(135deg, #ef7c00 0%, #003d7c 100%)",
-    banner: "https://images.unsplash.com/photo-1507537297725-24a1c029d3ca?q=80&w=1200&auto=format&fit=crop",
+    banner: "/images/universities/nus-banner.webp",
     ranking: { qs: "8", world: "8" },
     scholarships: {
       available: false,
@@ -681,9 +681,9 @@ export const dummyUniversities: University[] = [
     },
     intakes: ["August (Semester 1)", "January (Semester 2)"],
     gallery: [
-      "https://images.unsplash.com/photo-1507537297725-24a1c029d3ca?q=80&w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=600&auto=format&fit=crop"
+      "/images/universities/gallery-melbourne-2.webp",
+      "/images/universities/gallery-toronto-3.webp",
+      "/images/universities/monash-banner.webp"
     ],
     faq: [
       {

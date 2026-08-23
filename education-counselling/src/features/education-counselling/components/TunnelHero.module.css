@@ -223,13 +223,14 @@
 
 .contentOverlay h1 {
   font-family: "GrotzecCond", "PublicSans", -apple-system, sans-serif;
-  font-size: clamp(1.8rem, 4.8vw, 3.8rem);
-  font-weight: 900;
-  letter-spacing: -0.015em;
+  font-size: clamp(1.4rem, 2.5vw, 2.0rem);
+  font-weight: 800;
+  letter-spacing: -0.01em;
   text-transform: uppercase;
   color: #FFFFFF;
-  line-height: 1.08;
-  margin: 0.3rem 0 1.2rem;
+  line-height: 1.25;
+  margin: 0.3rem auto 1.2rem;
+  max-width: 680px;
   text-shadow: 0 4px 24px rgba(0, 0, 0, 0.8);
 }
 

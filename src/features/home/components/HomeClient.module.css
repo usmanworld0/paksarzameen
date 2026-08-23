@@ -305,12 +305,16 @@
 .bookDots {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  max-width: 620px;
+  margin-top: 0.2rem;
 }
 
 .bookDot {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: rgba(18, 61, 41, 0.2);
   border: none;
@@ -320,12 +324,12 @@
 }
 
 .bookDot:hover {
-  background: rgba(18, 61, 41, 0.5);
+  background: rgba(18, 61, 41, 0.6);
 }
 
 .bookDotActive {
-  width: 22px;
-  border-radius: 10px;
+  width: 18px;
+  border-radius: 9px;
   background: #123d29;
 }
 
@@ -334,7 +338,7 @@
   position: relative;
   width: 100%;
   max-width: 860px;
-  aspect-ratio: 1.62;
+  aspect-ratio: 1.4142;
   perspective: 2500px;
 }
 .bookInner {
@@ -395,6 +399,7 @@
   backface-visibility: hidden;
   box-sizing: border-box;
   overflow: hidden;
+  background: #ffffff;
   box-shadow: inset 18px 0 25px rgba(0, 0, 0, 0.04);
 }
 .pageFront {

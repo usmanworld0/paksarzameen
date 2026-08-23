@@ -24,14 +24,11 @@ const journeyLinks = [
   ["Contact", "/contact"],
 ] as const;
 
-const chapterVisuals = [
-  "/images/placeholders/shajarkari.png",
-  "/images/placeholders/Ehsas-ul-Haiwanat.png",
-  "/images/placeholders/room-zia.png",
-  "/images/placeholders/14.png",
-  "/images/placeholders/Tibi-Imdad.png",
-  "/images/placeholders/wajood-e-zan.png",
-] as const;
+const TOTAL_CANVA_PAGES = 52;
+const TOTAL_DESKTOP_SHEETS = 26; // 52 pages = 26 double-sided sheets
+
+const getCanvaPageSrc = (pageNum: number) =>
+  `/images/psz-portfolio-optimized/${pageNum}.webp`;
 
 export const HomeClient = memo(function HomeClient() {
   const root = useRef<HTMLDivElement>(null);
@@ -374,8 +371,8 @@ export const HomeClient = memo(function HomeClient() {
 
       <section className={styles.departments} aria-labelledby="departments-heading">
         <div className={styles.departmentHeading} data-reveal>
-          <h2 id="departments-heading" className={styles.appleSectionHeader}>Departments</h2>
-          <p className={styles.appleSectionDesc}>Explore the chapters of PakSarZameen and see our work across education, healthcare, environmental action, and welfare.</p>
+          <h2 id="departments-heading" className={styles.appleSectionHeader}>Our Journey</h2>
+          <p className={styles.appleSectionDesc}>Explore the chapters of PakSarZameen's journey across education, healthcare, environmental action, and welfare.</p>
         </div>
 
         <div className={styles.bookWrapper} data-reveal>
@@ -386,23 +383,26 @@ export const HomeClient = memo(function HomeClient() {
               goToDesktopPage(flippedCount - 1);
               goToMobilePage(flippedCountMobile - 1);
             }}
-            disabled={flippedCount === 0}
+            disabled={flippedCount === 0 && flippedCountMobile === 0}
             className={styles.bookSideArrow}
-            aria-label="Previous Chapter"
-            title="Previous Chapter"
+            aria-label="Previous Page"
+            title="Previous Page"
           >
             <ChevronLeft size={28} />
           </button>
 
           <div className={styles.bookStage}>
             {/* Desktop Double-Page Book (min-width: 821px) */}
-            <div className={styles.bookContainer} aria-label="Interactive horizontal book of Paksarzameen departments">
+            <div className={styles.bookContainer} aria-label="Interactive portfolio book of Paksarzameen">
               <div className={styles.bookInner}>
                 <div className={styles.leftUnderlay} />
                 <div className={styles.rightUnderlay} />
                 <div className={styles.bookSpine} />
 
-                {Array.from({ length: 7 }).map((_, index) => {
+                {Array.from({ length: TOTAL_DESKTOP_SHEETS }).map((_, index) => {
+                  const frontPageNum = index * 2 + 1;
+                  const backPageNum = index * 2 + 2;
+
                   return (
                     <div
                       key={`desktop-sheet-${index}`}
@@ -420,58 +420,28 @@ export const HomeClient = memo(function HomeClient() {
                     >
                       {/* Front Face of the Sheet */}
                       <div className={styles.pageFront}>
-                        {index === 0 ? (
-                          /* Book Cover */
-                          <div className={styles.coverPage}>
-                            <Image src="/paksarzameen_logo.png" alt="Paksarzameen" width={160} height={70} style={{ objectFit: "contain", filter: "brightness(0) invert(1)" }} />
-                            <h3 className={styles.coverTitle}>PakSarZameen</h3>
-                            <p className={styles.coverSubtitle}>Chapters of Progress</p>
-                            <span className={styles.coverPrompt}>Click arrow to open &rarr;</span>
-                          </div>
-                        ) : (
-                          /* Photo Page */
-                          <div className={styles.photoPage}>
-                            <div className={styles.photoFrame}>
-                              <Image
-                                src={chapterVisuals[index - 1]}
-                                alt={PROGRAM_CARDS[index - 1].name}
-                                fill
-                                sizes="(max-width: 820px) 100vw, 40vw"
-                                style={{ objectFit: "cover" }}
-                              />
-                            </div>
-                          </div>
-                        )}
+                        <Image
+                          src={getCanvaPageSrc(frontPageNum)}
+                          alt={`PakSarZameen Portfolio Page ${frontPageNum}`}
+                          fill
+                          sizes="(max-width: 820px) 100vw, 40vw"
+                          style={{ objectFit: "cover" }}
+                          priority={frontPageNum <= 4}
+                          unoptimized
+                        />
                       </div>
 
                       {/* Back Face of the Sheet */}
                       <div className={styles.pageBack}>
-                        {index === 6 ? (
-                          /* Back Cover */
-                          <div className={styles.coverPage}>
-                            <h3 className={styles.coverTitle}>Our Journey</h3>
-                            <p className={styles.coverSubtitle}>Continues with you</p>
-                            <Link href="/get-involved" className={styles.coverPrompt} style={{ display: "inline-block", textDecoration: "none", cursor: "pointer" }}>
-                              Join the mission &rarr;
-                            </Link>
-                          </div>
-                        ) : (
-                          /* Program Text Page */
-                          <div className={styles.paperPage}>
-                            <div className={styles.paperHeading}>
-                              <span className={styles.paperTag}>{PROGRAM_CARDS[index].tag}</span>
-                              <span className={styles.paperNum}>0{index + 1}</span>
-                            </div>
-                            <div className={styles.paperBody}>
-                              <h4 className={styles.paperTitle}>{PROGRAM_CARDS[index].name}</h4>
-                              <p className={styles.paperSubtitle}>{PROGRAM_CARDS[index].subtitle}</p>
-                              <p className={styles.paperDesc}>{PROGRAM_CARDS[index].desc}</p>
-                            </div>
-                            <Link href="/programs" className={styles.paperCta}>
-                              Explore program &rarr;
-                            </Link>
-                          </div>
-                        )}
+                        <Image
+                          src={getCanvaPageSrc(backPageNum)}
+                          alt={`PakSarZameen Portfolio Page ${backPageNum}`}
+                          fill
+                          sizes="(max-width: 820px) 100vw, 40vw"
+                          style={{ objectFit: "cover" }}
+                          priority={backPageNum <= 4}
+                          unoptimized
+                        />
                       </div>
                     </div>
                   );
@@ -480,11 +450,13 @@ export const HomeClient = memo(function HomeClient() {
             </div>
 
             {/* Mobile Single-Page Notebook Book (max-width: 820px) */}
-            <div className={styles.bookContainerMobile} aria-label="Interactive mobile book of Paksarzameen departments">
+            <div className={styles.bookContainerMobile} aria-label="Interactive mobile portfolio book of Paksarzameen">
               <div className={styles.bookInnerMobile}>
                 <div className={styles.bookSpineMobile} />
 
-                {Array.from({ length: 8 }).map((_, index) => {
+                {Array.from({ length: TOTAL_CANVA_PAGES }).map((_, index) => {
+                  const pageNum = index + 1;
+
                   return (
                     <div
                       key={`mobile-sheet-${index}`}
@@ -501,48 +473,15 @@ export const HomeClient = memo(function HomeClient() {
                       className={`${styles.bookSheetMobile} book-sheet-mobile-el`}
                     >
                       <div className={styles.pageFrontMobile}>
-                        {index === 0 ? (
-                          /* Mobile Book Cover */
-                          <div className={styles.coverPage} style={{ height: "100%" }}>
-                            <Image src="/paksarzameen_logo.png" alt="Paksarzameen" width={140} height={60} style={{ objectFit: "contain", filter: "brightness(0) invert(1)" }} />
-                            <h3 className={styles.coverTitle} style={{ fontSize: "2rem" }}>PakSarZameen</h3>
-                            <p className={styles.coverSubtitle}>Chapters of Progress</p>
-                            <span className={styles.coverPrompt}>Tap arrow to open &rarr;</span>
-                          </div>
-                        ) : index === 7 ? (
-                          /* Mobile Back Cover */
-                          <div className={styles.coverPage} style={{ height: "100%" }}>
-                            <h3 className={styles.coverTitle} style={{ fontSize: "2rem" }}>Our Journey</h3>
-                            <p className={styles.coverSubtitle}>Continues with you</p>
-                            <Link href="/get-involved" className={styles.coverPrompt} style={{ display: "inline-block", textDecoration: "none" }}>
-                              Join the mission &rarr;
-                            </Link>
-                          </div>
-                        ) : (
-                          /* Mobile Program Page (Photo top, Text bottom) */
-                          <>
-                            <div className={styles.mobilePhotoFrame}>
-                              <Image
-                                src={chapterVisuals[index - 1]}
-                                alt={PROGRAM_CARDS[index - 1].name}
-                                fill
-                                sizes="(max-width: 820px) 90vw, 10vw"
-                                style={{ objectFit: "cover" }}
-                              />
-                            </div>
-                            <div className={styles.mobilePageContent}>
-                              <div>
-                                <span className={styles.mobileTag}>{PROGRAM_CARDS[index - 1].tag}</span>
-                                <h4 className={styles.mobileTitle}>{PROGRAM_CARDS[index - 1].name}</h4>
-                                <p className={styles.mobileSubtitle}>{PROGRAM_CARDS[index - 1].subtitle}</p>
-                                <p className={styles.mobileDesc}>{PROGRAM_CARDS[index - 1].desc}</p>
-                              </div>
-                              <Link href="/programs" className={styles.mobileCta}>
-                                Explore program &rarr;
-                              </Link>
-                            </div>
-                          </>
-                        )}
+                        <Image
+                          src={getCanvaPageSrc(pageNum)}
+                          alt={`PakSarZameen Portfolio Page ${pageNum}`}
+                          fill
+                          sizes="(max-width: 820px) 90vw, 10vw"
+                          style={{ objectFit: "cover" }}
+                          priority={pageNum <= 2}
+                          unoptimized
+                        />
                       </div>
                       <div className={styles.pageBackMobile} />
                     </div>
@@ -559,10 +498,10 @@ export const HomeClient = memo(function HomeClient() {
               goToDesktopPage(flippedCount + 1);
               goToMobilePage(flippedCountMobile + 1);
             }}
-            disabled={flippedCount >= 7}
+            disabled={flippedCount >= TOTAL_DESKTOP_SHEETS && flippedCountMobile >= TOTAL_CANVA_PAGES - 1}
             className={styles.bookSideArrow}
-            aria-label="Next Chapter"
-            title={flippedCount === 0 ? "Open Book" : "Next Chapter"}
+            aria-label="Next Page"
+            title={flippedCount === 0 ? "Open Book" : "Next Page"}
           >
             <ChevronRight size={28} />
           </button>
@@ -572,22 +511,22 @@ export const HomeClient = memo(function HomeClient() {
         <div className={styles.bookIndicator} data-reveal>
           <span className={styles.bookStatus}>
             {flippedCount === 0
-              ? "Cover: PakSarZameen"
-              : flippedCount <= 6
-              ? `0${flippedCount} — ${PROGRAM_CARDS[flippedCount - 1].name}`
-              : "Our Journey Continues"}
+              ? "Cover — Page 01 of 52"
+              : flippedCount < TOTAL_DESKTOP_SHEETS
+              ? `Pages ${String(flippedCount * 2).padStart(2, "0")} - ${String(flippedCount * 2 + 1).padStart(2, "0")} of 52`
+              : "Back Cover — Page 52 of 52"}
           </span>
           <div className={styles.bookDots}>
-            {Array.from({ length: 8 }).map((_, dotIdx) => (
+            {Array.from({ length: TOTAL_DESKTOP_SHEETS }).map((_, dotIdx) => (
               <button
                 key={dotIdx}
                 type="button"
                 onClick={() => {
                   goToDesktopPage(dotIdx);
-                  goToMobilePage(dotIdx);
+                  goToMobilePage(dotIdx * 2);
                 }}
                 className={`${styles.bookDot} ${flippedCount === dotIdx ? styles.bookDotActive : ""}`}
-                aria-label={`Go to page ${dotIdx}`}
+                aria-label={`Go to spread ${dotIdx + 1}`}
               />
             ))}
           </div>

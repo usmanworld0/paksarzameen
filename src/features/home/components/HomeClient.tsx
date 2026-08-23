@@ -8,7 +8,6 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { siteConfig } from "@/config/site";
-import { PROGRAM_CARDS } from "@/features/home/home.content";
 import { VIDEO_POSTERS } from "@/lib/utils/media-helpers";
 import { AwardsHonoursShowcase } from "./AwardsHonoursShowcase";
 import { PartnershipsMarquee } from "./PartnershipsMarquee";
@@ -372,7 +371,7 @@ export const HomeClient = memo(function HomeClient() {
       <section className={styles.departments} aria-labelledby="departments-heading">
         <div className={styles.departmentHeading} data-reveal>
           <h2 id="departments-heading" className={styles.appleSectionHeader}>Our Journey</h2>
-          <p className={styles.appleSectionDesc}>Explore the chapters of PakSarZameen's journey across education, healthcare, environmental action, and welfare.</p>
+          <p className={styles.appleSectionDesc}>Explore the chapters of PakSarZameen&apos;s journey across education, healthcare, environmental action, and welfare.</p>
         </div>
 
         <div className={styles.bookWrapper} data-reveal>

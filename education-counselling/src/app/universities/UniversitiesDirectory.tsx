@@ -34,7 +34,7 @@ export function UniversitiesDirectory({ initialUniversities }: UniversitiesDirec
     if (levelQuery) setSelectedLevel(levelQuery);
   }, [searchParams]);
 
-  const countries = ["All", "United States", "United Kingdom", "Canada", "Australia", "Europe"];
+  const countries = ["All", "United States", "United Kingdom", "Canada", "Australia", "Switzerland", "Singapore", "Europe"];
   const fields = ["All", "Computer Science", "Economics", "Engineering", "Business", "Public Policy", "Medicine"];
 
   const filteredUniversities = useMemo(() => {
@@ -52,8 +52,13 @@ export function UniversitiesDirectory({ initialUniversities }: UniversitiesDirec
         if (!matchesName && !matchesCountry && !matchesProgram) return false;
       }
 
-      if (selectedCountry !== "All" && uni.country !== selectedCountry) {
-        return false;
+      if (selectedCountry !== "All") {
+        if (selectedCountry === "Europe") {
+          const europeanCountries = ["United Kingdom", "Switzerland", "Germany", "France", "Netherlands", "Sweden", "Europe"];
+          if (!europeanCountries.includes(uni.country)) return false;
+        } else if (uni.country !== selectedCountry) {
+          return false;
+        }
       }
 
       if (selectedLevel !== "All") {

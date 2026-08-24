@@ -29,9 +29,35 @@ interface ScholarshipItem {
 
 const SCHOLARSHIPS_DATA: ScholarshipItem[] = [
   {
+    id: "mpower-women-in-stem",
+    name: "MPOWER Women in STEM Scholarship",
+    region: "USA & North America",
+    type: "Merit & Leadership Award",
+    coverage: "Up to $5,000 Direct Tuition Grant + Career Mentorship Network",
+    stipend: "$5,000 Grand Prize ($2k & $1k Runners-Up)",
+    deadline: "December 31 (Annual Cycle)",
+    degreeLevel: "Bachelor's, Master's & PhD",
+    estimatedValue: "$5,000 USD",
+    desc: "Targeted scholarship empowering high-potential female international and DACA scholars pursuing full-time STEM degree programs across top universities in the US and Canada.",
+    accentColor: "#2D4B91",
+  },
+  {
+    id: "akdn-isp",
+    name: "Aga Khan Foundation International Scholarship (AKF ISP)",
+    region: "Global / Pakistan",
+    type: "50% Grant + 50% Loan",
+    coverage: "Full University Tuition + Complete Living Stipend throughout degree",
+    stipend: "Full Living Expenses Included",
+    deadline: "Early Annual Cycle (Jan – March)",
+    degreeLevel: "Master's & PhD",
+    estimatedValue: "$60,000+",
+    desc: "Established by His Highness Prince Karim Aga Khan IV, supporting exceptional scholars from Pakistan and developing countries who have genuine financial need to pursue postgraduate degrees worldwide.",
+    accentColor: "#007041",
+  },
+  {
     id: "fulbright",
     name: "Fulbright Foreign Student Program",
-    region: "USA",
+    region: "USA & North America",
     type: "100% Fully Funded",
     coverage: "Full Tuition + Living Stipend + Airfare + J-1 Visa + Health Insurance",
     stipend: "$1,800 – $2,600 / month",
@@ -111,6 +137,39 @@ const SCHOLARSHIPS_DATA: ScholarshipItem[] = [
 /* High-fidelity Vector SVG Logos */
 function ScholarshipLogo({ id }: { id: string }) {
   switch (id) {
+    case "mpower-women-in-stem":
+      return (
+        <svg viewBox="0 0 130 40" className="h-9 w-auto" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="MPOWER Financing Logo">
+          <rect width="130" height="40" rx="4" fill="#2D4B91" />
+          <g transform="translate(10, 11)">
+            <path d="M2 18V2L8 10L14 2V18" stroke="#00B2E2" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+          </g>
+          <text x="32" y="24" fill="#FFFFFF" fontFamily="system-ui, sans-serif" fontSize="11" fontWeight="900" letterSpacing="0.06em">
+            MPOWER
+          </text>
+          <text x="84" y="24" fill="#00B2E2" fontFamily="system-ui, sans-serif" fontSize="8.5" fontWeight="700">
+            STEM
+          </text>
+        </svg>
+      );
+
+    case "akdn-isp":
+      return (
+        <svg viewBox="0 0 130 40" className="h-9 w-auto" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Aga Khan Foundation Logo">
+          <rect width="130" height="40" rx="4" fill="#007041" />
+          <g transform="translate(10, 8)">
+            <circle cx="12" cy="12" r="9" stroke="#E5A823" strokeWidth="1.6" fill="none" />
+            <path d="M12 6L13.5 10H18L14.5 12.5L16 16.5L12 14L8 16.5L9.5 12.5L6 10H10.5L12 6Z" fill="#E5A823" />
+          </g>
+          <text x="34" y="19" fill="#FFFFFF" fontFamily="Georgia, serif" fontSize="9.5" fontWeight="800" letterSpacing="0.04em">
+            AGA KHAN
+          </text>
+          <text x="34" y="28" fill="#E5A823" fontFamily="system-ui, sans-serif" fontSize="7.5" fontWeight="700" letterSpacing="0.1em">
+            FOUNDATION
+          </text>
+        </svg>
+      );
+
     case "fulbright":
       return (
         <svg viewBox="0 0 120 40" className="h-9 w-auto" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Fulbright Logo">
@@ -226,16 +285,24 @@ export function ScholarshipsShowcase({ onOpenConsultation }: ScholarshipsShowcas
 
   const regions = [
     { label: "All Destinations", count: SCHOLARSHIPS_DATA.length },
-    { label: "USA", count: SCHOLARSHIPS_DATA.filter((s) => s.region === "USA").length },
-    { label: "United Kingdom", count: SCHOLARSHIPS_DATA.filter((s) => s.region === "United Kingdom").length },
-    { label: "Germany & Europe", count: SCHOLARSHIPS_DATA.filter((s) => s.region === "Germany & Europe").length },
-    { label: "Australia & Asia", count: SCHOLARSHIPS_DATA.filter((s) => s.region === "Australia & Asia").length },
+    { label: "USA & North America", count: SCHOLARSHIPS_DATA.filter((s) => s.region.includes("USA") || s.region.includes("North America")).length },
+    { label: "United Kingdom", count: SCHOLARSHIPS_DATA.filter((s) => s.region.includes("United Kingdom") || s.region.includes("UK")).length },
+    { label: "Germany & Europe", count: SCHOLARSHIPS_DATA.filter((s) => s.region.includes("Europe") || s.region.includes("Germany")).length },
+    { label: "Australia & Asia", count: SCHOLARSHIPS_DATA.filter((s) => s.region.includes("Australia") || s.region.includes("Asia")).length },
+    { label: "Global / Pakistan", count: SCHOLARSHIPS_DATA.filter((s) => s.region.includes("Global") || s.region.includes("Pakistan")).length },
   ];
 
   const filteredItems =
     selectedRegion === "All Destinations"
       ? SCHOLARSHIPS_DATA
-      : SCHOLARSHIPS_DATA.filter((s) => s.region === selectedRegion);
+      : SCHOLARSHIPS_DATA.filter((s) => {
+          if (selectedRegion === "USA & North America") return s.region.includes("USA") || s.region.includes("North America");
+          if (selectedRegion === "United Kingdom") return s.region.includes("United Kingdom") || s.region.includes("UK");
+          if (selectedRegion === "Germany & Europe") return s.region.includes("Europe") || s.region.includes("Germany");
+          if (selectedRegion === "Australia & Asia") return s.region.includes("Australia") || s.region.includes("Asia");
+          if (selectedRegion === "Global / Pakistan") return s.region.includes("Global") || s.region.includes("Pakistan");
+          return s.region === selectedRegion;
+        });
 
   return (
     <section id="scholarships" className="py-16 sm:py-24 border-b border-[#BECCAD] bg-[#F3F5F0] scroll-mt-20">

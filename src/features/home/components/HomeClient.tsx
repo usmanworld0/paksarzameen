@@ -351,24 +351,26 @@ export const HomeClient = memo(function HomeClient() {
 
       <section id="home-problem" className={styles.problem}>
         <div className={styles.problemGrid}>
-          <h2 className={styles.appleSectionHeader} data-reveal>What is PSZ?</h2>
           <div data-reveal>
             <p className={styles.highlightText}>Systemic unequal systems of power make countries serve debt over people, treat poverty as an individual failure, allow environmental harm in one place for the benefit of another, and weaken people’s ability to shape their own knowledge, priorities, and future, which leads to underdevelopment</p>
             <Link href="/programs" className={styles.appleLink}>Learn about our framework &rarr;</Link>
+          </div>
+          <div data-reveal dir="rtl">
+            <p className={styles.urduText}>طاقت کے منظم اور غیر مساوی نظام ممالک کو انسانوں پر قرضوں کو ترجیح دینے پر مجبور کرتے ہیں، غربت کو انفرادی ناکامی قرار دیتے ہیں، ایک جگہ کے فائدے کے لیے دوسری جگہ ماحولیاتی نقصان پہنچانے کی اجازت دیتے ہیں، اور لوگوں کی اپنے علم، ترجیحات اور مستقبل کو خود سنوارنے کی صلاحیت کو کمزور کرتے ہیں، جو کہ بالآخر پسماندگی کا باعث بنتا ہے۔</p>
           </div>
         </div>
       </section>
 
       <section id="home-solution" className={styles.solution}>
         <div className={styles.solutionCopy} data-reveal>
-          <h2 className={styles.appleSectionHeaderLight}>What We Do</h2>
           <p className={styles.highlightTextLight}>We believe development begins when humans have the freedom to shape their own time, choices, and future. We work toward this by helping families build income, supporting students to study abroad through scholarships, giving young scholars space to share their ideas, protecting the environment through plantation and recycling and creating projects that living bodies feel seen, included, and able to grow.</p>
-          <Link href="/programs" className={styles.appleButtonLight}>Explore our work &rarr;</Link>
+          <p className={styles.urduTextLight} dir="rtl">ہمارا ماننا ہے کہ ترقی کا آغاز تب ہوتا ہے جب انسانوں کو اپنے وقت، فیصلوں اور مستقبل کو سنوارنے کی آزادی ہو۔ ہم اس مقصد کے حصول کے لیے خاندانوں کی آمدنی بڑھانے میں مدد کر کے، وظائف کے ذریعے طلبہ کی بیرونِ ملک تعلیم میں معاونت کر کے، نوجوان دانشوروں کو اپنے خیالات پیش کرنے کے مواقع فراہم کر کے، شجرکاری اور ری سائیکلنگ کے ذریعے ماحول کے تحفظ، اور ایسے منصوبے بنا کر کام کرتے ہیں جن میں ہر جاندار خود کو اہم، شامل اور پروان چڑھنے کے قابل محسوس کرے۔</p>
+          <Link href="#home-journey" className={styles.appleButtonLight}>Explore our work &rarr;</Link>
         </div>
         <div className={styles.solutionPhoto}><Image src="/images/optimized/full-team.webp" alt="Paksarzameen team" fill sizes="(max-width: 820px) 100vw, 50vw" className={styles.coverImage} /></div>
       </section>
 
-      <section className={styles.departments} aria-labelledby="departments-heading">
+      <section id="home-journey" className={styles.departments} aria-labelledby="departments-heading">
         <div className={styles.departmentHeading} data-reveal>
           <h2 id="departments-heading" className={styles.appleSectionHeader}>Our Journey</h2>
           <p className={styles.appleSectionDesc}>Explore the chapters of PakSarZameen&apos;s journey across education, healthcare, environmental action, and welfare.</p>

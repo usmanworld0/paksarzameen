@@ -66,6 +66,487 @@ export interface University {
 
 export const dummyUniversities: University[] = [
   {
+    slug: "massachusetts-institute-of-technology",
+    name: "Massachusetts Institute of Technology (MIT)",
+    country: "United States",
+    logo: "linear-gradient(135deg, #750014 0%, #a31f34 100%)",
+    banner: "/images/universities/harvard-banner.webp",
+    ranking: { qs: "1", world: "1" },
+    scholarships: {
+      available: true,
+      details: [
+        {
+          name: "MIT Need-Blind Financial Aid",
+          eligibility: "All admitted undergraduate students with demonstrated financial need, regardless of nationality.",
+          gpa: "3.9+",
+          ielts: "7.5+ or TOEFL 100+",
+          coverage: "100% of demonstrated financial need (tuition, housing, food, and books; average grant $62,000+/year)",
+          procedure: "Submit CSS Profile and IDOC tax documentation.",
+          deadline: "February 15"
+        }
+      ]
+    },
+    overview: {
+      about: "Massachusetts Institute of Technology (MIT) is the world's premier research institution for science, technology, engineering, and artificial intelligence, located in Cambridge, Massachusetts. Consistently ranked #1 globally in the QS World University Rankings.",
+      campusLife: "MIT boasts a hyper-innovative culture with endless maker spaces, research labs (Media Lab, CSAIL), over 500 student organizations, and a vibrant entrepreneurial ecosystem along the Charles River.",
+      population: "11,900+",
+      internationalStudents: "33%"
+    },
+    programs: {
+      undergraduate: [
+        "Computer Science & Artificial Intelligence (B.S.)",
+        "Electrical Engineering & Computer Science (B.S.)",
+        "Mechanical Engineering (B.S.)",
+        "Computation & Cognition (B.S.)"
+      ],
+      masters: [
+        "Master of Science in EECS",
+        "MIT Sloan Master of Finance",
+        "Master of Engineering in Computer Science"
+      ],
+      phd: [
+        "Ph.D. in Computer Science (CSAIL)",
+        "Ph.D. in Physics",
+        "Ph.D. in Mechanical Engineering"
+      ]
+    },
+    admission: {
+      entryRequirements: "Outstanding secondary school transcript with top STEM preparation (Calculus, Physics, Chemistry, Biology), SAT/ACT required, essays, and 2 teacher recommendations.",
+      englishRequirements: "TOEFL minimum 90 (100+ recommended) or IELTS 7.5+.",
+      documents: [
+        "Official High School Transcript",
+        "Standardized Test Scores (SAT/ACT)",
+        "Two Teacher Evaluations (Math/Science & Humanities)",
+        "MIT Application Essays & Self-Reported Coursework",
+        "CSS Profile for Financial Aid"
+      ],
+      process: "Apply online directly through the MIT Application Portal. Shortlisted applicants are invited for an interview with an Educational Counselor (EC).",
+      processingTime: "8 to 12 weeks"
+    },
+    fees: {
+      tuition: "$59,750 / year",
+      accommodation: "$12,380 / year",
+      livingExpenses: "$7,000 / year",
+      visaCost: "$510 (SEVIS + F1 Visa Fee)"
+    },
+    intakes: ["Fall (September)"],
+    gallery: [
+      "/images/universities/harvard-banner.webp",
+      "/images/universities/gallery-harvard-2.webp",
+      "/images/universities/ubc-banner.webp"
+    ],
+    faq: [
+      {
+        q: "Is MIT need-blind for international applicants?",
+        a: "Yes. MIT is one of only a handful of universities in the world that is fully need-blind for all undergraduate applicants regardless of citizenship, and meets 100% of demonstrated financial need."
+      },
+      {
+        q: "Does MIT accept the Common App?",
+        a: "No. MIT uses its own dedicated application system (apply.mit.edu) and does not use the Common Application."
+      }
+    ]
+  },
+  {
+    slug: "imperial-college-london",
+    name: "Imperial College London",
+    country: "United Kingdom",
+    logo: "linear-gradient(135deg, #002147 0%, #003e74 100%)",
+    banner: "/images/universities/manchester-banner.webp",
+    ranking: { qs: "2", world: "2" },
+    scholarships: {
+      available: true,
+      details: [
+        {
+          name: "President's Undergraduate & Postgraduate Scholarships",
+          eligibility: "Exceptional academic merit across STEM faculties.",
+          gpa: "3.85+ / A*A*A",
+          ielts: "7.0+ (minimum 6.5 in all bands)",
+          coverage: "Full tuition fee waiver plus up to £20,000 annual living maintenance stipend",
+          procedure: "Automatic consideration upon UCAS or Postgraduate admissions submission.",
+          deadline: "January 31"
+        }
+      ]
+    },
+    overview: {
+      about: "Imperial College London is ranked #2 globally in the QS World University Rankings. Situated in South Kensington, London, it is world-renowned exclusively for science, engineering, medicine, and business education.",
+      campusLife: "Imperial's central London campus puts students next to the Science Museum, Natural History Museum, and Hyde Park, featuring cutting-edge invention rooms (Advanced Hackspace) and over 380 clubs.",
+      population: "20,000+",
+      internationalStudents: "60%"
+    },
+    programs: {
+      undergraduate: [
+        "Computing (Software Engineering / AI) (B.Eng / M.Eng)",
+        "Aeronautical Engineering (M.Eng)",
+        "Electrical & Electronic Engineering (B.Eng)",
+        "Biomedical Technology Ventures (B.Sc.)"
+      ],
+      masters: [
+        "MSc Advanced Computing",
+        "Imperial Full-Time MBA",
+        "MSc Machine Learning & Data Science"
+      ],
+      phd: [
+        "Ph.D. in Computing Research",
+        "Ph.D. in Bioengineering",
+        "Ph.D. in Physics"
+      ]
+    },
+    admission: {
+      entryRequirements: "A*A*A to A*AA at A-Level (or equivalent 90%+ in FSc/HSSC with top Mathematics and Science), mandatory admissions test (TMUA/STEP/ESAT depending on major).",
+      englishRequirements: "IELTS 7.0+ (no subscore below 6.5) or Duolingo 125+.",
+      documents: [
+        "UCAS Application & Personal Statement",
+        "Academic Reference Letter",
+        "Predicted / Certified Examination Results",
+        "Subject-specific Admissions Test Scores"
+      ],
+      process: "Apply via UCAS portal. Competitive applicants are invited for an academic admissions interview.",
+      processingTime: "6 to 12 weeks"
+    },
+    fees: {
+      tuition: "£36,500 - £41,000 / year",
+      accommodation: "£10,500 - £14,000 / year",
+      livingExpenses: "£7,500 / year",
+      visaCost: "£490 (Student Visa) + £776/year IHS"
+    },
+    intakes: ["Fall (October)"],
+    gallery: [
+      "/images/universities/manchester-banner.webp",
+      "/images/universities/gallery-manchester-3.webp",
+      "/images/universities/toronto-banner.webp"
+    ],
+    faq: [
+      {
+        q: "Why is Imperial ranked #2 in the world?",
+        a: "Imperial achieved #2 in the QS World Rankings due to world-leading research impact, unmatched employer reputation, and exceptional graduate salaries in science, engineering, and technology."
+      },
+      {
+        q: "Are interviews required for admission?",
+        a: "Yes. Most departments at Imperial interview shortlisted applicants before making a final conditional offer."
+      }
+    ]
+  },
+  {
+    slug: "university-of-oxford",
+    name: "University of Oxford",
+    country: "United Kingdom",
+    logo: "linear-gradient(135deg, #002147 0%, #0c335e 100%)",
+    banner: "/images/universities/manchester-banner.webp",
+    ranking: { qs: "3", world: "3" },
+    scholarships: {
+      available: true,
+      details: [
+        {
+          name: "Clarendon Fund & Reach Oxford Scholarships",
+          eligibility: "Academically stellar applicants from developing nations (including Pakistan).",
+          gpa: "3.9+ / A*A*A",
+          ielts: "7.5 (minimum 7.0 each component)",
+          coverage: "100% course fees plus an annual living cost stipend of £18,622+",
+          procedure: "Apply for course by January deadline; eligible candidates are automatically nominated for Clarendon.",
+          deadline: "January Course Deadline"
+        }
+      ]
+    },
+    overview: {
+      about: "The University of Oxford is the oldest university in the English-speaking world, founded around 1096. Ranked #3 globally by QS, Oxford combines 39 historic colleges with world-leading modern research laboratories.",
+      campusLife: "Unique collegiate system where students dine, socialize, and learn in historic college quads. Oxford offers world-renowned weekly 1-on-1 and 2-on-1 tutorials with leading professors.",
+      population: "26,000+",
+      internationalStudents: "46%"
+    },
+    programs: {
+      undergraduate: [
+        "Philosophy, Politics and Economics (PPE) (B.A.)",
+        "Computer Science (B.A. / M.CompSci)",
+        "Jurisprudence (Law) (B.A.)",
+        "Mathematics (M.Math)"
+      ],
+      masters: [
+        "MSc in Advanced Computer Science",
+        "Master of Public Policy (Blavatnik School)",
+        "Oxford 1-Year MBA (Saïd Business School)"
+      ],
+      phd: [
+        "DPhil in Computer Science",
+        "DPhil in Economics",
+        "DPhil in Clinical Medicine"
+      ]
+    },
+    admission: {
+      entryRequirements: "Top A-level grades (A*A*A - A*AA) or equivalent international board qualifications, UCAS submission, admissions test (MAT/PAT/LNAT/TSA), and submission of written work.",
+      englishRequirements: "IELTS 7.5+ (minimum 7.0 per component) or TOEFL 110+.",
+      documents: [
+        "UCAS Application by October 15",
+        "Academic Reference & Personal Statement",
+        "Pre-interview Admissions Test Score",
+        "Sample Written Work (for humanities/social sciences)"
+      ],
+      process: "Apply via UCAS by October 15. Shortlisted candidates are invited for rigorous academic college interviews in December.",
+      processingTime: "8 to 12 weeks"
+    },
+    fees: {
+      tuition: "£33,000 - £48,600 / year",
+      accommodation: "£9,500 - £12,500 / year",
+      livingExpenses: "£6,500 / year",
+      visaCost: "£490 (Student Visa) + £776/year IHS"
+    },
+    intakes: ["Fall (October)"],
+    gallery: [
+      "/images/universities/manchester-banner.webp",
+      "/images/universities/gallery-manchester-3.webp",
+      "/images/universities/harvard-banner.webp"
+    ],
+    faq: [
+      {
+        q: "What is the Oxford tutorial system?",
+        a: "Tutorials are intense weekly teaching sessions where 1 to 3 students discuss essays and problem sets directly with Oxford professors and fellows."
+      },
+      {
+        q: "Can Pakistani students apply for Reach Oxford?",
+        a: "Yes. Reach Oxford is specifically intended for students from developing countries (DAC list including Pakistan) who cannot afford to study in their home country."
+      }
+    ]
+  },
+  {
+    slug: "university-of-cambridge",
+    name: "University of Cambridge",
+    country: "United Kingdom",
+    logo: "linear-gradient(135deg, #a3c1ad 0%, #007788 100%)",
+    banner: "/images/universities/manchester-banner.webp",
+    ranking: { qs: "5", world: "5" },
+    scholarships: {
+      available: true,
+      details: [
+        {
+          name: "Gates Cambridge & Cambridge Trust Awards",
+          eligibility: "Outstanding intellectual leadership and commitment to improving the lives of others.",
+          gpa: "3.9+ / A*A*A",
+          ielts: "7.5 (minimum 7.0 each component)",
+          coverage: "Full University & College Composition Fee + £20,000 annual maintenance allowance + airfare",
+          procedure: "Apply via Cambridge postgraduate portal selecting Gates Cambridge checkbox and submitting 500-word statement.",
+          deadline: "Early December"
+        }
+      ]
+    },
+    overview: {
+      about: "Founded in 1209, the University of Cambridge is ranked #5 globally by QS. Home to 31 colleges along the River Cam, Cambridge has produced more Nobel Laureates (121+) than any other institution in the world.",
+      campusLife: "Collegiate supervision system, punting on the Cam, rowing clubs, historic libraries, and the Silicon Fen tech cluster—Europe's largest technology hotspot.",
+      population: "24,000+",
+      internationalStudents: "40%"
+    },
+    programs: {
+      undergraduate: [
+        "Natural Sciences Tripos (B.A. / M.Sci)",
+        "Computer Science (B.A. / M.Eng)",
+        "Engineering Tripos (M.Eng)",
+        "Economics Tripos (B.A.)"
+      ],
+      masters: [
+        "MPhil in Advanced Computer Science",
+        "Cambridge Judge MBA",
+        "MPhil in Technology Policy"
+      ],
+      phd: [
+        "Ph.D. in Computer Science & Technology",
+        "Ph.D. in Engineering",
+        "Ph.D. in Applied Mathematics (DAMTP)"
+      ]
+    },
+    admission: {
+      entryRequirements: "A*A*A to A*AA, college registration, TMUA/ESAT admissions assessments, and subject-matter supervisory interviews.",
+      englishRequirements: "IELTS 7.5+ (minimum 7.0 per band) or TOEFL 110+.",
+      documents: [
+        "UCAS Application (October 15 deadline)",
+        "My Cambridge Application (MyCApp) questionnaire",
+        "Admissions Assessment Scores",
+        "Academic References"
+      ],
+      process: "Submit UCAS application by October 15, complete MyCApp, sit for admissions test, and attend college interviews in December.",
+      processingTime: "8 to 12 weeks"
+    },
+    fees: {
+      tuition: "£35,000 - £47,000 / year",
+      accommodation: "£9,800 - £13,000 / year",
+      livingExpenses: "£6,800 / year",
+      visaCost: "£490 (Student Visa) + £776/year IHS"
+    },
+    intakes: ["Fall (October)"],
+    gallery: [
+      "/images/universities/manchester-banner.webp",
+      "/images/universities/gallery-manchester-3.webp",
+      "/images/universities/toronto-banner.webp"
+    ],
+    faq: [
+      {
+        q: "What is Cambridge Silicon Fen?",
+        a: "Silicon Fen refers to the region around Cambridge that houses over 5,000 technology and bio-tech companies, providing unparalleled internship and job placement for students."
+      },
+      {
+        q: "How does the Cambridge Tripos work?",
+        a: "Tripos is Cambridge's unique undergraduate degree examination structure, divided into Part I (foundations) and Part II/III (specialized advanced honours)."
+      }
+    ]
+  },
+  {
+    slug: "stanford-university",
+    name: "Stanford University",
+    country: "United States",
+    logo: "linear-gradient(135deg, #8c1515 0%, #b83a3a 100%)",
+    banner: "/images/universities/harvard-banner.webp",
+    ranking: { qs: "6", world: "6" },
+    scholarships: {
+      available: true,
+      details: [
+        {
+          name: "Knight-Hennessy Scholars Program",
+          eligibility: "Visionary leaders from all countries enrolling in any Stanford graduate degree.",
+          gpa: "3.85+",
+          ielts: "7.5+ or TOEFL 100+",
+          coverage: "Full tuition fees, generous living and academic stipend, plus travel grants for up to 3 years",
+          procedure: "Submit separate online Knight-Hennessy application alongside Stanford graduate degree application.",
+          deadline: "Early October"
+        }
+      ]
+    },
+    overview: {
+      about: "Stanford University is ranked #6 globally by QS. Located in the heart of Silicon Valley, California, Stanford is the world's most influential launchpad for tech founders, venture capital, and groundbreaking research.",
+      campusLife: "Expansive 8,180-acre sunlit campus in Palo Alto, world-class athletic facilities, bike-friendly paths, d.school design workshops, and direct access to top tech giants (Google, Apple, Meta).",
+      population: "17,000+",
+      internationalStudents: "25%"
+    },
+    programs: {
+      undergraduate: [
+        "Computer Science (B.S. in AI / Systems / HCI)",
+        "Symbolic Systems (B.S.)",
+        "Management Science & Engineering (B.S.)",
+        "Product Design (B.S.)"
+      ],
+      masters: [
+        "Master of Science in Computer Science",
+        "Stanford GSB Full-Time MBA",
+        "MS in Electrical Engineering"
+      ],
+      phd: [
+        "Ph.D. in Computer Science",
+        "Ph.D. in Artificial Intelligence",
+        "Ph.D. in Economics"
+      ]
+    },
+    admission: {
+      entryRequirements: "Top academic transcript, rigorous coursework, SAT/ACT scores (test-optional depending on cycle), 3 letters of recommendation, and reflective personal essays.",
+      englishRequirements: "TOEFL 100+ or IELTS 7.5+.",
+      documents: [
+        "Common Application & Stanford Short Questions",
+        "Official High School / College Transcripts",
+        "Two Teacher Recommendations & Counselor Evaluation",
+        "CSS Profile (for need-based aid)"
+      ],
+      process: "Apply via Common App (Restrictive Early Action or Regular Decision). Shortlisted graduate candidates are invited for faculty interviews.",
+      processingTime: "8 to 12 weeks"
+    },
+    fees: {
+      tuition: "$61,731 / year",
+      accommodation: "$18,619 / year",
+      livingExpenses: "$8,000 / year",
+      visaCost: "$510 (SEVIS + F1 Visa Fee)"
+    },
+    intakes: ["Fall (September)"],
+    gallery: [
+      "/images/universities/harvard-banner.webp",
+      "/images/universities/gallery-harvard-2.webp",
+      "/images/universities/ubc-banner.webp"
+    ],
+    faq: [
+      {
+        q: "What is Knight-Hennessy Scholars?",
+        a: "It is the largest fully endowed graduate fellowship in the world, funding up to 100 high-impact international students annually across all seven Stanford graduate schools."
+      },
+      {
+        q: "Does Stanford offer need-based aid to international undergraduates?",
+        a: "Yes. Stanford provides need-based financial aid to international students who request aid during their initial application process."
+      }
+    ]
+  },
+  {
+    slug: "eth-zurich",
+    name: "ETH Zurich",
+    country: "Switzerland",
+    logo: "linear-gradient(135deg, #1f407a 0%, #3562a6 100%)",
+    banner: "/images/universities/melbourne-banner.webp",
+    ranking: { qs: "7", world: "7" },
+    scholarships: {
+      available: true,
+      details: [
+        {
+          name: "Excellence Scholarship & Opportunity Programme (ESOP)",
+          eligibility: "Top 10% of Bachelor's graduates entering an ETH Master's programme.",
+          gpa: "3.8+ (Grade A)",
+          ielts: "7.0+ or TOEFL 100+",
+          coverage: "Full study and living costs grant (CHF 12,000 per semester) + full tuition fee waiver",
+          procedure: "Submit ESOP application dossier including Master's thesis pre-proposal during application window.",
+          deadline: "December 15"
+        }
+      ]
+    },
+    overview: {
+      about: "ETH Zurich (Swiss Federal Institute of Technology) is ranked #7 globally by QS and is continental Europe's #1 university. Founded in 1855, ETH has produced 22 Nobel Laureates including Albert Einstein.",
+      campusLife: "Modern urban campuses in Zentrum and Hönggerberg overlooking Zurich. Swiss research culture, modern robotics labs, student hackathons, and easy access to the Swiss Alps.",
+      population: "25,000+",
+      internationalStudents: "42%"
+    },
+    programs: {
+      undergraduate: [
+        "Computer Science (B.Sc. - German/English)",
+        "Mechanical Engineering (B.Sc.)",
+        "Physics (B.Sc.)"
+      ],
+      masters: [
+        "MSc in Computer Science (100% English-taught)",
+        "MSc in Data Science",
+        "MSc in Robotics, Systems and Control"
+      ],
+      phd: [
+        "Ph.D. in Computer Science",
+        "Ph.D. in Mechanical and Process Engineering",
+        "Ph.D. in Information Technology & Electrical Engineering"
+      ]
+    },
+    admission: {
+      entryRequirements: "Recognized Bachelor's degree in engineering/sciences with exceptional GPA, GRE General Test scores (strongly advised/required for non-EU degrees), and pre-requisite course mapping.",
+      englishRequirements: "IELTS 7.0+ or TOEFL 100+ for English-taught master's degrees.",
+      documents: [
+        "Degree Certificate and Certified Transcripts",
+        "Course Descriptions / Syllabus mapping",
+        "GRE Score Report",
+        "Statement of Purpose and CV",
+        "Two Academic Recommendation Letters"
+      ],
+      process: "Apply online via eApply portal between November 1 and December 15. Upload all course outlines and transcripts.",
+      processingTime: "10 to 14 weeks"
+    },
+    fees: {
+      tuition: "CHF 1,460 / year (Highly subsidized public rate)",
+      accommodation: "CHF 7,200 - CHF 10,800 / year",
+      livingExpenses: "CHF 9,000 / year",
+      visaCost: "CHF 120 (Swiss Student Visa)"
+    },
+    intakes: ["Fall (September)"],
+    gallery: [
+      "/images/universities/melbourne-banner.webp",
+      "/images/universities/gallery-melbourne-2.webp",
+      "/images/universities/toronto-banner.webp"
+    ],
+    faq: [
+      {
+        q: "Why is tuition so affordable at ETH Zurich?",
+        a: "ETH Zurich is a federal public institution funded by the Swiss government, making tuition extremely low (~CHF 730/semester) while maintaining world top 10 academic excellence."
+      },
+      {
+        q: "Are Master's degrees at ETH taught in English?",
+        a: "Yes. Almost all Master's degree programs in Engineering, Computer Science, Data Science, and Natural Sciences are 100% taught in English."
+      }
+    ]
+  },
+  {
     slug: "harvard-university",
     name: "Harvard University",
     country: "United States",
@@ -634,8 +1115,18 @@ export const dummyUniversities: University[] = [
     banner: "/images/universities/nus-banner.webp",
     ranking: { qs: "8", world: "8" },
     scholarships: {
-      available: false,
-      details: []
+      available: true,
+      details: [
+        {
+          name: "NUS Global Merit & ASEAN Undergraduate Scholarships",
+          eligibility: "Outstanding international and ASEAN applicants with exceptional academic results and leadership record.",
+          gpa: "3.9+",
+          ielts: "6.5+ (minimum 6.5 reading/writing)",
+          coverage: "Full tuition fee waiver + SGD $6,000 annual living allowance + SGD $2,000 accommodation allowance + SGD $1,750 computer grant",
+          procedure: "Submit scholarship application via the NUS Applicant Portal after submitting university application.",
+          deadline: "Mid-February"
+        }
+      ]
     },
     overview: {
       about: "The National University of Singapore is a national public research university in Queenstown, Singapore. Founded in 1905, it is the oldest autonomous university in Singapore. It is consistently ranked among the top 10 universities in the world.",
